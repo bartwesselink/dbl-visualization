@@ -1,8 +1,7 @@
 <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
     <header class="mdl-layout__header">
         <div class="mdl-layout__header-row">
-            <!-- Title -->
-            <span class="mdl-layout-title">Visualization</span>
+            <span class="mdl-layout-title">DBL 1D</span>
         </div>
 
         <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
@@ -13,10 +12,17 @@
         <span class="mdl-layout-title">Menu</span>
     </div>
     <main class="mdl-layout__content">
-        <section *ngFor="let tab of tabs;" class="mdl-layout__tab-panel is-active" [attr.id]="tab.id">
-            <div class="page-content">
-                <app-window></app-window>
+        <div class="holder">
+            <div class="holder-app">
+                <section *ngFor="let tab of tabs;" class="mdl-layout__tab-panel" [class.is-active]="tab.active" [attr.id]="tab.id">
+                    <div class="page-content">
+                        <app-window></app-window>
+                    </div>
+                </section>
             </div>
-        </section>
+            <div class="holder-sidebar">
+                <app-sidebar></app-sidebar>
+            </div>
+        </div>
     </main>
 </div>
