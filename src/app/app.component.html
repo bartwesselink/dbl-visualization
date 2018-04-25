@@ -14,8 +14,8 @@
     <main class="mdl-layout__content">
         <div class="holder">
             <div class="holder-app">
-                <section *ngFor="let tab of tabs;" class="mdl-layout__tab-panel" [class.is-active]="tab.active" [attr.id]="tab.id">
-                    <div class="page-content">
+                <section *ngFor="let tab of tabs;" class="mdl-layout__tab-panel full-height" [class.is-active]="tab.active" [attr.id]="tab.id">
+                    <div class="page-content full-height">
                         <app-window></app-window>
                     </div>
                 </section>
