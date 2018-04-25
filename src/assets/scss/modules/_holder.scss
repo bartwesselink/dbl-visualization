@@ -1,0 +1,17 @@
+.holder {
+  display: flex;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.holder-app {
+  flex-grow: 1;
+}
+
+.holder-sidebar {
+  width: 20rem;
+  flex-grow: 0;
+}
