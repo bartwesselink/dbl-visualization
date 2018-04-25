@@ -11,6 +11,7 @@ export class WindowComponent implements OnInit {
     ngOnInit() {
         this.context = this.canvas.nativeElement.getContext('2d');
 
+        this.redraw();
         this.setHeight();
 
         window.onresize = () => this.setHeight();
@@ -27,6 +28,7 @@ export class WindowComponent implements OnInit {
         this.context.fillStyle = gradient;
         this.context.fillText("Hello world", 10, 90);
     }
+
     /** @author Bart Wesselink */
     private clear(): void {
         this.context.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
