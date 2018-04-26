@@ -7,36 +7,49 @@ import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 export class WindowComponent implements OnInit {
     @ViewChild('canvas') private canvas: ElementRef;
     private context: CanvasRenderingContext2D;
+  
+    /** @author Roan Hofland */
+    private errored: boolean = false;
 
     ngOnInit() {
-        this.context = this.canvas.nativeElement.getContext('2d');
-
+        this.init();
+      
         this.setHeight();
+        this.redraw();
 
         window.onresize = () => this.setHeight();
     }
+  
+    //fallback rendering for when some OpenGL error occurs
+    private onError(): void {
+       this.context = this.canvas.nativeElement.getContext('2d');
+       this.context.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
 
-    private drawText(): void {
-        this.context.font = "30px Verdana";
-
-        const gradient = this.context.createLinearGradient(0, 0, this.canvas.nativeElement.width, 0);
-        gradient.addColorStop(0, "magenta");
-        gradient.addColorStop(0.5, "blue");
-        gradient.addColorStop(1.0, "red");
-
-        this.context.fillStyle = gradient;
-        this.context.fillText("Hello world", 10, 90);
+       this.context.font = "30px Verdana";
+       this.context.fillStyle = "red";
+       this.context.fillText("An internal OpenGL error occurred!", 10, this.canvas.nativeElement.height / 2);
     }
-    /** @author Bart Wesselink */
-    private clear(): void {
-        this.context.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
+  
+    //draw OpenGL stuff
+    private draw(): void {
+      //TODO OpenGL drawing
     }
-
+  
+    //initialise OpenGL
+    private init(): void {
+      //TODO initialise OpenGL
+    }
+  
+    //redraw canvas
     private redraw(): void {
-        this.clear();
-        this.drawText();
+       if(this.errored){
+         this.onError();
+       }else{
+         this.draw();
+       }
     }
-
+    /** @end-author Roan Hofland */
+    /** @author Bart Wesselink */
     private setHeight(): void {
         // fix to set correct canvas size
         setTimeout(() => {
