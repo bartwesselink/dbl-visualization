@@ -5,6 +5,8 @@ import {AppComponent} from './app.component';
 import {SidebarComponent} from '../components/sidebar/sidebar.component';
 import {WindowComponent} from '../components/window/window.component';
 import {ScreenshotButtonComponent} from '../components/screenshot-button/screenshot-button.component';
+import {TreeNavigatorComponent} from '../components/tree-navigator/tree-navigator.component';
+import {TreeNavigatorItemComponent} from '../components/tree-navigator-item/tree-navigator-item.component';
 
 
 @NgModule({
@@ -13,6 +15,8 @@ import {ScreenshotButtonComponent} from '../components/screenshot-button/screens
         SidebarComponent,
         WindowComponent,
         ScreenshotButtonComponent,
+        TreeNavigatorComponent,
+        TreeNavigatorItemComponent,
     ],
     imports: [
         BrowserModule
