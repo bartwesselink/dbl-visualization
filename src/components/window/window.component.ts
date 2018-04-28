@@ -19,14 +19,14 @@ export class WindowComponent implements OnInit {
     private shaderAttribColor;
 
     ngOnInit() {
-        console.log("init");//TODO remove
-        this.setHeight();
+      console.log("init");//TODO remove
+      this.setHeight();
       
-        this.init();
+      this.init();
       
-        this.redraw();
+      this.redraw();
 
-        window.onresize = () => this.setHeight();
+      window.onresize = () => this.setHeight();
     }
   
     //fallback rendering for when some OpenGL error occurs
@@ -42,24 +42,24 @@ export class WindowComponent implements OnInit {
        this.context.fillText("An internal OpenGL error occurred: " + error, 10, this.canvas.nativeElement.height / 2);
     }
   
+    //when the canvas is resized
+    private resize(): void {
+      //maintain the aspect ratio at 16:9 and center the viewport as a 16:9 rectangle in the center of the actual canvas
+      //by forcing a 16:9 viewport we can make sure that even when the canvas is resized the visualisation does not distort
+      if((this.canvas.nativeElement.width / 16) * 9 > this.canvas.nativeElement.height){
+        this.gl.viewport(0, (this.canvas.nativeElement.height - ((this.canvas.nativeElement.width / 16) * 9)) / 2, this.canvas.nativeElement.width, (this.canvas.nativeElement.width / 16) * 9);
+      }else{
+        this.gl.viewport((this.canvas.nativeElement.width - ((this.canvas.nativeElement.height / 9) * 16)) / 2, 0, (this.canvas.nativeElement.height / 9) * 16, this.canvas.nativeElement.height);
+      }
+    }
+  
     //draw OpenGL stuff
     private render(gl: WebGLRenderingContext): void {
       console.log("render");//TODO remove
       this.clear();
       
-      this.gl.viewport(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
-      
-      this.projectionMatrix = this.createMatrix();
-
-      this.perspective(this.projectionMatrix,
-                       (45 * Math.PI) / 180, //fov, 45 degrees
-                       this.gl.canvas.clientWidth / this.gl.canvas.clientHeight, //aspect ratio, TODO if the view port changes this needs to be updated
-                       1, // z-axis near
-                       -1); //z-axis far
-      console.log("GL canvas: " + this.gl.canvas.clientWidth + " | " + this.gl.canvas.clientHeight);
-      console.log("Actual canvas: " + this.canvas.nativeElement.width + " | " + this.canvas.nativeElement.height);
-      
       this.modelviewMatrix = this.createMatrix();
+      //this.translateSelf(this.modelviewMatrix, [-0.1, 0, 0]);
       
       this.gl.useProgram(this.shader);
       this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader, "projectionMatrix"), false, this.projectionMatrix);
@@ -69,10 +69,15 @@ export class WindowComponent implements OnInit {
       //position
       var positionBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-      const pos = [ 1,  1, 
-                   -0,  1, 
-                    0, -1, 
-                   -1, -1];
+      const pos = [ 0.0,  0.0, 
+                   -0.9,  0.0, 
+                   -0.9, -0.9, 
+                    0.0, -0.9,
+                    0.0,  0.0,
+                    0.0,  0.0,
+                    0.9,  0.0,
+                    0.0,  0.9,
+                    0.9,  0.9];
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pos), gl.STATIC_DRAW);
       
       //color
@@ -81,7 +86,12 @@ export class WindowComponent implements OnInit {
       const colors = [1, 0, 0, 1,
                       1, 0, 0, 1,
                       1, 0, 0, 1,
-                      1, 0, 0, 1];
+                      1, 0, 0, 1,
+                      1, 0, 0, 1,
+                      0, 1, 0, 1,
+                      0, 1, 0, 1,
+                      0, 1, 0, 1,
+                      0, 1, 0, 1];
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
             
       gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -103,8 +113,7 @@ export class WindowComponent implements OnInit {
       gl.enableVertexAttribArray(this.shaderAttribColor);
       
       //note that triangles are used, but we are drawing a quad, this is because triangles are more efficient, offset = 0 and we are drawing 4 vertices
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 9);
     }
   
     //initialise OpenGL
@@ -120,6 +129,15 @@ export class WindowComponent implements OnInit {
        
       //set the canvas background color to 100% transparent black
       this.gl.clearColor(0.0, 0.0, 0.0, 1.0);//TODO change to transparent, but for now a black background helps to signal errors
+      
+      this.projectionMatrix = this.createMatrix();
+      
+      //note that we force a 16:9 effective viewport later on so this never changes
+      this.perspective(this.projectionMatrix,
+                      (45 * Math.PI) / 180,                                     //fov, 45 degrees
+                      this.gl.canvas.clientWidth / this.gl.canvas.clientHeight, //aspect ratio
+                      1,                                                        // z-axis near
+                      -1);                                                      //z-axis far
     }
   
     //initialises the shaders
@@ -304,6 +322,7 @@ export class WindowComponent implements OnInit {
             this.canvas.nativeElement.width = this.canvas.nativeElement.scrollWidth;
             this.canvas.nativeElement.height = this.canvas.nativeElement.scrollHeight;
 
+            this.resize();
             this.redraw();
         });
     }
