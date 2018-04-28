@@ -1,4 +1,5 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Element} from '../../models/element';
 
 @Component({
     selector: 'app-window',
@@ -9,22 +10,42 @@ export class WindowComponent implements OnInit {
     private context: CanvasRenderingContext2D;
   
     /** @author Roan Hofland */
-    private gl: WebGLRenderingContext;
     private errored: boolean = false;
+    private lastError: string;
+
+    private gl: WebGLRenderingContext;
     private shader;
     private projectionMatrix;
-    private modelviewMatrix;
-    private lastError: string;
     private shaderAttribPosition;
     private shaderAttribColor;
+    private arrays: Element[] = [];
 
     ngOnInit() {
         this.setHeight();
         
         this.init();
+        this.computeScene();
         this.redraw();
         
         window.onresize = () => this.setHeight();
+    }
+    
+    //compute the visualisation
+    private computeScene(): void {
+        this.arrays = [];
+        
+        //test visualisation
+        this.drawQuad(0,    0,    100, 100, [1, 0, 0, 1]);
+        this.drawQuad(-100, -100, 100, 100, [0, 1, 0, 1]);
+        this.drawQuad(0,    -300, 200, 200, [0, 0, 1, 1]);
+        
+        //scalability hell test (change the limit)
+        for(var i = 0; i < 10; i++){
+            console.log(i);
+            var x = (Math.random() - 0.5) * 1600;
+            var y = (Math.random() - 0.5) * 900;
+            this.drawQuad(x, y, 50, 50, [Math.random(), Math.random(), Math.random(), Math.random()]);
+        }
     }
   
     //fallback rendering for when some OpenGL error occurs
@@ -57,51 +78,69 @@ export class WindowComponent implements OnInit {
     private render(gl: WebGLRenderingContext): void {
         this.clear();
         
-        this.modelviewMatrix = this.createMatrix();
+        //the model view matrix will later be used for user interaction
+        var modelviewMatrix = this.createMatrix();
         
         this.gl.useProgram(this.shader);
         this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader, "projectionMatrix"), false, this.projectionMatrix);
-        this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader, "modelviewMatrix"), false, this.modelviewMatrix);
+        this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader, "modelviewMatrix"), false, modelviewMatrix);
         
-        //static test drawing
+        //draw all the OpenGL buffers
+        for(var i = 0; i < this.arrays.length; i++){
+            var elem = this.arrays[i];
+            gl.bindBuffer(gl.ARRAY_BUFFER, elem.pos);
+            gl.vertexAttribPointer(this.shaderAttribPosition, //attribute
+                                   2,                         //2D so two values per iteration: x, y
+                                   gl.FLOAT,                  //data type is float32
+                                   false,                     //no normalisation
+                                   0,                         //stride = automatic
+                                   0);                        //skip
+            gl.enableVertexAttribArray(this.shaderAttribPosition);
+            
+            gl.bindBuffer(gl.ARRAY_BUFFER, elem.color);
+            gl.vertexAttribPointer(this.shaderAttribColor,    //attribute
+                                   4,                         //rgba so four values per iteration: r, g, b, a
+                                   gl.FLOAT,                  //data type is float32
+                                   false,                     //no normalisation
+                                   0,                         //stride = automatic
+                                   0);                        //skip
+            gl.enableVertexAttribArray(this.shaderAttribColor);
+            
+            gl.drawArrays(elem.mode, 0, elem.length);
+        }
+    }
+    
+    //draw an axis aligned quad
+    private drawQuad(x: number, y: number, width: number, height: number, color: number[]): void {
+        //scale to coordinate space
+        x /= 800;
+        y /= 450;
+        width /= 800;
+        height /= 450;
+        
         //position
-        var positionBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-        const pos = [ 0.9,  0.9, 
-                     -0.9,  0.9, 
-                      0.9, -0.9, 
-                     -0.9, -0.9];
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pos), gl.STATIC_DRAW);
+        var positionBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
+        const pos = [x + width,  y + height, 
+                     x,          y + height, 
+                     x + width,  y, 
+                     x,          y];
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
       
         //color
-        var colorBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-        const colors = [1, 0, 0, 1,
-                        1, 0, 0, 1,
-                        1, 0, 0, 1,
-                        1, 0, 0, 1];
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
-              
-        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-        gl.vertexAttribPointer(this.shaderAttribPosition, //attribute
-                               2, //2D so two values per iteration: x, y
-                               gl.FLOAT, //data type is float32
-                               false, //no normalisation
-                               0, //stride = automatic
-                               0); //skip
-        gl.enableVertexAttribArray(this.shaderAttribPosition);
-        
-        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-        gl.vertexAttribPointer(this.shaderAttribColor, //attribute
-                               4, //rgba so four values per iteration: r, g, b, a
-                               gl.FLOAT, //data type is float32
-                               false, //no normalisation
-                               0, //stride = automatic
-                               0); //skip
-        gl.enableVertexAttribArray(this.shaderAttribColor);
-        
-        //note that triangles are used, but we are drawing a quad, this is because triangles are more efficient, offset = 0 and we are drawing 4 vertices
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, pos.length / 2);
+        var colorBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
+        const colors = [color[0], color[1], color[2], color[3],
+                        color[0], color[1], color[2], color[3],
+                        color[0], color[1], color[2], color[3],
+                        color[0], color[1], color[2], color[3]];
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
+        this.arrays.push({
+            pos: positionBuffer,
+            color: colorBuffer,
+            mode: this.gl.TRIANGLE_STRIP,
+            length: 4
+        });
     }
   
     //initialise OpenGL
@@ -116,7 +155,7 @@ export class WindowComponent implements OnInit {
         this.initShaders();
          
         //set the canvas background color to 100% transparent black
-        this.gl.clearColor(0.0, 0.0, 0.0, 1.0);//TODO change to transparent, but for now a black background helps to signal errors
+        this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
         
         this.projectionMatrix = this.createMatrix();
         
@@ -210,9 +249,9 @@ export class WindowComponent implements OnInit {
     //redraw the canvas
     private redraw(): void {
         if(this.errored){
-          this.onError(this.lastError);
+            this.onError(this.lastError);
         }else{
-          this.render(this.gl);
+            this.render(this.gl);
         }
     }
   
@@ -222,6 +261,7 @@ export class WindowComponent implements OnInit {
     }
   
     //===== Typescript translations of gl-matrix.js =====
+    //translate matrix a by vector v and store the result in out
     private translate(out, a, v): void {
         var x = v[0],
             y = v[1],
@@ -260,6 +300,7 @@ export class WindowComponent implements OnInit {
         }
     }
   
+    //create a 4x4 identity matrix
     private createMatrix(): Float32Array {
         var out = new Float32Array(16);
         out[0] = 1;
@@ -281,6 +322,7 @@ export class WindowComponent implements OnInit {
         return out;
     }
   
+    //initialises matrix out with the perspective specified by the y fov, aspect ratio and z-near and z-far parameters
     private perspective(out, fovy, aspect, near, far): void {
         var f = 1.0 / Math.tan(fovy / 2);
         var nf = 1 / (near - far);
