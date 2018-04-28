@@ -1,0 +1,21 @@
+/** @author Bart Wesselink */
+.tree-navigator {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+
+  .toggle-state {
+    vertical-align: middle;
+    margin-right: 0.5rem;
+    cursor: pointer;
+  }
+
+  .tree-navigator {
+    padding-left: 1.5rem;
+  }
+}
+
+.tree-navigator-item.leaf {
+  padding-left: 2rem;
+}
+/** @end-author Bart Wesselink */
