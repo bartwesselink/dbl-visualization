@@ -67,10 +67,10 @@ export class WindowComponent implements OnInit {
         //position
         var positionBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-        const pos = [ 1,  1, 
-                     -1,  0, 
-                     -1, -1, 
-                      0, -1];
+        const pos = [ 0.9,  0.9, 
+                     -0.9,  0.9, 
+                      0.9, -0.9, 
+                     -0.9, -0.9];
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pos), gl.STATIC_DRAW);
       
         //color
@@ -101,7 +101,7 @@ export class WindowComponent implements OnInit {
         gl.enableVertexAttribArray(this.shaderAttribColor);
         
         //note that triangles are used, but we are drawing a quad, this is because triangles are more efficient, offset = 0 and we are drawing 4 vertices
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, pos.length / 2);
     }
   
     //initialise OpenGL
