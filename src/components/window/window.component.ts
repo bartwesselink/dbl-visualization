@@ -41,7 +41,6 @@ export class WindowComponent implements OnInit {
         
         //scalability hell test (change the limit)
         for(var i = 0; i < 10; i++){
-            console.log(i);
             var x = (Math.random() - 0.5) * 1600;
             var y = (Math.random() - 0.5) * 900;
             this.drawQuad(x, y, 50, 50, [Math.random(), Math.random(), Math.random(), Math.random()]);
