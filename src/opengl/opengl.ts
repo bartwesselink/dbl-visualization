@@ -8,12 +8,10 @@ export class OpenGL{
     private shader: Shader;
     private projectionMatrix;
     private arrays: Element[] = [];
-    private readonly WIDTH: number;
-    private readonly HEIGHT: number;
+    private readonly WIDTH = 1600;
+    private readonly HEIGHT = 900;
     
-    constructor(gl: WebGLRenderingContext, width: number, height: number){
-        this.WIDTH = width;
-        this.HEIGHT = height;
+    constructor(gl: WebGLRenderingContext){
         this.gl = gl;
         
         //set the canvas background color to 100% transparent black

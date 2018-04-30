@@ -17,8 +17,6 @@ export class WindowComponent implements OnInit {
     private lastError: string;
     
     private gl: OpenGL;
-    private readonly WIDTH = 1600;
-    private readonly HEIGHT = 900;
     
     ngOnInit() {
         this.setHeight();
@@ -41,8 +39,9 @@ export class WindowComponent implements OnInit {
         
         //scalability hell test (change the limit)
         for(var i = 0; i < 10; i++){
-            var x = (Math.random() - 0.5) * this.WIDTH;
-            var y = (Math.random() - 0.5) * this.HEIGHT;
+            //recall that our viewport is fixed at 1600x900, but we will never need this fact except for this test case since visualisations can go beyond the viewport
+            var x = (Math.random() - 0.5) * 1600;
+            var y = (Math.random() - 0.5) * 900;
             this.gl.drawQuad(x, y, 50, 50, [Math.random(), Math.random(), Math.random(), Math.random()]);
         }
     }
@@ -74,7 +73,7 @@ export class WindowComponent implements OnInit {
             return;
         }
         
-        this.gl = new OpenGL(gl, this.WIDTH, this.HEIGHT);
+        this.gl = new OpenGL(gl);
         
         try{
             //a bit redundant right now, but useful if we ever want to implement more shaders
