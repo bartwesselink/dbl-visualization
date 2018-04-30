@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input} from '@angular/core';
+import {Component, EventEmitter, Output} from '@angular/core';
 
 @Component({
   selector: 'app-upload-tool',
@@ -6,16 +6,18 @@ import {Component, ElementRef, Input} from '@angular/core';
 })
 export class UploadToolComponent {
   /** @author Mathijs Boezer */
+  @Output() newContent: EventEmitter<string> = new EventEmitter();
+
   public uploadFile() :void {
     var fileSelector: any = document.getElementById('fileSelector');
     var file: File = fileSelector.files[0];
 
     var fileReader: FileReader = new FileReader();
+    var self = this; // Get reference to this
     // Create callback for the file reader
     fileReader.onload = function(e){
       var content: string = fileReader.result;
-      console.log("Placeholder action for the file content.\n" + content);
-      //TODO replace this with something that passes the content to the data processing component
+      self.newContent.emit(content);
     }
 
     fileReader.readAsText(file); // Start reading
