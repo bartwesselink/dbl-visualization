@@ -7,37 +7,25 @@ export class Matrix{
         Matrix.translate(matrix, matrix, vector);
     }
     
-    public static rotateVector2D(center: number[], vector: number[], degrees: number){
-        console.log(vector)
-        var v = Matrix.subtract([0, 0], center);
-        var translation1 = Matrix.create2DTranslationMatrix(v);
-        var rotation = Matrix.create2DRotationMatrix(degrees);
-        Matrix.multiply(translation1, translation1, rotation);
+    //rotates the given vector around the given center by the given number of degrees
+    public static rotateVector2D(center: number[], vector: number[], degrees: number): number[]{
+        var translation1 = Matrix.create2DTranslationMatrix(Matrix.subtract([0, 0], center));
+        Matrix.multiply(translation1, translation1, Matrix.create2DRotationMatrix(degrees));
         var translation2 = Matrix.create2DTranslationMatrix(center);
         Matrix.multiply(translation2, translation1, translation2);
-        Matrix.resize2D(vector);
-        var rotated = Matrix.multiplyVector2D(vector, translation2);
-        rotated.pop();
-        return rotated;
+        return Matrix.multiplyVector2D(vector, translation2);
     }
     
+    //multiplies the given vectory by the given matrix
     public static multiplyVector2D(vector: number[], matrix: number[]): number[] {
         var x = vector[0];
         var y = vector[1];
-        var z = vector[2];
-        vector[0] = x * matrix[0] + y * matrix[1] + z * matrix[2];
-        vector[1] = x * matrix[3] + y * matrix[4] + z * matrix[5];
-        vector[2] = x * matrix[6] + y * matrix[7] + z * matrix[8];
+        vector[0] = x * matrix[0] + y * matrix[1] + matrix[2];
+        vector[1] = x * matrix[3] + y * matrix[4] + matrix[5];
         return vector;
     }
     
-    public static resize2D(vector: number[]){
-        if(vector.length == 2){
-            vector.push(1);
-        }
-        return vector;
-    }
-    
+    //creates a 3x3 rotation matrix for the given number of degrees
     public static create2DRotationMatrix(degrees: number): number[] {
         var c = Math.cos(degrees * this.oneDeg);
         var s = Math.sin(degrees * this.oneDeg);
@@ -54,6 +42,7 @@ export class Matrix{
         return out;
     }
     
+    //creates a 2D translation matrix for the given vector
     public static create2DTranslationMatrix(vector: number[]): number[]{
         var out = [9];
         out[0] = 1;
@@ -68,45 +57,46 @@ export class Matrix{
         return out;
     }
     
+    //subtracts vector b from vector a
     public static subtract(a: number[], b: number[]): number[]{
         return [a[0] - b[0], a[1] - b[1]];
     }
     
     //===== Typescript translations of gl-matrix.js =====
-    public static multiply(out, a, b) {
-  var a00 = a[0],
-      a01 = a[1],
-      a02 = a[2];
-  var a10 = a[3],
-      a11 = a[4],
-      a12 = a[5];
-  var a20 = a[6],
-      a21 = a[7],
-      a22 = a[8];
+    //multiplies two 3x3 matrices, multiplies a by b and stores the result in out
+    public static multiply(out, a, b): void {
+        var a00 = a[0],
+            a01 = a[1],
+            a02 = a[2];
+        var a10 = a[3],
+            a11 = a[4],
+            a12 = a[5];
+        var a20 = a[6],
+            a21 = a[7],
+            a22 = a[8];
+        
+        var b00 = b[0],
+            b01 = b[1],
+            b02 = b[2];
+        var b10 = b[3],
+            b11 = b[4],
+            b12 = b[5];
+        var b20 = b[6],
+            b21 = b[7],
+            b22 = b[8];
 
-  var b00 = b[0],
-      b01 = b[1],
-      b02 = b[2];
-  var b10 = b[3],
-      b11 = b[4],
-      b12 = b[5];
-  var b20 = b[6],
-      b21 = b[7],
-      b22 = b[8];
-
-  out[0] = b00 * a00 + b01 * a10 + b02 * a20;
-  out[1] = b00 * a01 + b01 * a11 + b02 * a21;
-  out[2] = b00 * a02 + b01 * a12 + b02 * a22;
-
-  out[3] = b10 * a00 + b11 * a10 + b12 * a20;
-  out[4] = b10 * a01 + b11 * a11 + b12 * a21;
-  out[5] = b10 * a02 + b11 * a12 + b12 * a22;
-
-  out[6] = b20 * a00 + b21 * a10 + b22 * a20;
-  out[7] = b20 * a01 + b21 * a11 + b22 * a21;
-  out[8] = b20 * a02 + b21 * a12 + b22 * a22;
-  return out;
-}
+        out[0] = b00 * a00 + b01 * a10 + b02 * a20;
+        out[1] = b00 * a01 + b01 * a11 + b02 * a21;
+        out[2] = b00 * a02 + b01 * a12 + b02 * a22;
+        
+        out[3] = b10 * a00 + b11 * a10 + b12 * a20;
+        out[4] = b10 * a01 + b11 * a11 + b12 * a21;
+        out[5] = b10 * a02 + b11 * a12 + b12 * a22;
+        
+        out[6] = b20 * a00 + b21 * a10 + b22 * a20;
+        out[7] = b20 * a01 + b21 * a11 + b22 * a21;
+        out[8] = b20 * a02 + b21 * a12 + b22 * a22;
+    }
     
     //translate matrix a by vector v and store the result in out
     public static translate(out, a, v): void {

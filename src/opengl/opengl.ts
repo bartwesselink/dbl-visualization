@@ -70,12 +70,6 @@ export class OpenGL{
     
     //draw a rotated quad
     public drawRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): void {
-        //scale to coordinate space
-        //x /= (this.WIDTH) / 2;
-        //y /= (this.HEIGHT) / 2;
-        //width /= (this.WIDTH) / 2;
-        //height /= (this.HEIGHT) / 2;
-        
         //a---------b
         //|   x,y   |
         //c---------d
