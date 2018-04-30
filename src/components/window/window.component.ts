@@ -3,6 +3,7 @@ import {Element} from '../../opengl/element';
 import {Matrix} from '../../opengl/matrix';
 import {OpenGL} from '../../opengl/opengl';
 import {Shader} from "../../opengl/shader";
+import { Observable } from "rxjs";
 
 @Component({
     selector: 'app-window',
@@ -20,30 +21,40 @@ export class WindowComponent implements OnInit {
     
     ngOnInit() {
         this.setHeight();
-        
+                
         this.init();
         this.computeScene();
         this.redraw();
         
         window.onresize = () => this.setHeight();
+        
+        Observable.interval(50).subscribe(x => {
+            this.computeScene();
+            this.gl.render();
+        });
     }
+    
+    private rotation = 0;
     
     //compute the visualisation
     private computeScene(): void {
         this.gl.releaseBuffers();
         
         //test visualisation
-        this.gl.drawAAQuad(0,    0,    100, 100, [1, 0, 0, 1]);
-        this.gl.drawAAQuad(-100, -100, 100, 100, [0, 1, 0, 1]);
-        this.gl.drawAAQuad(0,    -300, 200, 200, [0, 0, 1, 1]);
+        //this.gl.drawAAQuad(0,    0,    100, 100, [1, 0, 0, 1]);
+        //this.gl.drawAAQuad(-100, -100, 100, 100, [0, 1, 0, 1]);
+        //this.gl.drawAAQuad(0,    -300, 200, 200, [0, 0, 1, 1]);
+        
+        this.gl.drawRotatedQuad(0, 0, 100, 100, this.rotation, [1, 0, 0, 1]);
+        this.rotation++;
         
         //scalability hell test (change the limit)
-        for(var i = 0; i < 10; i++){
-            //recall that our viewport is fixed at 1600x900, but we will never need this fact except for this test case since visualisations can go beyond the viewport
-            var x = (Math.random() - 0.5) * 1600;
-            var y = (Math.random() - 0.5) * 900;
-            this.gl.drawAAQuad(x, y, 50, 50, [Math.random(), Math.random(), Math.random(), Math.random()]);
-        }
+//        for(var i = 0; i < 10; i++){
+//            //recall that our viewport is fixed at 1600x900, but we will never need this fact except for this test case since visualisations can go beyond the viewport
+//            var x = (Math.random() - 0.5) * 1600;
+//            var y = (Math.random() - 0.5) * 900;
+//            this.gl.drawAAQuad(x, y, 50, 50, [Math.random(), Math.random(), Math.random(), Math.random()]);
+//        }
     }
   
     //fallback rendering for when some OpenGL error occurs
