@@ -16,13 +16,20 @@ export class GeneralizedPythagorasTreeComponent implements OnInit {
   }
 
   weightHeight = 1; // Scaling factor for the height of every rectangle that is not the root
+  color = [1,0,1,1]; // Just some test color
 
   public generate(tree: node, rectangle: number[]): void {
     // Rectangle is an array of 5 numbers, in order: center x, center y, width (X), height (Y), angle
-    drawRectangle(rectangle);
+    drawRotatedQuad(rectangle[0], rectangle[1], rectangle[2], rectangle[3], rectangle[4], this.color);
+    /** This function can be considered in two ways. The first way is as it's done here. We loop over all the children
+     * of a node and consider what part this child is of the parent. Thus the child calculates what relative size it is
+     * of the parent. The second way is to take the parent and calculate the relative size of each of its children.
+     * Using the first way we can immediately recurse on the element we are considering, using the second way we need to
+     * recurse on the children of the element we are considering.
+     */
     if (tree.hasChild()) { // If a node does not have children it does not have to draw its children
       for (let element of tree.getChildren()) {
-        let angle = Math.PI * (element.getSizeNode() / element.getSizeSubTree()); // Calculate the angle of every subtree
+        let angle = Math.PI * (element.getSizeSubTree() / element.getParent().getSizeSubTree()); // Calculate the angle of every subtree
         let width = rectangle[2] * Math.sin(angle / 2);
         let height = this.weightHeight * rectangle[3] * Math.sin(angle / 2);
         let center = this.calculateCenter();
@@ -42,16 +49,6 @@ export class GeneralizedPythagorasTreeComponent implements OnInit {
   }
 
 }
-
-
-class DataStructure {
-
-  children: node[]; // if children == undefined, no children thus a leaf
-  parent: node; // if parent == undefined, no parent thus a root
-  nodeSizeChildren = [];
-
-}
-
 
 class node {
   children: Array<node>; // if children == undefined, no children thus a leaf
@@ -79,7 +76,7 @@ class node {
     this.sizeSubTree = size;
   }
 
-  /** The management functions like addChild, removeChild, calculating size can be much more effecient if handled
+  /** The management functions like addChild, removeChild, calculating size can be much more efficient if handled
    * by a dedicated data structure like class. For now this is a quick implementation which does the job.
    */
 
@@ -106,6 +103,10 @@ class node {
 
   public getChildren(): node[] {
     return this.children;
+  }
+
+  public getParent(): node{
+    return this.parent;
   }
 
   public hasParent(): boolean {
