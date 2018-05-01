@@ -9,7 +9,7 @@ export class UploadToolComponent {
     @Output() newContent: EventEmitter<string> = new EventEmitter();
 
     private fileTypeWhitelist = ['', 'text/plain',]; //Allowed types of files
-    private errorMsg : string = "Wrong file type, please upload a newick tree file.";
+    private errorMsg : string = "Wrong file type, please upload a Newick tree file.";
 
     public uploadFile(files: File[]) :void {
         var file: File = files[0];
@@ -25,9 +25,9 @@ export class UploadToolComponent {
             } else {
                 alert(self.errorMsg);
             }
-        }
+        };
 
-        if(this.fileTypeWhitelist.indexOf(file.type) != -1)
+        if(this.fileTypeWhitelist.includes(file.type))
             fileReader.readAsText(file); // Start reading
         else alert(this.errorMsg);
     }
