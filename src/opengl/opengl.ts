@@ -68,21 +68,48 @@ export class OpenGL{
         }
     }
     
+    //draw a rotated quad
+    public drawRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): void {
+        //a---------b
+        //|   x,y   |
+        //c---------d
+        var center = [x, y];
+        var a = Matrix.rotateVector2D(center, [x - width / 2, y + height / 2], rotation);
+        var b = Matrix.rotateVector2D(center, [x + width / 2, y + height / 2], rotation);
+        var c = Matrix.rotateVector2D(center, [x - width / 2, y - height / 2], rotation);
+        var d = Matrix.rotateVector2D(center, [x + width / 2, y - height / 2], rotation);
+        
+        this.drawQuadImpl(b[0] / ((this.WIDTH) / 2), b[1] / ((this.HEIGHT) / 2),
+                          a[0] / ((this.WIDTH) / 2), a[1] / ((this.HEIGHT) / 2),
+                          d[0] / ((this.WIDTH) / 2), d[1] / ((this.HEIGHT) / 2),
+                          c[0] / ((this.WIDTH) / 2), c[1] / ((this.HEIGHT) / 2),
+                          color);
+    }
+    
     //draw an axis aligned quad
-    public drawQuad(x: number, y: number, width: number, height: number, color: number[]): void {
+    public drawAAQuad(x: number, y: number, width: number, height: number, color: number[]): void {
         //scale to coordinate space
         x /= (this.WIDTH) / 2;
         y /= (this.HEIGHT) / 2;
         width /= (this.WIDTH) / 2;
         height /= (this.HEIGHT) / 2;
         
+        this.drawQuadImpl(x + width, y + height,
+                          x,         y + height,
+                          x + width, y,
+                          x,         y,
+                          color);
+    }
+        
+    //draw quad implementation
+    private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, color: number[]): void {
         //position
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
-        const pos = [x + width,  y + height, 
-                     x,          y + height, 
-                     x + width,  y, 
-                     x,          y];
+        const pos = [x1,  y1, 
+                     x2,  y2, 
+                     x3,  y3, 
+                     x4,  y4];
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
       
         //color
