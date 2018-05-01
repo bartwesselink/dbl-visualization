@@ -7,6 +7,7 @@ import {WindowComponent} from '../components/window/window.component';
 import {ScreenshotButtonComponent} from '../components/screenshot-button/screenshot-button.component';
 import {TreeNavigatorComponent} from '../components/tree-navigator/tree-navigator.component';
 import {TreeNavigatorItemComponent} from '../components/tree-navigator-item/tree-navigator-item.component';
+import { GeneralizedPythagorasTreeComponent } from '../components/generalized-pythagoras-tree/generalized-pythagoras-tree.component';
 
 
 @NgModule({
@@ -17,6 +18,7 @@ import {TreeNavigatorItemComponent} from '../components/tree-navigator-item/tree
         ScreenshotButtonComponent,
         TreeNavigatorComponent,
         TreeNavigatorItemComponent,
+        GeneralizedPythagorasTreeComponent,
     ],
     imports: [
         BrowserModule
