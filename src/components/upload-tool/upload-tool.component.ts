@@ -1,26 +1,35 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 
 @Component({
-  selector: 'app-upload-tool',
-  templateUrl: './upload-tool.component.html',
+    selector: 'app-upload-tool',
+    templateUrl: './upload-tool.component.html',
 })
 export class UploadToolComponent {
-  /** @author Mathijs Boezer */
-  @Output() newContent: EventEmitter<string> = new EventEmitter();
+    /** @author Mathijs Boezer */
+    @Output() newContent: EventEmitter<string> = new EventEmitter();
 
-  public uploadFile() :void {
-    var fileSelector: any = document.getElementById('fileSelector');
-    var file: File = fileSelector.files[0];
+    private fileTypeWhitelist = ['', 'text/plain',]; //Allowed types of files
+    private errorMsg : string = "Wrong file type, please upload a newick tree file.";
 
-    var fileReader: FileReader = new FileReader();
-    var self = this; // Get reference to this
-    // Create callback for the file reader
-    fileReader.onload = function(e){
-      var content: string = fileReader.result;
-      self.newContent.emit(content);
+    public uploadFile(files: File[]) :void {
+        var file: File = files[0];
+
+        var fileReader: FileReader = new FileReader();
+        var self = this; // Get reference to this
+        // Create callback for the file reader
+        fileReader.onload = function(e){
+            var content: string = fileReader.result;
+
+            if(content.substring(0, 7) == 'newick;'){
+                self.newContent.emit(content);
+            } else {
+                alert(self.errorMsg);
+            }
+        }
+
+        if(this.fileTypeWhitelist.indexOf(file.type) != -1)
+            fileReader.readAsText(file); // Start reading
+        else alert(this.errorMsg);
     }
-
-    fileReader.readAsText(file); // Start reading
-  }
-  /** @end-author Mathijs Boezer */
+    /** @end-author Mathijs Boezer */
 }
