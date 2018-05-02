@@ -4073,6 +4073,10 @@ netmask@~1.0.4:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/netmask/-/netmask-1.0.6.tgz#20297e89d86f6f6400f250d9f4f6b4c1945fcd35"
 
+newick@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/newick/-/newick-2.0.0.tgz#a10c9838fb18e120ae7241fa9c697507ccdea4af"
+
 next-tick@1:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/next-tick/-/next-tick-1.0.0.tgz#ca86d1fe8828169b0120208e3dc8424b9db8342c"

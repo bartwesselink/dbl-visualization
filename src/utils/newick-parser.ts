@@ -1,29 +1,56 @@
 import { Node } from "../models/node";
+import { Newick } from 'newick'
 
-/**
- * New typescript file
- */
 export class NewickParser {
+    /** @author Jordy Verhoeven */
+    public extractLines(data: string): string {
+        const lines = data.split("\n");
 
-    public parseTree(data: string, parent: Node = null): Node{
-        if (data.length === 0) {
-            return;
+        if (lines.length < 2) {
+            console.error('Invalid file supplied.');
+
+            return null;
         }
 
-        const firstP = data.lastIndexOf(')');
-        let last = data.slice(firstP+1, data.length);
-        if(last.charAt(last.length - 1) == ';'){
-            last=last.slice(0,last.length-1);
-        }
+        data = null;
 
-        const node: Node = {
-            label: last,
-            parent: parent,
-            children: [],
-        };
-
-
-        console.log(last);
+        return lines[1];
     }
 
+    public parseTree(data: string): Node {
+        let newick = new Newick(data);
+
+        const first = newick.tree;
+
+        const parent = this.recurse(first);
+
+        newick = null;
+
+        return parent;
+    }
+
+    private recurse(node: any, parent: Node = null): any {
+        const label = node.name;
+        const children = node.branchset;
+
+        const formatted: Node = {
+            label: label,
+            children: new Array(children == null ? 0 : children.length),
+            parent,
+        };
+
+        if (children != null) {
+            let i = 0;
+
+            for (const child of children) {
+                const formattedNode = this.recurse(child, formatted);
+                formatted.children[i] = formattedNode;
+
+                i++;
+            }
+        }
+
+        return formatted;
+    }
+    /** @end-author Jordy Verhoeven */
 }
