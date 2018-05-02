@@ -72,9 +72,7 @@ export class OpenGL{
             var elem = this.arrays.pop();
             this.gl.deleteBuffer(elem.color);
             this.gl.deleteBuffer(elem.pos);
-            if(elem.indices != null){
-                this.gl.deleteBuffer(elem.indices);
-            }
+            this.gl.deleteBuffer(elem.indices);
         }
     }
     
