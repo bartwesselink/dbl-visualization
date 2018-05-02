@@ -10,6 +10,9 @@ export class OpenGL{
     private arrays: Element[] = [];
     private readonly WIDTH = 1600;
     private readonly HEIGHT = 900;
+    private readonly HALFWIDTH = 800;
+    private readonly HALFHEIGHT = 450;
+
     
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
@@ -79,21 +82,15 @@ export class OpenGL{
         var c = Matrix.rotateVector2D(center, [x - width / 2, y - height / 2], rotation);
         var d = Matrix.rotateVector2D(center, [x + width / 2, y - height / 2], rotation);
         
-        this.drawQuadImpl(b[0] / ((this.WIDTH) / 2), b[1] / ((this.HEIGHT) / 2),
-                          a[0] / ((this.WIDTH) / 2), a[1] / ((this.HEIGHT) / 2),
-                          d[0] / ((this.WIDTH) / 2), d[1] / ((this.HEIGHT) / 2),
-                          c[0] / ((this.WIDTH) / 2), c[1] / ((this.HEIGHT) / 2),
+        this.drawQuadImpl(b[0], b[1],
+                          a[0], a[1],
+                          d[0], d[1],
+                          c[0], c[1],
                           color);
     }
     
     //draw an axis aligned quad
     public drawAAQuad(x: number, y: number, width: number, height: number, color: number[]): void {
-        //scale to coordinate space
-        x /= (this.WIDTH) / 2;
-        y /= (this.HEIGHT) / 2;
-        width /= (this.WIDTH) / 2;
-        height /= (this.HEIGHT) / 2;
-        
         this.drawQuadImpl(x + width, y + height,
                           x,         y + height,
                           x + width, y,
@@ -106,10 +103,10 @@ export class OpenGL{
         //position
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
-        const pos = [x1,  y1, 
-                     x2,  y2, 
-                     x3,  y3, 
-                     x4,  y4];
+        const pos = [x1 / this.HALFWIDTH,  y1 / this.HALFHEIGHT, 
+                     x2 / this.HALFWIDTH,  y2 / this.HALFHEIGHT, 
+                     x3 / this.HALFWIDTH,  y3 / this.HALFHEIGHT, 
+                     x4 / this.HALFWIDTH,  y4 / this.HALFHEIGHT];
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
       
         //color
