@@ -10,8 +10,8 @@ export class OpenGL{
     private arrays: Element[] = [];
     private readonly WIDTH = 1600;
     private readonly HEIGHT = 900;
-    private readonly HALFWIDTH = 800;
-    private readonly HALFHEIGHT = 450;
+    private readonly HALFWIDTH = this.WIDTH / 2;
+    private readonly HALFHEIGHT = this.HEIGHT / 2;
     
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
@@ -27,6 +27,11 @@ export class OpenGL{
                            this.gl.canvas.clientWidth / this.gl.canvas.clientHeight, //aspect ratio
                            1,                                                        //z-axis near
                            -1);                                                      //z-axis far
+        
+        this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+        this.gl.enable(this.gl.BLEND);
+        this.gl.depthFunc(gl.LEQUAL);
+        this.gl.enable(gl.DEPTH_TEST);   
     }
     
     //resizes the viewport to the optimal size for the new canvas size
@@ -88,7 +93,7 @@ export class OpenGL{
                           a[0], a[1],
                           d[0], d[1],
                           c[0], c[1],
-                          true, false, color);
+                          color);
     }
     
     //draw an axis aligned quad
@@ -97,11 +102,11 @@ export class OpenGL{
                           x,         y + height,
                           x + width, y,
                           x,         y,
-                          true, false, color);
+                          color);
     }
         
     //draw quad implementation
-    private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, fill: boolean, line: boolean, color: number[]): void {
+    private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, color: number[]): void {
         //position
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
@@ -137,7 +142,7 @@ export class OpenGL{
     
     //clear the screen
     private clear(): void {
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     }
     
     //draw all the OpenGL buffers
