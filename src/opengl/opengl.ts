@@ -131,8 +131,7 @@ export class OpenGL{
             color: colorBuffer,
             indices: indicesBuffer,
             mode: this.gl.TRIANGLE_STRIP,
-            length: 4,
-            offset: 0
+            length: 4
         });
     }
     
@@ -144,29 +143,43 @@ export class OpenGL{
     //draw all the OpenGL buffers
     private drawBuffers(): void {
         for(var i = 0; i < this.arrays.length; i++){
-            var elem = this.arrays[i];
+            this.drawElement(this.arrays[i]);
+        }
+    }
+    
+    //renders the given element
+    private drawElement(elem: Element): void {
+        if(elem.pos != null){
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
-            this.gl.vertexAttribPointer(this.shader.shaderAttribPosition, //attribute
-                                   2,                                     //2D so two values per iteration: x, y
-                                   this.gl.FLOAT,                         //data type is float32
-                                   false,                                 //no normalisation
-                                   0,                                     //stride = automatic
-                                   elem.offset);                          //skip
+            this.gl.vertexAttribPointer(this.shader.shaderAttribPosition,             //attribute
+                                        2,                                            //2D so two values per iteration: x, y
+                                        this.gl.FLOAT,                                //data type is float32
+                                        false,                                        //no normalisation
+                                        0,                                            //stride = automatic
+                                        elem.offset == null ? 0 : elem.offset);       //skip
             this.gl.enableVertexAttribArray(this.shader.shaderAttribPosition);
-            
+        }
+        
+        if(elem.color != null){
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.color);
-            this.gl.vertexAttribPointer(this.shader.shaderAttribColor,    //attribute
-                                   4,                                     //rgba so four values per iteration: r, g, b, a
-                                   this.gl.FLOAT,                         //data type is float32
-                                   false,                                 //no normalisation
-                                   0,                                     //stride = automatic
-                                   elem.offset * 2);                      //skip
+            this.gl.vertexAttribPointer(this.shader.shaderAttribColor,                //attribute
+                                        4,                                            //rgba so four values per iteration: r, g, b, a
+                                        this.gl.FLOAT,                                //data type is float32
+                                        false,                                        //no normalisation
+                                        0,                                            //stride = automatic
+                                        elem.offset == null ? 0 : (elem.offset * 2)); //skip
             this.gl.enableVertexAttribArray(this.shader.shaderAttribColor);
-            
+        }
+        
+        if(elem.indices == null){
+            this.gl.drawArrays(elem.mode, 0, elem.length);
+        }else{
             this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, elem.indices);
-
             this.gl.drawElements(elem.mode, elem.length, this.gl.UNSIGNED_BYTE, 0);
-            //this.gl.drawArrays(elem.mode, 0, elem.length);
+        }
+        
+        if(elem.overlay != null){
+            this.drawElement(elem.overlay);
         }
     }
     
