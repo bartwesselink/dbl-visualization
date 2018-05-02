@@ -17,6 +17,12 @@ Renders the OpenGL scene.
 Intialises the only shader we have at the moment.
 
 # Rendering
+All the rendering methods will ask for a color to use. The color should be provided as an array containing the red, green, blue and alpha values as floats. These floats should all be in range 0 to 1.    
+
+Examples:    
+- `var red = [1.0, 0.0, 0.0, 1.0];`
+- `var purple = [1.0, 0.0, 1.0, 1.0];`
+- `var black = [0.0, 0.0, 0.0, 1.0];`
 
 ## Quads
 - `public drawAAQuad(x: number, y: number, width: number, height: number, color: number[]): void`    
