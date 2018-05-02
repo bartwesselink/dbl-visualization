@@ -2,7 +2,7 @@
     <header class="mdl-layout__header">
         <div class="mdl-layout__header-row header-row">
             <span class="mdl-layout-title">DBL 1D</span>
-            <app-upload-tool></app-upload-tool>
+            <app-upload-tool (newContent)="parseTree($event)"></app-upload-tool>
         </div>
 
         <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
@@ -22,7 +22,7 @@
                 </section>
             </div>
             <div class="holder-sidebar">
-                <app-sidebar></app-sidebar>
+                <app-sidebar [tree]="tree"></app-sidebar>
             </div>
         </div>
     </main>

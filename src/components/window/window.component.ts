@@ -24,7 +24,8 @@ export class WindowComponent implements OnInit {
                 
         this.init();
         this.computeScene();
-        this.redraw();
+
+        setTimeout(() => this.redraw(), 100);
         
         window.onresize = () => this.setHeight();
     }

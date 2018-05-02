@@ -21,6 +21,14 @@ export class TreeNavigatorComponent implements OnInit {
     }
 
     public ngOnInit() {
+        this.reload();
+    }
+
+    public reload() {
+        if (this.tree == null) {
+            return;
+        }
+
         // check if input is root node (not an array)
         if (!(this.tree instanceof Array)) {
             this.tree = [this.tree]; // transform to array
