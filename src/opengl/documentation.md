@@ -2,7 +2,7 @@
 For people working with the OpenGL abstraction layer. These are the only methods that you should ever need all collected in one document.
 
 # Constructor
-`var = new OpenGL(WebGLRenderingContext)`
+`var gl = new OpenGL(WebGLRenderingContext)`
 
 # General
 - `public releaseBuffers(): void`    
