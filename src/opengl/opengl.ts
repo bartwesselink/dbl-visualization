@@ -67,6 +67,9 @@ export class OpenGL{
             var elem = this.arrays.pop();
             this.gl.deleteBuffer(elem.color);
             this.gl.deleteBuffer(elem.pos);
+            if(elem.indices != null){
+                this.gl.deleteBuffer(elem.indices);
+            }
         }
     }
     
@@ -85,7 +88,7 @@ export class OpenGL{
                           a[0], a[1],
                           d[0], d[1],
                           c[0], c[1],
-                          color);
+                          true, false, color);
     }
     
     //draw an axis aligned quad
@@ -94,11 +97,11 @@ export class OpenGL{
                           x,         y + height,
                           x + width, y,
                           x,         y,
-                          color);
+                          true, false, color);
     }
         
     //draw quad implementation
-    private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, color: number[]): void {
+    private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, fill: boolean, line: boolean, color: number[]): void {
         //position
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
