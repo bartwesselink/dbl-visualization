@@ -12,7 +12,6 @@ export class OpenGL{
     private readonly HEIGHT = 900;
     private readonly HALFWIDTH = 800;
     private readonly HALFHEIGHT = 450;
-
     
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
@@ -117,21 +116,30 @@ export class OpenGL{
                         color[0], color[1], color[2], color[3],
                         color[0], color[1], color[2], color[3]];
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
+        
+        //indices
+        var indicesBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
+        const indices = [0, 1, 2, 3];
+        this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices), this.gl.STATIC_DRAW);
+        
         this.arrays.push({
             pos: positionBuffer,
             color: colorBuffer,
+            indices: indicesBuffer,
             mode: this.gl.TRIANGLE_STRIP,
-            length: 4
+            length: 4,
+            offset: 0
         });
     }
     
     //clear the screen
-    public clear(): void {
+    private clear(): void {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     }
     
     //draw all the OpenGL buffers
-    public drawBuffers(): void {
+    private drawBuffers(): void {
         for(var i = 0; i < this.arrays.length; i++){
             var elem = this.arrays[i];
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
@@ -140,7 +148,7 @@ export class OpenGL{
                                    this.gl.FLOAT,                         //data type is float32
                                    false,                                 //no normalisation
                                    0,                                     //stride = automatic
-                                   0);                                    //skip
+                                   elem.offset);                          //skip
             this.gl.enableVertexAttribArray(this.shader.shaderAttribPosition);
             
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.color);
@@ -149,10 +157,13 @@ export class OpenGL{
                                    this.gl.FLOAT,                         //data type is float32
                                    false,                                 //no normalisation
                                    0,                                     //stride = automatic
-                                   0);                                    //skip
+                                   elem.offset * 2);                      //skip
             this.gl.enableVertexAttribArray(this.shader.shaderAttribColor);
             
-            this.gl.drawArrays(elem.mode, 0, elem.length);
+            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, elem.indices);
+
+            this.gl.drawElements(elem.mode, elem.length, this.gl.UNSIGNED_BYTE, 0);
+            //this.gl.drawArrays(elem.mode, 0, elem.length);
         }
     }
     
