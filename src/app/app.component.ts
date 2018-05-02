@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Tab} from '../models/tab';
+import { Node } from '../models/node';
 
 @Component({
     selector: 'app-root',
@@ -7,9 +8,14 @@ import {Tab} from '../models/tab';
 })
 export class AppComponent implements OnInit {
     tabs: Tab[] = [];
+    tree: Node;
 
     ngOnInit(): void {
         this.addTab();
+    }
+
+    parseTree(data: string) {
+
     }
 
     private addTab() {

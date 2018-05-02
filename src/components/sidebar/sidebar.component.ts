@@ -1,6 +1,7 @@
 import {Component, ViewChild} from '@angular/core';
 import {Node} from '../../models/node';
 import {TreeNavigatorComponent} from '../tree-navigator/tree-navigator.component';
+import { NewickParser } from '../../utils/newick-parser';
 
 @Component({
     selector: 'app-sidebar',
@@ -19,6 +20,9 @@ export class SidebarComponent {
     sample: Node;
 
     constructor() {
+        const parser = new NewickParser();
+        parser.parseTree('(A,B,(C,D)E)F;');
+
         this.createSample();
     }
 
