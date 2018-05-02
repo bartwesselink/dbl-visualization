@@ -1,5 +1,6 @@
+import {Visualizer} from '../interfaces/visualizer';
+
 export interface Tab {
-    title: string;
+    visualizer: Visualizer;
     active: boolean;
-    id: string;
 }

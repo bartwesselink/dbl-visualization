@@ -2,11 +2,18 @@
     <header class="mdl-layout__header">
         <div class="mdl-layout__header-row header-row">
             <span class="mdl-layout-title">DBL 1D</span>
+
+            <app-visualization-picker [visualizers]="visualizers" (select)="addVisualization($event)"></app-visualization-picker>
+
             <app-upload-tool (newContent)="parseTree($event)"></app-upload-tool>
         </div>
 
         <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
-            <a *ngFor="let tab of tabs;" href="#{{ tab.id }}" class="mdl-layout__tab" [class.is-active]="tab.active">{{ tab.title }}</a>
+            <a *ngFor="let tab of tabs;" (click)="switchTab(tab)" class="mdl-layout__tab-app" [class.is-active]="tab.active">
+                {{ tab.visualizer?.getName() }}
+
+                <i class="material-icons close-tab" (click)="closeTab(tab)">close</i>
+            </a>
         </div>
     </header>
     <div class="mdl-layout__drawer">
@@ -15,9 +22,9 @@
     <main class="mdl-layout__content">
         <div class="holder">
             <div class="holder-app">
-                <section *ngFor="let tab of tabs;" class="mdl-layout__tab-panel full-height" [class.is-active]="tab.active" [attr.id]="tab.id">
+                <section *ngFor="let tab of tabs;" class="mdl-layout__tab-panel full-height" [class.is-active]="tab.active">
                     <div class="page-content full-height">
-                        <app-window></app-window>
+                        <app-window [tree]="tree" [visualizer]="tab.visualizer"></app-window>
                     </div>
                 </section>
             </div>

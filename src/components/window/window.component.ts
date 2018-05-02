@@ -1,9 +1,11 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {Element} from '../../opengl/element';
 import {Matrix} from '../../opengl/matrix';
 import {OpenGL} from '../../opengl/opengl';
 import {Shader} from "../../opengl/shader";
 import { Observable } from "rxjs";
+import {Visualizer} from '../../interfaces/visualizer';
+import {Node} from '../../models/node';
 
 @Component({
     selector: 'app-window',
@@ -11,6 +13,9 @@ import { Observable } from "rxjs";
 })
 export class WindowComponent implements OnInit {
     @ViewChild('canvas') private canvas: ElementRef;
+    @Input('tree') private tree: Node;
+    @Input('visualizer') private visualizer: Visualizer;
+
     private context: CanvasRenderingContext2D;
   
     /** @author Roan Hofland */
@@ -34,33 +39,15 @@ export class WindowComponent implements OnInit {
     private computeScene(): void {
         this.gl.releaseBuffers();
         
-        //test visualisations
-        this.gl.drawAAQuad(0,    0,    100, 100, [1, 0, 0, 1]);
-        this.gl.drawAAQuad(-100, -100, 100, 100, [0, 1, 0, 1]);
-        this.gl.drawAAQuad(0,    -300, 200, 200, [0, 0, 1, 1]);
-        
-        for(var i = 0; i <= 36; i++){
-             this.gl.drawRotatedQuad(-800 + 25 + 43 * i, 200, 35, 35, i * 10, [1, 0, 0, 1]);
-        }
-        for(var i = 0; i <= 18; i++){
-             this.gl.drawRotatedQuad(-800 + 25 + 86 * i, 300, 70, 35, i * 20, [1, 0, 0, 1]);
-        }
-
-                
-        //scalability hell test (change the limit)
-        for(var i = 0; i < 5; i++){
-            //recall that our viewport is fixed at 1600x900, but we will never need this fact except for this test case since visualisations can go beyond the viewport
-            var x = (Math.random() - 0.5) * 1600;
-            var y = (Math.random() - 0.5) * 900;
-            this.gl.drawAAQuad(x, y, 50, 50, [Math.random(), Math.random(), Math.random(), Math.random()]);
-        }
+        if (!this.visualizer) return;
+        this.visualizer.draw(this.tree, this.gl);
     }
   
     //fallback rendering for when some OpenGL error occurs
     private onError(error): void {
         this.errored = true;
         this.lastError = error;
-        console.log(error);
+        console.error(error);
         this.context = this.canvas.nativeElement.getContext('2d');
         this.context.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
         
