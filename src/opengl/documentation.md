@@ -10,7 +10,7 @@ Releases all the buffers currently held in memory, should always be called when 
 - `public useShader(shader: Shader): void`    
 Sets the shader to use for rendering the scene.
 - `public resize(width: number, height: number): void`    
-Resizes the OpenGL viewport for to the optimal size for the given dimensions. Should be called on canvas resize events.
+Resizes the OpenGL viewport to the optimal size for the given dimensions. Should be called on canvas resize events.
 - `public render(): void`    
 Renders the OpenGL scene.
 - `public initShaders(): Shader`    
