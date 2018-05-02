@@ -41,7 +41,7 @@ export class OpenGL{
     }
     
     //render the OpenGL scene
-    public render(){
+    public render(): void {
         this.clear();
         
         //the model view matrix will later be used for user interaction
@@ -55,7 +55,7 @@ export class OpenGL{
     }
     
     //sets the shader to use
-    public useShader(shader: Shader){
+    public useShader(shader: Shader): void {
         this.shader = shader;
     }
     
@@ -134,7 +134,7 @@ export class OpenGL{
     }
     
     //draw all the OpenGL buffers
-    public drawBuffers(){
+    public drawBuffers(): void {
         for(var i = 0; i < this.arrays.length; i++){
             var elem = this.arrays[i];
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
