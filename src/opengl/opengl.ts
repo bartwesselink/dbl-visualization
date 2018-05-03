@@ -94,13 +94,31 @@ export class OpenGL{
                           true, false, color, null);
     }
     
-    //draw an axis aligned quad
-    public drawAAQuad(x: number, y: number, width: number, height: number, color: number[]): void {
+    //fill an axis aligned quad
+    public fillAAQuad(x: number, y: number, width: number, height: number, color: number[]): void {
         this.drawQuadImpl(x + width, y + height,
                           x,         y + height,
                           x + width, y,
                           x,         y,
                           true, false, color, null);
+    }
+    
+    //draw an axis aligned quad
+    public drawAAQuad(x: number, y: number, width: number, height: number, color: number[]): void {
+       this.drawQuadImpl(x + width, y + height,
+                         x,         y + height,
+                         x,         y,
+                         x + width, y,
+                         false, true, null, color);
+    }
+    
+    //render an axis aligned quad
+    public fillLinedAAQuad(x: number, y: number, width: number, height: number, fillColor: number[], lineColor: number[]): void {
+        this.drawQuadImpl(x + width, y + height,
+                          x,         y + height,
+                          x + width, y,
+                          x,         y,
+                          true, true, fillColor, lineColor);
     }
         
     //draw quad implementation

@@ -35,9 +35,13 @@ export class WindowComponent implements OnInit {
         this.gl.releaseBuffers();
         
         //test visualisations
-        this.gl.drawAAQuad(0,    0,    100, 100, [1, 0, 0, 1]);
-        this.gl.drawAAQuad(-100, -100, 100, 100, [0, 1, 0, 1]);
-        this.gl.drawAAQuad(0,    -300, 200, 200, [0, 0, 1, 1]);
+        this.gl.fillAAQuad(0,    0,    100, 100, [1, 0, 0, 1]);
+        this.gl.fillAAQuad(-100, -100, 100, 100, [0, 1, 0, 1]);
+        this.gl.fillAAQuad(0,    -300, 200, 200, [0, 0, 1, 1]);
+        
+        this.gl.fillAAQuad(300,    0, 100, 100, [1, 0, 0, 1]);
+        this.gl.fillLinedAAQuad(300, -300, 100, 100, [0, 1, 0, 1], [0, 0, 0, 1]);
+        this.gl.drawAAQuad(300, -150, 100, 100, [0, 0, 1, 1]);
         
         for(var i = 0; i <= 36; i++){
              this.gl.drawRotatedQuad(-800 + 25 + 43 * i, 200, 35, 35, i * 10, [1, 0, 0, 1]);
@@ -51,7 +55,7 @@ export class WindowComponent implements OnInit {
             //recall that our viewport is fixed at 1600x900, but we will never need this fact except for this test case since visualisations can go beyond the viewport
             var x = (Math.random() - 0.5) * 1600;
             var y = (Math.random() - 0.5) * 900;
-            this.gl.drawAAQuad(x, y, 50, 50, [Math.random(), Math.random(), Math.random(), Math.random()]);
+            this.gl.fillAAQuad(x, y, 50, 50, [Math.random(), Math.random(), Math.random(), Math.random()]);
         }
     }
   
