@@ -28,24 +28,42 @@ export class GeneralizedPythagorasTreeComponent implements OnInit {
      * recurse on the children of the element we are considering.
      */
     if (tree.hasChild()) { // If a node does not have children it does not have to draw its children
+      let angle: Array<number> = [];
       for (let element of tree.getChildren()) {
-        let angle = Math.PI * (element.getSizeSubTree() / element.getParent().getSizeSubTree()); // Calculate the angle of every subtree
-        let width = rectangle[2] * Math.sin(angle / 2);
-        let height = this.weightHeight * rectangle[3] * Math.sin(angle / 2);
-        let center = this.calculateCenter();
-        let rotation = this.calculateRotation();
+        angle.push(Math.PI * (element.getSizeSubTree() / element.getParent().getSizeSubTree())); // Calculate the angle of every subtree
+        let width = rectangle[2] * Math.sin(angle[angle.length - 1] / 2); // The last value in the array is always the one calculated last
+        let height = this.weightHeight * rectangle[3] * Math.sin(angle[angle.length - 1] / 2);
+        let center = this.calculateCenter(rectangle[2], width, height, angle, rectangle[4]);
+        let rotation = this.calculateRotation(angle, rectangle[4]);
         let rectangleChild = [center[0], center[1], width, height, rotation];
         this.generate(element, rectangleChild);
       }
     }
   }
 
-  private calculateCenter(): number[] {
-    return [0, 0];
+  private calculateCenter(widthPrevious: number, width: number, height: number, newAngle: number[], oldAngle: number): number[] {
+
+    // The coordinates of the new rectangle, bottom right refers to the first corner of the rectangle on the circle going counter clockwise
+    let bottomRight = [(widthPrevious/2) * Math.cos(newAngle[newAngle.length - 2]), (widthPrevious/2) * Math.sin(newAngle[newAngle.length - 2])];
+    let bottomLeft = [(widthPrevious/2) * Math.cos(newAngle[newAngle.length - 1]), (widthPrevious/2) * Math.sin(newAngle[newAngle.length - 1])];
+
+    // The mid point between the two corners calculated previously, relative to the previous rectangle
+    let middle = [(bottomLeft[0] + bottomRight[0])/2, (bottomLeft[1] + bottomRight[1])/2];
+
+    // This is the angle between the two lines going to the corners of the new rectangle
+    let angle = newAngle[newAngle.length - 1] - newAngle[newAngle.length - 2];
+
+    // The center coordinates of the new rectangle
+    let centerX = (width / 2) * Math.cos((angle/2) + oldAngle) + middle[0];
+    let centerY = (height / 2) * Math.sin((angle/2) + oldAngle) + middle[1];
+
+    return [centerX, centerY];
   }
 
-  private calculateRotation(): number {
-    return 0;
+  private calculateRotation(newAngle: number[], oldAngle: number): number {
+    let angle = newAngle[newAngle.length - 1] - newAngle[newAngle.length - 2];
+    angle += oldAngle;
+    return angle;
   }
 
 }
