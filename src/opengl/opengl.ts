@@ -91,7 +91,7 @@ export class OpenGL{
                           a[0], a[1],
                           d[0], d[1],
                           c[0], c[1],
-                          color);
+                          true, false, color, null);
     }
     
     //draw an axis aligned quad
@@ -100,11 +100,11 @@ export class OpenGL{
                           x,         y + height,
                           x + width, y,
                           x,         y,
-                          color);
+                          true, false, color, null);
     }
         
     //draw quad implementation
-    private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, color: number[]): void {
+    private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
         //position
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
@@ -115,27 +115,68 @@ export class OpenGL{
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
       
         //color
-        var colorBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
-        const colors = [color[0], color[1], color[2], color[3],
-                        color[0], color[1], color[2], color[3],
-                        color[0], color[1], color[2], color[3],
-                        color[0], color[1], color[2], color[3]];
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
+        var colorBuffer = null;
+        if(fill){
+            this.gl.createBuffer();
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
+            const colors = [fillColor[0], fillColor[1], fillColor[2], fillColor[3],
+                            fillColor[0], fillColor[1], fillColor[2], fillColor[3],
+                            fillColor[0], fillColor[1], fillColor[2], fillColor[3],
+                            fillColor[0], fillColor[1], fillColor[2], fillColor[3]];
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
+        }
         
-        //indices
-        var indicesBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
-        const indices = [0, 1, 2, 3];
-        this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices), this.gl.STATIC_DRAW);
-        
-        this.arrays.push({
-            pos: positionBuffer,
-            color: colorBuffer,
-            indices: indicesBuffer,
-            mode: this.gl.TRIANGLE_STRIP,
-            length: 4
-        });
+        if(!line){
+            this.arrays.push({
+                pos: positionBuffer,
+                color: colorBuffer,
+                mode: this.gl.TRIANGLE_STRIP,
+                length: 4
+            });
+        }else{
+            var lineColorBuffer = null;
+            if(lineColor == null){
+                lineColorBuffer = colorBuffer;
+            }else{
+                //color
+                lineColorBuffer = this.gl.createBuffer();
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
+                const colors = [lineColor[0], lineColor[1], lineColor[2], lineColor[3],
+                                lineColor[0], lineColor[1], lineColor[2], lineColor[3],
+                                lineColor[0], lineColor[1], lineColor[2], lineColor[3],
+                                lineColor[0], lineColor[1], lineColor[2], lineColor[3]];
+                this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(lineColor), this.gl.STATIC_DRAW);
+            }
+            
+            if(line && fill){
+                //indices
+                var indicesBuffer = this.gl.createBuffer();
+                this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
+                const indices = [0, 2, 3, 1];
+                this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices), this.gl.STATIC_DRAW);
+                
+                this.arrays.push({
+                    pos: positionBuffer,
+                    color: colorBuffer,
+                    mode: this.gl.TRIANGLE_STRIP,
+                    length: 4,
+                    overlay: {
+                        pos: positionBuffer,
+                        indices: indices,
+                        color: lineColorBuffer,
+                        mode: this.gl.LINE_LOOP,
+                        length: 4
+                    }
+                });
+            }else{
+                this.arrays.push({
+                    pos: positionBuffer,
+                    color: lineColorBuffer,
+                    mode: this.gl.LINE_LOOP,
+                    length: 4
+                });
+            }
+        }
     }
     
     //clear the screen
