@@ -10,6 +10,8 @@ export class OpenGL{
     private arrays: Element[] = [];
     private readonly WIDTH = 1600;
     private readonly HEIGHT = 900;
+    private readonly HALFWIDTH = this.WIDTH / 2;
+    private readonly HALFHEIGHT = this.HEIGHT / 2;
     
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
@@ -25,6 +27,11 @@ export class OpenGL{
                            this.gl.canvas.clientWidth / this.gl.canvas.clientHeight, //aspect ratio
                            1,                                                        //z-axis near
                            -1);                                                      //z-axis far
+        
+        this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+        this.gl.enable(this.gl.BLEND);
+        this.gl.depthFunc(gl.LEQUAL);
+        this.gl.enable(gl.DEPTH_TEST);   
     }
     
     //resizes the viewport to the optimal size for the new canvas size
@@ -65,6 +72,7 @@ export class OpenGL{
             var elem = this.arrays.pop();
             this.gl.deleteBuffer(elem.color);
             this.gl.deleteBuffer(elem.pos);
+            this.gl.deleteBuffer(elem.indices);
         }
     }
     
@@ -79,21 +87,15 @@ export class OpenGL{
         var c = Matrix.rotateVector2D(center, [x - width / 2, y - height / 2], rotation);
         var d = Matrix.rotateVector2D(center, [x + width / 2, y - height / 2], rotation);
         
-        this.drawQuadImpl(b[0] / ((this.WIDTH) / 2), b[1] / ((this.HEIGHT) / 2),
-                          a[0] / ((this.WIDTH) / 2), a[1] / ((this.HEIGHT) / 2),
-                          d[0] / ((this.WIDTH) / 2), d[1] / ((this.HEIGHT) / 2),
-                          c[0] / ((this.WIDTH) / 2), c[1] / ((this.HEIGHT) / 2),
+        this.drawQuadImpl(b[0], b[1],
+                          a[0], a[1],
+                          d[0], d[1],
+                          c[0], c[1],
                           color);
     }
     
     //draw an axis aligned quad
     public drawAAQuad(x: number, y: number, width: number, height: number, color: number[]): void {
-        //scale to coordinate space
-        x /= (this.WIDTH) / 2;
-        y /= (this.HEIGHT) / 2;
-        width /= (this.WIDTH) / 2;
-        height /= (this.HEIGHT) / 2;
-        
         this.drawQuadImpl(x + width, y + height,
                           x,         y + height,
                           x + width, y,
@@ -106,10 +108,10 @@ export class OpenGL{
         //position
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
-        const pos = [x1,  y1, 
-                     x2,  y2, 
-                     x3,  y3, 
-                     x4,  y4];
+        const pos = [x1 / this.HALFWIDTH,  y1 / this.HALFHEIGHT, 
+                     x2 / this.HALFWIDTH,  y2 / this.HALFHEIGHT, 
+                     x3 / this.HALFWIDTH,  y3 / this.HALFHEIGHT, 
+                     x4 / this.HALFWIDTH,  y4 / this.HALFHEIGHT];
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
       
         //color
@@ -120,42 +122,67 @@ export class OpenGL{
                         color[0], color[1], color[2], color[3],
                         color[0], color[1], color[2], color[3]];
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
+        
+        //indices
+        var indicesBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
+        const indices = [0, 1, 2, 3];
+        this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices), this.gl.STATIC_DRAW);
+        
         this.arrays.push({
             pos: positionBuffer,
             color: colorBuffer,
+            indices: indicesBuffer,
             mode: this.gl.TRIANGLE_STRIP,
             length: 4
         });
     }
     
     //clear the screen
-    public clear(): void {
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+    private clear(): void {
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     }
     
     //draw all the OpenGL buffers
-    public drawBuffers(): void {
+    private drawBuffers(): void {
         for(var i = 0; i < this.arrays.length; i++){
-            var elem = this.arrays[i];
+            this.drawElement(this.arrays[i]);
+        }
+    }
+    
+    //renders the given element
+    private drawElement(elem: Element): void {
+        if(elem.pos != null){
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
-            this.gl.vertexAttribPointer(this.shader.shaderAttribPosition, //attribute
-                                   2,                                     //2D so two values per iteration: x, y
-                                   this.gl.FLOAT,                         //data type is float32
-                                   false,                                 //no normalisation
-                                   0,                                     //stride = automatic
-                                   0);                                    //skip
+            this.gl.vertexAttribPointer(this.shader.shaderAttribPosition,             //attribute
+                                        2,                                            //2D so two values per iteration: x, y
+                                        this.gl.FLOAT,                                //data type is float32
+                                        false,                                        //no normalisation
+                                        0,                                            //stride = automatic
+                                        elem.offset == null ? 0 : elem.offset);       //skip
             this.gl.enableVertexAttribArray(this.shader.shaderAttribPosition);
-            
+        }
+        
+        if(elem.color != null){
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.color);
-            this.gl.vertexAttribPointer(this.shader.shaderAttribColor,    //attribute
-                                   4,                                     //rgba so four values per iteration: r, g, b, a
-                                   this.gl.FLOAT,                         //data type is float32
-                                   false,                                 //no normalisation
-                                   0,                                     //stride = automatic
-                                   0);                                    //skip
+            this.gl.vertexAttribPointer(this.shader.shaderAttribColor,                //attribute
+                                        4,                                            //rgba so four values per iteration: r, g, b, a
+                                        this.gl.FLOAT,                                //data type is float32
+                                        false,                                        //no normalisation
+                                        0,                                            //stride = automatic
+                                        elem.offset == null ? 0 : (elem.offset * 2)); //skip
             this.gl.enableVertexAttribArray(this.shader.shaderAttribColor);
-            
+        }
+        
+        if(elem.indices == null){
             this.gl.drawArrays(elem.mode, 0, elem.length);
+        }else{
+            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, elem.indices);
+            this.gl.drawElements(elem.mode, elem.length, this.gl.UNSIGNED_BYTE, 0);
+        }
+        
+        if(elem.overlay != null){
+            this.drawElement(elem.overlay);
         }
     }
     
