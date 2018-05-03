@@ -140,20 +140,19 @@ export class OpenGL{
             }else{
                 //color
                 lineColorBuffer = this.gl.createBuffer();
-                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, lineColorBuffer);
                 const colors = [lineColor[0], lineColor[1], lineColor[2], lineColor[3],
                                 lineColor[0], lineColor[1], lineColor[2], lineColor[3],
                                 lineColor[0], lineColor[1], lineColor[2], lineColor[3],
                                 lineColor[0], lineColor[1], lineColor[2], lineColor[3]];
-                this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(lineColor), this.gl.STATIC_DRAW);
+                this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
             }
             
             if(line && fill){
                 //indices
                 var indicesBuffer = this.gl.createBuffer();
                 this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
-                const indices = [0, 2, 3, 1];
-                this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices), this.gl.STATIC_DRAW);
+                this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint8Array([0, 2, 3, 1]), this.gl.STATIC_DRAW);
                 
                 this.arrays.push({
                     pos: positionBuffer,
@@ -162,7 +161,7 @@ export class OpenGL{
                     length: 4,
                     overlay: {
                         pos: positionBuffer,
-                        indices: indices,
+                        indices: indicesBuffer,
                         color: lineColorBuffer,
                         mode: this.gl.LINE_LOOP,
                         length: 4
