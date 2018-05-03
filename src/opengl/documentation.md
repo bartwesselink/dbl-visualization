@@ -35,7 +35,7 @@ Draws a filled quad with a line around it with the lower left corner at the give
 Draws a filled quad with a given center coordinate, width, height, rotation and color. The rotation is consistent with the unit circle meaning that the quad will rotate anticlockwise.
 - `public drawRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): void`    
 Outlines a quad with a given center coordinate, width, height, rotation and color. The rotation is consistent with the unit circle meaning that the quad will rotate anticlockwise.
-- `public fillLinedRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): void`    
+- `public fillLinedRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, fillColor: number[], lineColor: number[]): void`    
 Draws a filled quad with a line around it with a given center coordinate, width, height, rotation, a color to fill the quad with and a color for the line around it. The rotation is consistent with the unit circle meaning that the quad will rotate anticlockwise.
 
 # Private subroutines
