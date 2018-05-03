@@ -5,10 +5,14 @@ For people working with the OpenGL abstraction layer. These are the only methods
 `var gl = new OpenGL(WebGLRenderingContext)`
 
 # General
-- `public releaseBuffers(): void`    
-Releases all the buffers currently held in memory, should always be called when recomputing the scene.
-- `public useShader(shader: Shader): void`    
-Sets the shader to use for rendering the scene.
+- ```typescript 
+  public releaseBuffers(): void
+  ```  
+  Releases all the buffers currently held in memory, should always be called when recomputing the scene.
+- ```typescript
+  public useShader(shader: Shader): void
+  ```
+  Sets the shader to use for rendering the scene.
 - `public resize(width: number, height: number): void`    
 Resizes the OpenGL viewport to the optimal size for the given dimensions. Should be called on canvas resize events.
 - `public render(): void`    
