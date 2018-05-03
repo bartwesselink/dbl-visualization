@@ -5,14 +5,10 @@ For people working with the OpenGL abstraction layer. These are the only methods
 `var gl = new OpenGL(WebGLRenderingContext)`
 
 # General
-- ```typescript 
-  public releaseBuffers(): void
-  ```  
-  Releases all the buffers currently held in memory, should always be called when recomputing the scene.
-- ```typescript
-  public useShader(shader: Shader): void
-  ```
-  Sets the shader to use for rendering the scene.
+- `public releaseBuffers(): void`    
+Releases all the buffers currently held in memory, should always be called when recomputing the scene.
+- `public useShader(shader: Shader): void`    
+Sets the shader to use for rendering the scene.
 - `public resize(width: number, height: number): void`    
 Resizes the OpenGL viewport to the optimal size for the given dimensions. Should be called on canvas resize events.
 - `public render(): void`    
@@ -35,9 +31,12 @@ Draws a filled quad with the lower left corner at the given x and y coordinate. 
 Outlines a quad with the lower left corner at the given x and y coordinate. A width and height relative to that point and the given color.
 - `public fillLinedAAQuad(x: number, y: number, width: number, height: number, fillColor: number[], lineColor: number[]): void`        
 Draws a filled quad with a line around it with the lower left corner at the given x and y coordinate. A width and height relative to that point, a color to fill the quad with and a color for the line around it.
-- `public drawRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): void`    
+- `public fillRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): void`    
 Draws a filled quad with a given center coordinate, width, height, rotation and color. The rotation is consistent with the unit circle meaning that the quad will rotate anticlockwise.
-
+- `public drawRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): void`    
+Outlines a quad with a given center coordinate, width, height, rotation and color. The rotation is consistent with the unit circle meaning that the quad will rotate anticlockwise.
+- `public drawRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): void`    
+Draws a filled quad with a line around it with a given center coordinate, width, height, rotation, a color to fill the quad with and a color for the line around it. The rotation is consistent with the unit circle meaning that the quad will rotate anticlockwise.
 
 # Private subroutines
 
