@@ -25,8 +25,12 @@ Examples:
 - `var black = [0.0, 0.0, 0.0, 1.0];`
 
 ## Quads
-- `public drawAAQuad(x: number, y: number, width: number, height: number, color: number[]): void`    
+- `public fillAAQuad(x: number, y: number, width: number, height: number, color: number[]): void`    
 Draws a filled quad with the lower left corner at the given x and y coordinate. A width and height relative to that point and the given color.
+- `public drawAAQuad(x: number, y: number, width: number, height: number, color: number[]): void`    
+Outlines a quad with the lower left corner at the given x and y coordinate. A width and height relative to that point and the given color.
+- `public fillLinedAAQuad(x: number, y: number, width: number, height: number, fillColor: number[], lineColor: number[]): void`        
+Draws a filled quad with a line around it with the lower left corner at the given x and y coordinate. A width and height relative to that point, a color to fill the quad with and a color for the line around it.
 - `public drawRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): void`    
 Draws a filled quad with a given center coordinate, width, height, rotation and color. The rotation is consistent with the unit circle meaning that the quad will rotate anticlockwise.
 
@@ -34,4 +38,4 @@ Draws a filled quad with a given center coordinate, width, height, rotation and 
 # Private subroutines
 
 - `private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void`        
-Draws the quad specified by the 4 sets of coordinates and the given colors and the specified regions. `x1` and `y1` specify the upper right corner of the quad, `x2` and `y2` specify the upper left corner of the quad, `x3` and `y3` specify the lower right corner of the quad and `x4` and `y4` specify the lower left corner of the quad. The `fill` boolean denotes whether or not to fill the quad with the given color. The `line` boolean denotes whether or not to draw a line around this quad. The `fillColor` is the color used to fill the quad. The `lineColor` is the color used to draw the line around the quad, if `line` is set to true and this is set to `null` the `fillColor` will instead be used to draw the line.
+Draws the quad specified by the 4 sets of coordinates and the given colors and the specified regions. The meaning of the x and y coordinates is depended on the values of the `line` and `fill` variables. If `fill` is true then `x1` and `y1` specify the upper right corner of the quad, `x2` and `y2` specify the upper left corner of the quad, `x3` and `y3` specify the lower right corner of the quad and `x4` and `y4` specify the lower left corner of the quad. If `fill` is false and `line` is true then `x1` and `y1` specify the upper right corner of the quad, `x2` and `y2` specify the upper left corner of the quad, `x3` and `y3` specify the lower right corner of the quad and `x4` and `y4` specify the lower left corner of the quad. The `fill` boolean denotes whether or not to fill the quad with the given color. The `line` boolean denotes whether or not to draw a line around this quad. The `fillColor` is the color used to fill the quad. The `lineColor` is the color used to draw the line around the quad, if `line` is set to true and this is set to `null` the `fillColor` will instead be used to draw the line.
