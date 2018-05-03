@@ -45,10 +45,9 @@ export class WindowComponent implements OnInit {
         for(var i = 0; i <= 18; i++){
              this.gl.drawRotatedQuad(-800 + 25 + 86 * i, 300, 70, 35, i * 20, [1, 0, 0, 1]);
         }
-
                 
         //scalability hell test (change the limit)
-        for(var i = 0; i < 5; i++){
+        for(var i = 0; i < 0; i++){
             //recall that our viewport is fixed at 1600x900, but we will never need this fact except for this test case since visualisations can go beyond the viewport
             var x = (Math.random() - 0.5) * 1600;
             var y = (Math.random() - 0.5) * 900;

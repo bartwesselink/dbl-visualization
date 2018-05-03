@@ -117,7 +117,7 @@ export class OpenGL{
         //color
         var colorBuffer = null;
         if(fill){
-            this.gl.createBuffer();
+            colorBuffer = this.gl.createBuffer();
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
             const colors = [fillColor[0], fillColor[1], fillColor[2], fillColor[3],
                             fillColor[0], fillColor[1], fillColor[2], fillColor[3],
