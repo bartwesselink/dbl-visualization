@@ -26,9 +26,9 @@ Examples:
 
 ## Quads
 - `public drawAAQuad(x: number, y: number, width: number, height: number, color: number[]): void`    
-Draws a quad with the lower left corner at the given x and y coordinate. A width and height relative to that point and the given color.
+Draws a filled quad with the lower left corner at the given x and y coordinate. A width and height relative to that point and the given color.
 - `public drawRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): void`    
-Draws a quad with a given center coordinate, width, height, rotation and color. The rotation is consistent with the unit circle meaning that the quad will rotate anticlockwise.
+Draws a filled quad with a given center coordinate, width, height, rotation and color. The rotation is consistent with the unit circle meaning that the quad will rotate anticlockwise.
 
 
 # Private subroutines
