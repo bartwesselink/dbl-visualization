@@ -44,7 +44,7 @@ export class WindowComponent implements OnInit {
         this.gl.drawAAQuad(300, -150, 100, 100, [0, 0, 1, 1]);
         
         for(var i = 0; i <= 36; i++){
-             this.gl.drawRotatedQuad(-800 + 25 + 43 * i, 200, 35, 35, i * 10, [1, 0, 0, 1]);
+             this.gl.fillLinedRotatedQuad(-800 + 25 + 43 * i, 200, 35, 35, i * 10, [1, 0, 0, 1], [0, 0, 0, 1]);
         }
         for(var i = 0; i <= 18; i++){
              this.gl.drawRotatedQuad(-800 + 25 + 86 * i, 300, 70, 35, i * 20, [1, 0, 0, 1]);

@@ -76,22 +76,52 @@ export class OpenGL{
         }
     }
     
-    //draw a rotated quad
+    //fill a rotated quad
+    public fillRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): void {
+        this.renderRotatedQuad(x,             y,
+                               x - width / 2, y + height / 2,
+                               x + width / 2, y + height / 2,
+                               x - width / 2, y - height / 2,
+                               x + width / 2, y - height / 2,
+                               rotation, true, false, color, null);
+    }
+    
+     //draw a rotated quad
     public drawRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): void {
+        this.renderRotatedQuad(x,             y,
+                               x - width / 2, y + height / 2,
+                               x + width / 2, y + height / 2,
+                               x + width / 2, y - height / 2,
+                               x - width / 2, y - height / 2,
+                               rotation, false, true, null, color);
+    }
+    
+     //render a rotated quad
+    public fillLinedRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, fillColor: number[], lineColor: number[]): void {
+        this.renderRotatedQuad(x,             y,
+                               x - width / 2, y + height / 2,
+                               x + width / 2, y + height / 2,
+                               x - width / 2, y - height / 2,
+                               x + width / 2, y - height / 2,
+                               rotation, true, true, fillColor, lineColor);
+    }
+    
+    //renders a rotated quad
+    private renderRotatedQuad(x: number, y: number, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, rotation: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
         //a---------b
         //|   x,y   |
         //c---------d
         var center = [x, y];
-        var a = Matrix.rotateVector2D(center, [x - width / 2, y + height / 2], rotation);
-        var b = Matrix.rotateVector2D(center, [x + width / 2, y + height / 2], rotation);
-        var c = Matrix.rotateVector2D(center, [x - width / 2, y - height / 2], rotation);
-        var d = Matrix.rotateVector2D(center, [x + width / 2, y - height / 2], rotation);
+        var a = Matrix.rotateVector2D(center, [x1, y1], rotation);
+        var b = Matrix.rotateVector2D(center, [x2, y2], rotation);
+        var c = Matrix.rotateVector2D(center, [x3, y3], rotation);
+        var d = Matrix.rotateVector2D(center, [x4, y4], rotation);
         
         this.drawQuadImpl(b[0], b[1],
                           a[0], a[1],
                           d[0], d[1],
                           c[0], c[1],
-                          true, false, color, null);
+                          fill, line, fillColor, lineColor);
     }
     
     //fill an axis aligned quad
