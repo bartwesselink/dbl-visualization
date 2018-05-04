@@ -15,6 +15,8 @@ export class AppComponent implements OnInit {
     public tree: Node;
     public visualizers: Visualizer[];
 
+    private activeTab: Tab;
+
     @ViewChild(SidebarComponent) private sidebar: SidebarComponent;
 
     private parser = new NewickParser();
@@ -47,12 +49,15 @@ export class AppComponent implements OnInit {
     }
 
     public closeTab(tab: Tab) {
+        tab.window.destroyScene();
+
+        const wasActive = tab === this.activeTab;
         const index = this.tabs.indexOf(tab);
 
         this.tabs = this.tabs.filter(item => item !== tab);
 
-        if (this.tabs.length > 0) {
-            this.switchTab(this.tabs[index - 1]);
+        if (this.tabs.length > 0 && wasActive) {
+            this.switchTab(this.tabs[Math.max(index - 1, 0)]);
         }
     }
 
@@ -62,6 +67,13 @@ export class AppComponent implements OnInit {
         }
 
         tab.active = true;
+        this.activeTab = tab;
+
+        if (tab.window) {
+            setTimeout(() => {
+                tab.window.render();
+            }, 100);
+        }
     }
 
     private createVisualizers(): void {
