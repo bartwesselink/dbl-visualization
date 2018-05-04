@@ -15,6 +15,10 @@
   }
 }
 
+.tree-navigator-item {
+  white-space: nowrap;
+}
+
 .tree-navigator-item.leaf {
   padding-left: 2rem;
 }

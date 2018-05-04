@@ -8,7 +8,8 @@ import {ScreenshotButtonComponent} from '../components/screenshot-button/screens
 import {TreeNavigatorComponent} from '../components/tree-navigator/tree-navigator.component';
 import {TreeNavigatorItemComponent} from '../components/tree-navigator-item/tree-navigator-item.component';
 import { GeneralizedPythagorasTreeComponent } from '../components/generalized-pythagoras-tree/generalized-pythagoras-tree.component';
-
+import {UploadToolComponent} from '../components/upload-tool/upload-tool.component';
+import {VisualizationPickerComponent} from '../components/visualization-picker/visualization-picker.component';
 
 @NgModule({
     declarations: [
@@ -19,6 +20,8 @@ import { GeneralizedPythagorasTreeComponent } from '../components/generalized-py
         TreeNavigatorComponent,
         TreeNavigatorItemComponent,
         GeneralizedPythagorasTreeComponent,
+        UploadToolComponent,
+        VisualizationPickerComponent,
     ],
     imports: [
         BrowserModule
