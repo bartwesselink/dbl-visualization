@@ -50,7 +50,10 @@ export class WindowComponent implements OnInit {
     private computeScene(): void {
         this.gl.releaseBuffers();
         
-        if (!this.visualizer) return;
+        if (!this.visualizer) {
+            return;
+        }
+        
         this.visualizer.draw(this.tree, this.gl);
     }
   
