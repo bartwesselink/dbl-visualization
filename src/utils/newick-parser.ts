@@ -36,6 +36,7 @@ export class NewickParser {
         const formatted: Node = {
             label: label,
             children: new Array(children == null ? 0 : children.length),
+            subTreeSize: 1,
             parent,
         };
 
@@ -43,8 +44,10 @@ export class NewickParser {
             let i = 0;
 
             for (const child of children) {
-                const formattedNode = this.recurse(child, formatted);
-                formatted.children[i] = formattedNode;
+                const formattedChildNode = this.recurse(child, formatted);
+                formatted.children[i] = formattedChildNode;
+
+                formatted.subTreeSize += formattedChildNode.subTreeSize;
 
                 i++;
             }

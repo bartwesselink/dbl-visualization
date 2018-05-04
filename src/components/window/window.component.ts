@@ -49,11 +49,11 @@ export class WindowComponent implements OnInit {
     //compute the visualisation
     private computeScene(): void {
         this.gl.releaseBuffers();
-        
+      
         if (!this.visualizer) {
             return;
         }
-        
+
         this.visualizer.draw(this.tree, this.gl);
     }
   
