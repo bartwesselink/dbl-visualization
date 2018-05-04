@@ -226,6 +226,34 @@ export class OpenGL{
         }
     }
     
+    //renders an ellipsoid
+    public drawEllipsoidImpl(x: number, y: number, s: number){
+        const pos = [360 * 2 + 2];
+        pos[0] = x / this.HALFWIDTH;
+        pos[1] = y / this.HALFHEIGHT;
+        const color = [1, 0, 0, 1, 1, 0, 0, 1];
+        for(var i = 0; i <= 360 * 2; i += 2){
+            pos[i + 2] = (x + s * Math.cos((i / 2) * (Math.PI / 180.0))) / this.HALFWIDTH;
+            pos[i + 3] = (y + s * Math.sin((i / 2) * (Math.PI / 180.0))) / this.HALFHEIGHT;
+            color.push(1, 0, 0, 1, 1, 0, 0, 1);
+        }
+            
+        var colorBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(color), this.gl.STATIC_DRAW);
+            
+        var posBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
+        
+        this.arrays.push({
+            pos: posBuffer,
+            color: colorBuffer,
+            mode: this.gl.TRIANGLE_FAN,
+            length: pos.length / 2
+        });
+    }
+    
     //clear the screen
     private clear(): void {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
