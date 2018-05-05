@@ -12,6 +12,7 @@ export class OpenGL{
     private readonly HEIGHT = 900;
     private readonly HALFWIDTH = this.WIDTH / 2;
     private readonly HALFHEIGHT = this.HEIGHT / 2;
+    private readonly PRECISION = 10;
     
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
@@ -227,7 +228,7 @@ export class OpenGL{
     }
     
     //renders an ellipsoid
-    public drawEllipsoidImpl(x: number, y: number, s: number){
+    public drawEllipsoidImpl2(x: number, y: number, s: number): void {
         const pos = [360 * 2 + 2];
         pos[0] = x / this.HALFWIDTH;
         pos[1] = y / this.HALFHEIGHT;
@@ -256,7 +257,7 @@ export class OpenGL{
     }
     
     //renders a circle
-    public drawCircleImpl(x: number, y: number, radius: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]){
+    public drawCircleImpl(x: number, y: number, radius: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
         const pos = [];
         const colors = [];
         if(fill){
@@ -265,18 +266,25 @@ export class OpenGL{
         }
         var loc = [x + radius, y];
         var rotation = [9];
-        Matrix.multiply(rotation, Matrix.create2DTranslationMatrix([-x, -y]), Matrix.create2DRotationMatrix(1));
+        Matrix.multiply(rotation, Matrix.create2DTranslationMatrix([-x, -y]), Matrix.create2DRotationMatrix(precision));
         Matrix.multiply(rotation, rotation, Matrix.create2DTranslationMatrix([x, y]));
-        for(var i = 0; i <= 360; i += 1){
-            Matrix.multiplyVector2D(loc, rotation);
-            pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
-            if(fill || lineColor == null){
-                colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
-            }else{
-                colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+        for(var i = 0; i <= 360; i += precision){
+            if(i != 360 && line || fill){
+                Matrix.multiplyVector2D(loc, rotation);
+                pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
+                if(fill || lineColor == null){
+                    colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+                }else{
+                    colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+                }
             }
         }
             
+        this.drawEllipsoidImpl(colors, pos, fill, line, lineColor);
+    }
+    
+    //draws an ellipsoid
+    private drawEllipsoidImpl(colors: number[], pos: number[], fill: boolean, line: boolean, lineColor: number[]): void {
         var colorBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
@@ -300,12 +308,12 @@ export class OpenGL{
                 lineColorBuffer = this.gl.createBuffer();
                 this.gl.bindBuffer(this.gl.ARRAY_BUFFER, lineColorBuffer);
                 var lineColors = [];
-                for(var i = 0; i <= pos.length / 2 - 2; i++){
+                for(var i = 0; i < pos.length / 2 - 2; i++){
                     lineColors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
                 }
+                console.log(lineColors.length + " | " + pos.length);
                 this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(lineColors), this.gl.STATIC_DRAW);
             }
-            
             this.arrays.push({
                 pos: posBuffer,
                 color: colorBuffer,
@@ -354,7 +362,7 @@ export class OpenGL{
                                         this.gl.FLOAT,                                //data type is float32
                                         false,                                        //no normalisation
                                         0,                                            //stride = automatic
-                                        elem.offset == null ? 0 : (elem.offset * 2)); //skip
+                                        0);                                           //skip
             this.gl.enableVertexAttribArray(this.shader.shaderAttribColor);
         }
         

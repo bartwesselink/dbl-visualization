@@ -35,8 +35,8 @@ export class WindowComponent implements OnInit {
         this.gl.releaseBuffers();
         
         //test visualisations
-        this.gl.drawEllipsoidImpl(-300, 100, 50);
-        this.gl.drawCircleImpl(-300, -100, 50, true, true, [1, 0, 0, 1], [0, 0, 0, 1]);
+        //this.gl.drawEllipsoidImpl(-300, 100, 50);
+        this.gl.drawCircleImpl(-300, -100, 50, true, true, [1, 0, 0, .1], [0, 0, 0, 1]);
         
         this.gl.fillAAQuad(0,    0,    100, 100, [1, 0, 0, 1]);
         this.gl.fillAAQuad(-100, -100, 100, 100, [0, 1, 0, 1]);
