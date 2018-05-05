@@ -20,7 +20,7 @@ export class GeneralizedPythagorasTreeComponent implements OnInit {
 
   public generate(tree: node, rectangle: number[]): void {
     // Rectangle is an array of 5 numbers, in order: center x, center y, width (X), height (Y), angle
-    drawRotatedQuad(rectangle[0], rectangle[1], rectangle[2], rectangle[3], rectangle[4], this.color);
+    // drawRotatedQuad(rectangle[0], rectangle[1], rectangle[2], rectangle[3], rectangle[4], this.color);
     /** This function can be considered in two ways. The first way is as it's done here. We loop over all the children
      * of a node and consider what part this child is of the parent. Thus the child calculates what relative size it is
      * of the parent. The second way is to take the parent and calculate the relative size of each of its children.

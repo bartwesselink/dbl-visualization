@@ -27,7 +27,7 @@ export class GeneralizedPythagorasTree implements Visualizer {
             gl.drawAAQuad(x, y, 50, 50, [Math.random(), Math.random(), Math.random(), Math.random()]);
         }*/
         /** @end-author Roan Hofland */
-		let rectangle = [-100, 100, 80, 80, 0];
+		let rectangle = [-150, 0, 120, 120, 0];
 		this.generate(tree, rectangle, gl);
         // console.log(tree.subTreeSize);
         // for (let element of tree.children){
@@ -57,10 +57,11 @@ export class GeneralizedPythagorasTree implements Visualizer {
       let angle: Array<number> = [0]; // Initialize to zero helps with calculating using the first angle
         console.log("hello");
       for (let element of tree.children) {
-         angle.push(angle[angle.length -1] + Math.PI * (element.subTreeSize / (element.parent.subTreeSize -1))); // Calculate the angle of every subtree
+         angle.push(angle[angle.length - 1] + Math.PI * (element.subTreeSize / (element.parent.subTreeSize -1))); // Calculate the angle of every subtree
+          console.log(angle);
         //  angle.push(Math.PI * (1 /3));
-        let width = rectangle[2] * Math.sin((angle[angle.length - 1] + angle[angle.length - 2])/2); // The last value in the array is always the one calculated last
-        let height = this.weightHeight * rectangle[3] * Math.sin((angle[angle.length - 1] + angle[angle.length - 2])/2);
+        let width = rectangle[2] * Math.sin((angle[angle.length - 1] - angle[angle.length - 2])/2); // The last value in the array is always the one calculated last
+        let height = this.weightHeight * rectangle[3] * Math.sin((angle[angle.length - 1] - angle[angle.length - 2])/2);
         let center = this.calculateCenter(rectangle[2], rectangle[3], width, height, angle, rectangle[4]);
         center = [center[0] + rectangle[0], center[1] + rectangle[1]];
         //   console.log(center);
@@ -98,9 +99,13 @@ export class GeneralizedPythagorasTree implements Visualizer {
     // This is the angle between the two lines going to the corners of the new rectangle
     let angle = (newAngle[newAngle.length - 1] + newAngle[newAngle.length - 2])/2;
     // The center coordinates of the new rectangle
-    let centerX = (width / 2) * Math.cos(angle + oldAngle)+ middle[0]/2 + centerCircle[0];
-    let centerY = (height / 2) * Math.sin(angle + oldAngle) + middle[1]/2 + centerCircle[1];
+    // let centerX = (widthPrevious / 2) * Math.cos(angle + oldAngle)+ middle[0]/2 + centerCircle[0];
+    // let centerY = (heightPrevious / 2) * Math.sin(angle + oldAngle) + middle[1]/2 + centerCircle[1];
 
+      let centerX = (width / 2) * Math.cos(angle + oldAngle)+ middle[0] + centerCircle[0];
+      let centerY = (height / 2) * Math.sin(angle + oldAngle) + middle[1] + centerCircle[1];
+        // centerX = centerX + middle[0] + centerCircle[0];
+        // centerY = centerY + middle[1] + centerCircle[1];
     return [centerX, centerY];
   }
 
