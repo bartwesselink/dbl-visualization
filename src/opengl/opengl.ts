@@ -266,6 +266,21 @@ export class OpenGL{
         this.renderEllipsoidImpl(color, pos, fill, line, lineColor);
     }
     
+    //draws a circle
+    public fillCircle(x: number, y: number, radius: number, fillColor: number[], precision: number = this.PRECISION): void {
+        this.drawCircleImpl(x, y, radius, true, false, fillColor, null, precision);
+    }
+            
+    //draws a circle
+    public drawCircle(x: number, y: number, radius: number, lineColor: number[], precision: number = this.PRECISION): void {
+        this.drawCircleImpl(x, y, radius, false, true, null, lineColor, precision);
+    }
+                    
+    //draws a circle
+    public fillLinedCircle(x: number, y: number, radius: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
+        this.drawCircleImpl(x, y, radius, true, true, fillColor, lineColor, precision);
+    }
+    
     //renders a circle
     private drawCircleImpl(x: number, y: number, radius: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
         const pos = [];

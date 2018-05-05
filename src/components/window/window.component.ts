@@ -34,9 +34,14 @@ export class WindowComponent implements OnInit {
     private computeScene(): void {
         this.gl.releaseBuffers();
         
-        //test visualisations
-        //this.gl.drawEllipsoidImpl(-300, 100, 60, 40, 135, true, true, [1, 0, 0, 1], [0, 0, 0, 1]);
-        //this.gl.drawCircleImpl(-300, -100, 50, true, true, [1, 0, 0, 1], [0, 0, 0, 1]);
+        //test visualisations]
+        this.gl.fillCircle(-500, 50, 50, [1, 0, 0, 1]);
+        this.gl.drawCircle(-500, -100, 50, [0, 0, 0, 1]);
+        this.gl.fillLinedCircle(-500, -250, 50, [1, 0, 0, 1], [0, 0, 0, 1]);
+
+        this.gl.fillEllipsoid(-350, 50, 50, 30, 0, [1, 0, 0, 1]);
+        this.gl.drawEllipsoid(-350, -100, 50, 30, 45, [0, 0, 0, 1]);
+        this.gl.fillLinedEllipsoid(-350, -250, 50, 30, 135, [1, 0, 0, 1], [0, 0, 0, 1]);
         
         this.gl.fillAAQuad(0,    0,    100, 100, [1, 0, 0, 1]);
         this.gl.fillAAQuad(-100, -100, 100, 100, [0, 1, 0, 1]);
