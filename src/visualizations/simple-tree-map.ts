@@ -25,7 +25,7 @@ export class SimpleTreeMap implements Visualizer {
 
         let width = Math.abs(bounds.right - bounds.left);
         let height = Math.abs(bounds.top - bounds.bottom);
-        this.gl.fillLinedAAQuad(bounds.left, bounds.bottom, width, height, [1, 0, 0, 0.1], [0, 0, 0, 1]);
+        this.gl.fillLinedAAQuad(bounds.left, bounds.bottom, width, height, [1, 0, 0, 0.2], [0, 0, 0, 1]);
         var childOrientation = '';
         console.log(orientation, (orientation==='HORIZONTAL'));
         if (orientation === 'HORIZONTAL') {
@@ -35,10 +35,11 @@ export class SimpleTreeMap implements Visualizer {
         }
 
         if (true) {
-            console.log(tree);
+            // console.log(tree);
             for (let i = 0; i < tree.children.length; i++) {
                 const childNode = tree.children[i];
                 const childBounds = this.setBounds(bounds, doneSize, tree.subTreeSize, childNode.subTreeSize, orientation);
+                doneSize = doneSize + childNode.subTreeSize;
                 this.drawTree(childNode, childBounds, childOrientation, true)
             }
         }
@@ -58,8 +59,8 @@ export class SimpleTreeMap implements Visualizer {
             left = parentBounds.left + parentWidth * doneSize / parentSize;
             right = parentBounds.left + parentWidth * doneSize / parentSize + parentWidth * childSize / parentSize;
         } else {
-            bottom = parentBounds.top + parentHeight * doneSize / parentSize;
-            top = parentBounds.left + parentHeight * doneSize / parentSize + parentHeight * childSize / parentSize;
+            bottom = parentBounds.top - parentHeight * (childSize + doneSize) / parentSize;
+            top = parentBounds.top - parentHeight * doneSize / parentSize;
         }
 
         const newBounds = {
@@ -71,7 +72,7 @@ export class SimpleTreeMap implements Visualizer {
 
         return newBounds;
     }
-
+    /** @end-author Nico Klaassen */
 
 
     public getName(): string {
