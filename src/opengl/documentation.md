@@ -39,6 +39,8 @@ Outlines a quad with a given center coordinate, width, height, rotation and colo
 Draws a filled quad with a line around it with a given center coordinate, width, height, rotation, a color to fill the quad with and a color for the line around it. If the line color is set to `null` then the fill color is also used as the line color. The rotation is consistent with the unit circle meaning that the quad will rotate anticlockwise.
 
 ## Ellipsoids
+All the ellipsoid methods will ask for an optional precision argument. This has to be a positive integer that is also a divisor of 360. This means that the only valid values are: `1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 18, 20, 24, 30, 36, 40, 45, 60, 72, 90, 120, 180 and 360`. The precision roughly corresponds to the length of the small lines that make up the outer perimiter of the circle, thus this means that smaller precision values imply shorter lines and thus a smoother ellipsoid. Shorter lines also implies more lines though so performance goes down when the precision value is lowered.
+
 - `public fillEllipsoid(x: number, y: number, radx: number, rady: number, rotation: number, fillColor: number[], precision: number): void`    
 Draws a filled ellipsoid with a given center coordinate, x radius, y radius, rotation and fill color. The optional precision argument specifies how good the ellipsoid approximation has to be, this value has to be a divisor of 360 for correct results. If the precision argument is not specified then the default value of 10 is used. The rotation is consistent with the unit circle meaning that the quad will rotate anticlockwise.
 - `public drawEllipsoid(x: number, y: number, radx: number, rady: number, rotation: number, lineColor: number[], precision: number): void`    
