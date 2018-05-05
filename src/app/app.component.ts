@@ -5,6 +5,7 @@ import {NewickParser} from '../utils/newick-parser';
 import {SidebarComponent} from '../components/sidebar/sidebar.component';
 import {Visualizer} from '../interfaces/visualizer';
 import {GeneralizedPythagorasTree} from '../visualizations/generalized-pythagoras-tree';
+import {OpenglDemoTree} from "../visualizations/opengl-demo-tree";
 
 @Component({
     selector: 'app-root',
@@ -78,6 +79,7 @@ export class AppComponent implements OnInit {
 
     private createVisualizers(): void {
         this.visualizers = [
+            new OpenglDemoTree(),
             new GeneralizedPythagorasTree(),
         ];
     }
