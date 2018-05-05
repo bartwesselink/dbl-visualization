@@ -7,7 +7,6 @@ import {WindowComponent} from '../components/window/window.component';
 import {ScreenshotButtonComponent} from '../components/screenshot-button/screenshot-button.component';
 import {TreeNavigatorComponent} from '../components/tree-navigator/tree-navigator.component';
 import {TreeNavigatorItemComponent} from '../components/tree-navigator-item/tree-navigator-item.component';
-import { GeneralizedPythagorasTreeComponent } from '../components/generalized-pythagoras-tree/generalized-pythagoras-tree.component';
 import {UploadToolComponent} from '../components/upload-tool/upload-tool.component';
 import {VisualizationPickerComponent} from '../components/visualization-picker/visualization-picker.component';
 
@@ -19,7 +18,6 @@ import {VisualizationPickerComponent} from '../components/visualization-picker/v
         ScreenshotButtonComponent,
         TreeNavigatorComponent,
         TreeNavigatorItemComponent,
-        GeneralizedPythagorasTreeComponent,
         UploadToolComponent,
         VisualizationPickerComponent,
     ],
