@@ -49,7 +49,7 @@ export class WindowComponent implements OnInit {
     //compute the visualisation
     private computeScene(): void {
         this.gl.releaseBuffers();
-      
+
         if (!this.visualizer) {
             return;
         }
