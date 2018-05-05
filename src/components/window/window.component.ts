@@ -1,9 +1,12 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {Element} from '../../opengl/element';
 import {Matrix} from '../../opengl/matrix';
 import {OpenGL} from '../../opengl/opengl';
 import {Shader} from "../../opengl/shader";
 import { Observable } from "rxjs";
+import {Visualizer} from '../../interfaces/visualizer';
+import {Node} from '../../models/node';
+import {Tab} from '../../models/tab';
 
 @Component({
     selector: 'app-window',
@@ -11,6 +14,10 @@ import { Observable } from "rxjs";
 })
 export class WindowComponent implements OnInit {
     @ViewChild('canvas') private canvas: ElementRef;
+    @Input('tree') private tree: Node;
+    @Input('visualizer') private visualizer: Visualizer;
+    @Input('tab') private tab: Tab;
+
     private context: CanvasRenderingContext2D;
   
     /** @author Roan Hofland */
@@ -20,50 +27,41 @@ export class WindowComponent implements OnInit {
     private gl: OpenGL;
     
     ngOnInit() {
+        this.tab.window = this; // create reference in order to enable tab-manager to communicate with component
+
         this.setHeight();
-                
+        this.startScene();
+        
+        window.addEventListener('resize', () => this.setHeight())
+    }
+
+    public startScene(): void {
         this.init();
         this.computeScene();
 
         setTimeout(() => this.redraw(), 100);
-        
-        window.onresize = () => this.setHeight();
+    }
+
+    public destroyScene(): void {
+        this.gl.releaseBuffers();
     }
         
     //compute the visualisation
     private computeScene(): void {
         this.gl.releaseBuffers();
-        
-        //test visualisations
-        this.gl.fillAAQuad(0,    0,    100, 100, [1, 0, 0, 1]);
-        this.gl.fillAAQuad(-100, -100, 100, 100, [0, 1, 0, 1]);
-        this.gl.fillAAQuad(0,    -300, 200, 200, [0, 0, 1, 1]);
-        
-        this.gl.fillAAQuad(300,    0, 100, 100, [1, 0, 0, 1]);
-        this.gl.fillLinedAAQuad(300, -300, 100, 100, [0, 1, 0, 1], [0, 0, 0, 1]);
-        this.gl.drawAAQuad(300, -150, 100, 100, [0, 0, 1, 1]);
-        
-        for(var i = 0; i <= 36; i++){
-             this.gl.fillLinedRotatedQuad(-800 + 25 + 43 * i, 200, 35, 35, i * 10, [1, 0, 0, 1], [0, 0, 0, 1]);
+      
+        if (!this.visualizer) {
+            return;
         }
-        for(var i = 0; i <= 18; i++){
-             this.gl.drawRotatedQuad(-800 + 25 + 86 * i, 300, 70, 35, i * 20, [1, 0, 0, 1]);
-        }
-                
-        //scalability hell test (change the limit)
-        for(var i = 0; i < 0; i++){
-            //recall that our viewport is fixed at 1600x900, but we will never need this fact except for this test case since visualisations can go beyond the viewport
-            var x = (Math.random() - 0.5) * 1600;
-            var y = (Math.random() - 0.5) * 900;
-            this.gl.fillAAQuad(x, y, 50, 50, [Math.random(), Math.random(), Math.random(), Math.random()]);
-        }
+
+        this.visualizer.draw(this.tree, this.gl);
     }
   
     //fallback rendering for when some OpenGL error occurs
     private onError(error): void {
         this.errored = true;
         this.lastError = error;
-        console.log(error);
+        console.error(error);
         this.context = this.canvas.nativeElement.getContext('2d');
         this.context.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
         
@@ -73,7 +71,7 @@ export class WindowComponent implements OnInit {
     }
   
     //draw OpenGL stuff
-    private render(): void {
+    public render(): void {
         this.gl.render();
     }
   

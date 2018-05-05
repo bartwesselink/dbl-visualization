@@ -1,6 +1,19 @@
-header {
+/** @author Bart Wesselink */
+.mdl-layout__tab-app {
+    @extend .mdl-layout__tab; // extending the tab to prevent MDL interventions in tab handling
+    display: flex;
+    align-items: center;
+    cursor: pointer;
 
+    &::after {
+        animation: none !important;
+    }
 }
+
+.close-tab {
+    margin-left: 0.5rem;
+}
+/** @end-author Bart Wesselink */
 
 /** @author Mathijs Boezer */
 .header-row {

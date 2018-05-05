@@ -8,6 +8,7 @@ import {ScreenshotButtonComponent} from '../components/screenshot-button/screens
 import {TreeNavigatorComponent} from '../components/tree-navigator/tree-navigator.component';
 import {TreeNavigatorItemComponent} from '../components/tree-navigator-item/tree-navigator-item.component';
 import {UploadToolComponent} from '../components/upload-tool/upload-tool.component';
+import {VisualizationPickerComponent} from '../components/visualization-picker/visualization-picker.component';
 
 @NgModule({
     declarations: [
@@ -18,6 +19,7 @@ import {UploadToolComponent} from '../components/upload-tool/upload-tool.compone
         TreeNavigatorComponent,
         TreeNavigatorItemComponent,
         UploadToolComponent,
+        VisualizationPickerComponent,
     ],
     imports: [
         BrowserModule
