@@ -228,18 +228,27 @@ export class OpenGL{
     }
     
     //renders an ellipsoid
-    public drawEllipsoidImpl2(x: number, y: number, radx: number, rady: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
-        const pos = [360 * 2 + 2];
-        pos[0] = x / this.HALFWIDTH;
-        pos[1] = y / this.HALFHEIGHT;
-        const color = [1, 0, 0, 1, 1, 0, 0, 1];
+    public drawEllipsoidImpl(x: number, y: number, radx: number, rady: number, rotation: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
+        const pos = [];
+        const color = [];
+        if(fill){
+            pos.push(x / this.HALFWIDTH, y / this.HALFHEIGHT);
+            color.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+        }
+        var loc = [2];
         for(var i = 0; i <= 360 * 2; i += 2){
-            pos[i + 2] = (x + radx * Math.cos((i / 2) * Matrix.oneDeg)) / this.HALFWIDTH;
-            pos[i + 3] = (y + rady * Math.sin((i / 2) * Matrix.oneDeg)) / this.HALFHEIGHT;
-            color.push(1, 0, 0, 1, 1, 0, 0, 1);
+            loc[0] = x + radx * Math.cos((i / 2) * Matrix.oneDeg);
+            loc[1] = y + rady * Math.sin((i / 2) * Matrix.oneDeg);
+            Matrix.rotateVector2D([x, y], loc, rotation);
+            pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
+            if(fill || lineColor == null){
+                color.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+            }else{
+                color.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+            }
         }
             
-        this.drawEllipsoidImpl(color, pos, fill, line, lineColor);
+        this.renderEllipsoidImpl(color, pos, fill, line, lineColor);
     }
     
     //renders a circle
@@ -266,11 +275,11 @@ export class OpenGL{
             }
         }
             
-        this.drawEllipsoidImpl(colors, pos, fill, line, lineColor);
+        this.renderEllipsoidImpl(colors, pos, fill, line, lineColor);
     }
     
     //draws an ellipsoid
-    private drawEllipsoidImpl(colors: number[], pos: number[], fill: boolean, line: boolean, lineColor: number[]): void {
+    private renderEllipsoidImpl(colors: number[], pos: number[], fill: boolean, line: boolean, lineColor: number[]): void {
         var colorBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
@@ -297,7 +306,7 @@ export class OpenGL{
                 for(var i = 0; i < pos.length / 2 - 2; i++){
                     lineColors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
                 }
-                console.log(lineColors.length + " | " + pos.length);
+                
                 this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(lineColors), this.gl.STATIC_DRAW);
             }
             this.arrays.push({
