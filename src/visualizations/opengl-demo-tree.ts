@@ -1,11 +1,9 @@
 import {Visualizer} from '../interfaces/visualizer';
 import {Node} from '../models/node';
 import {OpenGL} from '../opengl/opengl';
-import {ElementRef, ViewChild} from "@angular/core";
+
 
 export class OpenglDemoTree implements Visualizer {
-    @ViewChild('canvas') private canvas: ElementRef;
-
     public draw(tree: Node, gl: OpenGL) {
         /** @author Nico Klaassen */
 
@@ -21,7 +19,7 @@ export class OpenglDemoTree implements Visualizer {
             gl.fillAAQuad(-1, -offset, 2, 2, [0, 0, 0, 1]); // y- ticks
         }
 
-        // Some quad examples
+        // Some big green quad examples
         gl.fillAAQuad(100, 100, 100, 100, [0, 1, 0, 1]);
         gl.drawAAQuad(100, -200, 100, 100, [0, 1, 0, 1]);
         gl.fillLinedAAQuad(-200, -200, 100, 100, [0, 1, 0, 1], [0, 0, 0, 1]);
