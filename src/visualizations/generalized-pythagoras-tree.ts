@@ -4,11 +4,23 @@ import {OpenGL} from '../opengl/opengl';
 
 export class GeneralizedPythagorasTree implements Visualizer {
     /** @author Jules Cornelissen */
+
+    private weightHeight: number = 1; // !! Currently broken !! Scaling factor for the height of every rectangle that is not the root
+    private color : number[] = [1, 0, 1, 0.5]; // Just some test color, translucency to show that no rectangles overlap
+
+    private initialRectangleCenterX : number = 0;
+    private initialRectangleCenterY : number = -250;
+    private initialRectangleWidth : number = 50;
+    private initialRectangleHeight : number = 50;
+    private initialRectangleAngle : number = 0;
+
+    private radianToDegreeMultiplier = 180 / Math.PI;
+
     public draw(tree: Node, gl: OpenGL) {
 
         // Define the base rectangle of the visualized tree, these values can later be determined in settings
         // Rectangle is an array of 5 numbers, in order: center x, center y, width (X), height (Y), angle
-        let rectangle = [0, -250, 50, 50, 0];
+        let rectangle = [this.initialRectangleCenterX, this.initialRectangleCenterY, this.initialRectangleWidth, this.initialRectangleHeight, this.initialRectangleAngle];
 
         // Call the main recursive drawing function
         this.generate(tree, rectangle, gl);
@@ -19,12 +31,9 @@ export class GeneralizedPythagorasTree implements Visualizer {
         return 'Generalized Pythagoras Tree';
     }
 
-    weightHeight = 1; // !! Currently broken !! Scaling factor for the height of every rectangle that is not the root
-    color = [1, 0, 1, 0.5]; // Just some test color, translucency to show that no rectangle overlap
-
     private generate(tree: Node, rectangle: number[], gl: OpenGL): void {
         // Draw the previously calculated rectangle
-        gl.fillRotatedQuad(rectangle[0], rectangle[1], rectangle[2], rectangle[3], rectangle[4] * 57.295779513082320876798154814105, this.color);
+        gl.fillRotatedQuad(rectangle[0], rectangle[1], rectangle[2], rectangle[3], rectangle[4] * this.radianToDegreeMultiplier, this.color);
         /** This function can be considered in two ways. The first way is as it's done here. We loop over all the children
          * of a node and consider what part this child is of the parent. Thus the child calculates what relative size it is
          * of the parent. The second way is to take the parent and calculate the relative size of each of its children.
@@ -71,8 +80,8 @@ export class GeneralizedPythagorasTree implements Visualizer {
         // The center of the circle is located at the top middle of the parent rectangle
         let centerCircle = [(widthPrevious / 2) * Math.cos(oldAngle + Math.PI / 2), (heightPrevious / 2) * Math.sin(oldAngle + Math.PI / 2)];
         // The coordinates of the new rectangle, bottom right refers to the first corner of the rectangle on the circle going counter clockwise
-        let bottomRight = [(widthPrevious / 2) * Math.cos(newAngle[newAngle.length - 2] + oldAngle), (widthPrevious / 2) * Math.sin(newAngle[newAngle.length - 2] + oldAngle)];
-        let bottomLeft = [(widthPrevious / 2) * Math.cos(newAngle[newAngle.length - 1] + oldAngle), (widthPrevious / 2) * Math.sin(newAngle[newAngle.length - 1] + oldAngle)];
+        let bottomRight = [(widthPrevious / 2) * Math.cos(newAngle[newAngle.length - 2] + oldAngle), (heightPrevious / 2) * Math.sin(newAngle[newAngle.length - 2] + oldAngle)];
+        let bottomLeft = [(widthPrevious / 2) * Math.cos(newAngle[newAngle.length - 1] + oldAngle), (heightPrevious / 2) * Math.sin(newAngle[newAngle.length - 1] + oldAngle)];
         // The mid point between the two corners calculated previously, relative to the previous rectangle
         let middle = [(bottomLeft[0] + bottomRight[0]) / 2, (bottomLeft[1] + bottomRight[1]) / 2];
 
