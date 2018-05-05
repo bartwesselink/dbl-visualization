@@ -226,14 +226,15 @@ export class OpenGL{
         }
     }
     
+    //renders an ellipsoid
     public drawEllipsoidImpl(x: number, y: number, s: number){
         const pos = [360 * 2 + 2];
         pos[0] = x / this.HALFWIDTH;
         pos[1] = y / this.HALFHEIGHT;
         const color = [1, 0, 0, 1, 1, 0, 0, 1];
         for(var i = 0; i <= 360 * 2; i += 2){
-            pos[i + 2] = (x + s * Math.cos((i / 2) * (Math.PI / 180.0))) / this.HALFWIDTH;
-            pos[i + 3] = (y + s * Math.sin((i / 2) * (Math.PI / 180.0))) / this.HALFHEIGHT;
+            pos[i + 2] = (x + s * Math.cos((i / 2) * Matrix.oneDeg)) / this.HALFWIDTH;
+            pos[i + 3] = (y + s * Math.sin((i / 2) * Matrix.oneDeg)) / this.HALFHEIGHT;
             color.push(1, 0, 0, 1, 1, 0, 0, 1);
         }
             
@@ -254,18 +255,26 @@ export class OpenGL{
         });
     }
     
-    //renders an ellipsoid
-    public drawCircleImpl(x: number, y: number, s: number, color: number[]){
-        const pos = [x / this.HALFWIDTH, y / this.HALFHEIGHT];
-        const colors = [color[0], color[1], color[2], color[3]];
-        var loc = [x + s, y];
+    //renders a circle
+    public drawCircleImpl(x: number, y: number, radius: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]){
+        const pos = [];
+        const colors = [];
+        if(fill){
+            pos.push(x / this.HALFWIDTH, y / this.HALFHEIGHT);
+            colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+        }
+        var loc = [x + radius, y];
         var rotation = [9];
         Matrix.multiply(rotation, Matrix.create2DTranslationMatrix([-x, -y]), Matrix.create2DRotationMatrix(1));
         Matrix.multiply(rotation, rotation, Matrix.create2DTranslationMatrix([x, y]));
         for(var i = 0; i <= 360; i += 1){
             Matrix.multiplyVector2D(loc, rotation);
             pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
-            colors.push(color[0], color[1], color[2], color[3]);
+            if(fill || lineColor == null){
+                colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+            }else{
+                colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+            }
         }
             
         var colorBuffer = this.gl.createBuffer();
@@ -276,13 +285,41 @@ export class OpenGL{
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
         
-        this.arrays.push({
-            pos: posBuffer,
-            color: colorBuffer,
-            mode: this.gl.TRIANGLE_FAN,
-            length: pos.length / 2// - 1,
-            //offset: 8
-        });
+        if(!(fill && line)){
+            this.arrays.push({
+                pos: posBuffer,
+                color: colorBuffer,
+                mode: fill ? this.gl.TRIANGLE_FAN : this.gl.LINE_LOOP,
+                length: pos.length / 2
+            });
+        }else{
+            var lineColorBuffer;
+            if(lineColor == null){
+                lineColorBuffer = colorBuffer;
+            }else{
+                lineColorBuffer = this.gl.createBuffer();
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, lineColorBuffer);
+                var lineColors = [];
+                for(var i = 0; i <= pos.length / 2 - 2; i++){
+                    lineColors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+                }
+                this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(lineColors), this.gl.STATIC_DRAW);
+            }
+            
+            this.arrays.push({
+                pos: posBuffer,
+                color: colorBuffer,
+                mode: this.gl.TRIANGLE_FAN,
+                length: pos.length / 2,
+                overlay: {
+                    pos: posBuffer,
+                    color: lineColorBuffer,
+                    mode: this.gl.LINE_LOOP,
+                    length: pos.length / 2 - 2,
+                    offset: 8
+                }
+            });
+        }
     }
     
     //clear the screen
