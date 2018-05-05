@@ -6,6 +6,7 @@ import {Shader} from "../../opengl/shader";
 import { Observable } from "rxjs";
 import {Visualizer} from '../../interfaces/visualizer';
 import {Node} from '../../models/node';
+import {Tab} from '../../models/tab';
 
 @Component({
     selector: 'app-window',
@@ -15,6 +16,7 @@ export class WindowComponent implements OnInit {
     @ViewChild('canvas') private canvas: ElementRef;
     @Input('tree') private tree: Node;
     @Input('visualizer') private visualizer: Visualizer;
+    @Input('tab') private tab: Tab;
 
     private context: CanvasRenderingContext2D;
   
@@ -25,21 +27,33 @@ export class WindowComponent implements OnInit {
     private gl: OpenGL;
     
     ngOnInit() {
+        this.tab.window = this; // create reference in order to enable tab-manager to communicate with component
+
         this.setHeight();
-                
+        this.startScene();
+        
+        window.addEventListener('resize', () => this.setHeight())
+    }
+
+    public startScene(): void {
         this.init();
         this.computeScene();
 
         setTimeout(() => this.redraw(), 100);
-        
-        window.onresize = () => this.setHeight();
+    }
+
+    public destroyScene(): void {
+        this.gl.releaseBuffers();
     }
         
     //compute the visualisation
     private computeScene(): void {
         this.gl.releaseBuffers();
-        
-        if (!this.visualizer) return;
+      
+        if (!this.visualizer) {
+            return;
+        }
+
         this.visualizer.draw(this.tree, this.gl);
     }
   
@@ -57,7 +71,7 @@ export class WindowComponent implements OnInit {
     }
   
     //draw OpenGL stuff
-    private render(): void {
+    public render(): void {
         this.gl.render();
     }
   
