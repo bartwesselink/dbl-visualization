@@ -27,7 +27,7 @@ export class GeneralizedPythagorasTree implements Visualizer {
             gl.drawAAQuad(x, y, 50, 50, [Math.random(), Math.random(), Math.random(), Math.random()]);
         }*/
         /** @end-author Roan Hofland */
-		let rectangle = [-150, 0, 120, 120, 0];
+		let rectangle = [0, -250, 50, 50, 0];
 		this.generate(tree, rectangle, gl);
         // console.log(tree.subTreeSize);
         // for (let element of tree.children){
@@ -89,8 +89,8 @@ export class GeneralizedPythagorasTree implements Visualizer {
     // The coordinates of the new rectangle, bottom right refers to the first corner of the rectangle on the circle going counter clockwise
     // let bottomRight = [centerCircle[0] + (widthPrevious/2) * Math.cos(newAngle[newAngle.length - 2]), centerCircle[1] +  (widthPrevious/2) * Math.sin(newAngle[newAngle.length - 2])];
     // let bottomLeft = [centerCircle[0] + (widthPrevious/2) * Math.cos(newAngle[newAngle.length - 1]), centerCircle[1] + (widthPrevious/2) * Math.sin(newAngle[newAngle.length - 1])];
-      let bottomRight = [(widthPrevious/2) * Math.cos(newAngle[newAngle.length - 2]), (widthPrevious/2) * Math.sin(newAngle[newAngle.length - 2])];
-      let bottomLeft = [(widthPrevious/2) * Math.cos(newAngle[newAngle.length - 1]), (widthPrevious/2) * Math.sin(newAngle[newAngle.length - 1])];
+      let bottomRight = [(widthPrevious/2) * Math.cos(newAngle[newAngle.length - 2] + oldAngle), (widthPrevious/2) * Math.sin(newAngle[newAngle.length - 2] + oldAngle)];
+      let bottomLeft = [(widthPrevious/2) * Math.cos(newAngle[newAngle.length - 1] + oldAngle), (widthPrevious/2) * Math.sin(newAngle[newAngle.length - 1] + oldAngle)];
     // console.log(centerCircle);
      // let t1 = [centerCircle[0] + Math.cos(newAngle[newAngle.length - 2]) * (widthPrevious/2)];
     // The mid point between the two corners calculated previously, relative to the previous rectangle
