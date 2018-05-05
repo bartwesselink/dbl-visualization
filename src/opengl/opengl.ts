@@ -227,8 +227,23 @@ export class OpenGL{
         }
     }
     
+    //draw an ellipsoid         
+    public fillEllipsoid(x: number, y: number, radx: number, rady: number, rotation: number, fillColor: number[], precision: number = this.PRECISION): void {
+        this.drawEllipsoidImpl(x, y, radx, rady, rotation, true, false, fillColor, null, precision);
+    }
+    
+    //draw an ellipsoid         
+    public drawEllipsoid(x: number, y: number, radx: number, rady: number, rotation: number, lineColor: number[], precision: number = this.PRECISION): void {
+        this.drawEllipsoidImpl(x, y, radx, rady, rotation, false, true, null, lineColor, precision);
+    }
+          
+    //draw an ellipsoid         
+    public fillLinedEllipsoid(x: number, y: number, radx: number, rady: number, rotation: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
+        this.drawEllipsoidImpl(x, y, radx, rady, rotation, true, true, fillColor, lineColor, precision);
+    }
+    
     //renders an ellipsoid
-    private drawEllipsoidImpl(x: number, y: number, radx: number, rady: number, rotation: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
+    private drawEllipsoidImpl(x: number, y: number, radx: number, rady: number, rotation: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
         const pos = [];
         const color = [];
         if(fill){
@@ -252,7 +267,7 @@ export class OpenGL{
     }
     
     //renders a circle
-    private drawCircleImpl(x: number, y: number, radius: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
+    private drawCircleImpl(x: number, y: number, radius: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
         const pos = [];
         const colors = [];
         if(fill){
