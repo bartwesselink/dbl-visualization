@@ -5,6 +5,11 @@ import {OpenGL} from '../opengl/opengl';
 export class SimpleTreeMap implements Visualizer {
     private gl: OpenGL;
     private size: number;
+    private colorA: number[];
+    private colorB: number[];
+    private colorDifference: number[];
+    private totalNodes: number;
+    private offset: number;
 
     /** @author Nico Klaassen */
     public draw(tree: Node, gl: OpenGL) {
@@ -17,30 +22,54 @@ export class SimpleTreeMap implements Visualizer {
             bottom: -300,
             top: 300
         };
-        this.drawTree(tree, bounds,'HORIZONTAL', false);
+        this.colorA = [255 / 255, 153 / 255, 0, 1];
+        this.colorB = [51 / 255, 0, 255 / 255, 1];
+        this.colorDifference = [
+            this.colorB[0] - this.colorA[0],
+            this.colorB[1] - this.colorA[1],
+            this.colorB[2] - this.colorA[2],
+            this.colorB[3] - this.colorA[3]
+        ];
+        this.totalNodes = tree.subTreeSize;
+        this.offset = 2; // TODO: implement as parameter
+
+        this.drawTree(tree, bounds,'HORIZONTAL', false, this.colorB);
     }
 
-    private drawTree(tree: Node, bounds, orientation: string, internalNode: boolean) : void {
+    private drawTree(tree: Node, bounds, orientation: string, internalNode: boolean, color: number[]) : void {
         let doneSize = 0;
 
         let width = Math.abs(bounds.right - bounds.left);
         let height = Math.abs(bounds.top - bounds.bottom);
-        this.gl.fillLinedAAQuad(bounds.left, bounds.bottom, width, height, [1, 0, 0, 0.2], [0, 0, 0, 1]);
+
+        // TODO: fix performance issues related to drawing BOTH a fill ánd outline
+        // this.gl.fillLinedAAQuad(bounds.left, bounds.bottom, width, height, [1, 0, 0, 1], [0, 0, 0, 1]);
+        this.gl.fillLinedAAQuad(bounds.left, bounds.bottom, width, height, color, [0, 0, 0, 1]);
+        // this.gl.drawAAQuad(bounds.left, bounds.bottom, width, height, [0, 0, 0, 1]);
+
         var childOrientation = '';
-        console.log(orientation, (orientation==='HORIZONTAL'));
+        // console.log(orientation, (orientation==='HORIZONTAL'));
         if (orientation === 'HORIZONTAL') {
             var childOrientation = 'VERTICAL';
         } else {
             var childOrientation = 'HORIZONTAL';
         }
 
+        console.log(this.colorDifference);
         if (true) {
             // console.log(tree);
             for (let i = 0; i < tree.children.length; i++) {
                 const childNode = tree.children[i];
                 const childBounds = this.setBounds(bounds, doneSize, tree.subTreeSize, childNode.subTreeSize, orientation);
                 doneSize = doneSize + childNode.subTreeSize;
-                this.drawTree(childNode, childBounds, childOrientation, true)
+                const childColor = [
+                    this.colorA[0] + this.colorDifference[0] * (childNode.subTreeSize / this.totalNodes),
+                    this.colorA[1] + this.colorDifference[1] * (childNode.subTreeSize / this.totalNodes),
+                    this.colorA[2] + this.colorDifference[2] * (childNode.subTreeSize / this.totalNodes),
+                    this.colorA[3] + this.colorDifference[3] * (childNode.subTreeSize / this.totalNodes)
+            ];
+                console.log(childColor);
+                this.drawTree(childNode, childBounds, childOrientation, true, childColor);
             }
         }
     }
