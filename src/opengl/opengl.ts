@@ -228,32 +228,18 @@ export class OpenGL{
     }
     
     //renders an ellipsoid
-    public drawEllipsoidImpl2(x: number, y: number, s: number): void {
+    public drawEllipsoidImpl2(x: number, y: number, radx: number, rady: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
         const pos = [360 * 2 + 2];
         pos[0] = x / this.HALFWIDTH;
         pos[1] = y / this.HALFHEIGHT;
         const color = [1, 0, 0, 1, 1, 0, 0, 1];
         for(var i = 0; i <= 360 * 2; i += 2){
-            pos[i + 2] = (x + s * Math.cos((i / 2) * Matrix.oneDeg)) / this.HALFWIDTH;
-            pos[i + 3] = (y + s * Math.sin((i / 2) * Matrix.oneDeg)) / this.HALFHEIGHT;
+            pos[i + 2] = (x + radx * Math.cos((i / 2) * Matrix.oneDeg)) / this.HALFWIDTH;
+            pos[i + 3] = (y + rady * Math.sin((i / 2) * Matrix.oneDeg)) / this.HALFHEIGHT;
             color.push(1, 0, 0, 1, 1, 0, 0, 1);
         }
             
-        var colorBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(color), this.gl.STATIC_DRAW);
-            
-        var posBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
-        
-        this.arrays.push({
-            pos: posBuffer,
-            color: colorBuffer,
-            mode: this.gl.LINE_LOOP,
-            length: pos.length / 2 - 2,
-            offset: 8
-        });
+        this.drawEllipsoidImpl(color, pos, fill, line, lineColor);
     }
     
     //renders a circle
