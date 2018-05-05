@@ -1,5 +1,8 @@
+import {Visualizer} from '../interfaces/visualizer';
+import {WindowComponent} from '../components/window/window.component';
+
 export interface Tab {
-    title: string;
+    visualizer: Visualizer;
     active: boolean;
-    id: string;
+    window?: WindowComponent;
 }
