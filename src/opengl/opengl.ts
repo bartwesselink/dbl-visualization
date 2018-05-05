@@ -228,7 +228,7 @@ export class OpenGL{
     }
     
     //renders an ellipsoid
-    public drawEllipsoidImpl(x: number, y: number, radx: number, rady: number, rotation: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
+    private drawEllipsoidImpl(x: number, y: number, radx: number, rady: number, rotation: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
         const pos = [];
         const color = [];
         if(fill){
@@ -236,9 +236,9 @@ export class OpenGL{
             color.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
         }
         var loc = [2];
-        for(var i = 0; i <= 360 * 2; i += 2){
-            loc[0] = x + radx * Math.cos((i / 2) * Matrix.oneDeg);
-            loc[1] = y + rady * Math.sin((i / 2) * Matrix.oneDeg);
+        for(var i = 0; i <= 360; i += precision){
+            loc[0] = x + radx * Math.cos(i * Matrix.oneDeg);
+            loc[1] = y + rady * Math.sin(i * Matrix.oneDeg);
             Matrix.rotateVector2D([x, y], loc, rotation);
             pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
             if(fill || lineColor == null){
@@ -252,7 +252,7 @@ export class OpenGL{
     }
     
     //renders a circle
-    public drawCircleImpl(x: number, y: number, radius: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
+    private drawCircleImpl(x: number, y: number, radius: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
         const pos = [];
         const colors = [];
         if(fill){
