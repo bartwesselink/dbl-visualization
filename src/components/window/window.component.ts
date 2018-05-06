@@ -49,7 +49,8 @@ export class WindowComponent implements OnInit {
     
     public onDrag(event: MouseEvent): void {
         if(this.down){
-            console.log("drag dx=" + (event.clientX - this.lastX) + " | dy=" + (event.clientY - this.lastY));
+            this.gl.translate((event.clientX - this.lastX), (event.clientY - this.lastY), this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+            this.render();
         }
         this.lastX = event.clientX;
         this.lastY = event.clientY;
