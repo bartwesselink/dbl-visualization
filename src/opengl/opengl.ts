@@ -56,6 +56,32 @@ export class OpenGL{
         Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]);
     }
     
+    public transformPoint(x: number, y: number, width: number, height: number): number[] {
+        var loc = this.transform(x, y, width, height);
+        loc[0] *= this.WIDTH;
+        loc[1] *= this.HEIGHT;
+        return loc;
+    }
+    
+    private transform(x: number, y: number, width: number, height: number): number[] {
+        var dx = x - width / 2;
+        var dy = y - height / 2;
+        console.log("dxy: " + dx + " | " + dy);
+        var trueHeight = height;
+        var trueWidth = width;
+        if(this.mode == this.MODE_WIDTH){
+            trueHeight = (width / this.WIDTH) * this.HEIGHT;
+        }else{
+            trueWidth = (height / this.HEIGHT) * this.WIDTH;
+        }
+        console.log(width + " | " + height);
+        
+        //TODO
+        
+        
+        return [0, 0];
+    }
+    
     //resizes the viewport to the optimal size for the new canvas size
     public resize(width: number, height: number): void {
         //maintain the viewport aspect ratio at 16:9 and center the viewport as a 16:9 rectangle in the center of the actual canvas making sure to
@@ -67,7 +93,7 @@ export class OpenGL{
             this.gl.viewport(0, (height - ((width / this.WIDTH) * this.HEIGHT)) / 2, width, (width / this.WIDTH) * this.HEIGHT);
         }else{
             this.mode = this.MODE_HEIGHT;
-            this.gl.viewport((width - ((height / this.HEIGHT) * this.WIDTH)) / 2, 0, (height / this.HEIGHT) * this.WIDTH, height);
+           this.gl.viewport((width - ((height / this.HEIGHT) * this.WIDTH)) / 2, 0, (height / this.HEIGHT) * this.WIDTH, height);
         }
     }
     

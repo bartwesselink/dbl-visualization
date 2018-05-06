@@ -47,6 +47,13 @@ export class WindowComponent implements OnInit {
         this.down = false;
     }
     
+    public onClick(event: MouseEvent): void {
+        var coords = this.gl.transformPoint(event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
+        this.gl.fillAAQuad(coords[0] - 10, coords[1] - 10, 20, 20, [0, 0, 1, 1]);
+        console.log("click: " + event.layerX + " | " + event.layerY + " | " + coords[0] + " | " + coords[1]);
+        this.render();
+    }
+    
     public onDrag(event: MouseEvent): void {
         if(this.down){
             this.gl.translate((event.clientX - this.lastX), (event.clientY - this.lastY), this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
@@ -57,7 +64,7 @@ export class WindowComponent implements OnInit {
     }
     
     public onScroll(event: any): void {
-        this.gl.scale(1.1);
+        this.gl.scale(0.9);
         console.log("scroll: " + event.toString());
         this.render();
     }
