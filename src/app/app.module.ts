@@ -16,6 +16,7 @@ import {NgPipesModule} from 'ngx-pipes';
 import {VisualizationSettingsButtonComponent} from '../components/visualization-settings-button/visualization-settings-button.component';
 import {GeneralSettingsButtonComponent} from '../components/general-settings-button/general-settings-button.component';
 import {SettingsBus} from '../providers/settings-bus';
+import {MdlDirective} from '../directives/material-design/material-design.directive';
 
 @NgModule({
     declarations: [
@@ -30,6 +31,7 @@ import {SettingsBus} from '../providers/settings-bus';
         FormComponent,
         VisualizationSettingsButtonComponent,
         GeneralSettingsButtonComponent,
+        MdlDirective,
     ],
     imports: [
         BrowserModule,
