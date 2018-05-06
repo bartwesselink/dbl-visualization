@@ -1,6 +1,6 @@
 /** @author Roan Hofland */
 export class Matrix{
-    private static readonly oneDeg = Math.PI / 180.0;
+    public static readonly oneDeg = Math.PI / 180.0;
     
     //translate the given matrix by the given vector
     public static translateSelf(matrix, vector): void {
