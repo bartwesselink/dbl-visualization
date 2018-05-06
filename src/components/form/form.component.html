@@ -1,5 +1,5 @@
 <form [formGroup]="form.getFormGroup()">
-    <div *ngFor="let field of form.getFieldDefinition()" class="form-group">
+    <div *ngFor="let field of form.getFieldDefinition()" class="form-group" [mdl]>
         <div class="form-group mdl-textfield mdl-js-textfield mdl-textfield--floating-label" *ngIf="field.type === FormType.Number">
             <input class="mdl-textfield__input" type="number" pattern="-?[0-9]*(\.[0-9]+)?" [id]="field.name" [formControl]="field.control">
             <label class="mdl-textfield__label" [for]="field.name">{{ field.options.label }}</label>
@@ -20,7 +20,7 @@
             </label>
         </div>
 
-        <div class="form-group mdl-selectfield mdl-js-selectfield mdl-selectfield--floating-label" *ngIf="field.type === FormType.Choice && !getChoiceOptions(field).expanded">
+        <div class="form-group mdl-selectfield mdl-js-selectfield mdl-selectfield--floating-label is-upgraded" *ngIf="field.type === FormType.Choice && !getChoiceOptions(field).expanded">
             <select [id]="field.name" class="mdl-selectfield__select" [formControl]="field.control">
                 <option *ngFor="let key of getChoiceOptions(field).choices|keys" [value]="key">{{ getChoiceOptions(field).choices[key] }}</option>
             </select>
@@ -31,7 +31,7 @@
         <div class="form-group mdl-textfield mdl-textfield--floating-label is-dirty is-upgraded" *ngIf="field.type === FormType.Choice && getChoiceOptions(field).expanded">
             <label class="mdl-textfield__label" [for]="field.name">{{ field.options.label }}</label>
 
-            <label *ngFor="let key of getChoiceOptions(field).choices|keys" class="mdl-radio mdl-js-radio mdl-js-ripple-effect" [for]="field.name + key">
+            <label *ngFor="let key of getChoiceOptions(field).choices|keys" class="mdl-radio mdl-js-radio mdl-js-ripple-effect radio" [for]="field.name + key">
                 <input type="radio" [id]="field.name + key" class="mdl-radio__button" name="options" [value]="key" [formControl]="field.control">
                 <span class="mdl-radio__label">{{ getChoiceOptions(field).choices[key] }}</span>
             </label>

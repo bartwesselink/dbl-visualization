@@ -20,7 +20,11 @@ export class FormComponent implements OnInit {
 
     ngOnInit(): void {
         // output when form value has changed
-        this.form.valueChanges.debounceTime(this.debounceTime).subscribe((value: object) => this.valueChanges.next(value));
+        this.form.valueChanges.debounceTime(this.debounceTime).subscribe((value: object) => {
+            if (this.form.isValid()) {
+                this.valueChanges.next(value);
+            }
+        });
     }
 
     getChoiceOptions(field: FormField): ChoiceFormOptions {

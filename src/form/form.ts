@@ -19,6 +19,10 @@ export class Form {
         return this.fieldDefinition;
     }
 
+    public isValid(): boolean {
+        return this.formGroup.valid;
+    }
+
     private subscribeChanges(): void {
         // method to check if value has been changed
         this.formGroup.valueChanges.subscribe((value: any) => this.changeSubject.next(value));
