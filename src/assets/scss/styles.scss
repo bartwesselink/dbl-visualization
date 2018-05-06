@@ -1,5 +1,6 @@
 /** Vendor component */
 @import "~material-design-lite/src/material-design-lite";
+@import "~intro.js/minified/introjs.min.css";
 
 /** Styles component */
 @import "modules/header";
@@ -10,3 +11,4 @@
 @import "modules/screenshot-button";
 @import "modules/tree-navigator";
 @import "modules/upload-button";
+@import "modules/help-tour";

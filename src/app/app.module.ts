@@ -9,6 +9,7 @@ import {TreeNavigatorComponent} from '../components/tree-navigator/tree-navigato
 import {TreeNavigatorItemComponent} from '../components/tree-navigator-item/tree-navigator-item.component';
 import {UploadToolComponent} from '../components/upload-tool/upload-tool.component';
 import {VisualizationPickerComponent} from '../components/visualization-picker/visualization-picker.component';
+import {HelpButtonComponent} from "../components/help-button/help-button.component";
 
 @NgModule({
     declarations: [
@@ -20,6 +21,7 @@ import {VisualizationPickerComponent} from '../components/visualization-picker/v
         TreeNavigatorItemComponent,
         UploadToolComponent,
         VisualizationPickerComponent,
+        HelpButtonComponent
     ],
     imports: [
         BrowserModule
