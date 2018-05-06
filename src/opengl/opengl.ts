@@ -6,7 +6,6 @@ import {Matrix} from "./matrix";
 export class OpenGL{
     private gl: WebGLRenderingContext;
     private shader: Shader;
-    private projectionMatrix;
     private modelviewMatrix;
     private arrays: Element[] = [];
     private readonly WIDTH = 1600;
@@ -18,6 +17,8 @@ export class OpenGL{
     private readonly MODE_HEIGHT = 1;
     private readonly MODE_WIDTH = 2;
     private factor: number = 1;
+    private dx: number = 0;
+    private dy: number = 0;
     
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
@@ -36,16 +37,23 @@ export class OpenGL{
     public translate(dx: number, dy: number, width: number, height: number): void {
         if(this.mode == this.MODE_WIDTH){
             height = (width / this.WIDTH) * this.HEIGHT;
-            Matrix.translateSelf(this.modelviewMatrix, [(dx / width) * 2 / this.factor, (-dy / height) * 2 / this.factor, 0])
         }else{
             width = (height / this.HEIGHT) * this.WIDTH;
-            Matrix.translateSelf(this.modelviewMatrix, [(dx / width) * 2 / this.factor, (-dy / height) * 2 / this.factor, 0])
         }
+        dx = ((dx / width) * 2) / this.factor;
+        dy = ((-dy / height) * 2) / this.factor;
+        Matrix.translateSelf(this.modelviewMatrix, [dx, dy, 0]);
+        this.dx += dx;
+        this.dy += dy;
     }
     
     public scale(factor: number): void {
-        this.factor = factor * this.factor;
+        Matrix.translateSelf(this.modelviewMatrix, [-this.dx, -this.dy, 0]);
         Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DScalingMatrix(factor));
+        this.factor *= factor;
+        this.dx *= factor;
+        this.dy *= factor;
+        Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]);
     }
     
     //resizes the viewport to the optimal size for the new canvas size

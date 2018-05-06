@@ -58,7 +58,7 @@ export class WindowComponent implements OnInit {
     
     public onScroll(event: any): void {
         this.gl.scale(1.1);
-        console.log("scroll: " + event);
+        console.log("scroll: " + event.toString());
         this.render();
     }
 
