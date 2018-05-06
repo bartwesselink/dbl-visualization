@@ -9,7 +9,7 @@ export class FormBuilder {
     /** @author Bart Wesselink */
     private fields: FormField[] = [];
 
-    constructor (private fb: AngularFormBuilder) {
+    constructor (private fb: AngularFormBuilder, private name: string) {
     }
 
     public addTextField(name: string, defaultValue: string, options: BaseFormOptions): FormBuilder {
@@ -58,7 +58,7 @@ export class FormBuilder {
             field.control = control;
         }
 
-        return new Form(reactiveForm, this.fields);
+        return new Form(this.name, reactiveForm, this.fields);
     }
 
     /** @end-author Bart Wesselink */

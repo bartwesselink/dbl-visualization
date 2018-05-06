@@ -7,8 +7,12 @@ export class Form {
     private changeSubject: Subject<object> = new Subject<object>();
     public valueChanges: Observable<object> = this.changeSubject.asObservable();
 
-    constructor(private formGroup: FormGroup, private fieldDefinition: FormField[]) {
+    constructor(private name: string, private formGroup: FormGroup, private fieldDefinition: FormField[]) {
         this.subscribeChanges();
+    }
+
+    public getName(): string {
+        return this.name;
     }
 
     public getFormGroup(): FormGroup {
