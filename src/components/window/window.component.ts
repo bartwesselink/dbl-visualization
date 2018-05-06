@@ -26,6 +26,10 @@ export class WindowComponent implements OnInit {
     
     private gl: OpenGL;
     
+    private down: boolean = false;
+    private lastX: number;
+    private lastY: number;
+    
     ngOnInit() {
         this.tab.window = this; // create reference in order to enable tab-manager to communicate with component
 
@@ -33,6 +37,22 @@ export class WindowComponent implements OnInit {
         this.startScene();
         
         window.addEventListener('resize', () => this.setHeight())
+    }
+    
+    public mouseDown(): void {
+        this.down = true;
+    }
+    
+    public mouseUp(): void {
+        this.down = false;
+    }
+    
+    public onDrag(event: MouseEvent): void {
+        if(this.down){
+            console.log("drag dx=" + (event.clientX - this.lastX) + " | dy=" + (event.clientY - this.lastY));
+        }
+        this.lastX = event.clientX;
+        this.lastY = event.clientY;
     }
 
     public startScene(): void {
