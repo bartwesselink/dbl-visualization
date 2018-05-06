@@ -5,7 +5,10 @@
 
             <app-visualization-picker [visualizers]="visualizers" (select)="addVisualization($event)"></app-visualization-picker>
 
-            <app-upload-tool (newContent)="parseTree($event)"></app-upload-tool>
+            <div>
+                <app-general-settings-button></app-general-settings-button>
+                <app-upload-tool (newContent)="parseTree($event)"></app-upload-tool>
+            </div>
         </div>
 
         <div class="mdl-layout__tab-bar mdl-js-ripple-effect">

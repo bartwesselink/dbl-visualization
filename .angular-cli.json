@@ -22,7 +22,8 @@
       ],
       "scripts": [
         "../node_modules/material-design-lite/dist/material.min.js",
-        "../node_modules/mdl-selectfield/dist/mdl-selectfield.js"
+        "../node_modules/mdl-selectfield/dist/mdl-selectfield.js",
+        "../node_modules/dialog-polyfill/dialog-polyfill.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {

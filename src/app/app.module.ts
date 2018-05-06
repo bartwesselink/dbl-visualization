@@ -13,7 +13,9 @@ import {FormFactory} from '../form/form-factory';
 import {FormComponent} from '../components/form/form.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import {NgPipesModule} from 'ngx-pipes';
-import {SettingsButtonComponent} from '../components/settings-button/settings-button.component';
+import {VisualizationSettingsButtonComponent} from '../components/visualization-settings-button/visualization-settings-button.component';
+import {GeneralSettingsButtonComponent} from '../components/general-settings-button/general-settings-button.component';
+import {SettingsBus} from '../providers/settings-bus';
 
 @NgModule({
     declarations: [
@@ -26,7 +28,8 @@ import {SettingsButtonComponent} from '../components/settings-button/settings-bu
         UploadToolComponent,
         VisualizationPickerComponent,
         FormComponent,
-        SettingsButtonComponent,
+        VisualizationSettingsButtonComponent,
+        GeneralSettingsButtonComponent,
     ],
     imports: [
         BrowserModule,
@@ -35,6 +38,7 @@ import {SettingsButtonComponent} from '../components/settings-button/settings-bu
     ],
     providers: [
         FormFactory,
+        SettingsBus,
     ],
     bootstrap: [AppComponent]
 })

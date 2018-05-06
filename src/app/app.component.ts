@@ -5,6 +5,8 @@ import {NewickParser} from '../utils/newick-parser';
 import {SidebarComponent} from '../components/sidebar/sidebar.component';
 import {Visualizer} from '../interfaces/visualizer';
 import {GeneralizedPythagorasTree} from '../visualizations/generalized-pythagoras-tree';
+import {SettingsBus} from '../providers/settings-bus';
+import {Settings} from '../interfaces/settings';
 
 @Component({
     selector: 'app-root',
@@ -21,8 +23,13 @@ export class AppComponent implements OnInit {
 
     private parser = new NewickParser();
 
-    constructor() {
+    constructor(private settingsBus: SettingsBus) {
         this.createVisualizers();
+
+        // TODO: remove this example of how settings are updated
+        this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
+            console.log(settings);
+        });
     }
 
     ngOnInit(): void {
