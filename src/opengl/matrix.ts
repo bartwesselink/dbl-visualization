@@ -62,6 +62,7 @@ export class Matrix{
         return [a[0] - b[0], a[1] - b[1]];
     }
     
+    //creates a 2D scaling matrix
     public static create2DScalingMatrix(factor: number): Float32Array{
         var out = new Float32Array(16);
         out[0] = factor;
@@ -119,6 +120,7 @@ export class Matrix{
         out[8] = b20 * a02 + b21 * a12 + b22 * a22;
     }
     
+    //multiplies two 4x4 matrices, multiplies a by b and stores the result in out
     public static multiply4(out, a, b): void {
         var a00 = a[0],
             a01 = a[1],
