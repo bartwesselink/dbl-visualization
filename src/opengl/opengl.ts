@@ -17,6 +17,7 @@ export class OpenGL{
     private mode: number;
     private readonly MODE_HEIGHT = 1;
     private readonly MODE_WIDTH = 2;
+    private factor: number = 1;
     
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
@@ -35,11 +36,16 @@ export class OpenGL{
     public translate(dx: number, dy: number, width: number, height: number): void {
         if(this.mode == this.MODE_WIDTH){
             height = (width / this.WIDTH) * this.HEIGHT;
-            Matrix.translateSelf(this.modelviewMatrix, [(dx / width) * 2, (-dy / height) * 2, 0])
+            Matrix.translateSelf(this.modelviewMatrix, [(dx / width) * 2 / this.factor, (-dy / height) * 2 / this.factor, 0])
         }else{
             width = (height / this.HEIGHT) * this.WIDTH;
-            Matrix.translateSelf(this.modelviewMatrix, [(dx / width) * 2, (-dy / height) * 2, 0])
+            Matrix.translateSelf(this.modelviewMatrix, [(dx / width) * 2 / this.factor, (-dy / height) * 2 / this.factor, 0])
         }
+    }
+    
+    public scale(factor: number): void {
+        this.factor = factor * this.factor;
+        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DScalingMatrix(factor));
     }
     
     //resizes the viewport to the optimal size for the new canvas size

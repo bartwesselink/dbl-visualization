@@ -62,6 +62,27 @@ export class Matrix{
         return [a[0] - b[0], a[1] - b[1]];
     }
     
+    public static create2DScalingMatrix(factor: number): Float32Array{
+        var out = new Float32Array(16);
+        out[0] = factor;
+        out[1] = 0;
+        out[2] = 0;
+        out[3] = 0;
+        out[4] = 0;
+        out[5] = factor;
+        out[6] = 0;
+        out[7] = 0;
+        out[8] = 0;
+        out[9] = 0;
+        out[10] = 1;
+        out[11] = 0;
+        out[12] = 0;
+        out[13] = 0;
+        out[14] = 0;
+        out[15] = 1;
+        return out;
+    }
+    
     //===== Typescript translations of gl-matrix.js =====
     //multiplies two 3x3 matrices, multiplies a by b and stores the result in out
     public static multiply(out, a, b): void {
@@ -96,6 +117,53 @@ export class Matrix{
         out[6] = b20 * a00 + b21 * a10 + b22 * a20;
         out[7] = b20 * a01 + b21 * a11 + b22 * a21;
         out[8] = b20 * a02 + b21 * a12 + b22 * a22;
+    }
+    
+    public static multiply4(out, a, b): void {
+        var a00 = a[0],
+            a01 = a[1],
+            a02 = a[2],
+            a03 = a[3];
+        var a10 = a[4],
+            a11 = a[5],
+            a12 = a[6],
+            a13 = a[7];
+        var a20 = a[8],
+            a21 = a[9],
+            a22 = a[10],
+            a23 = a[11];
+        var a30 = a[12],
+            a31 = a[13],
+            a32 = a[14],
+            a33 = a[15];
+
+        // Cache only the current line of the second matrix
+        var b0 = b[0],
+            b1 = b[1],
+            b2 = b[2],
+            b3 = b[3];
+        out[0] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
+        out[1] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
+        out[2] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
+        out[3] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
+        
+        b0 = b[4];b1 = b[5];b2 = b[6];b3 = b[7];
+        out[4] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
+        out[5] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
+        out[6] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
+        out[7] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
+
+        b0 = b[8];b1 = b[9];b2 = b[10];b3 = b[11];
+        out[8] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
+        out[9] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
+        out[10] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
+        out[11] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
+        
+        b0 = b[12];b1 = b[13];b2 = b[14];b3 = b[15];
+        out[12] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
+        out[13] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
+        out[14] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
+        out[15] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
     }
     
     //translate matrix a by vector v and store the result in out

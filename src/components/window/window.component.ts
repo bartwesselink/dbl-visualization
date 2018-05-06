@@ -55,6 +55,12 @@ export class WindowComponent implements OnInit {
         this.lastX = event.clientX;
         this.lastY = event.clientY;
     }
+    
+    public onScroll(event: any): void {
+        this.gl.scale(1.1);
+        console.log("scroll: " + event);
+        this.render();
+    }
 
     public startScene(): void {
         this.init();

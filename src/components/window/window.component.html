@@ -1,2 +1,2 @@
-<canvas #canvas class="canvas" (mousedown)="mouseDown()" (mouseup)="mouseUp()" (mousemove)="onDrag($event)"></canvas>
+<canvas #canvas class="canvas" (mousedown)="mouseDown()" (mouseup)="mouseUp()" (mousemove)="onDrag($event)" (mousewheel)="onScroll($event)" (DOMMouseScroll)="onScroll($event)"></canvas>
 <app-screenshot-button [canvas]="canvas"></app-screenshot-button>
