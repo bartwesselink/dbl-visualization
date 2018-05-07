@@ -29,6 +29,7 @@ export class WindowComponent implements OnInit {
     private down: boolean = false;
     private lastX: number;
     private lastY: number;
+    private readonly ZOOM_NORMALISATION = 40;
     
     ngOnInit() {
         this.tab.window = this; // create reference in order to enable tab-manager to communicate with component
@@ -63,9 +64,8 @@ export class WindowComponent implements OnInit {
         this.lastY = event.clientY;
     }
     
-    public onScroll(event: any): void {
-        this.gl.scale(0.9);
-        console.log("scroll: " + event.toString());
+    public onScroll(event: WheelEvent): void {
+        this.gl.scale(1.0 - (event.deltaY / this.ZOOM_NORMALISATION));
         this.render();
     }
 
