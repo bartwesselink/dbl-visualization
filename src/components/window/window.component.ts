@@ -40,21 +40,24 @@ export class WindowComponent implements OnInit {
         window.addEventListener('resize', () => this.setHeight())
     }
     
+    //called when the mouse is pressed
     public mouseDown(): void {
         this.down = true;
     }
     
+    //called when the mouse is realsed
     public mouseUp(): void {
         this.down = false;
     }
     
+    //called when the mouse is clicked
     public onClick(event: MouseEvent): void {
         var coords = this.gl.transformPoint(event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
-        this.gl.fillAAQuad(coords[0] - 10, coords[1] - 10, 20, 20, [0, 0, 1, 1]);
-        console.log("click: " + event.layerX + " | " + event.layerY + " | " + coords[0] + " | " + coords[1]);
-        this.render();
+        console.log("click at: " + event.layerX + " | " + event.layerY + " | " + coords[0] + " | " + coords[1]);
+        //TODO pass this on to the visualisation to do something with the click
     }
     
+    //called when the mouse moves
     public onDrag(event: MouseEvent): void {
         if(this.down){
             this.gl.translate((event.clientX - this.lastX), (event.clientY - this.lastY), this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
@@ -64,6 +67,7 @@ export class WindowComponent implements OnInit {
         this.lastY = event.clientY;
     }
     
+    //called when the scroll wheel is scrolled
     public onScroll(event: WheelEvent): void {
         this.gl.scale(1.0 - (event.deltaY / this.ZOOM_NORMALISATION));
         this.render();

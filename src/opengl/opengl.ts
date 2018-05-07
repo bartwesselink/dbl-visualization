@@ -34,6 +34,7 @@ export class OpenGL{
         this.gl.enable(gl.DEPTH_TEST);   
     }
     
+    //translates the model view by the given distance
     public translate(dx: number, dy: number, width: number, height: number): void {
         if(this.mode == this.MODE_WIDTH){
             height = (width / this.WIDTH) * this.HEIGHT;
@@ -47,15 +48,15 @@ export class OpenGL{
         this.dy += dy;
     }
     
+    //scales the model view by the given factor
     public scale(factor: number): void {
         Matrix.translateSelf(this.modelviewMatrix, [-this.dx, -this.dy, 0]);
         Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DScalingMatrix(factor));
-        this.factor *= factor;
-        this.dx *= factor;
-        this.dy *= factor;
         Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]);
+        this.factor *= factor;
     }
     
+    //maps a true canvas coordinate to the imaginary OpenGL coordinate system
     public transformPoint(x: number, y: number, width: number, height: number): number[] {
         var loc = this.transform(x, y, width, height);
         loc[0] *= this.WIDTH;
@@ -63,13 +64,14 @@ export class OpenGL{
         return loc;
     }
     
+    //maps a true canvas coordinate to the true OpenGL coordinate system
     private transform(x: number, y: number, width: number, height: number): number[] {
         var dx = x - width / 2;
         var dy = y - height / 2;
         if(this.mode == this.MODE_WIDTH){
-            return [(dx / width) / this.factor, -((dy / height) * (height / ((width / this.WIDTH) * this.HEIGHT))) / this.factor];
+            return [(dx / width) / this.factor - this.dx / 2, -((dy / height) * (height / ((width / this.WIDTH) * this.HEIGHT))) / this.factor - this.dy / 2];
         }else{
-            return [((dx / width) * (width / ((height / this.HEIGHT) * this.WIDTH))) / this.factor, -(dy / height) / this.factor];
+            return [((dx / width) * (width / ((height / this.HEIGHT) * this.WIDTH))) / this.factor - this.dx / 2, -(dy / height) / this.factor - this.dy / 2];
         }
     }
     
