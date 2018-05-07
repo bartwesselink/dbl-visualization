@@ -9,6 +9,7 @@ import {Node} from '../../models/node';
 import {Tab} from '../../models/tab';
 import {Form} from '../../form/form';
 import {FormFactory} from '../../form/form-factory';
+import {OpenglDemoTree} from '../../visualizations/opengl-demo-tree';
 
 @Component({
     selector: 'app-window',
@@ -40,8 +41,6 @@ export class WindowComponent implements OnInit {
 
         this.setHeight();
         this.startScene();
-        
-        window.addEventListener('resize', () => this.setHeight());
     }
 
     public change(value: object) {
@@ -65,6 +64,10 @@ export class WindowComponent implements OnInit {
 
         if (!this.visualizer) {
             return;
+        }
+
+        if (!this.tree && !(this.visualizer instanceof OpenglDemoTree)) { // only the demo visualizer can be rendered without data
+            return; // there is no tree yet
         }
 
         this.visualizer.draw(this.tree, this.gl);
@@ -118,7 +121,7 @@ export class WindowComponent implements OnInit {
     }
     /** @end-author Roan Hofland */
     /** @author Bart Wesselink */
-    private setHeight(): void {
+    public setHeight(): void {
         // fix to set correct canvas size
         setTimeout(() => {
             this.canvas.nativeElement.width = this.canvas.nativeElement.scrollWidth;

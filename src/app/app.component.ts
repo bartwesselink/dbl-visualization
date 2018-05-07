@@ -36,6 +36,7 @@ export class AppComponent implements OnInit {
 
     ngOnInit(): void {
         this.addTab(this.visualizers[0]); // TODO: remove first tab
+        window.addEventListener('resize', () => this.resizeActiveTab());
     }
 
     /** @author Jordy Verhoeven */
@@ -47,7 +48,8 @@ export class AppComponent implements OnInit {
 
             setTimeout(() => {
                 this.sidebar.reloadData();
-            });
+                this.redrawAllTabs();
+            }, 100);
         }
     }
     /** @end-author Jordy Verhoeven */
@@ -82,6 +84,8 @@ export class AppComponent implements OnInit {
             setTimeout(() => {
                 tab.window.render();
             }, 100);
+
+            this.resizeActiveTab();
         }
     }
 
@@ -91,6 +95,20 @@ export class AppComponent implements OnInit {
             new GeneralizedPythagorasTree(),
             new SimpleTreeMap(),
         ];
+    }
+
+    private resizeActiveTab(): void {
+        setTimeout(() => {
+            this.activeTab.window.setHeight();
+        });
+    }
+
+    private redrawAllTabs(): void {
+        for (const tab of this.tabs) {
+            if (tab.window) {
+                tab.window.startScene();
+            }
+        }
     }
 
     private addTab(visualizer: Visualizer) {
