@@ -14,9 +14,9 @@ Resizes the OpenGL viewport to the optimal size for the given dimensions. Should
 - `public render(): void`    
 Renders the OpenGL scene.
 - `public initShaders(): Shader`    
-Intialises the only shader we have at the moment.
+Intialises and returns the only shader we have at the moment.
 - `public transformPoint(x: number, y: number, width: number, height: number): number[]`    
-Maps a true canvas coordinate to the imaginary OpenGL coordinate system. The `x` and `y` parameters denote the point and the `width` and `height` denote the width and height of the canvas respectively.
+Maps a true canvas coordinate to the imaginary OpenGL coordinate system. The `x` and `y` parameters denote the point and the `width` and `height` denote the width and height of the canvas respectively. The returned array contains at index 0 the `x` coordinate and at index 1 the `y` coordinate.
 - `public scale(factor: number): void`   
 Scales the OpenGL model view by the given factor. Scaling is multiplicative.
 - `public translate(dx: number, dy: number, width: number, height: number): void`  
