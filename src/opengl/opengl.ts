@@ -66,20 +66,11 @@ export class OpenGL{
     private transform(x: number, y: number, width: number, height: number): number[] {
         var dx = x - width / 2;
         var dy = y - height / 2;
-        console.log("dxy: " + dx + " | " + dy);
-        var trueHeight = height;
-        var trueWidth = width;
         if(this.mode == this.MODE_WIDTH){
-            trueHeight = (width / this.WIDTH) * this.HEIGHT;
+            return [dx / width, -(dy / height) * (height / ((width / this.WIDTH) * this.HEIGHT))];
         }else{
-            trueWidth = (height / this.HEIGHT) * this.WIDTH;
+            return [(dx / width) * (width / ((height / this.HEIGHT) * this.WIDTH)), -dy / height];
         }
-        console.log(width + " | " + height);
-        
-        //TODO
-        
-        
-        return [0, 0];
     }
     
     //resizes the viewport to the optimal size for the new canvas size
