@@ -67,9 +67,9 @@ export class OpenGL{
         var dx = x - width / 2;
         var dy = y - height / 2;
         if(this.mode == this.MODE_WIDTH){
-            return [dx / width, -(dy / height) * (height / ((width / this.WIDTH) * this.HEIGHT))];
+            return [(dx / width) / this.factor, -((dy / height) * (height / ((width / this.WIDTH) * this.HEIGHT))) / this.factor];
         }else{
-            return [(dx / width) * (width / ((height / this.HEIGHT) * this.WIDTH)), -dy / height];
+            return [((dx / width) * (width / ((height / this.HEIGHT) * this.WIDTH))) / this.factor, -(dy / height) / this.factor];
         }
     }
     
