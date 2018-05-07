@@ -1,0 +1,9 @@
+<button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect settings-button" (click)="toggle()">
+    <i class="material-icons">settings</i>
+</button>
+
+<div [hidden]="!viewSettings" class="settings-button-form mdl-card mdl-shadow--2dp">
+    <div class="mdl-card__supporting-text">
+        <app-form *ngIf="form" [form]="form" (valueChanges)="change($event)"></app-form>
+    </div>
+</div>
