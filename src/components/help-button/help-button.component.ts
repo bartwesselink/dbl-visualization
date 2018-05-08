@@ -48,7 +48,11 @@ export class HelpButtonComponent implements OnInit{
                 },
                 {
                     intro: "This is the visualization window, your dataset will be visualized here according to your selected visualization.",
-                    element: 'app-window > canvas'
+                    element: '.mdl-layout__tab-panel.is-active'
+                },
+                {
+                    intro: "If you want to change something about the current visualization, click here.",
+                    element: 'app-settings-button > button'
                 },
                 {
                     intro: "If you want to make a screenshot of your visualization window, click here.",
