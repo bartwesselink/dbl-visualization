@@ -1,5 +1,6 @@
-/** Vendor component */
+/** Vendor components */
 @import "~material-design-lite/src/material-design-lite";
+@import "~mdl-selectfield/dist/mdl-selectfield";
 
 /** Styles component */
 @import "modules/header";
@@ -7,6 +8,9 @@
 @import "modules/sidebar";
 @import "modules/canvas";
 @import "modules/utilities";
+@import "modules/radio";
 @import "modules/screenshot-button";
 @import "modules/tree-navigator";
 @import "modules/upload-button";
+@import "modules/form-group";
+@import "modules/settings-button";

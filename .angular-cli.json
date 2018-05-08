@@ -21,7 +21,8 @@
         "assets/scss/styles.scss"
       ],
       "scripts": [
-        "../node_modules/material-design-lite/dist/material.min.js"
+        "../node_modules/material-design-lite/dist/material.min.js",
+        "../node_modules/mdl-selectfield/dist/mdl-selectfield.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {
