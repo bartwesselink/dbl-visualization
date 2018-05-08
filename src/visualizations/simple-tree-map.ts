@@ -1,6 +1,7 @@
 import {Visualizer} from '../interfaces/visualizer';
 import {Node} from '../models/node';
 import {OpenGL} from '../opengl/opengl';
+import {FormFactory} from "../form/form-factory";
 
 /** @author Nico Klaassen */
 
@@ -23,6 +24,7 @@ export class SimpleTreeMap implements Visualizer {
     private colorDifference: number[];
     private totalNodes: number;
     private offset: number;
+    private tree: Node;
 
     constructor() {
         this.colorA = [255 / 255, 153 / 255, 0, 1];
@@ -33,11 +35,11 @@ export class SimpleTreeMap implements Visualizer {
             this.colorB[2] - this.colorA[2],
             this.colorB[3] - this.colorA[3]
         ];
-        this.offset = 2;
+        this.offset = 0;
     }
 
     public draw(tree: Node, gl: OpenGL): void {
-        // Call the recursive draw method
+        this.tree = tree;
         this.gl = gl;
 
         // Initial bounds
@@ -110,26 +112,41 @@ export class SimpleTreeMap implements Visualizer {
         // Compute the new bounds which are nested within the bounds of the parent
         if (parentOrientation === Orientation.HORIZONTAL) {
             return {
-                left: parentBounds.left + parentWidth * doneSize / parentSize,
-                right: parentBounds.left + parentWidth * doneSize / parentSize + parentWidth * childSize / parentSize,
-                bottom: parentBounds.bottom,
-                top: parentBounds.top
+                left: parentBounds.left + parentWidth * doneSize / parentSize + this.offset,
+                right: parentBounds.left + parentWidth * doneSize / parentSize + parentWidth * childSize / parentSize - this.offset,
+                bottom: parentBounds.bottom + this.offset,
+                top: parentBounds.top - this.offset
             };
         } else {
             return {
-                left: parentBounds.left,
-                right: parentBounds.right,
-                bottom: parentBounds.top - parentHeight * (childSize + doneSize) / parentSize,
-                top: parentBounds.top - parentHeight * doneSize / parentSize
+                left: parentBounds.left + this.offset,
+                right: parentBounds.right - this.offset,
+                bottom: parentBounds.top - parentHeight * (childSize + doneSize) / parentSize + this.offset,
+                top: parentBounds.top - parentHeight * doneSize / parentSize - this.offset
             };
         }
 
     };
 
-    /** @end-author Nico Klaassen */
+    public getForm(formFactory: FormFactory) {
+        return formFactory.createFormBuilder()
+            .addNumberField('offset', 0, { label: 'Offset' })
+            .getForm();
+    }
+
+    public applySettings(settings: object) {
+        // console.log(settings);
+        this.offset = settings.offset;
+
+        this.gl.releaseBuffers();       // remove old data from buffers
+        this.draw(this.tree, this.gl);  // fill buffers with new data
+        this.gl.render();               // force a render
+    }
 
 
     public getName(): string {
         return 'Simple Tree Map';
     }
 }
+
+/** @end-author Nico Klaassen */

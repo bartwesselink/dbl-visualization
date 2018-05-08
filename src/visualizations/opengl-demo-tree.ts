@@ -122,7 +122,7 @@ export class OpenglDemoTree implements Visualizer {
     }
 
     public applySettings(settings: object){
-        console.log(settings);
+        // console.log(settings);
 
         // Update the color of the 4 big center objects
         this.mainColor = [
