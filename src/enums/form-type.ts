@@ -4,5 +4,6 @@ export enum FormType {
     Number,
     Choice,
     Toggle,
+    Slider,
 }
 /** @end-author Bart Wesselink */

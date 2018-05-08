@@ -4,6 +4,7 @@ import {FormField} from '../interfaces/form-field';
 import {BaseFormOptions} from '../interfaces/base-form-options';
 import {ChoiceFormOptions} from '../interfaces/choice-form-options';
 import {Form} from './form';
+import {SliderFormOptions} from '../interfaces/slider-form-options';
 
 export class FormBuilder {
     /** @author Bart Wesselink */
@@ -36,7 +37,13 @@ export class FormBuilder {
         return this;
     }
 
-    public addField(name: string, type: FormType, defaultValue: any, options: BaseFormOptions|ChoiceFormOptions): FormBuilder {
+    public addSliderField(name: string, defaultValue: number, options: SliderFormOptions): FormBuilder {
+        this.addField(name, FormType.Slider, defaultValue, options);
+
+        return this;
+    }
+
+    public addField(name: string, type: FormType, defaultValue: any, options: BaseFormOptions|ChoiceFormOptions|SliderFormOptions): FormBuilder {
         this.fields.push({
             name,
             defaultValue,
