@@ -82,7 +82,7 @@ export class WindowComponent implements OnInit {
     
     //called when the scroll wheel is scrolled
     public onScroll(event: WheelEvent): void {
-        this.gl.scale(1.0 - (event.deltaY / this.ZOOM_NORMALISATION));
+        this.gl.scale(Math.max(0.1, 1.0 - (event.deltaY / this.ZOOM_NORMALISATION)));
         this.render();
     }
 
