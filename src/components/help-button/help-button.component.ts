@@ -31,7 +31,7 @@ export class HelpButtonComponent implements OnInit{
                 },
                 {
                     intro: "This is the upload button, by clicking it you will be able to select your Newick dataset and upload it.",
-                    element: 'app-upload-tool > label'
+                    element: 'app-upload-tool label'
                 },
                 {
                     intro: "Here you will be able to see your dataset as a tree with nodes you can collapse and expand.",
@@ -52,11 +52,11 @@ export class HelpButtonComponent implements OnInit{
                 },
                 {
                     intro: "If you want to change something about the current visualization, click here.",
-                    element: 'app-settings-button > button'
+                    element: '.mdl-layout__tab-panel.is-active app-settings-button button'
                 },
                 {
                     intro: "If you want to make a screenshot of your visualization window, click here.",
-                    element: 'app-screenshot-button > button'
+                    element: '.mdl-layout__tab-panel.is-active app-screenshot-button button'
                 }
             ],
             showStepNumbers: false, // Hide step numbers
