@@ -15,6 +15,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {NgPipesModule} from 'ngx-pipes';
 import {SettingsButtonComponent} from '../components/settings-button/settings-button.component';
 import {MdlDirective} from '../directives/material-design/material-design.directive';
+import {WelcomePageComponent} from '../components/welcome-page/welcome-page.component';
 
 @NgModule({
     declarations: [
@@ -29,6 +30,7 @@ import {MdlDirective} from '../directives/material-design/material-design.direct
         FormComponent,
         SettingsButtonComponent,
         MdlDirective,
+        WelcomePageComponent,
     ],
     imports: [
         BrowserModule,

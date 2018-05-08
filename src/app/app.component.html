@@ -32,5 +32,7 @@
                 <app-sidebar [tree]="tree"></app-sidebar>
             </div>
         </div>
+
+        <app-welcome-page [hidden]="tabs.length > 0"></app-welcome-page>
     </main>
 </div>

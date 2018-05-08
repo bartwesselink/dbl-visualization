@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {Tab} from '../models/tab';
 import { Node } from '../models/node';
 import {NewickParser} from '../utils/newick-parser';
@@ -12,7 +12,7 @@ import {SimpleTreeMap} from "../visualizations/simple-tree-map";
     selector: 'app-root',
     templateUrl: './app.component.html',
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
     public tabs: Tab[] = [];
     public tree: Node;
     public visualizers: Visualizer[];
@@ -25,10 +25,6 @@ export class AppComponent implements OnInit {
 
     constructor() {
         this.createVisualizers();
-    }
-
-    ngOnInit(): void {
-        this.addTab(this.visualizers[0]); // TODO: remove first tab
     }
 
     /** @author Jordy Verhoeven */

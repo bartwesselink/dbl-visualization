@@ -1,0 +1,21 @@
+/** @author Bart Wesselink */
+.welcome-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  color: white;
+  background-color: unquote("rgb(#{$palette-indigo-900})");
+}
+
+.welcome-content {
+  width: 100%;
+  max-width: 40rem;
+  text-align: center;
+}
+/** @end-author Bart Wesselink */
