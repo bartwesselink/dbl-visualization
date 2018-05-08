@@ -14,7 +14,13 @@ Resizes the OpenGL viewport to the optimal size for the given dimensions. Should
 - `public render(): void`    
 Renders the OpenGL scene.
 - `public initShaders(): Shader`    
-Intialises the only shader we have at the moment.
+Intialises and returns the only shader we have at the moment.
+- `public transformPoint(x: number, y: number, width: number, height: number): number[]`    
+Maps a true canvas coordinate to the imaginary OpenGL coordinate system. The `x` and `y` parameters denote the point and the `width` and `height` denote the width and height of the canvas respectively. The returned array contains at index 0 the transformed `x` coordinate and at index 1 the transformed `y` coordinate.
+- `public scale(factor: number): void`   
+Scales the OpenGL view by the given factor. Scaling is multiplicative.
+- `public translate(dx: number, dy: number, width: number, height: number): void`  
+Translates the OpenGL view by the given distance. The `dx` and `dy` parameters denote the distance to translate the model in the x and y direction respectively and the `width` and `height` respectively denote the width and height of the canvas. Translations are cumulative.
 
 # Rendering
 All the rendering methods will ask for a color to use. The color should be provided as an array containing the red, green, blue and alpha values as floats. These floats should all be in range 0 to 1.    
