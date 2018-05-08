@@ -113,17 +113,15 @@ export class OpenglDemoTree implements Visualizer {
 
     public getForm(formFactory: FormFactory) {
         return formFactory.createFormBuilder()
-            .addNumberField('r', 0, { label: 'Red' })
-            .addNumberField('g', 255, { label: 'Green' })
-            .addNumberField('b', 0, { label: 'Blue' })
-            .addNumberField('a', 255, { label: 'Alpha'})
+            .addSliderField('r', 0, { label: 'Red', min: 0, max: 255 })
+            .addSliderField('g', 255, { label: 'Green', min: 0, max: 255 })
+            .addSliderField('b', 0, { label: 'Blue', min: 0, max: 255 })
+            .addSliderField('a', 255, { label: 'Alpha', min: 0, max: 255 })
             .addToggleField('sinewaves', true, { label: 'Sine waves' })
             .getForm();
     }
 
-    public applySettings(settings: object){
-        // console.log(settings);
-
+    public applySettings(settings: any){
         // Update the color of the 4 big center objects
         this.mainColor = [
             settings.r / 255,

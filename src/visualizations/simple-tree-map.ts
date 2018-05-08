@@ -130,12 +130,11 @@ export class SimpleTreeMap implements Visualizer {
 
     public getForm(formFactory: FormFactory) {
         return formFactory.createFormBuilder()
-            .addNumberField('offset', 0, { label: 'Offset' })
+            .addSliderField('offset', 0, { label: 'Offset', min: 0, max: 25 })
             .getForm();
     }
 
-    public applySettings(settings: object) {
-        // console.log(settings);
+    public applySettings(settings: any) {
         this.offset = settings.offset;
 
         this.gl.releaseBuffers();       // remove old data from buffers
