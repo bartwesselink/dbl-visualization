@@ -1,0 +1,40 @@
+<form [formGroup]="form.getFormGroup()">
+    <div *ngFor="let field of form.getFieldDefinition()" class="form-group" [mdl]>
+        <div class="form-group mdl-textfield mdl-js-textfield mdl-textfield--floating-label" *ngIf="field.type === FormType.Number">
+            <input class="mdl-textfield__input" type="number" pattern="-?[0-9]*(\.[0-9]+)?" [id]="form.getName() + field.name" [formControl]="field.control">
+            <label class="mdl-textfield__label" [for]="form.getName() + field.name">{{ field.options.label }}</label>
+            <span class="mdl-textfield__error">Input is not a valid number.</span>
+        </div>
+
+        <div class="form-group mdl-textfield mdl-js-textfield mdl-textfield--floating-label" *ngIf="field.type === FormType.Text">
+            <input class="mdl-textfield__input" type="text" [id]="form.getName() + field.name" [formControl]="field.control">
+            <label class="mdl-textfield__label" [for]="form.getName() + field.name">{{ field.options.label }}</label>
+        </div>
+
+        <div class="form-group mdl-textfield mdl-textfield--floating-label is-dirty is-upgraded" *ngIf="field.type === FormType.Toggle">
+            <label class="mdl-textfield__label">{{ field.options.label }}</label>
+
+            <label class="form-group mdl-switch mdl-js-switch mdl-js-ripple-effect" [for]="form.getName() + field.name">
+                <input type="checkbox" [id]="form.getName() + field.name" class="mdl-switch__input" [formControl]="field.control">
+                <span class="mdl-switch__label"></span>
+            </label>
+        </div>
+
+        <div class="form-group mdl-selectfield mdl-js-selectfield mdl-selectfield--floating-label is-upgraded" *ngIf="field.type === FormType.Choice && !getChoiceOptions(field).expanded">
+            <select [id]="form.getName() + field.name" class="mdl-selectfield__select" [formControl]="field.control">
+                <option *ngFor="let key of getChoiceOptions(field).choices|keys" [value]="key">{{ getChoiceOptions(field).choices[key] }}</option>
+            </select>
+            <label class="mdl-selectfield__label" [for]="form.getName() + field.name">{{ field.options.label }}</label>
+            <span class="mdl-selectfield__error">Select a value</span>
+        </div>
+
+        <div class="form-group mdl-textfield mdl-textfield--floating-label is-dirty is-upgraded" *ngIf="field.type === FormType.Choice && getChoiceOptions(field).expanded">
+            <label class="mdl-textfield__label">{{ field.options.label }}</label>
+
+            <label *ngFor="let key of getChoiceOptions(field).choices|keys" class="mdl-radio mdl-js-radio mdl-js-ripple-effect radio" [for]="form.getName() + field.name + key">
+                <input type="radio" [id]="form.getName() + field.name + key" class="mdl-radio__button" name="options" [value]="key" [formControl]="field.control">
+                <span class="mdl-radio__label">{{ getChoiceOptions(field).choices[key] }}</span>
+            </label>
+        </div>
+    </div>
+</form>

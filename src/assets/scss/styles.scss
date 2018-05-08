@@ -1,5 +1,6 @@
-/** Vendor component */
+/** Vendor components */
 @import "~material-design-lite/src/material-design-lite";
+@import "~mdl-selectfield/dist/mdl-selectfield";
 @import "~intro.js/minified/introjs.min.css";
 @import "~intro.js/themes/introjs-nassim.css";
 
@@ -9,7 +10,10 @@
 @import "modules/sidebar";
 @import "modules/canvas";
 @import "modules/utilities";
+@import "modules/radio";
 @import "modules/screenshot-button";
 @import "modules/tree-navigator";
 @import "modules/upload-button";
 @import "modules/help-tour";
+@import "modules/form-group";
+@import "modules/settings-button";

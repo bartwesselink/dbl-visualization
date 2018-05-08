@@ -10,6 +10,12 @@ import {TreeNavigatorItemComponent} from '../components/tree-navigator-item/tree
 import {UploadToolComponent} from '../components/upload-tool/upload-tool.component';
 import {VisualizationPickerComponent} from '../components/visualization-picker/visualization-picker.component';
 import {HelpButtonComponent} from "../components/help-button/help-button.component";
+import {FormFactory} from '../form/form-factory';
+import {FormComponent} from '../components/form/form.component';
+import {ReactiveFormsModule} from '@angular/forms';
+import {NgPipesModule} from 'ngx-pipes';
+import {SettingsButtonComponent} from '../components/settings-button/settings-button.component';
+import {MdlDirective} from '../directives/material-design/material-design.directive';
 
 @NgModule({
     declarations: [
@@ -21,12 +27,19 @@ import {HelpButtonComponent} from "../components/help-button/help-button.compone
         TreeNavigatorItemComponent,
         UploadToolComponent,
         VisualizationPickerComponent,
-        HelpButtonComponent
+        HelpButtonComponent,
+        FormComponent,
+        SettingsButtonComponent,
+        MdlDirective
     ],
     imports: [
-        BrowserModule
+        BrowserModule,
+        ReactiveFormsModule,
+        NgPipesModule,
     ],
-    providers: [],
+    providers: [
+        FormFactory,
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule {
