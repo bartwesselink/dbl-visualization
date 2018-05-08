@@ -2,17 +2,22 @@
 import {Shader} from "./shader";
 import {Element} from "./element";
 import {Matrix} from "./matrix";
+import {Mode} from "./mode";
 
 export class OpenGL{
     private gl: WebGLRenderingContext;
     private shader: Shader;
-    private projectionMatrix;
+    private modelviewMatrix;
     private arrays: Element[] = [];
     private readonly WIDTH = 1600;
     private readonly HEIGHT = 900;
     private readonly HALFWIDTH = this.WIDTH / 2;
     private readonly HALFHEIGHT = this.HEIGHT / 2;
     private readonly PRECISION = 10;
+    private mode: Mode;
+    private factor: number = 1;
+    private dx: number = 0;
+    private dy: number = 0;
     
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
@@ -20,19 +25,53 @@ export class OpenGL{
         //set the canvas background color to 100% transparent black
         this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
         
-        this.projectionMatrix = Matrix.createMatrix();
-        
-        //note that we force a 16:9 effective viewport later on so this never changes
-        Matrix.perspective(this.projectionMatrix,
-                           (45 * Math.PI) / 180,                                     //fov, 45 degrees
-                           this.gl.canvas.clientWidth / this.gl.canvas.clientHeight, //aspect ratio
-                           1,                                                        //z-axis near
-                           -1);                                                      //z-axis far
+        this.modelviewMatrix = Matrix.createMatrix();
         
         this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
         this.gl.enable(this.gl.BLEND);
         this.gl.depthFunc(gl.LEQUAL);
         this.gl.enable(gl.DEPTH_TEST);   
+    }
+    
+    //translates the model view by the given distance
+    public translate(dx: number, dy: number, width: number, height: number): void {
+        if(this.mode == Mode.WIDTH_FIRST){
+            height = (width / this.WIDTH) * this.HEIGHT;
+        }else{
+            width = (height / this.HEIGHT) * this.WIDTH;
+        }
+        dx = ((dx / width) * 2) / this.factor;
+        dy = ((-dy / height) * 2) / this.factor;
+        Matrix.translateSelf(this.modelviewMatrix, [dx, dy, 0]);
+        this.dx += dx;
+        this.dy += dy;
+    }
+    
+    //scales the model view by the given factor
+    public scale(factor: number): void {
+        Matrix.translateSelf(this.modelviewMatrix, [-this.dx, -this.dy, 0]);
+        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DScalingMatrix(factor));
+        Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]);
+        this.factor *= factor;
+    }
+    
+    //maps a true canvas coordinate to the imaginary OpenGL coordinate system
+    public transformPoint(x: number, y: number, width: number, height: number): number[] {
+        var loc = this.transform(x, y, width, height);
+        loc[0] *= this.WIDTH;
+        loc[1] *= this.HEIGHT;
+        return loc;
+    }
+    
+    //maps a true canvas coordinate to the true OpenGL coordinate system
+    private transform(x: number, y: number, width: number, height: number): number[] {
+        var dx = x - width / 2;
+        var dy = y - height / 2;
+        if(this.mode == Mode.WIDTH_FIRST){
+            return [(dx / width) / this.factor - this.dx / 2, -((dy / height) * (height / ((width / this.WIDTH) * this.HEIGHT))) / this.factor - this.dy / 2];
+        }else{
+            return [((dx / width) * (width / ((height / this.HEIGHT) * this.WIDTH))) / this.factor - this.dx / 2, -(dy / height) / this.factor - this.dy / 2];
+        }
     }
     
     //resizes the viewport to the optimal size for the new canvas size
@@ -42,8 +81,10 @@ export class OpenGL{
         //by forcing a 16:9 viewport we can make sure that even when the canvas is resized our buffers remain correct so that 
         //the visualisation does not distort. Theoretically we could also recompute all the buffers and map to a new coordinate space.
         if((width / this.WIDTH) * this.HEIGHT > height){
+            this.mode = Mode.WIDTH_FIRST;
             this.gl.viewport(0, (height - ((width / this.WIDTH) * this.HEIGHT)) / 2, width, (width / this.WIDTH) * this.HEIGHT);
         }else{
+            this.mode = Mode.HEIGHT_FIRST;
             this.gl.viewport((width - ((height / this.HEIGHT) * this.WIDTH)) / 2, 0, (height / this.HEIGHT) * this.WIDTH, height);
         }
     }
@@ -52,12 +93,8 @@ export class OpenGL{
     public render(): void {
         this.clear();
         
-        //the model view matrix will later be used for user interaction
-        var modelviewMatrix = Matrix.createMatrix();
-        
         this.gl.useProgram(this.shader.shader);
-        this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader.shader, "projectionMatrix"), false, this.projectionMatrix);
-        this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader.shader, "modelviewMatrix"), false, modelviewMatrix);
+        this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader.shader, "modelviewMatrix"), false, this.modelviewMatrix);
         
         this.drawBuffers();
     }
@@ -412,12 +449,11 @@ export class OpenGL{
           attribute vec4 color;
         
           uniform mat4 modelviewMatrix;
-          uniform mat4 projectionMatrix;
         
           varying lowp vec4 vcolor;
           
           void main() {
-            gl_Position = modelviewMatrix * modelviewMatrix * pos;
+            gl_Position = modelviewMatrix * pos;
             vcolor = color;
           }
         `;
