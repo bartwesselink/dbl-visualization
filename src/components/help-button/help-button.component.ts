@@ -31,7 +31,7 @@ export class HelpButtonComponent implements OnInit{
                 },
                 {
                     intro: "This is the upload button, by clicking it you will be able to select your Newick dataset and upload it.",
-                    element: 'app-upload-tool > button'
+                    element: 'app-upload-tool > label'
                 },
                 {
                     intro: "Here you will be able to see your dataset as a tree with nodes you can collapse and expand.",
