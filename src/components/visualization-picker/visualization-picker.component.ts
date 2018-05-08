@@ -12,6 +12,9 @@ export class VisualizationPickerComponent {
 
     public selectItem(visualizer: Visualizer): void {
         this.select.emit(visualizer);
+
+        // hide select box
+        document.body.click();
     }
 
     /** @end-author Bart Wesselink */

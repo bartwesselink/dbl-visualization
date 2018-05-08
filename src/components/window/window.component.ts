@@ -7,6 +7,8 @@ import { Observable } from "rxjs";
 import {Visualizer} from '../../interfaces/visualizer';
 import {Node} from '../../models/node';
 import {Tab} from '../../models/tab';
+import {Form} from '../../form/form';
+import {FormFactory} from '../../form/form-factory';
 
 @Component({
     selector: 'app-window',
@@ -15,8 +17,10 @@ import {Tab} from '../../models/tab';
 export class WindowComponent implements OnInit {
     @ViewChild('canvas') private canvas: ElementRef;
     @Input('tree') private tree: Node;
-    @Input('visualizer') private visualizer: Visualizer;
+    @Input('visualizer') public visualizer: Visualizer;
     @Input('tab') private tab: Tab;
+
+    public form: Form|null;
 
     private context: CanvasRenderingContext2D;
   
@@ -25,6 +29,10 @@ export class WindowComponent implements OnInit {
     private lastError: string;
     
     private gl: OpenGL;
+
+    constructor(private formFactory: FormFactory) {
+
+    }
     
     private down: boolean = false;
     private lastX: number;
@@ -33,11 +41,16 @@ export class WindowComponent implements OnInit {
     
     ngOnInit() {
         this.tab.window = this; // create reference in order to enable tab-manager to communicate with component
+        this.form = this.visualizer.getForm(this.formFactory);
 
         this.setHeight();
         this.startScene();
         
-        window.addEventListener('resize', () => this.setHeight())
+        window.addEventListener('resize', () => this.setHeight());
+    }
+
+    public change(value: object) {
+        this.visualizer.applySettings(value);
     }
     
     //called when the mouse is pressed

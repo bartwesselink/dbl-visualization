@@ -1,2 +1,3 @@
 <canvas #canvas class="canvas" (mousedown)="mouseDown()" (mouseup)="mouseUp()" (mousemove)="onDrag($event)" (wheel)="onScroll($event)" (click)="onClick($event)"></canvas>
 <app-screenshot-button [canvas]="canvas"></app-screenshot-button>
+<app-settings-button *ngIf="form !== null" [form]="form" (valueChanges)="change($event)"></app-settings-button>
