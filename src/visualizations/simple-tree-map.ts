@@ -1,22 +1,11 @@
 import {Visualizer} from '../interfaces/visualizer';
+import {Bounds} from '../interfaces/bounds';
 import {Node} from '../models/node';
 import {OpenGL} from '../opengl/opengl';
-import {Form} from '../form/form';
 import {FormFactory} from '../form/form-factory';
+import {Orientation} from '../enums/orientation';
 
 /** @author Nico Klaassen */
-
-export enum Orientation {
-    HORIZONTAL,
-    VERTICAL
-}
-
-export interface Bounds {
-    left: number,
-    right: number,
-    bottom: number,
-    top: number
-}
 
 export class SimpleTreeMap implements Visualizer {
     private gl: OpenGL;
@@ -51,6 +40,7 @@ export class SimpleTreeMap implements Visualizer {
             top: 300
         };
         this.totalNodes = tree.subTreeSize;
+        console.log("nodes: " + this.totalNodes);
 
         this.drawTree(tree, bounds, Orientation.HORIZONTAL, false, this.colorB);
     }
@@ -131,7 +121,7 @@ export class SimpleTreeMap implements Visualizer {
 
     public getForm(formFactory: FormFactory) {
         return formFactory.createFormBuilder()
-            .addSliderField('offset', 0, { label: 'Offset', min: 0, max: 25 })
+            .addSliderField('offset', 0, {label: 'Offset', min: 0, max: 25})
             .getForm();
     }
 
@@ -147,7 +137,7 @@ export class SimpleTreeMap implements Visualizer {
         return 'Simple Tree Map';
     }
 
-    public getThumbnailImage(): string|null {
+    public getThumbnailImage(): string | null {
         return null;
     }
 }
