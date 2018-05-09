@@ -55,6 +55,8 @@ export class WindowComponent implements OnInit {
     //called when the mouse is pressed
     public mouseDown(): void {
         this.down = true;
+        this.gl.rotate(90);
+        this.render();
     }
     
     //called when the mouse is realsed
@@ -82,7 +84,11 @@ export class WindowComponent implements OnInit {
     //called when the scroll wheel is scrolled
     public onScroll(event: WheelEvent): void {
         event.preventDefault();
-        this.gl.scale(Math.max(0.1, 1.0 - (event.deltaY / this.ZOOM_NORMALISATION)));
+        if(this.down){
+            this.gl.rotate(event.deltaY / 10);
+        }else{
+            this.gl.scale(Math.max(0.1, 1.0 - (event.deltaY / this.ZOOM_NORMALISATION)));    
+        }
         this.render();
     }
 

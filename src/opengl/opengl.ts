@@ -17,7 +17,7 @@ export class OpenGL{
     private mode: Mode;
     private factor: number = 1;
     private dx: number = 0;
-    private dy: number = 0;
+    private dy: number = 0;    
     
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
@@ -31,6 +31,14 @@ export class OpenGL{
         this.gl.enable(this.gl.BLEND);
         this.gl.depthFunc(gl.LEQUAL);
         this.gl.enable(gl.DEPTH_TEST);   
+        
+    }
+    
+    public rotate(rotation: number): void {
+        Matrix.translateSelf(this.modelviewMatrix, [-this.dx, -this.dy, 0]);
+        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DRotationMatrix4(rotation));
+        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(1, 9/16));
+        Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]); 
     }
     
     //translates the model view by the given distance
