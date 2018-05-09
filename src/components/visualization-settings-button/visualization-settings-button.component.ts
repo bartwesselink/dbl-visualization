@@ -2,10 +2,10 @@ import {Component, ElementRef, EventEmitter, Input, Output} from '@angular/core'
 import {Form} from '../../form/form';
 
 @Component({
-    selector: 'app-settings-button',
-    templateUrl: './settings-button.component.html',
+    selector: 'app-visualization-settings-button',
+    templateUrl: './visualization-settings-button.component.html',
 })
-export class SettingsButtonComponent {
+export class VisualizationSettingsButtonComponent {
     /** @author Bart Wesselink */
     @Input() public form: Form;
     @Output() public valueChanges: EventEmitter<object> = new EventEmitter<object>();

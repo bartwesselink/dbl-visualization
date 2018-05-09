@@ -1,0 +1,17 @@
+<button class="mdl-button mdl-js-button mdl-button--icon general-settings-button" (click)="open()">
+    <i class="material-icons">settings</i>
+</button>
+
+<dialog class="mdl-dialog" #dialog tabindex="-1">
+    <h4 class="mdl-dialog__title">Settings</h4>
+    <div class="mdl-dialog__content">
+        <p>
+            Using this tool you can tweak general visualization settings.
+        </p>
+
+        <app-form [form]="form" (valueChanges)="updateValue()"></app-form>
+    </div>
+    <div class="mdl-dialog__actions">
+        <button type="button" class="mdl-button close" (click)="close()">Close</button>
+    </div>
+</dialog>

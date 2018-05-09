@@ -5,6 +5,8 @@ import {NewickParser} from '../utils/newick-parser';
 import {SidebarComponent} from '../components/sidebar/sidebar.component';
 import {Visualizer} from '../interfaces/visualizer';
 import {GeneralizedPythagorasTree} from '../visualizations/generalized-pythagoras-tree';
+import {SettingsBus} from '../providers/settings-bus';
+import {Settings} from '../interfaces/settings';
 import {OpenglDemoTree} from "../visualizations/opengl-demo-tree";
 import {SimpleTreeMap} from "../visualizations/simple-tree-map";
 
@@ -23,12 +25,18 @@ export class AppComponent implements OnInit {
 
     private parser = new NewickParser();
 
-    constructor() {
+    constructor(private settingsBus: SettingsBus) {
         this.createVisualizers();
+
+        // TODO: remove this example of how settings are updated
+        this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
+            console.log(settings);
+        });
     }
 
     ngOnInit(): void {
         this.addTab(this.visualizers[0]); // TODO: remove first tab
+        window.addEventListener('resize', () => this.resizeActiveTab());
     }
 
     /** @author Jordy Verhoeven */
@@ -40,7 +48,8 @@ export class AppComponent implements OnInit {
 
             setTimeout(() => {
                 this.sidebar.reloadData();
-            });
+                this.redrawAllTabs();
+            }, 100);
         }
     }
     /** @end-author Jordy Verhoeven */
@@ -75,6 +84,8 @@ export class AppComponent implements OnInit {
             setTimeout(() => {
                 tab.window.render();
             }, 100);
+
+            this.resizeActiveTab();
         }
     }
 
@@ -84,6 +95,20 @@ export class AppComponent implements OnInit {
             new GeneralizedPythagorasTree(),
             new SimpleTreeMap(),
         ];
+    }
+
+    private resizeActiveTab(): void {
+        setTimeout(() => {
+            this.activeTab.window.setHeight();
+        });
+    }
+
+    private redrawAllTabs(): void {
+        for (const tab of this.tabs) {
+            if (tab.window) {
+                tab.window.startScene();
+            }
+        }
     }
 
     private addTab(visualizer: Visualizer) {
