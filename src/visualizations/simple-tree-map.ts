@@ -142,9 +142,12 @@ export class SimpleTreeMap implements Visualizer {
         this.gl.render();               // force a render
     }
 
-
     public getName(): string {
         return 'Simple Tree Map';
+    }
+
+    public getThumbnailImage(): string|null {
+        return null;
     }
 }
 

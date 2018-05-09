@@ -47,6 +47,10 @@ export class GeneralizedPythagorasTree implements Visualizer {
         return 'Generalized Pythagoras Tree';
     }
 
+    public getThumbnailImage(): string|null {
+        return '/assets/images/visualization-generalized-pythagoras-tree.png';
+    }
+
     private generate(tree: Node, rectangle: number[], gl: OpenGL): void {
         // Draw the previously calculated rectangle
         gl.fillRotatedQuad(rectangle[0], rectangle[1], rectangle[2], rectangle[3], rectangle[4] * this.radianToDegreeMultiplier, this.color);

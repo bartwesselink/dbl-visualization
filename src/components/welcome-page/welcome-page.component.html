@@ -6,4 +6,12 @@
             corner to start working. If you want to know the ins-and-outs of the tool, please consult the help-tool.
         </p>
     </div>
+
+    <div class="welcome-examples">
+        <h3>Example visualizations:</h3>
+
+        <div class="welcome-thumbnails">
+            <img *ngFor="let thumbnail of getThumbnails();" [src]="thumbnail" class="welcome-thumbnail" height="120">
+        </div>
+    </div>
 </div>
