@@ -19,6 +19,7 @@ export class SimpleTreeMap implements Visualizer {
     private rootBounds: Bounds;
     private treeHeight: number;
     private drawOutlines: boolean;
+    private offsetScale: number;
 
     constructor() {
         this.colorA = [255 / 255, 153 / 255, 0, 1];
@@ -38,6 +39,7 @@ export class SimpleTreeMap implements Visualizer {
             top: (this.defaultSize / 2)
         };
         this.drawOutlines = true;
+        this.offsetScale = 0;
     }
 
     public draw(tree: Node, gl: OpenGL): void {
@@ -77,7 +79,7 @@ export class SimpleTreeMap implements Visualizer {
         // Compute color and size per child, recurse on each child with the new - and nested - bounds.
         for (let i = 0; i < tree.children.length; i++) {
             const childNode = tree.children[i];
-            const childBounds = this.setBounds(bounds, doneSize, tree.subTreeSize - 1, childNode.subTreeSize, tree.orientation);
+            const childBounds = this.setBounds(bounds, doneSize, tree.subTreeSize - 1, childNode.subTreeSize, tree.orientation, (i == tree.children.length - 1), i);
             doneSize = doneSize + childNode.subTreeSize; // Add the # of nodes in the subtree rooted at the childnode to doneSize.
 
             // Color the new node based on the ratio between 'total tree size' and 'subtree size'.
@@ -101,34 +103,39 @@ export class SimpleTreeMap implements Visualizer {
      * @param {Orientation} parentOrientation The direction in which the parent has been laid out
      * @returns {Bounds} New bounding-box with the correct position and offset such that it is nested within parentBounds
      */
-    private setBounds(parentBounds: Bounds, doneSize: number, parentSize: number, childSize: number, parentOrientation: Orientation): Bounds {
+    private setBounds(parentBounds: Bounds, doneSize: number, parentSize: number, childSize: number, parentOrientation: Orientation, last: boolean, index: number): Bounds {
         const parentWidth = Math.abs(parentBounds.right - parentBounds.left);
         const parentHeight = Math.abs(parentBounds.top - parentBounds.bottom);
 
-        // Shrink offset by 10% if it would cause the bounds to become 0 or inverted.
-        let relativeWidthOffset = parentWidth * this.offset / 100;
-        let relativeHeightOffset = parentHeight * this.offset / 100;
-
-        if (((parentWidth - 2 * relativeWidthOffset) < 10) || ((parentHeight - 2 * relativeHeightOffset) < 10) || parentBounds.right < parentBounds.left || parentBounds.top < parentBounds.bottom) {
-            relativeWidthOffset = 0;
-            relativeHeightOffset = 0;
-        }
-
         // Compute the new bounds which are nested within the bounds of the parent
         if (parentOrientation === Orientation.HORIZONTAL) {
+            
             return {
-                left: parentBounds.left + parentWidth * doneSize / parentSize + relativeWidthOffset,
-                right: parentBounds.left + parentWidth * doneSize / parentSize + parentWidth * childSize / parentSize - relativeWidthOffset,
-                bottom: parentBounds.bottom + relativeHeightOffset,
-                top: parentBounds.top - relativeHeightOffset
+                left: parentBounds.left + parentWidth * doneSize / parentSize + this.offset * (index + 1),
+                right: last ? parentBounds.left + parentWidth * doneSize / parentSize + parentWidth * childSize / parentSize - this.offset : parentBounds.left + parentWidth * doneSize / parentSize + this.offset * (index + 1),
+                bottom: parentBounds.bottom + this.offset,
+                top: parentBounds.top - this.offset
             };
         } else {
             return {
-                left: parentBounds.left + relativeWidthOffset,
-                right: parentBounds.right - relativeWidthOffset,
-                bottom: parentBounds.top - parentHeight * doneSize / parentSize - parentHeight * childSize / parentSize + relativeHeightOffset,
-                top: parentBounds.top - parentHeight * doneSize / parentSize - relativeHeightOffset
+                left: parentBounds.left + this.offset,
+                right: parentBounds.right - this.offset,
+                bottom: last ? parentBounds.top - parentHeight * doneSize / parentSize - parentHeight * childSize / parentSize + this.offset : parentBounds.top - parentHeight * doneSize / parentSize - parentHeight * childSize / parentSize + this.offset / 2,
+                top: parentBounds.top - parentHeight * doneSize / parentSize - this.offset / 2
             };
+        //     return {
+        //         left: parentBounds.left + parentWidth * doneSize / parentSize + this.offset / 2,
+        //         right: last ? parentBounds.left + parentWidth * doneSize / parentSize + parentWidth * childSize / parentSize - this.offset : parentBounds.left + parentWidth * doneSize / parentSize + parentWidth * childSize / parentSize - this.offset / 2,
+        //         bottom: parentBounds.bottom + this.offset,
+        //         top: parentBounds.top - this.offset
+        //     };
+        // } else {
+        //     return {
+        //         left: parentBounds.left + this.offset,
+        //         right: parentBounds.right - this.offset,
+        //         bottom: last ? parentBounds.top - parentHeight * doneSize / parentSize - parentHeight * childSize / parentSize + this.offset : parentBounds.top - parentHeight * doneSize / parentSize - parentHeight * childSize / parentSize + this.offset / 2,
+        //         top: parentBounds.top - parentHeight * doneSize / parentSize - this.offset / 2
+        //     };
         }
 
     };
@@ -163,7 +170,7 @@ export class SimpleTreeMap implements Visualizer {
         return treeHeight;
     }
 
-    private calculateMaxSegments(tree: Node, horizontalSegments: number, verticalSegments: number) {
+    private calculateMaxSegments(tree: Node, horizontalSegments: number, verticalSegments: number): number {
         let maxSegments = Math.max(horizontalSegments, verticalSegments);
 
         for (let i = 0; i < tree.children.length; i++) {
@@ -198,9 +205,18 @@ export class SimpleTreeMap implements Visualizer {
     }
 
     public applySettings(settings: any) {
-        this.offset = settings.offset;
         this.drawOutlines = settings.outline;
-        // this.updateRootBounds();
+        this.offset = settings.offset;
+        if (this.offset > 0) {
+            const oldBounds = this.rootBounds;
+            this.updateRootBounds();
+            const scaleFactor = (oldBounds.right / this.rootBounds.right);
+            console.log("scalefactor: " + scaleFactor);
+            this.gl.scale(scaleFactor);
+            this.offsetScale = (300 / this.rootBounds.right);
+            this.offset *= 1;
+            console.log("offset scale: " + this.offsetScale);
+        }
 
         this.gl.releaseBuffers();       // remove old data from buffers
         this.draw(this.tree, this.gl);  // fill buffers with new data
@@ -208,11 +224,13 @@ export class SimpleTreeMap implements Visualizer {
     }
 
     public updateRootBounds(): void {
+        const maxSegments = this.calculateMaxSegments(this.tree, 0, 0);
+
         this.rootBounds = {
-            left: -(this.defaultSize / 2) - this.offset * this.treeHeight * 2,
-            right: (this.defaultSize / 2) + this.offset * this.treeHeight * 2,
-            bottom: -(this.defaultSize / 2) - this.offset * this.treeHeight * 2,
-            top: (this.defaultSize / 2) + this.offset * this.treeHeight * 2
+            left: -(this.defaultSize / 2) - this.offset * this.treeHeight * maxSegments,
+            right: (this.defaultSize / 2) + this.offset * this.treeHeight * maxSegments,
+            bottom: -(this.defaultSize / 2) - this.offset * this.treeHeight * maxSegments,
+            top: (this.defaultSize / 2) + this.offset * this.treeHeight * maxSegments
         };
     }
 
