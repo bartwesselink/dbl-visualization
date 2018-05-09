@@ -49,7 +49,8 @@ export class SimpleTreeMap implements Visualizer {
 
         // Initialize orientation
         tree.orientation = Orientation.HORIZONTAL;
-        
+        this.orientTreeNodes(tree);
+
         this.drawTree(tree, this.rootBounds, false, this.colorB);
     }
 
@@ -73,17 +74,9 @@ export class SimpleTreeMap implements Visualizer {
             this.gl.fillAAQuad(bounds.left, bounds.bottom, width, height, color);
         }
 
-        // Toggle the orientation for direct children of the current node
-        if (tree.orientation === Orientation.HORIZONTAL) {
-            var childOrientation = Orientation.VERTICAL;
-        } else {
-            var childOrientation = Orientation.HORIZONTAL;
-        }
-
         // Compute color and size per child, recurse on each child with the new - and nested - bounds.
         for (let i = 0; i < tree.children.length; i++) {
             const childNode = tree.children[i];
-            childNode.orientation = childOrientation;
             const childBounds = this.setBounds(bounds, doneSize, tree.subTreeSize - 1, childNode.subTreeSize, tree.orientation);
             doneSize = doneSize + childNode.subTreeSize; // Add the # of nodes in the subtree rooted at the childnode to doneSize.
 
@@ -140,6 +133,21 @@ export class SimpleTreeMap implements Visualizer {
 
     };
 
+    private orientTreeNodes(tree: Node): void{
+        // Toggle the orientation for direct children of the current node
+        if (tree.orientation === Orientation.HORIZONTAL) {
+            var childOrientation = Orientation.VERTICAL;
+        } else {
+            var childOrientation = Orientation.HORIZONTAL;
+        }
+
+        for (let i = 0; i < tree.children.length; i++) {
+            const childNode = tree.children[i];
+            childNode.orientation = childOrientation;
+            this.orientTreeNodes(childNode);
+        }
+    }
+
     private calculateTreeHeight(tree: Node, currentHeight: number): number {
         let treeHeight = currentHeight;
         for (let i = 0; i < tree.children.length; i++) {
@@ -156,20 +164,30 @@ export class SimpleTreeMap implements Visualizer {
     }
 
     private calculateMaxSegments(tree: Node, horizontalSegments: number, verticalSegments: number) {
-        // let maxHorizontalSegments = horizontalSegments;
-        // let maxVerticalSegments = verticalSegments;
-        //
-        // for (let i = 0; i < tree.children.length; i++) {
-        //     if (treeHeight == 0) {
-        //         treeHeight = this.calculateTreeHeight(tree.children[i], currentHeight + 1);
-        //     } else {
-        //         const newHeight = this.calculateTreeHeight(tree.children[i], currentHeight + 1);
-        //         if (newHeight > treeHeight) {
-        //             treeHeight = newHeight;
-        //         }
-        //     }
-        // }
-        // return treeHeight;
+        let maxSegments = Math.max(horizontalSegments, verticalSegments);
+
+        for (let i = 0; i < tree.children.length; i++) {
+            if (maxSegments == 0) {
+                if (tree.orientation === Orientation.HORIZONTAL) {
+                    maxSegments = this.calculateMaxSegments(tree.children[i], horizontalSegments + tree.children.length, verticalSegments + 1);
+                } else {
+                    maxSegments = this.calculateMaxSegments(tree.children[i], horizontalSegments + 1, verticalSegments + tree.children.length);
+                }
+            } else {
+                let newMax;
+                if (tree.orientation === Orientation.HORIZONTAL) {
+                    newMax = this.calculateMaxSegments(tree.children[i], horizontalSegments + tree.children.length, verticalSegments + 1);
+                } else {
+                    newMax = this.calculateMaxSegments(tree.children[i], horizontalSegments + 1, verticalSegments + tree.children.length);
+                }
+
+                if (newMax > maxSegments) {
+                    maxSegments = newMax;
+                }
+
+            }
+        }
+        return maxSegments;
     }
 
     public getForm(formFactory: FormFactory) {
