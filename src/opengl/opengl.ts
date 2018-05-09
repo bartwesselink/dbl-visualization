@@ -2,6 +2,7 @@
 import {Shader} from "./shader";
 import {Element} from "./element";
 import {Matrix} from "./matrix";
+import {Mode} from "./mode";
 
 export class OpenGL{
     private gl: WebGLRenderingContext;
@@ -13,9 +14,7 @@ export class OpenGL{
     private readonly HALFWIDTH = this.WIDTH / 2;
     private readonly HALFHEIGHT = this.HEIGHT / 2;
     private readonly PRECISION = 10;
-    private mode: number;
-    private readonly MODE_HEIGHT = 1;
-    private readonly MODE_WIDTH = 2;
+    private mode: Mode;
     private factor: number = 1;
     private dx: number = 0;
     private dy: number = 0;
@@ -36,7 +35,7 @@ export class OpenGL{
     
     //translates the model view by the given distance
     public translate(dx: number, dy: number, width: number, height: number): void {
-        if(this.mode == this.MODE_WIDTH){
+        if(this.mode == Mode.WIDTH_FIRST){
             height = (width / this.WIDTH) * this.HEIGHT;
         }else{
             width = (height / this.HEIGHT) * this.WIDTH;
@@ -68,7 +67,7 @@ export class OpenGL{
     private transform(x: number, y: number, width: number, height: number): number[] {
         var dx = x - width / 2;
         var dy = y - height / 2;
-        if(this.mode == this.MODE_WIDTH){
+        if(this.mode == Mode.WIDTH_FIRST){
             return [(dx / width) / this.factor - this.dx / 2, -((dy / height) * (height / ((width / this.WIDTH) * this.HEIGHT))) / this.factor - this.dy / 2];
         }else{
             return [((dx / width) * (width / ((height / this.HEIGHT) * this.WIDTH))) / this.factor - this.dx / 2, -(dy / height) / this.factor - this.dy / 2];
@@ -82,10 +81,10 @@ export class OpenGL{
         //by forcing a 16:9 viewport we can make sure that even when the canvas is resized our buffers remain correct so that 
         //the visualisation does not distort. Theoretically we could also recompute all the buffers and map to a new coordinate space.
         if((width / this.WIDTH) * this.HEIGHT > height){
-            this.mode = this.MODE_WIDTH;
+            this.mode = Mode.WIDTH_FIRST;
             this.gl.viewport(0, (height - ((width / this.WIDTH) * this.HEIGHT)) / 2, width, (width / this.WIDTH) * this.HEIGHT);
         }else{
-            this.mode = this.MODE_HEIGHT;
+            this.mode = Mode.HEIGHT_FIRST;
             this.gl.viewport((width - ((height / this.HEIGHT) * this.WIDTH)) / 2, 0, (height / this.HEIGHT) * this.WIDTH, height);
         }
     }

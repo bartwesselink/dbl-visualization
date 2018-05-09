@@ -29,15 +29,15 @@ export class WindowComponent implements OnInit {
     private lastError: string;
     
     private gl: OpenGL;
-
-    constructor(private formFactory: FormFactory) {
-
-    }
     
     private down: boolean = false;
     private lastX: number;
     private lastY: number;
     private readonly ZOOM_NORMALISATION = 40;
+    
+    constructor(private formFactory: FormFactory) {
+
+    }
     
     ngOnInit() {
         this.tab.window = this; // create reference in order to enable tab-manager to communicate with component
@@ -82,6 +82,7 @@ export class WindowComponent implements OnInit {
     
     //called when the scroll wheel is scrolled
     public onScroll(event: WheelEvent): void {
+        event.preventDefault();
         this.gl.scale(Math.max(0.1, 1.0 - (event.deltaY / this.ZOOM_NORMALISATION)));
         this.render();
     }
