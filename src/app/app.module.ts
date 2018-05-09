@@ -34,7 +34,6 @@ import {MdlDirective} from '../directives/material-design/material-design.direct
         VisualizationSettingsButtonComponent,
         GeneralSettingsButtonComponent,
         MdlDirective,
-        MdlDirective
     ],
     imports: [
         BrowserModule,
