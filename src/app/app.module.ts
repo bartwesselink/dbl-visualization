@@ -14,7 +14,9 @@ import {FormFactory} from '../form/form-factory';
 import {FormComponent} from '../components/form/form.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import {NgPipesModule} from 'ngx-pipes';
-import {SettingsButtonComponent} from '../components/settings-button/settings-button.component';
+import {VisualizationSettingsButtonComponent} from '../components/visualization-settings-button/visualization-settings-button.component';
+import {GeneralSettingsButtonComponent} from '../components/general-settings-button/general-settings-button.component';
+import {SettingsBus} from '../providers/settings-bus';
 import {MdlDirective} from '../directives/material-design/material-design.directive';
 import {WelcomePageComponent} from '../components/welcome-page/welcome-page.component';
 
@@ -30,7 +32,9 @@ import {WelcomePageComponent} from '../components/welcome-page/welcome-page.comp
         VisualizationPickerComponent,
         HelpButtonComponent,
         FormComponent,
-        SettingsButtonComponent,
+        VisualizationSettingsButtonComponent,
+        GeneralSettingsButtonComponent,
+        MdlDirective,
         WelcomePageComponent,
         MdlDirective
     ],
@@ -41,6 +45,7 @@ import {WelcomePageComponent} from '../components/welcome-page/welcome-page.comp
     ],
     providers: [
         FormFactory,
+        SettingsBus,
     ],
     bootstrap: [AppComponent]
 })

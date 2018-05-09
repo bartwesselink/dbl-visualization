@@ -1,8 +1,8 @@
 import {Visualizer} from '../interfaces/visualizer';
 import {Node} from '../models/node';
 import {OpenGL} from '../opengl/opengl';
+import {FormFactory} from '../form/form-factory';
 import {Form} from "../form/form";
-import {FormFactory} from "../form/form-factory";
 
 /** @author Nico Klaassen */
 export class OpenglDemoTree implements Visualizer {
@@ -135,7 +135,6 @@ export class OpenglDemoTree implements Visualizer {
         this.draw(this.tree, this.gl);  // fill buffers with new data
         this.gl.render();               // force a render
     }
-
 
     public getName(): string {
         return 'OpenGL Demo Tree';

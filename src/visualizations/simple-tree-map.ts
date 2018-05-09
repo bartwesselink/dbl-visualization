@@ -1,7 +1,8 @@
 import {Visualizer} from '../interfaces/visualizer';
 import {Node} from '../models/node';
 import {OpenGL} from '../opengl/opengl';
-import {FormFactory} from "../form/form-factory";
+import {Form} from '../form/form';
+import {FormFactory} from '../form/form-factory';
 
 /** @author Nico Klaassen */
 
