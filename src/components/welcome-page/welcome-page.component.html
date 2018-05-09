@@ -1,0 +1,17 @@
+<div class="welcome-page">
+    <div class="welcome-content">
+        <h3>Welcome!</h3>
+        <p>
+            Using this tool, one can visualize hierarchical tree data in the Newick format. Use the upload-button in the upper right
+            corner to start working. If you want to know the ins-and-outs of the tool, please consult the help-button.
+        </p>
+    </div>
+
+    <div class="welcome-examples">
+        <h3>Example visualizations:</h3>
+
+        <div class="welcome-thumbnails">
+            <img *ngFor="let thumbnail of getThumbnails();" [src]="thumbnail" class="welcome-thumbnail" height="120">
+        </div>
+    </div>
+</div>

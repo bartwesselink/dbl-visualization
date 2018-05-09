@@ -146,6 +146,10 @@ export class SimpleTreeMap implements Visualizer {
     public getName(): string {
         return 'Simple Tree Map';
     }
+
+    public getThumbnailImage(): string|null {
+        return null;
+    }
 }
 
 /** @end-author Nico Klaassen */

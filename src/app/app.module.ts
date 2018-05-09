@@ -18,6 +18,7 @@ import {VisualizationSettingsButtonComponent} from '../components/visualization-
 import {GeneralSettingsButtonComponent} from '../components/general-settings-button/general-settings-button.component';
 import {SettingsBus} from '../providers/settings-bus';
 import {MdlDirective} from '../directives/material-design/material-design.directive';
+import {WelcomePageComponent} from '../components/welcome-page/welcome-page.component';
 
 @NgModule({
     declarations: [
@@ -34,6 +35,7 @@ import {MdlDirective} from '../directives/material-design/material-design.direct
         VisualizationSettingsButtonComponent,
         GeneralSettingsButtonComponent,
         MdlDirective,
+        WelcomePageComponent,
     ],
     imports: [
         BrowserModule,

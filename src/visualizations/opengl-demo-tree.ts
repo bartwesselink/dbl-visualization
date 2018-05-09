@@ -139,5 +139,9 @@ export class OpenglDemoTree implements Visualizer {
     public getName(): string {
         return 'OpenGL Demo Tree';
     }
+
+    public getThumbnailImage(): string|null {
+        return null;
+    }
 }
 /** @end-author Nico Klaassen */
