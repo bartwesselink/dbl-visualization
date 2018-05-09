@@ -79,7 +79,7 @@ export class SimpleTreeMap implements Visualizer {
         // Compute color and size per child, recurse on each child with the new - and nested - bounds.
         for (let i = 0; i < tree.children.length; i++) {
             const childNode = tree.children[i];
-            const childBounds = this.setBounds(bounds, doneSize, tree.subTreeSize - 1, childNode.subTreeSize, tree.orientation, (i == tree.children.length - 1), i);
+            const childBounds = this.setBounds(childNode, bounds, doneSize, (i == tree.children.length - 1), i);
             doneSize = doneSize + childNode.subTreeSize; // Add the # of nodes in the subtree rooted at the childnode to doneSize.
 
             // Color the new node based on the ratio between 'total tree size' and 'subtree size'.
@@ -103,16 +103,24 @@ export class SimpleTreeMap implements Visualizer {
      * @param {Orientation} parentOrientation The direction in which the parent has been laid out
      * @returns {Bounds} New bounding-box with the correct position and offset such that it is nested within parentBounds
      */
-    private setBounds(parentBounds: Bounds, doneSize: number, parentSize: number, childSize: number, parentOrientation: Orientation, last: boolean, index: number): Bounds {
+    private setBounds(tree: Node, parentBounds: Bounds, doneSize: number, last: boolean, index: number): Bounds {
         const parentWidth = Math.abs(parentBounds.right - parentBounds.left);
         const parentHeight = Math.abs(parentBounds.top - parentBounds.bottom);
+        const parentSize = tree.parent.subTreeSize;
+        const childSize = tree.subTreeSize;
 
         // Compute the new bounds which are nested within the bounds of the parent
-        if (parentOrientation === Orientation.HORIZONTAL) {
-            
+        if (tree.parent.orientation === Orientation.HORIZONTAL) {
+            // const offsetCompensation = (index + 1) * (parentWidth - parentWidth * (tree.parent.children.length + 1) * this.offset / tree.parent.children.length);
+            const offsetCompensation = (parentWidth - this.offset * tree.parent.children.length) / tree.parent.children.length;
+            console.log("comp: " + offsetCompensation);
             return {
-                left: parentBounds.left + parentWidth * doneSize / parentSize + this.offset * (index + 1),
-                right: last ? parentBounds.left + parentWidth * doneSize / parentSize + parentWidth * childSize / parentSize - this.offset : parentBounds.left + parentWidth * doneSize / parentSize + this.offset * (index + 1),
+                left: (index == 0) ?
+                    parentBounds.left + this.offset :
+                    parentBounds.left + parentWidth * doneSize / parentSize + this.offset * (index + 1) - offsetCompensation * (index + 1),
+                right: (last) ?
+                    parentBounds.left + parentWidth * doneSize / parentSize + parentWidth * childSize / parentSize + this.offset * (index + 1) - offsetCompensation * (index + 1) :
+                    parentBounds.left + parentWidth * doneSize / parentSize + this.offset * (index + 1) - offsetCompensation * (index + 1),
                 bottom: parentBounds.bottom + this.offset,
                 top: parentBounds.top - this.offset
             };
@@ -120,7 +128,9 @@ export class SimpleTreeMap implements Visualizer {
             return {
                 left: parentBounds.left + this.offset,
                 right: parentBounds.right - this.offset,
-                bottom: last ? parentBounds.top - parentHeight * doneSize / parentSize - parentHeight * childSize / parentSize + this.offset : parentBounds.top - parentHeight * doneSize / parentSize - parentHeight * childSize / parentSize + this.offset / 2,
+                bottom: last ?
+                    parentBounds.top - parentHeight * doneSize / parentSize - parentHeight * childSize / parentSize + this.offset :
+                    parentBounds.top - parentHeight * doneSize / parentSize - parentHeight * childSize / parentSize + this.offset / 2,
                 top: parentBounds.top - parentHeight * doneSize / parentSize - this.offset / 2
             };
         //     return {
