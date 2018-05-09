@@ -36,7 +36,6 @@ import {WelcomePageComponent} from '../components/welcome-page/welcome-page.comp
         GeneralSettingsButtonComponent,
         MdlDirective,
         WelcomePageComponent,
-        MdlDirective
     ],
     imports: [
         BrowserModule,
