@@ -4,6 +4,7 @@ import {FormType} from '../../enums/form-type';
 import 'rxjs/add/operator/debounceTime';
 import {ChoiceFormOptions} from '../../interfaces/choice-form-options';
 import {FormField} from '../../interfaces/form-field';
+import {SliderFormOptions} from '../../interfaces/slider-form-options';
 
 @Component({
     selector: 'app-form',
@@ -29,6 +30,10 @@ export class FormComponent implements OnInit {
 
     getChoiceOptions(field: FormField): ChoiceFormOptions {
         return field.options as ChoiceFormOptions;
+    }
+
+    getSliderOptions(field: FormField): SliderFormOptions {
+        return field.options as SliderFormOptions;
     }
 
     /** @end-author Bart Wesselink */

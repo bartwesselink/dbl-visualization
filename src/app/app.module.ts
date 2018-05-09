@@ -9,6 +9,7 @@ import {TreeNavigatorComponent} from '../components/tree-navigator/tree-navigato
 import {TreeNavigatorItemComponent} from '../components/tree-navigator-item/tree-navigator-item.component';
 import {UploadToolComponent} from '../components/upload-tool/upload-tool.component';
 import {VisualizationPickerComponent} from '../components/visualization-picker/visualization-picker.component';
+import {HelpButtonComponent} from "../components/help-button/help-button.component";
 import {FormFactory} from '../form/form-factory';
 import {FormComponent} from '../components/form/form.component';
 import {ReactiveFormsModule} from '@angular/forms';
@@ -28,10 +29,12 @@ import {MdlDirective} from '../directives/material-design/material-design.direct
         TreeNavigatorItemComponent,
         UploadToolComponent,
         VisualizationPickerComponent,
+        HelpButtonComponent,
         FormComponent,
         VisualizationSettingsButtonComponent,
         GeneralSettingsButtonComponent,
         MdlDirective,
+        MdlDirective
     ],
     imports: [
         BrowserModule,

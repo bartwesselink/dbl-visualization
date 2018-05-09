@@ -1,7 +1,8 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "project": {
-    "name": "visualization-app"
+    "name": "visualization-app",
+    "ejected": true
   },
   "apps": [
     {
@@ -46,6 +47,7 @@
   },
   "defaults": {
     "styleExt": "scss",
-    "component": {}
+    "component": {
+    }
   }
 }
