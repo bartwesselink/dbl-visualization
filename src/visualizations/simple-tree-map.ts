@@ -71,7 +71,7 @@ export class SimpleTreeMap implements Visualizer {
         // Compute color and size per child, recurse on each child with the new - and nested - bounds.
         for (let i = 0; i < tree.children.length; i++) {
             const childNode = tree.children[i];
-            const childBounds = this.setBounds(bounds, doneSize, tree.subTreeSize, childNode.subTreeSize, orientation);
+            const childBounds = this.setBounds(bounds, doneSize, tree.subTreeSize - 1, childNode.subTreeSize, orientation);
             doneSize = doneSize + childNode.subTreeSize; // Add the # of nodes in the subtree rooted at the childnode to doneSize.
 
             // Color the new node based on the ratio between 'total tree size' and 'subtree size'.
@@ -84,7 +84,6 @@ export class SimpleTreeMap implements Visualizer {
 
             this.drawTree(childNode, childBounds, childOrientation, true, childColor);
         }
-
     }
 
     /** setBounds calculates the new and nested bounding-box (bounds) for a particular child-node in relation to the
