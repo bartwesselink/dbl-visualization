@@ -15,6 +15,8 @@ export class SimpleTreeMap implements Visualizer {
     private totalNodes: number;
     private offset: number;
     private tree: Node;
+    private rootBounds: Bounds;
+    private treeHeight: number;
 
     constructor() {
         this.colorA = [255 / 255, 153 / 255, 0, 1];
@@ -25,7 +27,14 @@ export class SimpleTreeMap implements Visualizer {
             this.colorB[2] - this.colorA[2],
             this.colorB[3] - this.colorA[3]
         ];
+
         this.offset = 0;
+        this.rootBounds = {
+            left: -300,
+            right: 300,
+            bottom: -300,
+            top: 300
+        };
     }
 
     public draw(tree: Node, gl: OpenGL): void {
@@ -40,7 +49,7 @@ export class SimpleTreeMap implements Visualizer {
             top: 300
         };
         this.totalNodes = tree.subTreeSize;
-        console.log("nodes: " + this.totalNodes);
+        this.treeHeight = this.calculateTreeHeight(tree, 0);
 
         this.drawTree(tree, bounds, Orientation.HORIZONTAL, false, this.colorB);
     }
@@ -117,6 +126,21 @@ export class SimpleTreeMap implements Visualizer {
         }
 
     };
+
+    private calculateTreeHeight(tree: Node, currentHeight: number) : number {
+        let treeHeight = currentHeight;
+        for (let i = 0; i < tree.children.length; i++) {
+            if (treeHeight == 0) {
+                treeHeight = this.calculateTreeHeight(tree.children[i], currentHeight + 1);
+            } else {
+                const newHeight = this.calculateTreeHeight(tree.children[i], currentHeight + 1);
+                if (newHeight > treeHeight) {
+                    treeHeight = newHeight;
+                }
+            }
+        }
+        return treeHeight;
+    }
 
     public getForm(formFactory: FormFactory) {
         return formFactory.createFormBuilder()
