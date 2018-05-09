@@ -8,6 +8,7 @@ import {Orientation} from '../enums/orientation';
 /** @author Nico Klaassen */
 
 export class SimpleTreeMap implements Visualizer {
+    readonly defaultSize = 600;
     private gl: OpenGL;
     private colorA: number[];
     private colorB: number[];
@@ -17,6 +18,7 @@ export class SimpleTreeMap implements Visualizer {
     private tree: Node;
     private rootBounds: Bounds;
     private treeHeight: number;
+    private drawOutlines: boolean;
 
     constructor() {
         this.colorA = [255 / 255, 153 / 255, 0, 1];
@@ -30,28 +32,22 @@ export class SimpleTreeMap implements Visualizer {
 
         this.offset = 0;
         this.rootBounds = {
-            left: -300,
-            right: 300,
-            bottom: -300,
-            top: 300
+            left: -(this.defaultSize / 2),
+            right: (this.defaultSize / 2),
+            bottom: -(this.defaultSize / 2),
+            top: (this.defaultSize / 2)
         };
+        this.drawOutlines = true;
     }
 
     public draw(tree: Node, gl: OpenGL): void {
         this.tree = tree;
         this.gl = gl;
 
-        // Initial bounds
-        const bounds = {
-            left: -300,
-            right: 300,
-            bottom: -300,
-            top: 300
-        };
         this.totalNodes = tree.subTreeSize;
         this.treeHeight = this.calculateTreeHeight(tree, 0);
 
-        this.drawTree(tree, bounds, Orientation.HORIZONTAL, false, this.colorB);
+        this.drawTree(tree, this.rootBounds, Orientation.HORIZONTAL, false, this.colorB);
     }
 
     /** drawTree draw the tree-map recursively.
@@ -68,7 +64,11 @@ export class SimpleTreeMap implements Visualizer {
         let height = Math.abs(bounds.top - bounds.bottom);
 
         // Draw the bounds of the current node
-        this.gl.fillLinedAAQuad(bounds.left, bounds.bottom, width, height, color, [0, 0, 0, 1]);
+        if (this.drawOutlines) {
+            this.gl.fillLinedAAQuad(bounds.left, bounds.bottom, width, height, color, [0, 0, 0, 1]);
+        } else {
+            this.gl.fillAAQuad(bounds.left, bounds.bottom, width, height, color);
+        }
 
         // Toggle the orientation for direct children of the current node
         if (orientation === Orientation.HORIZONTAL) {
@@ -108,26 +108,35 @@ export class SimpleTreeMap implements Visualizer {
         const parentWidth = Math.abs(parentBounds.right - parentBounds.left);
         const parentHeight = Math.abs(parentBounds.top - parentBounds.bottom);
 
+        // Shrink offset by 10% if it would cause the bounds to become 0 or inverted.
+        let relativeWidthOffset = parentWidth * this.offset / 100;
+        let relativeHeightOffset = parentHeight * this.offset / 100;
+
+        if (((parentWidth - 2 * relativeWidthOffset) < 10) || ((parentHeight - 2 * relativeHeightOffset) < 10) || parentBounds.right < parentBounds.left || parentBounds.top < parentBounds.bottom) {
+            relativeWidthOffset = 0;
+            relativeHeightOffset = 0;
+        }
+
         // Compute the new bounds which are nested within the bounds of the parent
         if (parentOrientation === Orientation.HORIZONTAL) {
             return {
-                left: parentBounds.left + parentWidth * doneSize / parentSize + this.offset,
-                right: parentBounds.left + parentWidth * doneSize / parentSize + parentWidth * childSize / parentSize - this.offset,
-                bottom: parentBounds.bottom + this.offset,
-                top: parentBounds.top - this.offset
+                left: parentBounds.left + parentWidth * doneSize / parentSize + relativeWidthOffset,
+                right: parentBounds.left + parentWidth * doneSize / parentSize + parentWidth * childSize / parentSize - relativeWidthOffset,
+                bottom: parentBounds.bottom + relativeHeightOffset,
+                top: parentBounds.top - relativeHeightOffset
             };
         } else {
             return {
-                left: parentBounds.left + this.offset,
-                right: parentBounds.right - this.offset,
-                bottom: parentBounds.top - parentHeight * (childSize + doneSize) / parentSize + this.offset,
-                top: parentBounds.top - parentHeight * doneSize / parentSize - this.offset
+                left: parentBounds.left + relativeWidthOffset,
+                right: parentBounds.right - relativeWidthOffset,
+                bottom: parentBounds.top - parentHeight * doneSize / parentSize - parentHeight * childSize / parentSize + relativeHeightOffset,
+                top: parentBounds.top - parentHeight * doneSize / parentSize - relativeHeightOffset
             };
         }
 
     };
 
-    private calculateTreeHeight(tree: Node, currentHeight: number) : number {
+    private calculateTreeHeight(tree: Node, currentHeight: number): number {
         let treeHeight = currentHeight;
         for (let i = 0; i < tree.children.length; i++) {
             if (treeHeight == 0) {
@@ -144,16 +153,28 @@ export class SimpleTreeMap implements Visualizer {
 
     public getForm(formFactory: FormFactory) {
         return formFactory.createFormBuilder()
+            .addToggleField('outline', true, {label: 'Draw outlines'})
             .addSliderField('offset', 0, {label: 'Offset', min: 0, max: 25})
             .getForm();
     }
 
     public applySettings(settings: any) {
         this.offset = settings.offset;
+        this.drawOutlines = settings.outline;
+        // this.updateRootBounds();
 
         this.gl.releaseBuffers();       // remove old data from buffers
         this.draw(this.tree, this.gl);  // fill buffers with new data
         this.gl.render();               // force a render
+    }
+
+    public updateRootBounds(): void {
+        this.rootBounds = {
+            left: -(this.defaultSize / 2) - this.offset * this.treeHeight * 2,
+            right: (this.defaultSize / 2) + this.offset * this.treeHeight * 2,
+            bottom: -(this.defaultSize / 2) - this.offset * this.treeHeight * 2,
+            top: (this.defaultSize / 2) + this.offset * this.treeHeight * 2
+        };
     }
 
     public getName(): string {
