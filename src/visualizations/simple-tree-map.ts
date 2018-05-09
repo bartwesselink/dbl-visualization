@@ -47,7 +47,10 @@ export class SimpleTreeMap implements Visualizer {
         this.totalNodes = tree.subTreeSize;
         this.treeHeight = this.calculateTreeHeight(tree, 0);
 
-        this.drawTree(tree, this.rootBounds, Orientation.HORIZONTAL, false, this.colorB);
+        // Initialize orientation
+        tree.orientation = Orientation.HORIZONTAL;
+        
+        this.drawTree(tree, this.rootBounds, false, this.colorB);
     }
 
     /** drawTree draw the tree-map recursively.
@@ -57,7 +60,7 @@ export class SimpleTreeMap implements Visualizer {
      * @param {boolean} internalNode Whether we are recursing on internal nodes, or on the root of the initial input tree
      * @param {number[]} color The color with which we should draw our current bounding-box based rectangle
      */
-    private drawTree(tree: Node, bounds: Bounds, orientation: Orientation, internalNode: boolean, color: number[]): void {
+    private drawTree(tree: Node, bounds: Bounds, internalNode: boolean, color: number[]): void {
         let doneSize = 0; // How many subtree-nodes are already taking up space within the bounds.
 
         let width = Math.abs(bounds.right - bounds.left);
@@ -71,7 +74,7 @@ export class SimpleTreeMap implements Visualizer {
         }
 
         // Toggle the orientation for direct children of the current node
-        if (orientation === Orientation.HORIZONTAL) {
+        if (tree.orientation === Orientation.HORIZONTAL) {
             var childOrientation = Orientation.VERTICAL;
         } else {
             var childOrientation = Orientation.HORIZONTAL;
@@ -80,7 +83,8 @@ export class SimpleTreeMap implements Visualizer {
         // Compute color and size per child, recurse on each child with the new - and nested - bounds.
         for (let i = 0; i < tree.children.length; i++) {
             const childNode = tree.children[i];
-            const childBounds = this.setBounds(bounds, doneSize, tree.subTreeSize - 1, childNode.subTreeSize, orientation);
+            childNode.orientation = childOrientation;
+            const childBounds = this.setBounds(bounds, doneSize, tree.subTreeSize - 1, childNode.subTreeSize, tree.orientation);
             doneSize = doneSize + childNode.subTreeSize; // Add the # of nodes in the subtree rooted at the childnode to doneSize.
 
             // Color the new node based on the ratio between 'total tree size' and 'subtree size'.
@@ -91,7 +95,7 @@ export class SimpleTreeMap implements Visualizer {
                 this.colorA[3] + this.colorDifference[3] * (childNode.subTreeSize / this.totalNodes)
             ];
 
-            this.drawTree(childNode, childBounds, childOrientation, true, childColor);
+            this.drawTree(childNode, childBounds, true, childColor);
         }
     }
 
@@ -149,6 +153,23 @@ export class SimpleTreeMap implements Visualizer {
             }
         }
         return treeHeight;
+    }
+
+    private calculateMaxSegments(tree: Node, horizontalSegments: number, verticalSegments: number) {
+        // let maxHorizontalSegments = horizontalSegments;
+        // let maxVerticalSegments = verticalSegments;
+        //
+        // for (let i = 0; i < tree.children.length; i++) {
+        //     if (treeHeight == 0) {
+        //         treeHeight = this.calculateTreeHeight(tree.children[i], currentHeight + 1);
+        //     } else {
+        //         const newHeight = this.calculateTreeHeight(tree.children[i], currentHeight + 1);
+        //         if (newHeight > treeHeight) {
+        //             treeHeight = newHeight;
+        //         }
+        //     }
+        // }
+        // return treeHeight;
     }
 
     public getForm(formFactory: FormFactory) {
