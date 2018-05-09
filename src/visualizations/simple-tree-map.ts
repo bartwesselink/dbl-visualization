@@ -7,29 +7,6 @@ import {Orientation} from '../enums/orientation';
 
 /** @author Nico Klaassen */
 
-export class AugmentedNode implements Node {
-    label: string;
-    children: Node[];
-    parent?: Node;
-    subTreeSize?: number;
-    fields: {};
-
-    constructor(label: string, children: Node[], parent: Node, subTreeSize: number) {
-        this.label = label;
-        this.children = children;
-        this.parent = parent;
-        this.subTreeSize = subTreeSize;
-    }
-
-    public addField(field: string, value: any): void {
-        this.fields[field] = value;
-    }
-
-    public getField(field: string): any {
-        return this.fields[field];
-    }
-}
-
 export class SimpleTreeMap implements Visualizer {
     readonly defaultSize = 600;
     private gl: OpenGL;
@@ -39,7 +16,6 @@ export class SimpleTreeMap implements Visualizer {
     private totalNodes: number;
     private offset: number;
     private tree: Node;
-    private augmentedTree: AugmentedNode;
     private rootBounds: Bounds;
     private treeHeight: number;
     private drawOutlines: boolean;
@@ -66,13 +42,12 @@ export class SimpleTreeMap implements Visualizer {
 
     public draw(tree: Node, gl: OpenGL): void {
         this.tree = tree;
-        this.augmentedTree = this.augmentTree(tree);
         this.gl = gl;
 
         this.totalNodes = tree.subTreeSize;
         this.treeHeight = this.calculateTreeHeight(tree, 0);
 
-        this.drawTree(this.augmentedTree, this.rootBounds, Orientation.HORIZONTAL, false, this.colorB);
+        this.drawTree(tree, this.rootBounds, Orientation.HORIZONTAL, false, this.colorB);
     }
 
     /** drawTree draw the tree-map recursively.
@@ -174,14 +149,6 @@ export class SimpleTreeMap implements Visualizer {
             }
         }
         return treeHeight;
-    }
-
-    private augmentTree(tree: Node): AugmentedNode {
-        let augmentedChildren = [];
-        for (let i = 0; i < tree.children.length; i++) {
-            augmentedChildren.push(this.augmentTree(tree.children[i]));
-        }
-        return (new AugmentedNode(tree.label, augmentedChildren, tree.parent, tree.subTreeSize));
     }
 
     public getForm(formFactory: FormFactory) {
