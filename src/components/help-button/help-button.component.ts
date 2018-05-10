@@ -62,7 +62,9 @@ export class HelpButtonComponent implements OnInit{
             showStepNumbers: false, // Hide step numbers
             showBullets: false,     // Hide bullets
             showProgress: true,     // Instead use progress bar
-            overlayOpacity: 0.5     // Set opacity of page overlay to 0.5
+            overlayOpacity: 0.5,    // Set opacity of page overlay to 0.5
+            nextLabel: "Next",      // Default has arrow, doesn't fit with material style
+            prevLabel: "Back",      // Default has arrow, doesn't fit with material style
         })
     }
 
