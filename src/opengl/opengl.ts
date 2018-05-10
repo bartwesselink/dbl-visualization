@@ -17,7 +17,8 @@ export class OpenGL{
     private mode: Mode;
     private factor: number = 1;
     private dx: number = 0;
-    private dy: number = 0;    
+    private dy: number = 0;
+    private rotation: number = 0;
     
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
@@ -40,10 +41,14 @@ export class OpenGL{
         Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DRotationMatrix4(rotation));
         Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(1 / this.HALFHEIGHT, 1 / this.HALFWIDTH));
         Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]); 
+        this.rotation += rotation;
     }
     
     //translates the model view by the given distance
     public translate(dx: number, dy: number, width: number, height: number): void {
+        var vec = Matrix.rotateVector2D([0, 0], [dx, dy], -this.rotation);
+        dx = vec[0];
+        dy = vec[1];
         if(this.mode == Mode.WIDTH_FIRST){
             height = (width / this.WIDTH) * this.HEIGHT;
         }else{
