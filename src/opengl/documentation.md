@@ -25,8 +25,16 @@ Translates the OpenGL view by the given distance. The `dx` and `dy` parameters d
 Rotates the OpenGL view by the given number of degrees. Rotations are additive.
 - `public getRotation(): number`    
 Returns the view rotation in degrees.
-- `public getZoom(): number`
+- `public getZoom(): number`    
 Return the zoom factor.
+- `public resetTransformations(): void`    
+Resets all transformations (zoom, rotation and translation).
+- `public resetZoom(): void`    
+Resets the zoom level back to 1.
+- `public resetRotation(): void`    
+Resets the rotation back to 0 degrees.
+- `public resetTranslation(): void`    
+Resets the origin back to (0, 0).
 
 # Rendering
 All the rendering methods will ask for a color to use. The color should be provided as an array containing the red, green, blue and alpha values as floats. These floats should all be in range 0 to 1.    
