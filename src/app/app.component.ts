@@ -1,16 +1,20 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {Tab} from '../models/tab';
 import { Node } from '../models/node';
 import {NewickParser} from '../utils/newick-parser';
 import {SidebarComponent} from '../components/sidebar/sidebar.component';
 import {Visualizer} from '../interfaces/visualizer';
 import {GeneralizedPythagorasTree} from '../visualizations/generalized-pythagoras-tree';
+import {SettingsBus} from '../providers/settings-bus';
+import {Settings} from '../interfaces/settings';
+import {OpenglDemoTree} from "../visualizations/opengl-demo-tree";
+import {SimpleTreeMap} from "../visualizations/simple-tree-map";
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
     public tabs: Tab[] = [];
     public tree: Node;
     public visualizers: Visualizer[];
@@ -21,12 +25,13 @@ export class AppComponent implements OnInit {
 
     private parser = new NewickParser();
 
-    constructor() {
+    constructor(private settingsBus: SettingsBus) {
         this.createVisualizers();
-    }
 
-    ngOnInit(): void {
-        this.addTab(this.visualizers[0]); // TODO: remove first tab
+        // TODO: remove this example of how settings are updated
+        this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
+            console.log(settings);
+        });
     }
 
     /** @author Jordy Verhoeven */
@@ -38,7 +43,8 @@ export class AppComponent implements OnInit {
 
             setTimeout(() => {
                 this.sidebar.reloadData();
-            });
+                this.redrawAllTabs();
+            }, 100);
         }
     }
     /** @end-author Jordy Verhoeven */
@@ -73,13 +79,31 @@ export class AppComponent implements OnInit {
             setTimeout(() => {
                 tab.window.render();
             }, 100);
+
+            this.resizeActiveTab();
         }
     }
 
     private createVisualizers(): void {
         this.visualizers = [
+            new OpenglDemoTree(),
             new GeneralizedPythagorasTree(),
+            new SimpleTreeMap(),
         ];
+    }
+
+    private resizeActiveTab(): void {
+        setTimeout(() => {
+            this.activeTab.window.setHeight();
+        });
+    }
+
+    private redrawAllTabs(): void {
+        for (const tab of this.tabs) {
+            if (tab.window) {
+                tab.window.startScene();
+            }
+        }
     }
 
     private addTab(visualizer: Visualizer) {

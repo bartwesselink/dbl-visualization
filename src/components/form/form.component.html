@@ -36,5 +36,11 @@
                 <span class="mdl-radio__label">{{ getChoiceOptions(field).choices[key] }}</span>
             </label>
         </div>
+
+        <div class="form-group mdl-textfield mdl-textfield--floating-label is-dirty is-upgraded" *ngIf="field.type === FormType.Slider">
+            <label class="mdl-textfield__label" [for]="form.getName() + field.name">{{ field.options.label }}</label>
+
+            <input type="range" [id]="form.getName() + field.name" class="full-width" [min]="getSliderOptions(field).min" [max]="getSliderOptions(field).max" [formControl]="field.control">
+        </div>
     </div>
 </form>

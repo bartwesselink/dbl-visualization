@@ -1,6 +1,7 @@
 /** Vendor components */
 @import "~material-design-lite/src/material-design-lite";
 @import "~mdl-selectfield/dist/mdl-selectfield";
+@import "~dialog-polyfill/dialog-polyfill";
 @import "~intro.js/minified/introjs.min.css";
 
 /** Styles component */
@@ -15,4 +16,7 @@
 @import "modules/upload-button";
 @import "modules/help-tour";
 @import "modules/form-group";
-@import "modules/settings-button";
+@import "modules/welcome-page";
+@import "modules/visualization-settings-button";
+@import "modules/general-settings-button";
+@import "modules/dialog";

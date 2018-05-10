@@ -6,6 +6,7 @@
             <app-visualization-picker [visualizers]="visualizers" (select)="addVisualization($event)"></app-visualization-picker>
 
             <div>
+                <app-general-settings-button></app-general-settings-button>
                 <app-help-button></app-help-button>
                 <app-upload-tool (newContent)="parseTree($event)"></app-upload-tool>
             </div>
@@ -35,5 +36,7 @@
                 <app-sidebar [tree]="tree"></app-sidebar>
             </div>
         </div>
+
+        <app-welcome-page [visualizers]="visualizers" [hidden]="tabs.length > 0"></app-welcome-page>
     </main>
 </div>
