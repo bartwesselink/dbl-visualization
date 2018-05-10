@@ -43,6 +43,30 @@ export class OpenGL{
     public getZoom(): number {
         return this.factor;    
     }
+    
+    //reset scale, rotation and translations
+    public resetTransformations(): void {
+        this.resetTranslation();
+        this.resetZoom();
+        this.resetRotation();
+    }
+    
+    //reset all scalings
+    public resetZoom(): void {
+        this.scale(1 / this.factor);
+    }
+    
+    //reset all rotations
+    public resetRotation(): void {
+        this.rotate(-this.rotation);
+    }
+    
+    //reset all translations
+    public resetTranslation(): void {
+        Matrix.translateSelf(this.modelviewMatrix, [-this.dx, -this.dy, 0]);
+        this.dx = 0;
+        this.dy = 0;
+    }
 
     //rotate the model view by the given number of degrees
     public rotate(rotation: number): void {

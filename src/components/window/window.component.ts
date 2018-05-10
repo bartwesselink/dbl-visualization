@@ -99,6 +99,11 @@ export class WindowComponent implements OnInit {
             this.gl.scale(1 - this.DEFAULT_DS);
             this.render();
             break;
+        case 't':
+        case 'T':
+            this.gl.resetTransformations();
+            this.render();
+            break;
         }
     }
     
