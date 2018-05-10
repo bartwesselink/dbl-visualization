@@ -3,6 +3,8 @@ import {Node} from '../models/node';
 import {OpenGL} from '../opengl/opengl';
 import {Form} from '../form/form';
 import {FormFactory} from '../form/form-factory';
+import {Draw} from '../interfaces/draw';
+import {VisualizerInput} from '../interfaces/visualizer-input';
 
 export class GeneralizedPythagorasTree implements Visualizer {
     /** @author Jules Cornelissen */
@@ -18,14 +20,16 @@ export class GeneralizedPythagorasTree implements Visualizer {
 
     private radianToDegreeMultiplier = 180 / Math.PI;
 
-    public draw(tree: Node, gl: OpenGL) {
+    public draw(input: VisualizerInput): Draw[] {
 
         // Define the base rectangle of the visualized tree, these values can later be determined in settings
         // Rectangle is an array of 5 numbers, in order: center x, center y, width (X), height (Y), angle
-        let rectangle = [this.initialRectangleCenterX, this.initialRectangleCenterY, this.initialRectangleWidth, this.initialRectangleHeight, this.initialRectangleAngle];
+        //let rectangle = [this.initialRectangleCenterX, this.initialRectangleCenterY, this.initialRectangleWidth, this.initialRectangleHeight, this.initialRectangleAngle];
 
         // Call the main recursive drawing function
-        this.generate(tree, rectangle, gl);
+        //this.generate(tree, rectangle, gl);
+
+        return [];
 
     }
 

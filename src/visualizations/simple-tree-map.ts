@@ -3,6 +3,8 @@ import {Node} from '../models/node';
 import {OpenGL} from '../opengl/opengl';
 import {Form} from '../form/form';
 import {FormFactory} from '../form/form-factory';
+import {Draw} from '../interfaces/draw';
+import {VisualizerInput} from '../interfaces/visualizer-input';
 
 /** @author Nico Klaassen */
 
@@ -39,20 +41,21 @@ export class SimpleTreeMap implements Visualizer {
         this.offset = 0;
     }
 
-    public draw(tree: Node, gl: OpenGL): void {
-        this.tree = tree;
-        this.gl = gl;
-
-        // Initial bounds
-        const bounds = {
-            left: -300,
-            right: 300,
-            bottom: -300,
-            top: 300
-        };
-        this.totalNodes = tree.subTreeSize;
-
-        this.drawTree(tree, bounds, Orientation.HORIZONTAL, false, this.colorB);
+    public draw(input: VisualizerInput): Draw[] {
+        return [];
+        // this.tree = tree;
+        // this.gl = gl;
+        //
+        // // Initial bounds
+        // const bounds = {
+        //     left: -300,
+        //     right: 300,
+        //     bottom: -300,
+        //     top: 300
+        // };
+        // this.totalNodes = tree.subTreeSize;
+        //
+        // this.drawTree(tree, bounds, Orientation.HORIZONTAL, false, this.colorB);
     }
 
     /** drawTree draw the tree-map recursively.
@@ -133,14 +136,6 @@ export class SimpleTreeMap implements Visualizer {
         return formFactory.createFormBuilder()
             .addSliderField('offset', 0, { label: 'Offset', min: 0, max: 25 })
             .getForm();
-    }
-
-    public applySettings(settings: any) {
-        this.offset = settings.offset;
-
-        this.gl.releaseBuffers();       // remove old data from buffers
-        this.draw(this.tree, this.gl);  // fill buffers with new data
-        this.gl.render();               // force a render
     }
 
     public getName(): string {

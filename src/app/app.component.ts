@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, ElementRef, ViewChild} from '@angular/core';
 import {Tab} from '../models/tab';
 import { Node } from '../models/node';
 import {NewickParser} from '../utils/newick-parser';
@@ -9,6 +9,7 @@ import {SettingsBus} from '../providers/settings-bus';
 import {Settings} from '../interfaces/settings';
 import {OpenglDemoTree} from "../visualizations/opengl-demo-tree";
 import {SimpleTreeMap} from "../visualizations/simple-tree-map";
+import {WorkerManager} from '../utils/worker-manager';
 
 @Component({
     selector: 'app-root',
@@ -18,10 +19,13 @@ export class AppComponent {
     public tabs: Tab[] = [];
     public tree: Node;
     public visualizers: Visualizer[];
+    public showFullScreenLoader: boolean = false;
 
     private activeTab: Tab;
+    private amountOfWindowsLoading: number = 0;
 
     @ViewChild(SidebarComponent) private sidebar: SidebarComponent;
+    @ViewChild('fullScreenLoader') private fullScreenLoader: ElementRef;
 
     private parser = new NewickParser();
 
@@ -84,6 +88,26 @@ export class AppComponent {
         }
     }
 
+    public updateLoading(isLoading: boolean) {
+        if (isLoading) {
+            this.amountOfWindowsLoading++;
+        } else {
+            this.amountOfWindowsLoading--;
+        }
+
+        // check if we need to show the full screen modal, in case there is no visualization yet
+        if (this.amountOfWindowsLoading > 0 && this.showFullScreenLoader) {
+            this.fullScreenLoader.nativeElement.showModal();
+        } else if (this.showFullScreenLoader) {
+            this.showFullScreenLoader = false;
+            this.fullScreenLoader.nativeElement.close();
+        }
+    }
+
+    public isLoading(): boolean {
+        return this.amountOfWindowsLoading > 0;
+    }
+
     private createVisualizers(): void {
         this.visualizers = [
             new OpenglDemoTree(),
@@ -113,6 +137,7 @@ export class AppComponent {
         });
 
         this.switchTab(this.tabs[this.tabs.length - 1]); // always show new visualization when tab is added
+        this.showFullScreenLoader = true;
     }
     /** @end-author Bart Wesselink */
 }
