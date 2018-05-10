@@ -23,6 +23,10 @@ Scales the OpenGL view by the given factor. Scaling is multiplicative.
 Translates the OpenGL view by the given distance. The `dx` and `dy` parameters denote the distance to translate the model in the x and y direction respectively and the `width` and `height` respectively denote the width and height of the canvas. Translations are cumulative.
 - `public rotate(rotation: number): void`    
 Rotates the OpenGL view by the given number of degrees. Rotations are additive.
+- `public getRotation(): number`    
+Returns the view rotation in degrees.
+- `public getZoom(): number`
+Return the zoom factor.
 
 # Rendering
 All the rendering methods will ask for a color to use. The color should be provided as an array containing the red, green, blue and alpha values as floats. These floats should all be in range 0 to 1.    

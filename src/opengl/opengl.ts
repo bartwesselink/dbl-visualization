@@ -33,7 +33,18 @@ export class OpenGL{
         this.gl.depthFunc(gl.LEQUAL);
         this.gl.enable(gl.DEPTH_TEST);   
     }
+    
+    //return the rotation
+    public getRotation(): number {
+        return this.rotation;
+    }
+    
+    //return the zoom level
+    public getZoom(): number {
+        return this.factor;    
+    }
 
+    //rotate the model view by the given number of degrees
     public rotate(rotation: number): void {
         Matrix.translateSelf(this.modelviewMatrix, [-this.dx, -this.dy, 0]);
         Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(this.HALFHEIGHT, this.HALFWIDTH));
