@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild, HostListener} from '@angular/core';
 import {Element} from '../../opengl/element';
 import {Matrix} from '../../opengl/matrix';
 import {OpenGL} from '../../opengl/opengl';
@@ -35,6 +35,10 @@ export class WindowComponent implements OnInit {
     private lastX: number;
     private lastY: number;
     private readonly ZOOM_NORMALISATION = 40;
+    private readonly ROTATION_NORMALISATION = 10;
+    private readonly DEFAULT_DR = 1;
+    private readonly DEFAULT_DT = 5;
+    private readonly DEFAULT_DS = 0.1;
     
     constructor(private formFactory: FormFactory) {
 
@@ -52,10 +56,55 @@ export class WindowComponent implements OnInit {
         this.visualizer.applySettings(value);
     }
     
+    @HostListener('window:keydown', ['$event'])
+    public keyEvent(event: KeyboardEvent): void {
+        switch(event.key){
+        case 'q':
+        case 'Q':
+            this.gl.rotate(-this.DEFAULT_DR);
+            this.render();
+            break;
+        case 'e':
+        case 'E':
+            this.gl.rotate(this.DEFAULT_DR);
+            this.render();
+            break;
+        case 'w':
+        case 'W':
+            this.gl.translate(0, this.DEFAULT_DT, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+            this.render();
+            break;
+        case 's':
+        case 'S':
+            this.gl.translate(0, -this.DEFAULT_DT, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+            this.render();    
+            break;
+        case 'a':
+        case 'A':
+            this.gl.translate(this.DEFAULT_DT, 0, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+            this.render();
+            break;
+        case 'd':
+        case 'D':
+            this.gl.translate(-this.DEFAULT_DT, 0, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+            this.render();    
+            break;
+        case 'r':
+        case 'R':
+            this.gl.scale(1 + this.DEFAULT_DS);
+            this.render();
+            break;
+        case 'f':
+        case 'F':
+            this.gl.scale(1 - this.DEFAULT_DS);
+            this.render();
+            break;
+        }
+    }
+    
     //called when the mouse is pressed
     public mouseDown(): void {
         this.down = true;
-        this.render();
     }
     
     //called when the mouse is realsed
@@ -84,7 +133,7 @@ export class WindowComponent implements OnInit {
     public onScroll(event: WheelEvent): void {
         event.preventDefault();
         if(this.down){
-            this.gl.rotate(event.deltaY / 10);
+            this.gl.rotate(event.deltaY / this.ROTATION_NORMALISATION);
         }else{
             this.gl.scale(Math.max(0.1, 1.0 - (event.deltaY / this.ZOOM_NORMALISATION)));    
         }
