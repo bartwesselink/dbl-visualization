@@ -32,9 +32,8 @@ export class OpenGL{
         this.gl.enable(this.gl.BLEND);
         this.gl.depthFunc(gl.LEQUAL);
         this.gl.enable(gl.DEPTH_TEST);   
-        
     }
-   //00:30
+
     public rotate(rotation: number): void {
         Matrix.translateSelf(this.modelviewMatrix, [-this.dx, -this.dy, 0]);
         Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(this.HALFHEIGHT, this.HALFWIDTH));
