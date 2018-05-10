@@ -55,7 +55,6 @@ export class WindowComponent implements OnInit {
     //called when the mouse is pressed
     public mouseDown(): void {
         this.down = true;
-        this.gl.rotate(90);
         this.render();
     }
     

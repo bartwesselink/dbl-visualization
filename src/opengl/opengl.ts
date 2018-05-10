@@ -33,11 +33,12 @@ export class OpenGL{
         this.gl.enable(gl.DEPTH_TEST);   
         
     }
-    
+   //00:30
     public rotate(rotation: number): void {
         Matrix.translateSelf(this.modelviewMatrix, [-this.dx, -this.dy, 0]);
+        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(this.HALFHEIGHT, this.HALFWIDTH));
         Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DRotationMatrix4(rotation));
-        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(1, 9/16));
+        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(1 / this.HALFHEIGHT, 1 / this.HALFWIDTH));
         Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]); 
     }
     

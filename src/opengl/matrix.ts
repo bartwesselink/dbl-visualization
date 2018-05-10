@@ -43,7 +43,7 @@ export class Matrix{
     }
     
     //creates a 4x4 rotation matrix for the given number of degrees
-    public static create2DRotationMatrix4(degrees: number): number[] {
+    public static create2DRotationMatrix4(degrees: number): Float32Array {
         var c = Math.cos(degrees * this.oneDeg);
         var s = Math.sin(degrees * this.oneDeg);
         var out = new Float32Array(16);
