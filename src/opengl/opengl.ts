@@ -106,8 +106,8 @@ export class OpenGL{
     //maps a true canvas coordinate to the imaginary OpenGL coordinate system
     public transformPoint(x: number, y: number, width: number, height: number): number[] {
         var loc = this.transform(x, y, width, height);
-        loc[0] *= this.WIDTH;
-        loc[1] *= this.HEIGHT;
+        loc[0] *= this.HALFWIDTH;
+        loc[1] *= this.HALFHEIGHT;
         return loc;
     }
     
@@ -116,9 +116,9 @@ export class OpenGL{
         var dx = x - width / 2;
         var dy = y - height / 2;
         if(this.mode == Mode.WIDTH_FIRST){
-            return [(dx / width) / this.factor - this.dx / 2, -((dy / height) * (height / ((width / this.WIDTH) * this.HEIGHT))) / this.factor - this.dy / 2];
+            return [((dx / width) / this.factor) * 2 - this.dx, -(((dy / height) * (height / ((width / this.WIDTH) * this.HEIGHT))) / this.factor) * 2 - this.dy];
         }else{
-            return [((dx / width) * (width / ((height / this.HEIGHT) * this.WIDTH))) / this.factor - this.dx / 2, -(dy / height) / this.factor - this.dy / 2];
+            return [(((dx / width) * (width / ((height / this.HEIGHT) * this.WIDTH))) / this.factor) * 2 - this.dx, -((dy / height) / this.factor) * 2 - this.dy];
         }
     }
     
