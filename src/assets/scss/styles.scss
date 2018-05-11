@@ -5,6 +5,7 @@
 @import "~intro.js/minified/introjs.min.css";
 
 /** Styles component */
+@import "modules/global";
 @import "modules/header";
 @import "modules/holder";
 @import "modules/sidebar";

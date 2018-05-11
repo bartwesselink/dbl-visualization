@@ -68,7 +68,7 @@ export class HelpButtonComponent implements OnInit{
                     element: '.mdl-layout__tab-panel.is-active app-screenshot-button button',
                 },
                 {
-                    intro: "Finally you can close a visualization by clicking here",
+                    intro: "Finally you can close a visualization by clicking here.",
                     element: '.mdl-layout__tab-app.is-active i',
                     clickExit: true,
                 }
