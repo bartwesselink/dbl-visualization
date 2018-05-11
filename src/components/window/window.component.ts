@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit, ViewChild, HostListener} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {Element} from '../../opengl/element';
 import {Matrix} from '../../opengl/matrix';
 import {OpenGL} from '../../opengl/opengl';
@@ -19,7 +19,7 @@ export class WindowComponent implements OnInit {
     @ViewChild('canvas') private canvas: ElementRef;
     @Input('tree') private tree: Node;
     @Input('visualizer') public visualizer: Visualizer;
-    @Input('tab') private tab: Tab;
+    @Input('tab') public tab: Tab;
 
     public form: Form|null;
 
@@ -56,7 +56,6 @@ export class WindowComponent implements OnInit {
         this.visualizer.applySettings(value);
     }
     
-    @HostListener('window:keydown', ['$event'])
     public keyEvent(event: KeyboardEvent): void {
         switch(event.key){
         case 'q':
