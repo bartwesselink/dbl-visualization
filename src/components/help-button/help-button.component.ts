@@ -40,14 +40,12 @@ export class HelpButtonComponent implements OnInit{
                 {
                     intro: "To add a new visualization to the tabs, click here and choose one of the options.",
                     element: 'app-visualization-picker > button',
-                    click: true,
-                    clickTime: 'exit'
+                    clickExit: true,
                 },
                 {
                     intro: "For this tour we will use this one as an example.",
                     element: 'app-visualization-picker div ul li',
-                    click: true,
-                    clickTime: 'exit'
+                    clickExit: true,
                 },
                 {
                     intro: "Here you will be able to see your dataset as a tree with nodes you can collapse and expand.",
@@ -61,6 +59,9 @@ export class HelpButtonComponent implements OnInit{
                 {
                     intro: "If you want to change something about the current visualization, click here.",
                     element: '.mdl-layout__tab-panel.is-active app-visualization-settings-button button',
+                    clickStart: true,
+                    clickExit: true,
+                    position: 'right'
                 },
                 {
                     intro: "If you want to make a screenshot of your visualization window, click here.",
@@ -69,8 +70,7 @@ export class HelpButtonComponent implements OnInit{
                 {
                     intro: "Finally you can close a visualization by clicking here",
                     element: '.mdl-layout__tab-app.is-active i',
-                    click: true,
-                    clickTime: 'exit',
+                    clickExit: true,
                 }
             ],
             showStepNumbers: false, // Hide step numbers
@@ -81,33 +81,26 @@ export class HelpButtonComponent implements OnInit{
             prevLabel: "Back",      // Default has arrow, doesn't fit with material style
         });
 
-        // This implements the click attribute in the steps so we can do things like opening menus in the tour
-        // The clickTime attribute determines when in a step the click event is triggered
-        // start means right when the tour gets to the element, exit right when it goes to the next
-        // By default clickTime is 'start'
-        let self = this;
+        // This implements the click attributes in the steps so we can do things like opening menus in the tour
+        // clickStart clicks the selected element when the tour gets to that element, and exit when it leaves.
         this.tour.onchange(function(element) {
-            if(this._options.steps[this._currentStep].click && this._options.steps[this._currentStep].clickTime != 'exit' && element) {
+            if(this._options.steps[this._currentStep].clickStart && element) {
                 element.click();
             }
 
             if(this._options.steps[this._currentStep - 1] &&
-                this._options.steps[this._currentStep - 1].click &&
-                this._options.steps[this._currentStep - 1].clickTime == 'exit') {
-                (document.querySelector(this._options.steps[this._currentStep - 1].element) as HTMLElement).click();
+                this._options.steps[this._currentStep - 1].clickExit) {
+                this._introItems[this._currentStep - 1].element.click();
             }
 
-            for (var i = this._currentStep; i < this._options.steps.length; i++) {
-                var currentItem = this._introItems[i];
-                var step = this._options.steps[i];
+            // Update the tour elements for if new elements have been added since the tour started (in our case the canvas and its buttons)
+            for (let i = this._currentStep; i < this._options.steps.length; i++) {
+                let currentItem = this._introItems[i];
+                let step = this._options.steps[i];
 
                 if (step.element && document.querySelector(step.element)) {
                     currentItem.element = (document.querySelector(step.element) as HTMLElement);
                     currentItem.position = step.position;
-                }
-
-                if(step.element == '.mdl-layout__tab-panel.is-active') {
-                    console.log(document.querySelector(step.element) as HTMLElement);
                 }
             }
         });
@@ -115,9 +108,8 @@ export class HelpButtonComponent implements OnInit{
         // Edge case for triggering a click on exiting the last step of the tour
         this.tour.onbeforeexit(function() {
             if(this._options.steps[this._currentStep - 1] &&
-                this._options.steps[this._currentStep - 1].click &&
-                this._options.steps[this._currentStep - 1].clickTime == 'exit') {
-                (document.querySelector(this._options.steps[this._currentStep - 1].element) as HTMLElement).click();
+                this._options.steps[this._currentStep - 1].clickExit) {
+                this._introItems[this._currentStep - 1].element.click();
             }
         })
     }
