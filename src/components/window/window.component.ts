@@ -19,7 +19,7 @@ export class WindowComponent implements OnInit {
     @ViewChild('canvas') private canvas: ElementRef;
     @Input('tree') private tree: Node;
     @Input('visualizer') public visualizer: Visualizer;
-    @Input('tab') private tab: Tab;
+    @Input('tab') public tab: Tab;
 
     public form: Form|null;
 
@@ -35,6 +35,10 @@ export class WindowComponent implements OnInit {
     private lastX: number;
     private lastY: number;
     private readonly ZOOM_NORMALISATION = 40;
+    private readonly ROTATION_NORMALISATION = 10;
+    private readonly DEFAULT_DR = 1;
+    private readonly DEFAULT_DT = 5;
+    private readonly DEFAULT_DS = 0.1;
     
     constructor(private formFactory: FormFactory) {
 
@@ -50,6 +54,56 @@ export class WindowComponent implements OnInit {
 
     public change(value: object) {
         this.visualizer.applySettings(value);
+    }
+    
+    public keyEvent(event: KeyboardEvent): void {
+        switch(event.key){
+        case 'q':
+        case 'Q':
+            this.gl.rotate(-this.DEFAULT_DR);
+            this.render();
+            break;
+        case 'e':
+        case 'E':
+            this.gl.rotate(this.DEFAULT_DR);
+            this.render();
+            break;
+        case 'w':
+        case 'W':
+            this.gl.translate(0, this.DEFAULT_DT, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+            this.render();
+            break;
+        case 's':
+        case 'S':
+            this.gl.translate(0, -this.DEFAULT_DT, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+            this.render();    
+            break;
+        case 'a':
+        case 'A':
+            this.gl.translate(this.DEFAULT_DT, 0, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+            this.render();
+            break;
+        case 'd':
+        case 'D':
+            this.gl.translate(-this.DEFAULT_DT, 0, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+            this.render();    
+            break;
+        case 'r':
+        case 'R':
+            this.gl.scale(1 + this.DEFAULT_DS);
+            this.render();
+            break;
+        case 'f':
+        case 'F':
+            this.gl.scale(1 - this.DEFAULT_DS);
+            this.render();
+            break;
+        case 't':
+        case 'T':
+            this.gl.resetTransformations();
+            this.render();
+            break;
+        }
     }
     
     //called when the mouse is pressed
@@ -82,7 +136,11 @@ export class WindowComponent implements OnInit {
     //called when the scroll wheel is scrolled
     public onScroll(event: WheelEvent): void {
         event.preventDefault();
-        this.gl.scale(Math.max(0.1, 1.0 - (event.deltaY / this.ZOOM_NORMALISATION)));
+        if(this.down){
+            this.gl.rotate(event.deltaY / this.ROTATION_NORMALISATION);
+        }else{
+            this.gl.scale(Math.max(0.1, 1.0 - (event.deltaY / this.ZOOM_NORMALISATION)));    
+        }
         this.render();
     }
 

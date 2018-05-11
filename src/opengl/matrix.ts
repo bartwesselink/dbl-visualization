@@ -42,6 +42,30 @@ export class Matrix{
         return out;
     }
     
+    //creates a 4x4 rotation matrix for the given number of degrees
+    public static create2DRotationMatrix4(degrees: number): Float32Array {
+        var c = Math.cos(degrees * this.oneDeg);
+        var s = Math.sin(degrees * this.oneDeg);
+        var out = new Float32Array(16);
+        out[0] = c;
+        out[1] = -s;
+        out[2] = 0;
+        out[3] = 0;
+        out[4] = s;
+        out[5] = c;
+        out[6] = 0;
+        out[7] = 0;
+        out[8] = 0;
+        out[9] = 0;
+        out[10] = 1;
+        out[11] = 0;
+        out[12] = 0;
+        out[13] = 0;
+        out[14] = 0;
+        out[15] = 1;
+        return out;
+    }
+    
     //creates a 2D translation matrix for the given vector
     public static create2DTranslationMatrix(vector: number[]): number[]{
         var out = [9];
@@ -71,6 +95,28 @@ export class Matrix{
         out[3] = 0;
         out[4] = 0;
         out[5] = factor;
+        out[6] = 0;
+        out[7] = 0;
+        out[8] = 0;
+        out[9] = 0;
+        out[10] = 1;
+        out[11] = 0;
+        out[12] = 0;
+        out[13] = 0;
+        out[14] = 0;
+        out[15] = 1;
+        return out;
+    }
+    
+    //creates a 2D scaling matrix
+    public static create2DInconsistentScalingMatrix(sx: number, sy: number): Float32Array{
+        var out = new Float32Array(16);
+        out[0] = sx;
+        out[1] = 0;
+        out[2] = 0;
+        out[3] = 0;
+        out[4] = 0;
+        out[5] = sy;
         out[6] = 0;
         out[7] = 0;
         out[8] = 0;
