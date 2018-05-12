@@ -18,6 +18,7 @@ export class OpenGL{
     private factor: number = 1;
     private dx: number = 0;
     private dy: number = 0;
+    private rotation: number = 0;
     
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
@@ -33,8 +34,55 @@ export class OpenGL{
         this.gl.enable(gl.DEPTH_TEST);   
     }
     
+    //return the rotation
+    public getRotation(): number {
+        return this.rotation;
+    }
+    
+    //return the zoom level
+    public getZoom(): number {
+        return this.factor;    
+    }
+    
+    //reset scale, rotation and translations
+    public resetTransformations(): void {
+        this.resetTranslation();
+        this.resetZoom();
+        this.resetRotation();
+    }
+    
+    //reset all scalings
+    public resetZoom(): void {
+        this.scale(1 / this.factor);
+    }
+    
+    //reset all rotations
+    public resetRotation(): void {
+        this.rotate(-this.rotation);
+    }
+    
+    //reset all translations
+    public resetTranslation(): void {
+        Matrix.translateSelf(this.modelviewMatrix, [-this.dx, -this.dy, 0]);
+        this.dx = 0;
+        this.dy = 0;
+    }
+
+    //rotate the model view by the given number of degrees
+    public rotate(rotation: number): void {
+        Matrix.translateSelf(this.modelviewMatrix, [-this.dx, -this.dy, 0]);
+        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(this.HALFHEIGHT, this.HALFWIDTH));
+        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DRotationMatrix4(rotation));
+        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(1 / this.HALFHEIGHT, 1 / this.HALFWIDTH));
+        Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]); 
+        this.rotation += rotation;
+    }
+    
     //translates the model view by the given distance
     public translate(dx: number, dy: number, width: number, height: number): void {
+        var vec = Matrix.rotateVector2D([0, 0], [dx, dy], -this.rotation);
+        dx = vec[0];
+        dy = vec[1];
         if(this.mode == Mode.WIDTH_FIRST){
             height = (width / this.WIDTH) * this.HEIGHT;
         }else{
@@ -58,8 +106,8 @@ export class OpenGL{
     //maps a true canvas coordinate to the imaginary OpenGL coordinate system
     public transformPoint(x: number, y: number, width: number, height: number): number[] {
         var loc = this.transform(x, y, width, height);
-        loc[0] *= this.WIDTH;
-        loc[1] *= this.HEIGHT;
+        loc[0] *= this.HALFWIDTH;
+        loc[1] *= this.HALFHEIGHT;
         return loc;
     }
     
@@ -68,9 +116,9 @@ export class OpenGL{
         var dx = x - width / 2;
         var dy = y - height / 2;
         if(this.mode == Mode.WIDTH_FIRST){
-            return [(dx / width) / this.factor - this.dx / 2, -((dy / height) * (height / ((width / this.WIDTH) * this.HEIGHT))) / this.factor - this.dy / 2];
+            return [((dx / width) / this.factor) * 2 - this.dx, -(((dy / height) * (height / ((width / this.WIDTH) * this.HEIGHT))) / this.factor) * 2 - this.dy];
         }else{
-            return [((dx / width) * (width / ((height / this.HEIGHT) * this.WIDTH))) / this.factor - this.dx / 2, -(dy / height) / this.factor - this.dy / 2];
+            return [(((dx / width) * (width / ((height / this.HEIGHT) * this.WIDTH))) / this.factor) * 2 - this.dx, -((dy / height) / this.factor) * 2 - this.dy];
         }
     }
     
