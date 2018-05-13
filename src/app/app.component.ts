@@ -132,6 +132,7 @@ export class AppComponent {
 
     private addTab(visualizer: Visualizer) {
         this.tabs.push({
+            id: this.tabs.length + 1,
             visualizer: visualizer,
             active: false,
         });
