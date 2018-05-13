@@ -3,9 +3,9 @@
 @import "~mdl-selectfield/dist/mdl-selectfield";
 @import "~dialog-polyfill/dialog-polyfill";
 @import "~intro.js/minified/introjs.min.css";
-@import "~intro.js/themes/introjs-nassim.css";
 
 /** Styles component */
+@import "modules/global";
 @import "modules/header";
 @import "modules/holder";
 @import "modules/sidebar";
