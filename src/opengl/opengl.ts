@@ -162,6 +162,35 @@ export class OpenGL{
         }
     }
     
+    public drawPartialCircle(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
+        const pos = [];
+        const colors = [];
+        var loc = [x + radius, y];
+        var rotation = [9];
+        Matrix.multiply(rotation, Matrix.create2DTranslationMatrix([-x, -y]), Matrix.create2DRotationMatrix(precision));
+        Matrix.multiply(rotation, rotation, Matrix.create2DTranslationMatrix([x, y]));
+        for(var i = start; i < end; i += precision){
+            Matrix.multiplyVector2D(loc, rotation);
+            pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
+            colors.push(color[0], color[1], color[2], color[3]);
+        }
+        
+        var positionBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
+        
+        var colorBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
+        
+        this.arrays.push({
+            pos: positionBuffer,
+            color: colorBuffer,
+            mode: this.gl.LINE_STRIP,
+            length: pos.length / 2
+        });
+    }
+    
     //fill a rotated quad
     public fillRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): void {
         this.renderRotatedQuad(x,             y,
