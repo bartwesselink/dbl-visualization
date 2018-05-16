@@ -393,6 +393,32 @@ export class OpenGL{
         this.renderEllipsoidImpl(colors, pos, fill, line, lineColor);
     }
     
+    public drawThingyImpl(x: number, y: number, near: number, far: number, start: number, end: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
+        const pos = [];
+        const colors = [];
+        if(fill){
+            pos.push(x / this.HALFWIDTH, y / this.HALFHEIGHT);
+            colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+        }
+        var loc = [x + radius, y];
+        var rotation = [9];
+        Matrix.multiply(rotation, Matrix.create2DTranslationMatrix([-x, -y]), Matrix.create2DRotationMatrix(precision));
+        Matrix.multiply(rotation, rotation, Matrix.create2DTranslationMatrix([x, y]));
+        for(var i = 0; i <= 360; i += precision){
+            if(i != 360 && line || fill){
+                Matrix.multiplyVector2D(loc, rotation);
+                pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
+                if(fill || lineColor == null){
+                    colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+                }else{
+                    colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+                }
+            }
+        }
+            
+        this.renderEllipsoidImpl(colors, pos, fill, line, lineColor);
+    }
+    
     //draws an ellipsoid
     private renderEllipsoidImpl(colors: number[], pos: number[], fill: boolean, line: boolean, lineColor: number[]): void {
         var colorBuffer = this.gl.createBuffer();
