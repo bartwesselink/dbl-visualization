@@ -162,35 +162,6 @@ export class OpenGL{
         }
     }
     
-    public drawPartialCircle(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
-        const pos = [];
-        const colors = [];
-        var loc = [x + radius, y];
-        var rotation = [9];
-        Matrix.multiply(rotation, Matrix.create2DTranslationMatrix([-x, -y]), Matrix.create2DRotationMatrix(precision));
-        Matrix.multiply(rotation, rotation, Matrix.create2DTranslationMatrix([x, y]));
-        for(var i = start; i < end; i += precision){
-            Matrix.multiplyVector2D(loc, rotation);
-            pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
-            colors.push(color[0], color[1], color[2], color[3]);
-        }
-        
-        var positionBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
-        
-        var colorBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
-        
-        this.arrays.push({
-            pos: positionBuffer,
-            color: colorBuffer,
-            mode: this.gl.LINE_STRIP,
-            length: pos.length / 2
-        });
-    }
-    
     //fill a rotated quad
     public fillRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): void {
         this.renderRotatedQuad(x,             y,
@@ -382,25 +353,21 @@ export class OpenGL{
     
     //draws a circle
     public fillCircle(x: number, y: number, radius: number, fillColor: number[], precision: number = this.PRECISION): void {
-        this.drawCircleImpl(x, y, radius, 0, 360, true, false, fillColor, null, precision);
+        this.drawCircleImpl(x, y, radius, true, false, fillColor, null, precision);
     }
             
     //draws a circle
     public drawCircle(x: number, y: number, radius: number, lineColor: number[], precision: number = this.PRECISION): void {
-        this.drawCircleImpl(x, y, radius, 0, 360, false, true, null, lineColor, precision);
+        this.drawCircleImpl(x, y, radius, false, true, null, lineColor, precision);
     }
                     
     //draws a circle
     public fillLinedCircle(x: number, y: number, radius: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
-        this.drawCircleImpl(x, y, radius, 0, 360, true, true, fillColor, lineColor, precision);
-    }
-    
-    public drawCircleSlice(x: number, y: number, radius: number, start: number, end: number, lineColor: number[], precision: number = this.PRECISION): void {
-        this.drawCircleImpl(x, y, radius, start, end, false, true, null, lineColor, precision);
+        this.drawCircleImpl(x, y, radius, true, true, fillColor, lineColor, precision);
     }
     
     //renders a circle
-    private drawCircleImpl(x: number, y: number, radius: number, start: number, end: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
+    private drawCircleImpl(x: number, y: number, radius: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
         const pos = [];
         const colors = [];
         if(fill){
@@ -411,10 +378,7 @@ export class OpenGL{
         var rotation = [9];
         Matrix.multiply(rotation, Matrix.create2DTranslationMatrix([-x, -y]), Matrix.create2DRotationMatrix(precision));
         Matrix.multiply(rotation, rotation, Matrix.create2DTranslationMatrix([x, y]));
-        if(start != 0){
-            Matrix.rotateVector2D(loc, start);
-        }
-        for(var i = start; i <= end; i += precision){
+        for(var i = 0; i <= 360; i += precision){
             Matrix.multiplyVector2D(loc, rotation);
             pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
             if(fill || lineColor == null){
@@ -427,20 +391,25 @@ export class OpenGL{
         this.renderEllipsoidImpl(colors, pos, fill, line, lineColor);
     }
     
-    public drawThingyImpl(x: number, y: number, near: number, far: number, start: number, end: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
+    public drawCircleSlice(x: number, y: number, radius: number, start: number, end: number, lineColor: number[], precision: number = this.PRECISION): void {
+        //this.drawCircleImpl(x, y, radius, start, end, true, false, true, null, lineColor, precision);
+        this.drawSliceImpl(x, y, 100, 150, start, end, false, true, null, lineColor, precision);
+    }
+    
+    public drawSliceImpl(x: number, y: number, near: number, far: number, start: number, end: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
         const pos = [];
         const colors = [];
         
         for(var i = start; i <= end; i += precision){
-            pos.push(near * Math.cos(i * Matrix.oneDeg), near * Math.sin(i * Matrix.oneDeg));
-            colors.push(color[0], color[1], color[2], color[3]);
+            pos.push(near * Math.cos(i * Matrix.oneDeg) / this.HALFWIDTH, near * Math.sin(i * Matrix.oneDeg) / this.HALFHEIGHT);
+            colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
         }
         
         for(var i = end; i >= start; i -= precision){
-            pos.push(far * Math.cos(i * Matrix.oneDeg), far * Math.sin(i * Matrix.oneDeg));
-            colors.push(color[0], color[1], color[2], color[3]);
+            pos.push(far * Math.cos(i * Matrix.oneDeg) / this.HALFWIDTH, far * Math.sin(i * Matrix.oneDeg) / this.HALFHEIGHT);
+            colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
         }
-        
+        console.log(pos.length + " | " + colors.length);
         
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
