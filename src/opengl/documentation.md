@@ -76,7 +76,9 @@ Draws a filled circle with a lined around it with a given center coordinate, x r
 
 ## Lines
 - `public drawLine(x: number[], y: number[], color: number[]): void`    
-Draws a line through the given x and y coordinates and with the given color. The x and y lists should have the same size.  
+Draws a line through the given x and y coordinates and with the given color. The x and y lists should have the same size and numbers at the same array index correspond to each other. For instance, the first line segment would be drawn between (`x[0]`, `y[0]`) and (`x[1]`, `y[1]`).
+- `public drawLine(x1: number, y1: number, x2: number, y2: number, color: number[]): void`    
+Draws a straight line between two points and with the given color, the first point being (`x1`, `y1`) and the second point being (`x2`, `y2`).
 
 # Private subroutines
 - `private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void`        
