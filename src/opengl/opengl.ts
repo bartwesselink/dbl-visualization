@@ -391,24 +391,32 @@ export class OpenGL{
         this.renderEllipsoidImpl(colors, pos, fill, line, lineColor);
     }
     
-    public drawCircleSlice(x: number, y: number, radius: number, start: number, end: number, lineColor: number[], precision: number = this.PRECISION): void {
+    public drawCircleSlice(x: number, y: number, radius: number, start: number, end: number, lineColor: number[], innerPrecision: number = this.PRECISION, outerPrecision: number = this.PRECISION): void {
         //this.drawCircleImpl(x, y, radius, start, end, true, false, true, null, lineColor, precision);
-        this.drawSliceImpl(x, y, 100, 150, start, end, false, true, null, lineColor, precision);
+        this.drawSliceImpl(x, y, 0, 150, start, end, false, true, null, lineColor, innerPrecision, outerPrecision);
     }
     
-    public drawSliceImpl(x: number, y: number, near: number, far: number, start: number, end: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
+    public drawSliceImpl(x: number, y: number, near: number, far: number, start: number, end: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], innerPrecision: number, outerPrecision: number): void {
         const pos = [];
         const colors = [];
-        
-        for(var i = start; i <= end; i += precision){
-            pos.push(near * Math.cos(i * Matrix.oneDeg) / this.HALFWIDTH, near * Math.sin(i * Matrix.oneDeg) / this.HALFHEIGHT);
+        if(fill){
+            pos.push((x + ((near + far) / 2) * Math.cos(((start + end) / 2) * Matrix.oneDeg)) / this.HALFWIDTH, (y + ((near + far) / 2) * Math.sin(((start + end) / 2) * Matrix.oneDeg)) / this.HALFHEIGHT);
+            colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+        }
+        if(near == 0){
+            pos.push(x / this.HALFWIDTH, y / this.HALFHEIGHT);
+            colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+        }else{
+            for(var i = start; i <= end; i += innerPrecision){
+                pos.push((x + near * Math.cos(i * Matrix.oneDeg) / this.HALFWIDTH), (y + near * Math.sin(i * Matrix.oneDeg) / this.HALFHEIGHT));
+                colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+            }
+        }
+        for(var i = end; i >= start; i -= outerPrecision){
+            pos.push((x + far * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + far * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
             colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
         }
         
-        for(var i = end; i >= start; i -= precision){
-            pos.push(far * Math.cos(i * Matrix.oneDeg) / this.HALFWIDTH, far * Math.sin(i * Matrix.oneDeg) / this.HALFHEIGHT);
-            colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
-        }
         console.log(pos.length + " | " + colors.length);
         
         var positionBuffer = this.gl.createBuffer();
