@@ -21,6 +21,9 @@ export class OpenglDemoTree implements Visualizer {
         this.gl = gl; // So we have access to this in the entire class.
         this.tree = tree;
 
+        // Dedicated GPU test
+        gl.isDedicatedGPU();
+
         // Draw axis - range and domain: [-100, 100]
         gl.fillAAQuad(-200, -1, 400, 2, [1, 0, 0, 1]); // X axis
         gl.fillAAQuad(-1, -200, 2, 400, [1, 0, 0, 1]); // Y axis
