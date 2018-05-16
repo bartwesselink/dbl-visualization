@@ -32,6 +32,8 @@ export class AppComponent {
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
             console.log(settings);
         });
+
+        window.addEventListener('resize', () => this.resizeActiveTab());
     }
 
     /** @author Jordy Verhoeven */
@@ -93,6 +95,10 @@ export class AppComponent {
     }
 
     private resizeActiveTab(): void {
+        if (!this.activeTab) {
+            return;
+        }
+
         setTimeout(() => {
             this.activeTab.window.setHeight();
         });
@@ -108,6 +114,7 @@ export class AppComponent {
 
     private addTab(visualizer: Visualizer) {
         this.tabs.push({
+            id: this.tabs.length + 1,
             visualizer: visualizer,
             active: false,
         });
