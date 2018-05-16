@@ -153,9 +153,9 @@ export class WindowComponent implements OnInit {
         this.render();
     }
 
-    public startScene(): void {
+    public async startScene(): Promise<void> {
         this.init();
-        this.computeScene();
+        await this.computeScene();
 
     }
 
@@ -164,27 +164,31 @@ export class WindowComponent implements OnInit {
     }
         
     //compute the visualisation
-    private computeScene(): void {
-        this.gl.releaseBuffers();
+    private computeScene(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.gl.releaseBuffers();
 
-        if (!this.visualizer) {
-            return;
-        }
+            if (!this.visualizer) {
+                return;
+            }
 
-        if (!this.tree && !(this.visualizer instanceof OpenglDemoTree)) { // only the demo visualizer can be rendered without data
-            return; // there is no tree yet
-        }
+            if (!this.tree && !(this.visualizer instanceof OpenglDemoTree)) { // only the demo visualizer can be rendered without data
+                return; // there is no tree yet
+            }
 
-        this.startLoading();
+            this.startLoading();
 
-        this.workerManager.startWorker(this.gl,this.visualizer.draw, { tree: this.tree, settings: this.lastSettings })
-            .then(() => {
-                setTimeout(() => {
-                    this.redraw();
+            this.workerManager.startWorker(this.gl,this.visualizer.draw, { tree: this.tree, settings: this.lastSettings })
+                .then(() => {
+                    setTimeout(() => {
+                        this.redraw();
 
-                    this.stopLoading();
-                }, 100);
-            });
+                        this.stopLoading();
+                    }, 100);
+
+                    resolve();
+                });
+        });
     }
   
     //fallback rendering for when some OpenGL error occurs

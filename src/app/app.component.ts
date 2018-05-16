@@ -97,7 +97,10 @@ export class AppComponent {
 
         // check if we need to show the full screen modal, in case there is no visualization yet
         if (this.amountOfWindowsLoading > 0 && this.showFullScreenLoader) {
-            this.fullScreenLoader.nativeElement.showModal();
+            // check if modal is already open, to prevent any errors
+            if (!this.fullScreenLoader.nativeElement.open) {
+                this.fullScreenLoader.nativeElement.showModal();
+            }
         } else if (this.showFullScreenLoader) {
             this.showFullScreenLoader = false;
             this.fullScreenLoader.nativeElement.close();
@@ -122,10 +125,10 @@ export class AppComponent {
         });
     }
 
-    private redrawAllTabs(): void {
-        for (const tab of this.tabs) {
+    private async redrawAllTabs(): Promise<void> {
+        for (const tab of this.tabs.slice().sort((a, b) => a === this.activeTab ? 0 : 1)) {
             if (tab.window) {
-                tab.window.startScene();
+                await tab.window.startScene();
             }
         }
     }
