@@ -162,6 +162,18 @@ export class OpenGL{
         }
     }
     
+    //draws a partial ellipsoid
+    public drawEllipsoidalArc(x: number, y: number, radx: number, rady: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
+        const pos = [];
+        const colors = [];
+        for(var i = start; i <= end; i += precision){
+            pos.push((x + radx * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + rady * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
+            colors.push(color[0], color[1], color[2], color[3]);
+        }
+        
+        this.drawArcImpl(pos, colors);
+    }
+    
     //draws a partial circle
     public drawCircularArc(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
         const pos = [];
