@@ -396,27 +396,32 @@ export class OpenGL{
     public drawThingyImpl(x: number, y: number, near: number, far: number, start: number, end: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
         const pos = [];
         const colors = [];
-        if(fill){
-            pos.push(x / this.HALFWIDTH, y / this.HALFHEIGHT);
-            colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+        
+        for(var i = start; i <= end; i += precision){
+            pos.push(near * Math.cos(i * Matrix.oneDeg), near * Math.sin(i * Matrix.oneDeg));
+            colors.push(color[0], color[1], color[2], color[3]);
         }
-        var loc = [x + radius, y];
-        var rotation = [9];
-        Matrix.multiply(rotation, Matrix.create2DTranslationMatrix([-x, -y]), Matrix.create2DRotationMatrix(precision));
-        Matrix.multiply(rotation, rotation, Matrix.create2DTranslationMatrix([x, y]));
-        for(var i = 0; i <= 360; i += precision){
-            if(i != 360 && line || fill){
-                Matrix.multiplyVector2D(loc, rotation);
-                pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
-                if(fill || lineColor == null){
-                    colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
-                }else{
-                    colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
-                }
-            }
+        
+        for(var i = end; i >= start; i -= precision){
+            pos.push(far * Math.cos(i * Matrix.oneDeg), far * Math.sin(i * Matrix.oneDeg));
+            colors.push(color[0], color[1], color[2], color[3]);
         }
-            
-        this.renderEllipsoidImpl(colors, pos, fill, line, lineColor);
+        
+        
+        var positionBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
+        
+        var colorBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
+        
+        this.arrays.push({
+            pos: positionBuffer,
+            color: colorBuffer,
+            mode: this.gl.LINE_LOOP,
+            length: pos.length / 2
+        });
     }
     
     //draws an ellipsoid
