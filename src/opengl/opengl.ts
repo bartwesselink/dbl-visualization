@@ -382,21 +382,25 @@ export class OpenGL{
     
     //draws a circle
     public fillCircle(x: number, y: number, radius: number, fillColor: number[], precision: number = this.PRECISION): void {
-        this.drawCircleImpl(x, y, radius, true, false, fillColor, null, precision);
+        this.drawCircleImpl(x, y, radius, 0, 360, true, false, fillColor, null, precision);
     }
             
     //draws a circle
     public drawCircle(x: number, y: number, radius: number, lineColor: number[], precision: number = this.PRECISION): void {
-        this.drawCircleImpl(x, y, radius, false, true, null, lineColor, precision);
+        this.drawCircleImpl(x, y, radius, 0, 360, false, true, null, lineColor, precision);
     }
                     
     //draws a circle
     public fillLinedCircle(x: number, y: number, radius: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
-        this.drawCircleImpl(x, y, radius, true, true, fillColor, lineColor, precision);
+        this.drawCircleImpl(x, y, radius, 0, 360, true, true, fillColor, lineColor, precision);
+    }
+    
+    public drawCircleSlice(x: number, y: number, radius: number, start: number, end: number, lineColor: number[], precision: number = this.PRECISION): void {
+        this.drawCircleImpl(x, y, radius, start, end, false, true, null, lineColor, precision);
     }
     
     //renders a circle
-    private drawCircleImpl(x: number, y: number, radius: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
+    private drawCircleImpl(x: number, y: number, radius: number, start: number, end: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
         const pos = [];
         const colors = [];
         if(fill){
@@ -407,15 +411,16 @@ export class OpenGL{
         var rotation = [9];
         Matrix.multiply(rotation, Matrix.create2DTranslationMatrix([-x, -y]), Matrix.create2DRotationMatrix(precision));
         Matrix.multiply(rotation, rotation, Matrix.create2DTranslationMatrix([x, y]));
-        for(var i = 0; i <= 360; i += precision){
-            if(i != 360 && line || fill){
-                Matrix.multiplyVector2D(loc, rotation);
-                pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
-                if(fill || lineColor == null){
-                    colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
-                }else{
-                    colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
-                }
+        if(start != 0){
+            Matrix.rotateVector2D(loc, start);
+        }
+        for(var i = start; i <= end; i += precision){
+            Matrix.multiplyVector2D(loc, rotation);
+            pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
+            if(fill || lineColor == null){
+                colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+            }else{
+                colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
             }
         }
             
