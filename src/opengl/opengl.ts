@@ -46,13 +46,11 @@ export class OpenGL{
                 return false;
             }else if(name.indexOf("Mobility") != -1){
                 return false;
-            }else if(name.indexOf("FirePro_M") != -1){
-                return false;
             }else{
                 return true;
             }
         }else if(name.indexOf("FirePro") != -1){
-            if(name.indexOf("FirePro_M") != -1){
+            if(name.indexOf("FirePro M") != -1){
                 return false;
             }else{
                 return true;
