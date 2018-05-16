@@ -164,11 +164,11 @@ export class OpenGL{
     
     //draws a straight line
     public drawLine(x1: number, y1: number, x2: number, y2: number, color: number[]): void {
-        this.drawLines([x1, x2], [y1, y2], color);    
+        this.drawPolyLine([x1, x2], [y1, y2], color);    
     }
     
     //draws multiple continues lines
-    public drawLines(x: number[], y: number[], color: number[]): void {   
+    public drawPolyLine(x: number[], y: number[], color: number[]): void {   
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         const pos = [x.length + y.length];

@@ -75,7 +75,7 @@ Outlines a circle with a given center coordinate, radius, rotation and color. Th
 Draws a filled circle with a lined around it with a given center coordinate, x radius, y radius, rotation, fill color and line color. If the line color is set to `null` then the fill color is also used as the line color. The optional precision argument specifies how good the ellipsoid approximation has to be, this value has to be a divisor of 360 for correct results. If the precision argument is not specified then the default value of 10 is used.
 
 ## Lines
-- `public drawLine(x: number[], y: number[], color: number[]): void`    
+- `public drawPolyLine(x: number[], y: number[], color: number[]): void`    
 Draws a line through the given x and y coordinates and with the given color. The x and y lists should have the same size and numbers at the same array index correspond to each other. For instance, the first line segment would be drawn between (`x[0]`, `y[0]`) and (`x[1]`, `y[1]`).
 - `public drawLine(x1: number, y1: number, x2: number, y2: number, color: number[]): void`    
 Draws a straight line between two points and with the given color, the first point being (`x1`, `y1`) and the second point being (`x2`, `y2`).
