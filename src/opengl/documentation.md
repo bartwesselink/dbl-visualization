@@ -82,6 +82,8 @@ Draws a filled circle with a lined around it with a given center coordinate, x r
 Draws a line through the given x and y coordinates and with the given color. The x and y lists should have the same size and numbers at the same array index correspond to each other. For instance, the first line segment would be drawn between (`x[0]`, `y[0]`) and (`x[1]`, `y[1]`).
 - `public drawLine(x1: number, y1: number, x2: number, y2: number, color: number[]): void`    
 Draws a straight line between two points and with the given color, the first point being (`x1`, `y1`) and the second point being (`x2`, `y2`).
+
+## Arcs
 - `public drawEllipsoidalArc(x: number, y: number, radx: number, rady: number, start: number, end: number, color: number[], precision: number): void`    
 Draws an ellipsoidal arc centred at the given `x` and `y` coordinate (if the full arc were to be drawn) and with the given x and y radiuses. The `start` variable specifies at what number of degrees the arc start and the `end` variable specifies at what number of degrees the arc should end. For example drawing from `start=90` to `end=180` would draw the leftmost upper quarter of the ellipsoid. Additionally a line color has to be given. The optional precision argument specifies how good the ellipsoid approximation has to be, this value has to be a divisor of 360 for correct results. If the precision argument is not specified then the default value of 10 is used.
 - `public drawCircularArc(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number): void`    
