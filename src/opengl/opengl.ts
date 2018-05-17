@@ -391,16 +391,27 @@ export class OpenGL{
         this.renderEllipsoidImpl(colors, pos, fill, line, lineColor, 2);
     }
     
-    public drawRingSlice(): void {
+    public drawRingSlice(x: number, y: number, radius: number, start: number, end: number, lineColor: number[], innerPrecision: number = this.PRECISION, outerPrecision: number = this.PRECISION): void {
         
-    }
-        
-    public drawCircleSlice(x: number, y: number, start: number, end: number, lineColor: number[], innerPrecision: number = this.PRECISION, outerPrecision: number = this.PRECISION): void {
-        //this.drawCircleImpl(x, y, radius, start, end, true, false, true, null, lineColor, precision);
-        this.drawSliceImpl(x, y, 0, 150, start, end, true, true, lineColor, [0,0,0,1], innerPrecision, 30);
     }
     
-    public drawSliceImpl(x: number, y: number, near: number, far: number, start: number, end: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], innerPrecision: number, outerPrecision: number): void {
+    //draws a circular slice  
+    public drawCircleSlice(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
+        this.drawSliceImpl(x, y, 0, radius, start, end, false, true, null, color, 0, precision);
+    }
+    
+    //draws a circular slice
+    public fillCircleSlice(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
+        this.drawSliceImpl(x, y, 0, radius, start, end, true, false, color, null, 0, precision);
+    }
+    
+    //draws a circular slice
+    public fillLinedCircleSlice(x: number, y: number, radius: number, start: number, end: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
+        this.drawSliceImpl(x, y, 0, radius, start, end, true, true, fillColor, lineColor, 0, precision);
+    }
+    
+    //draws a circular slice
+    private drawSliceImpl(x: number, y: number, near: number, far: number, start: number, end: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], innerPrecision: number, outerPrecision: number): void {
         const pos = [];
         const colors = [];
         for(var i = (end + start) / 2; i < end; i += outerPrecision){
