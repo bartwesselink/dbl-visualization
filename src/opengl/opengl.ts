@@ -115,11 +115,22 @@ export class OpenGL{
     private transform(x: number, y: number, width: number, height: number): number[] {
         var dx = x - width / 2;
         var dy = y - height / 2;
+        var loc = null;
         if(this.mode == Mode.WIDTH_FIRST){
-            return [((dx / width) / this.factor) * 2 - this.dx, -(((dy / height) * (height / ((width / this.WIDTH) * this.HEIGHT))) / this.factor) * 2 - this.dy];
+            loc = [((dx / width) / this.factor) * 2, -(((dy / height) * (height / ((width / this.WIDTH) * this.HEIGHT))) / this.factor) * 2];
         }else{
-            return [(((dx / width) * (width / ((height / this.HEIGHT) * this.WIDTH))) / this.factor) * 2 - this.dx, -((dy / height) / this.factor) * 2 - this.dy];
+            loc = [(((dx / width) * (width / ((height / this.HEIGHT) * this.WIDTH))) / this.factor) * 2, -((dy / height) / this.factor) * 2];
         }
+        console.log(loc);
+        loc[0] *= this.HALFWIDTH;
+        loc[1] *= this.HALFHEIGHT;
+        console.log(loc);
+        Matrix.rotateVector2D([0, 0], loc, this.rotation);
+        loc[0] /= this.HALFWIDTH;
+        loc[1] /= this.HALFHEIGHT;
+        loc[0] -= this.dx;
+        loc[1] -= this.dy;
+        return loc;
     }
     
     //resizes the viewport to the optimal size for the new canvas size
