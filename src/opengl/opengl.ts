@@ -113,8 +113,8 @@ export class OpenGL{
     
     //maps a true canvas coordinate to the true OpenGL coordinate system
     private transform(x: number, y: number, width: number, height: number): number[] {
-        var dx = x - width / 2;
-        var dy = y - height / 2;
+        var dx = x - (width / 2);
+        var dy = y - (height / 2);
         if(this.mode == Mode.WIDTH_FIRST){
             var loc = [((dx / width) / this.factor) * this.WIDTH, -(((dy / height) * (height / (width / this.WIDTH))) / this.factor)];
         }else{
