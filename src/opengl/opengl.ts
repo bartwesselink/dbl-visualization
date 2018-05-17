@@ -448,14 +448,14 @@ export class OpenGL{
             }
         }else{
             for(var i = end; i > start; i -= innerPrecision){
-                pos.push((x + near * Math.cos(i * Matrix.oneDeg) / this.HALFWIDTH), (y + near * Math.sin(i * Matrix.oneDeg) / this.HALFHEIGHT));
+                pos.push((x + near * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + near * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
                 if(fill || lineColor == null){
                     colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
                 }else{
                     colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
                 }
             }
-            pos.push((x + near * Math.cos(start * Matrix.oneDeg) / this.HALFWIDTH), (y + near * Math.sin(start * Matrix.oneDeg) / this.HALFHEIGHT));
+            pos.push((x + near * Math.cos(start * Matrix.oneDeg)) / this.HALFWIDTH, (y + near * Math.sin(start * Matrix.oneDeg)) / this.HALFHEIGHT);
             if(fill || lineColor == null){
                 colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
             }else{
