@@ -393,36 +393,36 @@ export class OpenGL{
     
     //draws a ring slice
     public drawRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, color: number[], innerPrecision: number = this.PRECISION, outerPrecision: number = this.PRECISION): void {
-        this.drawSliceImpl(x, y, near, far, start, end, false, true, null, color, innerPrecision, outerPrecision);
+        this.drawRingSliceImpl(x, y, near, far, start, end, false, true, null, color, innerPrecision, outerPrecision);
     }
     
     //draws a ring slice
     public fillRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, color: number[], innerPrecision: number = this.PRECISION, outerPrecision: number = this.PRECISION): void {
-        this.drawSliceImpl(x, y, near, far, start, end, true, false, color, null, innerPrecision, outerPrecision);
+        this.drawRingSliceImpl(x, y, near, far, start, end, true, false, color, null, innerPrecision, outerPrecision);
     }
     
     //draws a ring slice
     public fillLinedRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, fillColor: number[], lineColor: number[], innerPrecision: number = this.PRECISION, outerPrecision: number = this.PRECISION): void {
-        this.drawSliceImpl(x, y, near, far, start, end, true, true, fillColor, lineColor, innerPrecision, outerPrecision);
+        this.drawRingSliceImpl(x, y, near, far, start, end, true, true, fillColor, lineColor, innerPrecision, outerPrecision);
     }
     
     //draws a circular slice  
     public drawCircleSlice(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
-        this.drawSliceImpl(x, y, 0, radius, start, end, false, true, null, color, 0, precision);
+        this.drawCircleSliceImpl(x, y, radius, start, end, false, true, null, color, precision);
     }
     
     //draws a circular slice
     public fillCircleSlice(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
-        this.drawSliceImpl(x, y, 0, radius, start, end, true, false, color, null, 0, precision);
+        this.drawCircleSliceImpl(x, y, radius, start, end, true, false, color, null, precision);
     }
     
     //draws a circular slice
     public fillLinedCircleSlice(x: number, y: number, radius: number, start: number, end: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
-        this.drawSliceImpl(x, y, 0, radius, start, end, true, true, fillColor, lineColor, 0, precision);
+        this.drawCircleSliceImpl(x, y, radius, start, end, true, true, fillColor, lineColor, precision);
     }
     
     //draws a circular slice
-    private drawSliceImpl(x: number, y: number, near: number, far: number, start: number, end: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], innerPrecision: number, outerPrecision: number): void {
+    private drawRingSliceImpl(x: number, y: number, near: number, far: number, start: number, end: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], innerPrecision: number, outerPrecision: number): void {
         const pos = [];
         const colors = [];
         for(var i = (end + start) / 2; i < end; i += outerPrecision){
@@ -485,14 +485,14 @@ export class OpenGL{
             colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
         }
         for(var i = start; i < end; i += precision){
-            pos.push((x + far * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + far * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
+            pos.push((x + radius * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + radius * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
             if(fill || lineColor == null){
                 colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
             }else{
                 colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
             }
         }
-        pos.push((x + far * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH, (y + far * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT);
+        pos.push((x + radius * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH, (y + radius * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT);
         if(fill || lineColor == null){
             colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
         }else{
