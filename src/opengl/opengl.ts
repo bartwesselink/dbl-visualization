@@ -348,7 +348,7 @@ export class OpenGL{
             }
         }
             
-        this.renderEllipsoidImpl(color, pos, fill, line, lineColor);
+        this.renderEllipsoidImpl(color, pos, fill, line, lineColor, 2);
     }
     
     //draws a circle
@@ -388,55 +388,72 @@ export class OpenGL{
             }
         }
             
-        this.renderEllipsoidImpl(colors, pos, fill, line, lineColor);
+        this.renderEllipsoidImpl(colors, pos, fill, line, lineColor, 2);
     }
     
-    public drawCircleSlice(x: number, y: number, radius: number, start: number, end: number, lineColor: number[], innerPrecision: number = this.PRECISION, outerPrecision: number = this.PRECISION): void {
+    public drawRingSlice(): void {
+        
+    }
+        
+    public drawCircleSlice(x: number, y: number, start: number, end: number, lineColor: number[], innerPrecision: number = this.PRECISION, outerPrecision: number = this.PRECISION): void {
         //this.drawCircleImpl(x, y, radius, start, end, true, false, true, null, lineColor, precision);
-        this.drawSliceImpl(x, y, 0, 150, start, end, false, true, null, lineColor, innerPrecision, outerPrecision);
+        this.drawSliceImpl(x, y, 0, 150, start, end, true, true, lineColor, [0,0,0,1], innerPrecision, 30);
     }
     
     public drawSliceImpl(x: number, y: number, near: number, far: number, start: number, end: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], innerPrecision: number, outerPrecision: number): void {
         const pos = [];
         const colors = [];
-        if(fill){
-            pos.push((x + ((near + far) / 2) * Math.cos(((start + end) / 2) * Matrix.oneDeg)) / this.HALFWIDTH, (y + ((near + far) / 2) * Math.sin(((start + end) / 2) * Matrix.oneDeg)) / this.HALFHEIGHT);
+        for(var i = (end + start) / 2; i < end; i += outerPrecision){
+            pos.push((x + far * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + far * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
+            if(fill || lineColor == null){
+                colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+            }else{
+                colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+            }
+        }
+        pos.push((x + far * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH, (y + far * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT);
+        if(fill || lineColor == null){
+            colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+        }else{
             colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
         }
         if(near == 0){
             pos.push(x / this.HALFWIDTH, y / this.HALFHEIGHT);
-            colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+             if(fill || lineColor == null){
+                colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+            }else{
+                colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+            }
         }else{
-            for(var i = start; i <= end; i += innerPrecision){
+            for(var i = end; i > start; i -= innerPrecision){
                 pos.push((x + near * Math.cos(i * Matrix.oneDeg) / this.HALFWIDTH), (y + near * Math.sin(i * Matrix.oneDeg) / this.HALFHEIGHT));
+                if(fill || lineColor == null){
+                    colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+                }else{
+                    colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+                }
+            }
+            pos.push((x + near * Math.cos(start * Matrix.oneDeg) / this.HALFWIDTH), (y + near * Math.sin(start * Matrix.oneDeg) / this.HALFHEIGHT));
+            if(fill || lineColor == null){
+                colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+            }else{
                 colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
             }
         }
-        for(var i = end; i >= start; i -= outerPrecision){
+        for(var i = start; i < (end + start) / 2; i += outerPrecision){
             pos.push((x + far * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + far * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
-            colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+            if(fill || lineColor == null){
+                colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+            }else{
+                colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+            }
         }
-        
-        console.log(pos.length + " | " + colors.length);
-        
-        var positionBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
-        
-        var colorBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
-        
-        this.arrays.push({
-            pos: positionBuffer,
-            color: colorBuffer,
-            mode: this.gl.LINE_LOOP,
-            length: pos.length / 2
-        });
+                
+        this.renderEllipsoidImpl(colors, pos, fill, line, lineColor, 0);
     }
     
     //draws an ellipsoid
-    private renderEllipsoidImpl(colors: number[], pos: number[], fill: boolean, line: boolean, lineColor: number[]): void {
+    private renderEllipsoidImpl(colors: number[], pos: number[], fill: boolean, line: boolean, lineColor: number[], offset: number): void {
         var colorBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
@@ -460,7 +477,7 @@ export class OpenGL{
                 lineColorBuffer = this.gl.createBuffer();
                 this.gl.bindBuffer(this.gl.ARRAY_BUFFER, lineColorBuffer);
                 var lineColors = [];
-                for(var i = 0; i < pos.length / 2 - 2; i++){
+                for(var i = 0; i < pos.length / 2 - offset; i++){
                     lineColors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
                 }
                 
@@ -475,8 +492,8 @@ export class OpenGL{
                     pos: posBuffer,
                     color: lineColorBuffer,
                     mode: this.gl.LINE_LOOP,
-                    length: pos.length / 2 - 2,
-                    offset: 8
+                    length: pos.length / 2 - offset,
+                    offset: offset * 4
                 }
             });
         }
