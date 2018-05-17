@@ -115,21 +115,14 @@ export class OpenGL{
     private transform(x: number, y: number, width: number, height: number): number[] {
         var dx = x - width / 2;
         var dy = y - height / 2;
-        var loc = null;
         if(this.mode == Mode.WIDTH_FIRST){
-            loc = [((dx / width) / this.factor) * 2, -(((dy / height) * (height / ((width / this.WIDTH) * this.HEIGHT))) / this.factor) * 2];
+            var loc = [((dx / width) / this.factor) * this.WIDTH, -(((dy / height) * (height / (width / this.WIDTH))) / this.factor)];
         }else{
-            loc = [(((dx / width) * (width / ((height / this.HEIGHT) * this.WIDTH))) / this.factor) * 2, -((dy / height) / this.factor) * 2];
+            var loc = [(((dx / width) * (width / (height / this.HEIGHT))) / this.factor), -((dy / height) / this.factor) * this.HEIGHT];
         }
-        console.log(loc);
-        loc[0] *= this.HALFWIDTH;
-        loc[1] *= this.HALFHEIGHT;
-        console.log(loc);
         Matrix.rotateVector2D([0, 0], loc, this.rotation);
-        loc[0] /= this.HALFWIDTH;
-        loc[1] /= this.HALFHEIGHT;
-        loc[0] -= this.dx;
-        loc[1] -= this.dy;
+        loc[0] = loc[0] / this.HALFWIDTH - this.dx;
+        loc[1] = loc[1] / this.HALFHEIGHT - this.dy;
         return loc;
     }
     
