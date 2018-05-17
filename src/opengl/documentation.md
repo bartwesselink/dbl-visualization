@@ -75,6 +75,8 @@ Outlines a circle with a given center coordinate, radius, rotation and color. Th
 Draws a filled circle with a lined around it with a given center coordinate, x radius, y radius, rotation, fill color and line color. If the line color is set to `null` then the fill color is also used as the line color. The optional precision argument specifies how good the ellipsoid approximation has to be, this value has to be a divisor of 360 for correct results. If the precision argument is not specified then the default value of 10 is used.
 
 ## Slices
+**Note:** The precision argument for slices is a bit more relaxed and does not have to be a divisor of 360. In fact the best results are achieved when it is a divisor of the difference between the `start` and `end` argument. For a small enough precision value this different is however unnoticeable.
+
 -     public fillLinedCircleSlice(x: number, y: number, radius: number, start: number, end: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
 -     public fillCircleSlice(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
 -     public drawCircleSlice(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
