@@ -103,6 +103,23 @@ export class OpenGL{
         this.factor *= factor;
     }
     
+    //scales the model view by the given factor
+    public scaleTo(factor: number, x: number, y: number, width: number, height: number): void {
+        var loc = this.transformPoint(x, y, width, height);
+        //Matrix.translateSelf(this.modelviewMatrix, [-this.dx, -this.dy, 0]);
+        console.log(loc);
+        //this.resetTranslation();
+        var f = this.factor;
+        this.scale(factor);
+        
+        var n = this.transformPoint(x, y, width, height);
+
+        this.translate(n[0] - loc[0], loc[1] - n[1], width, height);
+        //Matrix.translateSelf(this.modelviewMatrix, [this.dx += (loc[0] - n[0]) / this.factor, this.dy += (loc[1] - n[1]) / this.factor, 0]);
+
+        console.log(this.transform(x, y, width, height));
+    }
+    
     //maps a true canvas coordinate to the imaginary OpenGL coordinate system
     public transformPoint(x: number, y: number, width: number, height: number): number[] {
         var loc = this.transform(x, y, width, height);

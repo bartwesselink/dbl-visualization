@@ -139,7 +139,7 @@ export class WindowComponent implements OnInit {
         if(this.down){
             this.gl.rotate(event.deltaY / this.ROTATION_NORMALISATION);
         }else{
-            this.gl.scale(Math.max(0.1, 1.0 - (event.deltaY / this.ZOOM_NORMALISATION)));    
+            this.gl.scaleTo(Math.max(0.1, 1.0 - (event.deltaY / this.ZOOM_NORMALISATION)), event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);    
         }
         this.render();
     }
