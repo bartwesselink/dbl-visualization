@@ -391,8 +391,19 @@ export class OpenGL{
         this.renderEllipsoidImpl(colors, pos, fill, line, lineColor, 2);
     }
     
-    public drawRingSlice(x: number, y: number, radius: number, start: number, end: number, lineColor: number[], innerPrecision: number = this.PRECISION, outerPrecision: number = this.PRECISION): void {
-        
+    //draws a ring slice
+    public drawRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, color: number[], innerPrecision: number = this.PRECISION, outerPrecision: number = this.PRECISION): void {
+        this.drawSliceImpl(x, y, near, far, start, end, false, true, null, color, innerPrecision, outerPrecision);
+    }
+    
+    //draws a ring slice
+    public fillRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, color: number[], innerPrecision: number = this.PRECISION, outerPrecision: number = this.PRECISION): void {
+        this.drawSliceImpl(x, y, near, far, start, end, true, false, color, null, innerPrecision, outerPrecision);
+    }
+    
+    //draws a ring slice
+    public fillLinedRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, fillColor: number[], lineColor: number[], innerPrecision: number = this.PRECISION, outerPrecision: number = this.PRECISION): void {
+        this.drawSliceImpl(x, y, near, far, start, end, true, true, fillColor, lineColor, innerPrecision, outerPrecision);
     }
     
     //draws a circular slice  
