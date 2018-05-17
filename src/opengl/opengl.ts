@@ -121,8 +121,8 @@ export class OpenGL{
             var loc = [(((dx / width) * (width / (height / this.HEIGHT))) / this.factor), -((dy / height) / this.factor) * this.HEIGHT];
         }
         Matrix.rotateVector2D([0, 0], loc, this.rotation);
-        loc[0] = loc[0] / this.HALFWIDTH - this.dx;
-        loc[1] = loc[1] / this.HALFHEIGHT - this.dy;
+        loc[0] = (loc[0] / this.HALFWIDTH) - this.dx;
+        loc[1] = (loc[1] / this.HALFHEIGHT) - this.dy;
         return loc;
     }
     
