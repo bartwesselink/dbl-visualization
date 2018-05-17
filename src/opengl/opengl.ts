@@ -474,6 +474,34 @@ export class OpenGL{
         this.renderEllipsoidImpl(colors, pos, fill, line, lineColor, 0);
     }
     
+    //draws a circular slice
+    private drawCircleSliceImpl(x: number, y: number, radius: number, start: number, end: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
+        const pos = [];
+        const colors = [];
+        pos.push(x / this.HALFWIDTH, y / this.HALFHEIGHT);
+        if(fill || lineColor == null){
+            colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+        }else{
+            colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+        }
+        for(var i = start; i < end; i += precision){
+            pos.push((x + far * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + far * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
+            if(fill || lineColor == null){
+                colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+            }else{
+                colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+            }
+        }
+        pos.push((x + far * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH, (y + far * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT);
+        if(fill || lineColor == null){
+            colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+        }else{
+            colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+        }
+                
+        this.renderEllipsoidImpl(colors, pos, fill, line, lineColor, 0);
+    }
+    
     //draws an ellipsoid
     private renderEllipsoidImpl(colors: number[], pos: number[], fill: boolean, line: boolean, lineColor: number[], offset: number): void {
         var colorBuffer = this.gl.createBuffer();
