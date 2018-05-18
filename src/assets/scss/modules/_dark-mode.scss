@@ -1,0 +1,20 @@
+/** @author Mathijs Boezer */
+.dark-mode {
+    .canvas {
+        background-color: rgb(50,50,50);
+    }
+
+    .sidebar {
+        background-color: black;
+
+        .mdl-card__title, .sidebar-content{
+            color: white;
+        }
+
+        .mdl-card__actions .mdl-button {
+            color: white !important;
+        }
+    }
+}
+
+/** @end-author Mathijs Boezer */

@@ -9,6 +9,7 @@ import {SettingsBus} from '../providers/settings-bus';
 import {Settings} from '../interfaces/settings';
 import {OpenglDemoTree} from "../visualizations/opengl-demo-tree";
 import {SimpleTreeMap} from "../visualizations/simple-tree-map";
+import {DarkMode} from "../utils/darkmode";
 
 @Component({
     selector: 'app-root',
@@ -24,13 +25,13 @@ export class AppComponent {
     @ViewChild(SidebarComponent) private sidebar: SidebarComponent;
 
     private parser = new NewickParser();
+    private darkMode = new DarkMode();
 
     constructor(private settingsBus: SettingsBus) {
         this.createVisualizers();
 
-        // TODO: remove this example of how settings are updated
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
-            console.log(settings);
+            this.darkMode.set(settings.darkMode);
         });
 
         window.addEventListener('resize', () => this.resizeActiveTab());
