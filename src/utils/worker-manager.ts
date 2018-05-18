@@ -15,7 +15,7 @@ export class WorkerManager {
     constructor (private webWorkerService: WebWorkerService) {
     }
 
-    public startWorker(gl: OpenGL, fn: (input: VisualizerInput) => Draw[], input: VisualizerInput): Promise<void> {
+    public startWorker(gl: OpenGL, fn: (input: VisualizerInput) => Draw[], input: VisualizerInput): Promise<Draw[]> {
         return new Promise((resolve, reject) => {
             this.gl = gl;
 
@@ -23,7 +23,7 @@ export class WorkerManager {
                 .then((draws: Draw[]) => {
                     this.drawItems(draws);
 
-                    resolve();
+                    resolve(draws);
                 })
                 .catch((error) => console.log(error));
         });
@@ -99,8 +99,6 @@ export class WorkerManager {
                     break;
             }
         }
-
-        draws = null; // wait for garbage collection
     }
     /** @end-author Bart Wesselink */
 }

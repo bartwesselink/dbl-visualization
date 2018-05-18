@@ -29,7 +29,7 @@ export class NewickParser {
         return parent;
     }
 
-    private recurse(node: any, parent: Node = null): any {
+    private recurse(node: any, parent: Node = null, identifier: { id: number } = { id: 0 }): any { // identifier is a object to ensure reference-passing
         const label = node.name;
         const children = node.branchset;
 
@@ -37,14 +37,17 @@ export class NewickParser {
             label: label,
             children: new Array(children == null ? 0 : children.length),
             subTreeSize: 1,
+            identifier: identifier.id,
             parent,
         };
+
+        identifier.id++;
 
         if (children != null) {
             let i = 0;
 
             for (const child of children) {
-                const formattedChildNode = this.recurse(child, formatted);
+                const formattedChildNode = this.recurse(child, formatted, identifier);
                 formatted.children[i] = formattedChildNode;
 
                 formatted.subTreeSize += formattedChildNode.subTreeSize;

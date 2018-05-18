@@ -7,4 +7,5 @@ import {RotatedQuadOptions} from './rotated-quad-options';
 export interface Draw {
     type: DrawType;
     options: AaQuadOptions|CircleOptions|EllipsoidOptions|RotatedQuadOptions;
+    identifier?: number;
 }

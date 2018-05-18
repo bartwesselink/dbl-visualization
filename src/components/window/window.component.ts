@@ -13,6 +13,8 @@ import {OpenglDemoTree} from '../../visualizations/opengl-demo-tree';
 import {WorkerManager} from '../../utils/worker-manager';
 import {DrawType} from '../../enums/draw-type';
 import {FormComponent} from '../form/form.component';
+import {Draw} from '../../interfaces/draw';
+import {InteractionHandler} from '../../utils/interaction-handler';
 
 @Component({
     selector: 'app-window',
@@ -25,6 +27,7 @@ export class WindowComponent implements OnInit {
     @Input('tab') public tab: Tab;
 
     @Output() private loading: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() private redrawAll: EventEmitter<void> = new EventEmitter<void>();
 
     public form: Form|null;
 
@@ -47,8 +50,11 @@ export class WindowComponent implements OnInit {
     private readonly DEFAULT_DT = 5;
     private readonly DEFAULT_DS = 0.1;
 
-    constructor(private formFactory: FormFactory, private workerManager: WorkerManager) {
+    private currentDraws: Draw[];
+    private interactionHandler: InteractionHandler;
 
+    constructor(private formFactory: FormFactory, private workerManager: WorkerManager) {
+        this.interactionHandler = new InteractionHandler(this);
     }
     
     ngOnInit() {
@@ -129,7 +135,8 @@ export class WindowComponent implements OnInit {
     public onClick(event: MouseEvent): void {
         var coords = this.gl.transformPoint(event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
         console.log("click at: " + event.layerX + " | " + event.layerY + " | " + coords[0] + " | " + coords[1]);
-        //TODO pass this on to the visualisation to do something with the click
+
+        this.interactionHandler.determineClick(this.tree, this.currentDraws, coords);
     }
     
     //called when the mouse moves
@@ -156,11 +163,14 @@ export class WindowComponent implements OnInit {
     public async startScene(): Promise<void> {
         this.init();
         await this.computeScene();
-
     }
 
     public destroyScene(): void {
         this.gl.releaseBuffers();
+    }
+
+    public redrawAllScenes(): void { // redraws all canvases through the AppComponent
+        this.redrawAll.next();
     }
         
     //compute the visualisation
@@ -178,16 +188,20 @@ export class WindowComponent implements OnInit {
 
             this.startLoading();
 
-            this.workerManager.startWorker(this.gl,this.visualizer.draw, { tree: this.tree, settings: this.lastSettings })
-                .then(() => {
+            /** @author Bart Wesselink */
+            this.workerManager.startWorker(this.gl, this.visualizer.draw,{ tree: this.tree, settings: this.lastSettings })
+                .then((draws: Draw[]) => {
                     setTimeout(() => {
                         this.redraw();
 
                         this.stopLoading();
                     }, 100);
 
+                    this.currentDraws = draws;
+
                     resolve();
                 });
+            /** @end-author Bart Wesselink */
         });
     }
   
