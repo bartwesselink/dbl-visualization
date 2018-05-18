@@ -1,7 +1,7 @@
 /** @author Roan Hofland */
 export interface Element{
     pos?: WebGLBuffer;
-    color?: WebGLBuffer;
+    color?: any;
     indices?: WebGLBuffer;
     mode: number;
     length: number;

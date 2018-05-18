@@ -5,7 +5,7 @@ import {Matrix} from "./matrix";
 import {Mode} from "./mode";
 
 export class OpenGL{
-    private gl: WebGLRenderingContext;
+    private gl: WebGL2RenderingContext;
     private shader: Shader;
     private modelviewMatrix;
     private arrays: Element[] = [];
@@ -20,7 +20,7 @@ export class OpenGL{
     private dy: number = 0;
     private rotation: number = 0;
     
-    constructor(gl: WebGLRenderingContext){
+    constructor(gl: WebGL2RenderingContext){
         this.gl = gl;
         
         //set the canvas background color to 100% transparent black
@@ -177,6 +177,7 @@ export class OpenGL{
         
         this.gl.useProgram(this.shader.shader);
         this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader.shader, "modelviewMatrix"), false, this.modelviewMatrix);
+        //this.gl.uniform3.uniform3uiv(this.gl.getUniformLocation(this.shader.shader, "color"), new Uint8Array([255, 0, 0]));
         
         this.drawBuffers();
     }
@@ -763,15 +764,15 @@ export class OpenGL{
         //we just pass the color on to the fragment shader and don't perform any transformations
         const vertexShaderSource = `
           attribute vec4 pos;
-          attribute vec4 color;
         
           uniform mat4 modelviewMatrix;
+          uniform vec3 color;
         
           varying lowp vec4 vcolor;
           
           void main() {
             gl_Position = modelviewMatrix * pos;
-            vcolor = color;
+            vcolor = vec4(color, 1.0);
           }
         `;
       
