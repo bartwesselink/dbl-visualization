@@ -735,16 +735,16 @@ export class OpenGL{
             this.gl.enableVertexAttribArray(this.shader.shaderAttribPosition);
         }
         
-        if(elem.color != null){
-            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.color);
-            this.gl.vertexAttribPointer(this.shader.shaderAttribColor,                //attribute
-                                        4,                                            //rgba so four values per iteration: r, g, b, a
-                                        this.gl.FLOAT,                                //data type is float32
-                                        false,                                        //no normalisation
-                                        0,                                            //stride = automatic
-                                        0);                                           //skip
-            this.gl.enableVertexAttribArray(this.shader.shaderAttribColor);
-        }
+//        if(elem.color != null){
+//            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.color);
+//            this.gl.vertexAttribPointer(this.shader.shaderAttribColor,                //attribute
+//                                        4,                                            //rgba so four values per iteration: r, g, b, a
+//                                        this.gl.FLOAT,                                //data type is float32
+//                                        false,                                        //no normalisation
+//                                        0,                                            //stride = automatic
+//                                        0);                                           //skip
+//            this.gl.enableVertexAttribArray(this.shader.shaderAttribColor);
+//        }
         
         if(elem.indices == null){
             this.gl.drawArrays(elem.mode, 0, elem.length);
@@ -825,8 +825,7 @@ export class OpenGL{
         //Initialise the shader object for use
         return{
             shader: program,
-            shaderAttribPosition: this.gl.getAttribLocation(program, "pos"),
-            shaderAttribColor: this.gl.getAttribLocation(program, "color")
+            shaderAttribPosition: this.gl.getAttribLocation(program, "pos")
         }
     }
 }
