@@ -31,7 +31,10 @@ export class OpenGL{
         this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
         this.gl.enable(this.gl.BLEND);
         this.gl.depthFunc(gl.LEQUAL);
-        this.gl.enable(gl.DEPTH_TEST);   
+        this.gl.enable(gl.DEPTH_TEST);  
+        
+        console.log("OpenGL version: " + this.gl.getParameter(gl.VERSION));
+        console.log("GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
     }
     
     //test for a dedicated GPU
@@ -177,7 +180,8 @@ export class OpenGL{
         
         this.gl.useProgram(this.shader.shader);
         this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader.shader, "modelviewMatrix"), false, this.modelviewMatrix);
-        //this.gl.uniform3.uniform3uiv(this.gl.getUniformLocation(this.shader.shader, "color"), new Uint8Array([255, 0, 0]));
+        //this.gl.uniform4ui(this.gl.getUniformLocation(this.shader.shader, "color"), 255, 0, 0, 0);
+        this.gl.uniform3fv(this.gl.getUniformLocation(this.shader.shader, "color"), [1, 0, 0]);
         
         this.drawBuffers();
     }
