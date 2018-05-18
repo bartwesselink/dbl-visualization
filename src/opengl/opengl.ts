@@ -78,6 +78,19 @@ export class OpenGL{
         this.rotation += rotation;
     }
     
+    //rotate the model view by the given number of degrees
+    public rotateAround(rotation: number, x: number, y: number, width: number, height: number): void {
+        var old = this.transformPoint(x, y, width, height);
+        Matrix.translateSelf(this.modelviewMatrix, [-this.dx, -this.dy, 0]);
+        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(this.HALFHEIGHT, this.HALFWIDTH));
+        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DRotationMatrix4(rotation));
+        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(1 / this.HALFHEIGHT, 1 / this.HALFWIDTH));
+        Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]); 
+        this.rotation += rotation;
+        var n = this.transformPoint(x, y, width, height);
+        this.translate(old[0] - n[0], old[1] - n[1], width, height);
+    }
+    
     //translates the model view by the given distance
     public translate(dx: number, dy: number, width: number, height: number): void {
         var vec = Matrix.rotateVector2D([0, 0], [dx, dy], -this.rotation);

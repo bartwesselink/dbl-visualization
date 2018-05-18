@@ -137,7 +137,7 @@ export class WindowComponent implements OnInit {
     public onScroll(event: WheelEvent): void {
         event.preventDefault();
         if(this.down){
-            this.gl.rotate(event.deltaY / this.ROTATION_NORMALISATION);
+            this.gl.rotateAround(event.deltaY / this.ROTATION_NORMALISATION, event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
         }else{
             this.gl.scaleTo(Math.max(0.1, 1.0 - (event.deltaY / this.ZOOM_NORMALISATION)), event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);    
         }
