@@ -35,6 +35,8 @@ Resets the zoom level back to 1.
 Resets the rotation back to 0 degrees.
 - `public resetTranslation(): void`    
 Resets the origin back to (0, 0).
+- `public isDedicatedGPU(): boolean`    
+Checks whether or not the GPU used by OpenGL is a dedicated GPU.
 
 # Rendering
 

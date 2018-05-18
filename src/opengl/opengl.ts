@@ -34,6 +34,40 @@ export class OpenGL{
         this.gl.enable(gl.DEPTH_TEST);   
     }
     
+    //test for a dedicated GPU
+    public isDedicatedGPU(): boolean {
+        var info = this.gl.getExtension("WEBGL_debug_renderer_info");
+        var name = this.gl.getParameter(info.UNMASKED_RENDERER_WEBGL);
+        console.log("Detected renderer: " + name);
+        if(name.indexOf("NVIDIA") != -1){
+            return true;   
+        }else if(name.indexOf("Radeon") != -1){
+            if(name.match(".*Radeon (HD ....M|R(5|7|9) M...|Pro).*")){//Radeon HD Mobile, R5/R7/R9 Mobile and RX and Pro
+                return false;
+            }else if(name.indexOf("Mobility") != -1){
+                return false;
+            }else{
+                return true;
+            }
+        }else if(name.indexOf("FirePro") != -1){
+            if(name.indexOf("FirePro M") != -1){
+                return false;
+            }else{
+                return true;
+            }
+        }else if(name.indexOf("FireGL") != -1){
+            if(name.indexOf("Mobility") != -1){
+                return false;
+            }else{
+                return true;
+            }
+        }else if(name.indexOf("FireMV") != -1){
+            return true;
+        }else{//note: no support for the AMD Wonder, Rage and Mach series since they are simply too old (<2000)
+            return false;   
+        }
+    }
+    
     //return the rotation
     public getRotation(): number {
         return this.rotation;
