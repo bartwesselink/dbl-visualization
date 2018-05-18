@@ -14,10 +14,7 @@ export class Color {
     a: number;
     rgba: [number, number, number, number];
 
-    // constructor(){
-    //
-    // };
-    constructor(r?: any, g?: number, b?: number, alpha?: number) {
+    constructor(r?: number, g?: number, b?: number, alpha?: number) {
         this.r = r;
         this.g = g;
         this.b = b;
@@ -25,15 +22,32 @@ export class Color {
         this.rgba = [r, g, b, alpha];
     };
 
+    static fromRGB(r: number, g: number, b: number) {
+        if (r > 1 || g > 1 || b > 1) {
+            // Here we assume we got passed rgb on a 0-255 scale
+            r /= 255;
+            g /= 255;
+            b /= 255;
+        }
+        return new Color(r, g, b, 1);
+    }
+
+    static fromRGBA(r: number, g: number, b: number, a: number) {
+        if (r > 1 || g > 1 || b > 1 || a > 1) {
+            // Here we assume we got passed rgb on a 0-255 scale
+            r /= 255;
+            g /= 255;
+            b /= 255;
+            a /= 255
+        }
+        return new Color(r, g, b, a);
+    }
+
     static fromHex(hex: string) {
         const hexInt = parseInt(hex, 16);
-        console.log(hex + " : " + hexInt);
         const r = (hexInt >> 16) & 255;
-        console.log('r: ' + r);
         const g = (hexInt >> 8) & 255;
-        console.log('g: ' + g);
         const b = hexInt & 255;
-        console.log('b: ' + b);
         return new Color(r / 255, g / 255, b / 255, 1);
     }
 
