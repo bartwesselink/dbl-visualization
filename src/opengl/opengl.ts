@@ -180,9 +180,7 @@ export class OpenGL{
         
         this.gl.useProgram(this.shader.shader);
         this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader.shader, "modelviewMatrix"), false, this.modelviewMatrix);
-        //this.gl.uniform3fv(this.gl.getUniformLocation(this.shader.shader, "color"), [1, 0, 0]);
-        this.gl.uniform1f(this.gl.getUniformLocation(this.shader.shader, "color"), 0xFF0000FF);
-        console.log("val: " + 0xFF0000FF + " | " + (0xFF0000FF / 16777216));
+        this.gl.uniform1f(this.gl.getUniformLocation(this.shader.shader, "color"), 0x00A252F9);
         
         this.drawBuffers();
     }
@@ -765,8 +763,8 @@ export class OpenGL{
     
     //initialises the shaders
     public initShaders(): Shader {
-        //really simple minimal vertex shader
-        //we just pass the color on to the fragment shader and don't perform any transformations
+        //ridiculously complicated vertex shader
+        //because bit wise operators were on a vacation in GLSL -_-
         const vertexShaderSource = `
           attribute vec4 pos;
         
@@ -776,11 +774,10 @@ export class OpenGL{
           varying lowp vec4 vcolor;
           
           void main() {
-            gl_Position = modelviewMatrix * pos;
-            float r = min(color / 16777216.0, 255.0);
-            
-            
-            vcolor = vec4(r / 255.0, 0.0, 0.0, 1.0);
+              gl_Position = modelviewMatrix * pos;
+              float b = mod(color, 256.0) * 0.00390625;
+              float g = ((mod(color, 65536.0) * 0.00390625) - b) * 0.00390625;
+              vcolor = vec4(((mod(color, 16777216.0) * 0.0000152587890625) - g) * 0.00390625, g, b, 1.0);
           }
         `;
       
