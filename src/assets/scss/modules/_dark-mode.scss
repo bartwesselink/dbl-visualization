@@ -4,15 +4,80 @@
         background-color: rgb(50,50,50);
     }
 
-    .sidebar {
-        background-color: black;
+    .holder-sidebar {
+        background-color: rgb(20,20,20);
+        .sidebar {
+            background-color: rgb(20,20,20);
 
-        .mdl-card__title, .sidebar-content{
+            .mdl-card__title, .sidebar-content{
+                color: white;
+            }
+
+            .mdl-card__actions .mdl-button {
+                color: white !important;
+            }
+        }
+    }
+
+    .mdl-dialog {
+        color: white;
+        background-color: rgb(20,20,20);
+
+        .mdl-dialog__content, .mdl-dialog__title, .mdl-button {
+            color: white;
+            background-color: rgb(20,20,20);
+        }
+    }
+
+    .mdl-layout__drawer {
+        color: white;
+        background-color: rgb(20,20,20);
+        border-right-color: rgb(20,20,20);
+    }
+
+    .mdl-layout__header {
+        background-color: rgb(30,30,30);
+
+        .mdl-layout__tab-bar, .mdl-layout__tab-bar-button .material-icons {
+            background-color: rgb(30,30,30);
+        }
+    }
+
+    .mdl-layout__tab-bar-button {
+        background-color: rgb(30,30,30);
+    }
+
+    .welcome-page {
+        background-color: rgb(20,20,20);
+    }
+
+    .introjs-tooltip {
+        background-color: rgb(20,20,20);
+    }
+
+    .introjs-tooltiptext {
+        color: white !important;
+    }
+
+    .introjs-button {
+        color: white;
+    }
+
+    .settings-button-form {
+        background-color: rgb(50,50,50);
+        color: white;
+        .mdl-textfield__label {
             color: white;
         }
+    }
 
-        .mdl-card__actions .mdl-button {
-            color: white !important;
+    .mdl-menu {
+        background-color: rgb(50,50,50);
+        .mdl-menu__item {
+            color: white;
+        }
+        .mdl-menu__item:hover {
+            background-color: rgb(80,80,80);
         }
     }
 }
