@@ -190,7 +190,7 @@ export class WindowComponent implements OnInit {
   
     //initialise OpenGL
     private init(): void {
-        var gl: WebGLRenderingContext = this.canvas.nativeElement.getContext('webgl2', {preserveDrawingBuffer: true});
+        var gl: WebGLRenderingContext = this.canvas.nativeElement.getContext('webgl', {preserveDrawingBuffer: true});
         
         if(!gl){
             this.onError("No WebGL present");

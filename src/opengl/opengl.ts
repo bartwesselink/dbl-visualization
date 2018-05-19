@@ -5,7 +5,7 @@ import {Matrix} from "./matrix";
 import {Mode} from "./mode";
 
 export class OpenGL{
-    private gl: WebGL2RenderingContext;
+    private gl: WebGLRenderingContext;
     private shader: Shader;
     private modelviewMatrix;
     private arrays: Element[] = [];
@@ -20,7 +20,7 @@ export class OpenGL{
     private dy: number = 0;
     private rotation: number = 0;
     
-    constructor(gl: WebGL2RenderingContext){
+    constructor(gl: WebGLRenderingContext){
         this.gl = gl;
         
         //set the canvas background color to 100% transparent black
@@ -180,8 +180,9 @@ export class OpenGL{
         
         this.gl.useProgram(this.shader.shader);
         this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader.shader, "modelviewMatrix"), false, this.modelviewMatrix);
-        //this.gl.uniform4ui(this.gl.getUniformLocation(this.shader.shader, "color"), 255, 0, 0, 0);
-        this.gl.uniform3fv(this.gl.getUniformLocation(this.shader.shader, "color"), [1, 0, 0]);
+        //this.gl.uniform3fv(this.gl.getUniformLocation(this.shader.shader, "color"), [1, 0, 0]);
+        this.gl.uniform1f(this.gl.getUniformLocation(this.shader.shader, "color"), 0xFF0000FF);
+        console.log("val: " + 0xFF0000FF + " | " + (0xFF0000FF / 16777216));
         
         this.drawBuffers();
     }
@@ -770,13 +771,16 @@ export class OpenGL{
           attribute vec4 pos;
         
           uniform mat4 modelviewMatrix;
-          uniform vec3 color;
+          uniform float color;
         
           varying lowp vec4 vcolor;
           
           void main() {
             gl_Position = modelviewMatrix * pos;
-            vcolor = vec4(color, 1.0);
+            float r = min(color / 16777216.0, 255.0);
+            
+            
+            vcolor = vec4(r / 255.0, 0.0, 0.0, 1.0);
           }
         `;
       
@@ -798,6 +802,8 @@ export class OpenGL{
             this.gl.shaderSource(shader, vertexShaderSource);
             this.gl.compileShader(shader);
             if(!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)){
+                var log = this.gl.getShaderInfoLog(shader);
+                console.log(log);
                 this.gl.deleteShader(shader);
                 throw new Error("Vertex shader compilation failed");
             }else{
