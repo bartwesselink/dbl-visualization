@@ -149,10 +149,11 @@ export class OpenGL{
     private transform(x: number, y: number, width: number, height: number): number[] {
         var dx = x - (width / 2);
         var dy = y - (height / 2);
+        var loc = null;
         if(this.mode == Mode.WIDTH_FIRST){
-            var loc = [((dx / width) / this.factor) * this.WIDTH, -(((dy / height) * (height / (width / this.WIDTH))) / this.factor)];
+            loc = [((dx / width) / this.factor) * this.WIDTH, -(((dy / height) * (height / (width / this.WIDTH))) / this.factor)];
         }else{
-            var loc = [(((dx / width) * (width / (height / this.HEIGHT))) / this.factor), -((dy / height) / this.factor) * this.HEIGHT];
+            loc = [(((dx / width) * (width / (height / this.HEIGHT))) / this.factor), -((dy / height) / this.factor) * this.HEIGHT];
         }
         Matrix.rotateVector2D([0, 0], loc, this.rotation);
         loc[0] = (loc[0] / this.HALFWIDTH) - this.dx;
