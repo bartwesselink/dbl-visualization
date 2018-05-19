@@ -1,13 +1,19 @@
 /** @author Mathijs Boezer */
+$dark-primary: rgb(10, 10, 10);
+$dark-secondary: rgb(20, 20, 20);
+$dark-canvas: rgb(50, 50, 50);
+$dark-dialogs: rgb(30, 30, 30);
+$dark-dialogs_hover: rgb(80, 80, 80);
+
 .dark-mode {
     .canvas {
-        background-color: rgb(50,50,50);
+        background-color: $dark-canvas;
     }
 
     .holder-sidebar {
-        background-color: rgb(20,20,20);
+        background-color: $dark-secondary;
         .sidebar {
-            background-color: rgb(20,20,20);
+            background-color: $dark-secondary;
 
             .mdl-card__title, .sidebar-content{
                 color: white;
@@ -21,38 +27,38 @@
 
     .mdl-dialog {
         color: white;
-        background-color: rgb(20,20,20);
+        background-color: $dark-dialogs;
 
         .mdl-dialog__content, .mdl-dialog__title, .mdl-button {
             color: white;
-            background-color: rgb(20,20,20);
+            background-color: $dark-dialogs;
         }
     }
 
     .mdl-layout__drawer {
         color: white;
-        background-color: rgb(20,20,20);
-        border-right-color: rgb(20,20,20);
+        background-color: $dark-secondary;
+        border-right-color: $dark-secondary;
     }
 
     .mdl-layout__header {
-        background-color: rgb(30,30,30);
+        background-color: $dark-primary;
 
         .mdl-layout__tab-bar, .mdl-layout__tab-bar-button .material-icons {
-            background-color: rgb(30,30,30);
+            background-color: $dark-primary;
         }
     }
 
     .mdl-layout__tab-bar-button {
-        background-color: rgb(30,30,30);
+        background-color: $dark-primary;
     }
 
     .welcome-page {
-        background-color: rgb(20,20,20);
+        background-color: $dark-secondary;
     }
 
     .introjs-tooltip {
-        background-color: rgb(20,20,20);
+        background-color: $dark-secondary;
     }
 
     .introjs-tooltiptext {
@@ -64,7 +70,7 @@
     }
 
     .settings-button-form {
-        background-color: rgb(50,50,50);
+        background-color: $dark-primary;
         color: white;
         .mdl-textfield__label {
             color: white;
@@ -72,12 +78,12 @@
     }
 
     .mdl-menu {
-        background-color: rgb(50,50,50);
+        background-color: $dark-dialogs;
         .mdl-menu__item {
             color: white;
         }
         .mdl-menu__item:hover {
-            background-color: rgb(80,80,80);
+            background-color: $dark-dialogs_hover;
         }
     }
 }

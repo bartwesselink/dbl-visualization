@@ -1,6 +1,5 @@
 export class DarkMode {
     /** @author Mathijs Boezer */
-
     public set(enabled: boolean): void {
         if(!document.querySelector("body")) {
             return;
