@@ -427,10 +427,8 @@ export class OpenGL{
     //renders an ellipsoid
     private drawEllipsoidImpl(x: number, y: number, radx: number, rady: number, rotation: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
         const pos = [];
-        const color = [];
         if(fill){
             pos.push(x / this.HALFWIDTH, y / this.HALFHEIGHT);
-            color.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
         }
         var loc = [2];
         for(var i = 0; i <= 360; i += precision){
@@ -438,14 +436,9 @@ export class OpenGL{
             loc[1] = y + rady * Math.sin(i * Matrix.oneDeg);
             Matrix.rotateVector2D([x, y], loc, rotation);
             pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
-            if(fill || lineColor == null){
-                color.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
-            }else{
-                color.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
-            }
         }
             
-        this.renderEllipsoidImpl(color, pos, fill, line, lineColor, 2);
+        this.renderEllipsoidImpl(pos, fill, line, lineColor, fillColor, 2);
     }
     
     //draws a circle
@@ -466,10 +459,8 @@ export class OpenGL{
     //renders a circle
     private drawCircleImpl(x: number, y: number, radius: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
         const pos = [];
-        const colors = [];
         if(fill){
             pos.push(x / this.HALFWIDTH, y / this.HALFHEIGHT);
-            colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
         }
         var loc = [x + radius, y];
         var rotation = [9];
@@ -478,14 +469,9 @@ export class OpenGL{
         for(var i = 0; i <= 360; i += precision){
             Matrix.multiplyVector2D(loc, rotation);
             pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
-            if(fill || lineColor == null){
-                colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
-            }else{
-                colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
-            }
         }
             
-        this.renderEllipsoidImpl(colors, pos, fill, line, lineColor, 2);
+        this.renderEllipsoidImpl(pos, fill, line, lineColor, fillColor, 2);
     }
     
     //draws a ring slice
@@ -617,38 +603,17 @@ export class OpenGL{
     //draws a circular slice
     private drawCircleSliceImpl(x: number, y: number, radius: number, start: number, end: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
         const pos = [];
-        const colors = [];
         pos.push(x / this.HALFWIDTH, y / this.HALFHEIGHT);
-        if(fill || lineColor == null){
-            colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
-        }else{
-            colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
-        }
         for(var i = start; i < end; i += precision){
             pos.push((x + radius * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + radius * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
-            if(fill || lineColor == null){
-                colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
-            }else{
-                colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
-            }
         }
         pos.push((x + radius * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH, (y + radius * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT);
-        if(fill || lineColor == null){
-            colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
-        }else{
-            colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
-        }
                 
-        this.renderEllipsoidImpl(colors, pos, fill, line, lineColor, 0);
+        this.renderEllipsoidImpl(pos, fill, line, lineColor, fillColor, 0);
     }
     
     //draws an ellipsoid
-    private renderEllipsoidImpl(colors: number[], pos: number[], fill: boolean, line: boolean, lineColor: number[], offset: number): void {
-        return;
-        var colorBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
-            
+    private renderEllipsoidImpl(pos: number[], fill: boolean, line: boolean, lineColor: number[], fillColor: number[], offset: number): void {     
         var posBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
@@ -656,32 +621,23 @@ export class OpenGL{
         if(!(fill && line)){
             this.arrays.push({
                 pos: posBuffer,
-                color: colorBuffer,
+                color: this.toColor(fillColor),
                 mode: fill ? this.gl.TRIANGLE_FAN : this.gl.LINE_LOOP,
                 length: pos.length / 2
             });
         }else{
-            var lineColorBuffer;
             if(lineColor == null){
-                lineColorBuffer = colorBuffer;
-            }else{
-                lineColorBuffer = this.gl.createBuffer();
-                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, lineColorBuffer);
-                var lineColors = [];
-                for(var i = 0; i < pos.length / 2 - offset; i++){
-                    lineColors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
-                }
-                
-                this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(lineColors), this.gl.STATIC_DRAW);
+                lineColor = fillColor;
             }
+            
             this.arrays.push({
                 pos: posBuffer,
-                color: colorBuffer,
+                color: this.toColor(fillColor),
                 mode: this.gl.TRIANGLE_FAN,
                 length: pos.length / 2,
                 overlay: {
                     pos: posBuffer,
-                    color: lineColorBuffer,
+                    color: this.toColor(lineColor),
                     mode: this.gl.LINE_LOOP,
                     length: pos.length / 2 - offset,
                     offset: offset * 4
