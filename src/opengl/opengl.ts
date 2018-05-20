@@ -231,18 +231,14 @@ export class OpenGL{
     }
     
     //draws an arc
-    private drawArcImpl(pos: number[], colors: number[]): void {
+    private drawArcImpl(pos: number[], color: number[]): void {
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
         
-        var colorBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
-        
         this.arrays.push({
             pos: positionBuffer,
-            color: colorBuffer,
+            color: this.toColor(color),
             mode: this.gl.LINE_STRIP,
             length: pos.length / 2
         });
