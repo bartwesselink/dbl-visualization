@@ -193,7 +193,6 @@ export class OpenGL{
     public releaseBuffers(): void {
         while(this.arrays.length > 0){
             var elem = this.arrays.pop();
-            this.gl.deleteBuffer(elem.color);
             this.gl.deleteBuffer(elem.pos);
             this.gl.deleteBuffer(elem.indices);
         }
@@ -734,7 +733,7 @@ export class OpenGL{
     
     //creates a color from the given array
     private toColor(array: number[]): number{
-        return array[0] * 0x01000000 + array[1] * 0x00010000 + array[2];
+        return array[0] * 0x00FF0000 + array[1] * 0x0000FF00 + array[2] * 0x000000FF;
     }
     
     //initialises the shaders
