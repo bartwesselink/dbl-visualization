@@ -258,24 +258,15 @@ export class OpenGL{
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         const pos = [x.length + y.length];
-        const colors = [x.length * 4];
         for(var i = 0; i < x.length; i++){
             pos[i * 2] = x[i] / this.HALFWIDTH;
             pos[i * 2 + 1] = y[i] / this.HALFHEIGHT;
-            colors[i * 4] = color[0];
-            colors[i * 4 + 1] = color[1];
-            colors[i * 4 + 2] = color[2];
-            colors[i * 4 + 3] = color[3];
         }
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
         
-        var colorBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
-        
         this.arrays.push({
             pos: positionBuffer,
-            color: colorBuffer,
+            color: this.toColor(color),
             mode: this.gl.LINE_STRIP,
             length: x.length
         });
