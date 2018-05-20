@@ -477,23 +477,14 @@ export class OpenGL{
     //draws a ring slice
     public drawRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
         const pos = [];
-        const colors = [];
         for(var i = start; i < end; i += precision){
             pos.push((x + far * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + far * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
-            colors.push(color[0], color[1], color[2], color[3]);
         }
         pos.push((x + far * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH, (y + far * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT);
-        colors.push(color[0], color[1], color[2], color[3]);
         for(var i = end; i > start; i -= precision){
             pos.push((x + near * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + near * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
-            colors.push(color[0], color[1], color[2], color[3]);
         }
         pos.push((x + near * Math.cos(start * Matrix.oneDeg)) / this.HALFWIDTH, (y + near * Math.sin(start * Matrix.oneDeg)) / this.HALFHEIGHT);
-        colors.push(color[0], color[1], color[2], color[3]);
-                
-        var colorBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
             
         var posBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
@@ -501,7 +492,7 @@ export class OpenGL{
         
         this.arrays.push({
             pos: posBuffer,
-            color: colorBuffer,
+            color: this.toColor(color),
             mode: this.gl.LINE_LOOP,
             length: pos.length / 2
         });
