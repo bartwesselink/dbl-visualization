@@ -1,6 +1,6 @@
 export interface Node {
     label: string;
-    length: number;
+    length?: number;
     children: Node[];
     parent?: Node;
     subTreeSize?: number;
@@ -8,4 +8,4 @@ export interface Node {
     // these are only present in tree-navigator
     original?: Node;
     expandable?: boolean;
-}
+}}
