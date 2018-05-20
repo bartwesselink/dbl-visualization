@@ -1,5 +1,6 @@
 export interface Node {
     label: string;
+    length: number;
     children: Node[];
     parent?: Node;
     subTreeSize?: number;
