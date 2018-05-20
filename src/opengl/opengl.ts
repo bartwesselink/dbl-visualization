@@ -180,7 +180,6 @@ export class OpenGL{
         
         this.gl.useProgram(this.shader.shader);
         this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader.shader, "modelviewMatrix"), false, this.modelviewMatrix);
-        this.gl.uniform1f(this.gl.getUniformLocation(this.shader.shader, "color"), 0x00A252F9);
         
         this.drawBuffers();
     }
@@ -368,39 +367,17 @@ export class OpenGL{
                      x3 / this.HALFWIDTH,  y3 / this.HALFHEIGHT, 
                      x4 / this.HALFWIDTH,  y4 / this.HALFHEIGHT];
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
-      
-        //color
-        var colorBuffer = null;
-        if(fill){
-            colorBuffer = this.gl.createBuffer();
-            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
-            const colors = [fillColor[0], fillColor[1], fillColor[2], fillColor[3],
-                            fillColor[0], fillColor[1], fillColor[2], fillColor[3],
-                            fillColor[0], fillColor[1], fillColor[2], fillColor[3],
-                            fillColor[0], fillColor[1], fillColor[2], fillColor[3]];
-            this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
-        }
         
         if(!line){
             this.arrays.push({
                 pos: positionBuffer,
-                color: colorBuffer,
+                color: this.toColor(fillColor),
                 mode: this.gl.TRIANGLE_STRIP,
                 length: 4
             });
         }else{
-            var lineColorBuffer = null;
             if(lineColor == null){
-                lineColorBuffer = colorBuffer;
-            }else{
-                //color
-                lineColorBuffer = this.gl.createBuffer();
-                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, lineColorBuffer);
-                const colors = [lineColor[0], lineColor[1], lineColor[2], lineColor[3],
-                                lineColor[0], lineColor[1], lineColor[2], lineColor[3],
-                                lineColor[0], lineColor[1], lineColor[2], lineColor[3],
-                                lineColor[0], lineColor[1], lineColor[2], lineColor[3]];
-                this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
+                lineColor = fillColor;
             }
             
             if(line && fill){
@@ -411,13 +388,13 @@ export class OpenGL{
                 
                 this.arrays.push({
                     pos: positionBuffer,
-                    color: colorBuffer,
+                    color: this.toColor(fillColor),
                     mode: this.gl.TRIANGLE_STRIP,
                     length: 4,
                     overlay: {
                         pos: positionBuffer,
                         indices: indicesBuffer,
-                        color: lineColorBuffer,
+                        color: this.toColor(lineColor),
                         mode: this.gl.LINE_LOOP,
                         length: 4
                     }
@@ -425,7 +402,7 @@ export class OpenGL{
             }else{
                 this.arrays.push({
                     pos: positionBuffer,
-                    color: lineColorBuffer,
+                    color: this.toColor(lineColor),
                     mode: this.gl.LINE_LOOP,
                     length: 4
                 });
@@ -668,6 +645,7 @@ export class OpenGL{
     
     //draws an ellipsoid
     private renderEllipsoidImpl(colors: number[], pos: number[], fill: boolean, line: boolean, lineColor: number[], offset: number): void {
+        return;
         var colorBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
@@ -738,16 +716,9 @@ export class OpenGL{
             this.gl.enableVertexAttribArray(this.shader.shaderAttribPosition);
         }
         
-//        if(elem.color != null){
-//            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.color);
-//            this.gl.vertexAttribPointer(this.shader.shaderAttribColor,                //attribute
-//                                        4,                                            //rgba so four values per iteration: r, g, b, a
-//                                        this.gl.FLOAT,                                //data type is float32
-//                                        false,                                        //no normalisation
-//                                        0,                                            //stride = automatic
-//                                        0);                                           //skip
-//            this.gl.enableVertexAttribArray(this.shader.shaderAttribColor);
-//        }
+        if(elem.color != null){
+            this.gl.uniform1f(this.gl.getUniformLocation(this.shader.shader, "color"), elem.color);
+        }
         
         if(elem.indices == null){
             this.gl.drawArrays(elem.mode, 0, elem.length);
@@ -759,6 +730,11 @@ export class OpenGL{
         if(elem.overlay != null){
             this.drawElement(elem.overlay);
         }
+    }
+    
+    //creates a color from the given array
+    private toColor(array: number[]): number{
+        return array[0] * 0x01000000 + array[1] * 0x00010000 + array[2];
     }
     
     //initialises the shaders
