@@ -8,4 +8,4 @@ export interface Node {
     // these are only present in tree-navigator
     original?: Node;
     expandable?: boolean;
-}}
+}
