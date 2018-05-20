@@ -596,7 +596,7 @@ export class OpenGL{
         if(!(fill && line)){
             this.arrays.push({
                 pos: posBuffer,
-                color: this.toColor(fillColor),
+                color: this.toColor(line ? lineColor : fillColor),
                 mode: fill ? this.gl.TRIANGLE_FAN : this.gl.LINE_LOOP,
                 length: pos.length / 2
             });
