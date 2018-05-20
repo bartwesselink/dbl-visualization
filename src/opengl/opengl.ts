@@ -777,7 +777,7 @@ export class OpenGL{
               gl_Position = modelviewMatrix * pos;
               float b = mod(color, 256.0) * 0.00390625;
               float g = ((mod(color, 65536.0) * 0.00390625) - b) * 0.00390625;
-              vcolor = vec4(((mod(color, 16777216.0) * 0.0000152587890625) - g) * 0.00390625, g, b, 1.0);
+              vcolor = vec4(((mod(color, 16777216.0) * 0.0000152587890625) - g - (b * 0.00390625)) * 0.00390625, g, b, 1.0);
           }
         `;
       
