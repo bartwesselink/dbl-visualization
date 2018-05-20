@@ -520,36 +520,20 @@ export class OpenGL{
     //draws a ring slice
     private fillRingSliceImpl(x: number, y: number, near: number, far: number, start: number, end: number, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
         const pos = [];
-        const colors = [];
         for(var i = start; i < end; i += precision){
             pos.push((x + far * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + far * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
             pos.push((x + near * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + near * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
-            colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3], fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
         }
         pos.push((x + far * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH, (y + far * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT);
         pos.push((x + near * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH, (y + near * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT);
-        colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3], fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
-                
-        var colorBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
             
         var posBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
         
         if(line){
-            var lineColorBuffer = null;
             if(lineColor == null){
-                lineColorBuffer = colorBuffer;
-            }else{
-                lineColorBuffer = this.gl.createBuffer();
-                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, lineColorBuffer);
-                var lineColors = [];
-                for(var i = 0; i < pos.length / 2; i++){
-                    lineColors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
-                }
-                this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(lineColors), this.gl.STATIC_DRAW);
+                lineColor = fillColor;
             }
             
             const indices = [pos.length / 2];
@@ -564,13 +548,13 @@ export class OpenGL{
         
             this.arrays.push({
                 pos: posBuffer,
-                color: colorBuffer,
+                color: this.toColor(fillColor),
                 mode: this.gl.TRIANGLE_STRIP,
                 length: pos.length / 2,
                 overlay: {
                     pos: posBuffer,
                     indices: indicesBuffer,
-                    color: lineColorBuffer,
+                    color: this.toColor(lineColor),
                     mode: this.gl.LINE_LOOP,
                     length: pos.length / 2
                 }
@@ -578,7 +562,7 @@ export class OpenGL{
         }else{
             this.arrays.push({
                 pos: posBuffer,
-                color: colorBuffer,
+                color: this.toColor(fillColor),
                 mode: this.gl.TRIANGLE_STRIP,
                 length: pos.length / 2,
             });
