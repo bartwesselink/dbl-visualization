@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, ElementRef, ViewChild} from '@angular/core';
 import {Tab} from '../models/tab';
 import { Node } from '../models/node';
 import {NewickParser} from '../utils/newick-parser';
@@ -9,8 +9,6 @@ import {SettingsBus} from '../providers/settings-bus';
 import {Settings} from '../interfaces/settings';
 import {OpenglDemoTree} from "../visualizations/opengl-demo-tree";
 import {SimpleTreeMap} from "../visualizations/simple-tree-map";
-import {DarkMode} from "../utils/darkmode";
-
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -23,15 +21,15 @@ export class AppComponent {
     private activeTab: Tab;
 
     @ViewChild(SidebarComponent) private sidebar: SidebarComponent;
+    @ViewChild('layoutContainer') private container: ElementRef;
 
     private parser = new NewickParser();
-    private darkMode = new DarkMode();
-
+    public darkMode = false;
     constructor(private settingsBus: SettingsBus) {
         this.createVisualizers();
 
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
-            this.darkMode.set(settings.darkMode);
+            this.darkMode = settings.darkMode;
         });
 
         window.addEventListener('resize', () => this.resizeActiveTab());
