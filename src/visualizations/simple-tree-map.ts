@@ -338,7 +338,7 @@ export class SimpleTreeMap implements Visualizer {
     }
 
     public getThumbnailImage(): string | null {
-        return null;
+        return '/assets/images/visualization-simple-tree-map.png';
     }
 }
 
