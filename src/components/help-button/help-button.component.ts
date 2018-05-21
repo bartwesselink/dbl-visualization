@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, Input, OnInit} from '@angular/core';
 import {introJs} from 'intro.js';
 
 @Component({
@@ -9,8 +9,11 @@ export class HelpButtonComponent implements OnInit{
     /** @author Mathijs Boezer */
     private tour: any;
 
+    @Input() private target: ElementRef;
+
     ngOnInit(): void {
-        this.tour = introJs();
+        console.log(this.target.nativeElement);
+        this.tour = introJs(this.target.nativeElement);
 
         /** Each step in the tour is followed in the same order as entered in the steps array below
          *  Each step has the following format:
@@ -111,10 +114,11 @@ export class HelpButtonComponent implements OnInit{
                 this._options.steps[this._currentStep - 1].clickExit) {
                 this._introItems[this._currentStep - 1].element.click();
             }
-        })
+        });
     }
 
     public startTour(): void {
+        console.log(this.target.nativeElement);
         if(this.tour) {
             this.tour.start();
         }
