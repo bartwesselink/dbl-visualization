@@ -21,7 +21,7 @@ export class AppComponent {
     private activeTab: Tab;
 
     @ViewChild(SidebarComponent) private sidebar: SidebarComponent;
-    @ViewChild('layoutContainer') private container: ElementRef;
+    @ViewChild('layoutContainer') public container: ElementRef;
 
     private parser = new NewickParser();
     public darkMode = false;
