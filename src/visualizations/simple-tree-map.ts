@@ -1,6 +1,7 @@
 import {Visualizer} from '../interfaces/visualizer';
 import {Bounds} from '../interfaces/bounds';
 import {Node} from '../models/node';
+import {NodeTreeMap} from '../models/node-tree-map'
 import {OpenGL} from '../opengl/opengl';
 import {FormFactory} from '../form/form-factory';
 import {Orientation} from '../enums/orientation';
@@ -15,7 +16,7 @@ export class SimpleTreeMap implements Visualizer {
     private colorDifference: number[];
     private totalNodes: number;
     private offset: number;
-    private tree: Node;
+    private tree: NodeTreeMap;
     private rootBounds: Bounds;
     private treeHeight: number;
     private drawOutlines: boolean;
@@ -43,17 +44,39 @@ export class SimpleTreeMap implements Visualizer {
     }
 
     public draw(tree: Node, gl: OpenGL): void {
-        this.tree = tree;
+        this.tree = this.augmentTree(tree);
         this.gl = gl;
 
         this.totalNodes = tree.subTreeSize;
         this.treeHeight = this.calculateTreeHeight(tree, 0);
 
         // Initialize orientation
-        tree.orientation = Orientation.HORIZONTAL;
+        this.tree.orientation = Orientation.HORIZONTAL;
         this.orientTreeNodes(tree);
 
         this.drawTree(tree, this.rootBounds, false, this.colorB);
+    }
+
+    /**
+     * Augments the tree from the bottom up.
+     *
+     * @param {Node} tree
+     * @param {NodeTreeMap} parent : optional
+     * @returns {NodeTreeMap}
+     */
+    private augmentTree(tree: Node, parent?: NodeTreeMap): NodeTreeMap {
+        let augmentedTree = {
+            label: tree.label,
+            children: [],
+            subTreeSize: tree.subTreeSize,
+            parent: parent
+        };
+
+        for (let i = 0; i < tree.children.length; i++) {
+            augmentedTree.children.push(this.augmentTree(tree.children[i], augmentedTree));
+        }
+
+        return augmentedTree;
     }
 
     /** drawTree draw the tree-map recursively.
@@ -104,7 +127,7 @@ export class SimpleTreeMap implements Visualizer {
      * @param {number} index The index of the child within the array containing its siblings (on the parent node)
      * @returns {Bounds} New bounding-box with the correct position and offset such that it is nested within parentBounds
      */
-    private setBounds(tree: Node, parentBounds: Bounds, doneSize: number, last: boolean, index: number): Bounds {
+    private setBounds(tree: NodeTreeMap, parentBounds: Bounds, doneSize: number, last: boolean, index: number): Bounds {
         const parentWidth = Math.abs(parentBounds.right - parentBounds.left);
         const parentHeight = Math.abs(parentBounds.top - parentBounds.bottom);
         const parentSize = tree.parent.subTreeSize - 1;
@@ -143,7 +166,7 @@ export class SimpleTreeMap implements Visualizer {
      *
      * @param {Node} tree Tree for which to calculate the orientation of the nodes for
      */
-    private orientTreeNodes(tree: Node): void {
+    private orientTreeNodes(tree: NodeTreeMap): void {
         // Toggle the orientation for direct children of the current node
         if (tree.orientation === Orientation.HORIZONTAL) {
             var childOrientation = Orientation.VERTICAL;
@@ -188,7 +211,7 @@ export class SimpleTreeMap implements Visualizer {
      * @param {number} verticalSegments Initial call should be 0 , parameter to track height recursively
      * @returns {number} The maximum width or height in terms of cell / segment count
      */
-    private calculateMaxSegments(tree: Node, horizontalSegments: number, verticalSegments: number): number {
+    private calculateMaxSegments(tree: NodeTreeMap, horizontalSegments: number, verticalSegments: number): number {
         let maxSegments = Math.max(horizontalSegments, verticalSegments);
 
         for (let i = 0; i < tree.children.length; i++) {
