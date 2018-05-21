@@ -8,12 +8,12 @@ import {introJs} from 'intro.js';
 export class HelpButtonComponent implements OnInit{
     /** @author Mathijs Boezer */
 
-    @Input() container: ElementRef;
+    @Input() container: Element;
 
     private tour: any;
 
     ngOnInit(): void {
-        this.tour = introJs(this.container.nativeElement);
+        this.tour = introJs(this.container);
 
         /** Each step in the tour is followed in the same order as entered in the steps array below
          *  Each step has the following format:
