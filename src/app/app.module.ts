@@ -22,6 +22,7 @@ import {WelcomePageComponent} from '../components/welcome-page/welcome-page.comp
 import {WorkerManager} from '../utils/worker-manager';
 import { WebWorkerService } from 'angular2-web-worker';
 import {LoaderComponent} from '../components/loader/loader.component';
+import {SelectBus} from '../providers/select-bus';
 
 @NgModule({
     declarations: [
@@ -51,6 +52,7 @@ import {LoaderComponent} from '../components/loader/loader.component';
         WebWorkerService,
         WorkerManager,
         SettingsBus,
+        SelectBus,
     ],
     bootstrap: [AppComponent]
 })

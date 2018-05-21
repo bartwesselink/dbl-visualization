@@ -8,10 +8,7 @@ import {CircleOptions} from '../interfaces/circle-options';
 
 /** @author Bart Wesselink */
 export class InteractionHandler {
-    constructor(private windowComponent: WindowComponent) {
-    }
-
-    public determineClick(tree: Node, draws: Draw[], coords: number[]) {
+    public determineClick(tree: Node, draws: Draw[], coords: number[]): Node|null {
         const x: number = coords[0];
         const y: number = coords[1];
 
@@ -21,19 +18,11 @@ export class InteractionHandler {
             if (this.withinDraw(draw, x, y)) {
                 const node = this.findNodeByIdentifier(tree, draw.identifier);
 
-                if (tree.selectedNode) {
-                    tree.selectedNode.selected = false;
-                    tree.selectedNode = null;
-                }
-
-                tree.selectedNode = node;
-                node.selected = true;
-
-                this.windowComponent.redrawAllScenes();
-
-                break;
+                return node;
             }
         }
+
+        return null;
     }
 
     public withinDraw(draw: Draw, x: number, y: number): boolean {

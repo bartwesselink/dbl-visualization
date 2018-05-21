@@ -1,5 +1,6 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {Node} from '../../models/node';
+import {SelectBus} from '../../providers/select-bus';
 
 @Component({
     selector: 'app-tree-navigator',
@@ -8,8 +9,23 @@ import {Node} from '../../models/node';
 export class TreeNavigatorComponent implements OnInit {
     /** @author Bart Wesselink */
     @Input() tree: Node|Node[];
-
+    @Input() parent: boolean = false;
     public current: Node[] = [];
+
+    constructor(private selectBus: SelectBus) {
+    }
+
+    public hasNode(node: Node): boolean {
+        let foundChild;
+
+        if (this.tree === node) {
+            foundChild = node;
+        } else if (this.tree instanceof Array) {
+            foundChild = this.tree.find((item: Node) => item === node);
+        }
+
+        return foundChild != null;
+    }
 
     public static transformToNavigatorNode(node: Node): Node {
         return {
@@ -17,11 +33,19 @@ export class TreeNavigatorComponent implements OnInit {
             children: [],
             expandable: node.children.length > 0,
             original: node,
+            identifier: node.identifier,
+            selected: node.selected === true,
         };
     }
 
     public ngOnInit() {
         this.reload();
+
+        if (this.parent) {
+            this.selectBus.nodeSelected.subscribe((node: Node) => {
+
+            });
+        }
     }
 
     public reload() {

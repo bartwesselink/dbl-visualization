@@ -15,6 +15,7 @@ import {DrawType} from '../../enums/draw-type';
 import {FormComponent} from '../form/form.component';
 import {Draw} from '../../interfaces/draw';
 import {InteractionHandler} from '../../utils/interaction-handler';
+import {SelectBus} from '../../providers/select-bus';
 
 @Component({
     selector: 'app-window',
@@ -53,8 +54,20 @@ export class WindowComponent implements OnInit {
     private currentDraws: Draw[];
     private interactionHandler: InteractionHandler;
 
-    constructor(private formFactory: FormFactory, private workerManager: WorkerManager) {
-        this.interactionHandler = new InteractionHandler(this);
+    constructor(private formFactory: FormFactory, private workerManager: WorkerManager, private selectBus: SelectBus) {
+        this.interactionHandler = new InteractionHandler();
+
+        this.selectBus.nodeSelected.subscribe((node: Node) => {
+            if (this.tree.selectedNode != null) {
+                this.tree.selectedNode.selected = false;
+                this.tree.selectedNode = null;
+            }
+
+            this.tree.selectedNode = node;
+            node.selected = true;
+
+            this.redrawAllScenes();
+        });
     }
     
     ngOnInit() {
@@ -136,7 +149,10 @@ export class WindowComponent implements OnInit {
         var coords = this.gl.transformPoint(event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
         console.log("click at: " + event.layerX + " | " + event.layerY + " | " + coords[0] + " | " + coords[1]);
 
-        this.interactionHandler.determineClick(this.tree, this.currentDraws, coords);
+        const node: Node = this.interactionHandler.determineClick(this.tree, this.currentDraws, coords);
+        if (node !== null) {
+            this.selectBus.selectNode(node);
+        }
     }
     
     //called when the mouse moves
@@ -174,7 +190,7 @@ export class WindowComponent implements OnInit {
     }
         
     //compute the visualisation
-    private computeScene(): Promise<void> {
+    public computeScene(): Promise<void> {
         return new Promise((resolve, reject) => {
             this.gl.releaseBuffers();
 

@@ -2,7 +2,7 @@
     <i class="material-icons toggle-state" (click)="toggle()" [hidden]="!node.expandable || node.children.length > 0">add_circle_outline</i>
     <i class="material-icons toggle-state" (click)="toggle()" [hidden]="!node.expandable || node.children.length === 0">remove_circle_outline</i>
 
-    {{ node.label }}
+    <span (click)="select()" class="tree-navigator-label" [class.tree-navigator-unnamed]="node.label === ''" [class.tree-navigator-selected]="node.original.selected">{{ node.label === '' ? '(unnamed)' : node.label }}</span>
 
     <app-tree-navigator [tree]="node.children"></app-tree-navigator>
 </div>

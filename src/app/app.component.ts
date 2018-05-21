@@ -128,7 +128,7 @@ export class AppComponent {
     public async redrawAllTabs(): Promise<void> {
         for (const tab of this.tabs.slice().sort((a, b) => a === this.activeTab ? 0 : 1)) {
             if (tab.window) {
-                await tab.window.startScene();
+                tab.window.computeScene();
             }
         }
     }
