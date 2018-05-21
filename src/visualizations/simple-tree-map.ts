@@ -280,7 +280,6 @@ export class SimpleTreeMap implements Visualizer {
     }
 
     public applySettings(settings: any) {
-        console.log(settings);
         this.drawOutlines = settings.outline;
 
         this.offset = settings.offset;
