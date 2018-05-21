@@ -16,6 +16,7 @@ export class SimpleTreeMap implements Visualizer {
     private colorDifference: number[];
     private totalNodes: number;
     private offset: number;
+    private offsetType: string;
     private tree: NodeTreeMap;
     private rootBounds: Bounds;
     private treeHeight: number;
@@ -33,6 +34,8 @@ export class SimpleTreeMap implements Visualizer {
         ];
 
         this.offset = 0;
+        this.offsetType = 'relative';
+
         this.rootBounds = {
             left: -(this.defaultSize / 2),
             right: (this.defaultSize / 2),
@@ -135,29 +138,59 @@ export class SimpleTreeMap implements Visualizer {
 
         // Compute the new bounds which are nested within the bounds of the parent
         if (tree.parent.orientation === Orientation.HORIZONTAL) {
-            const freeSpace = parentWidth - (tree.parent.children.length + 1) * this.offset;
-            return {
-                left: (index == 0) ?
-                    parentBounds.left + this.offset :
-                    parentBounds.left + this.offset * (index + 1) + (freeSpace * doneSize / parentSize),
-                right: (last) ?
-                    parentBounds.left + this.offset * (index + 1) + freeSpace :
-                    parentBounds.left + this.offset * (index + 1) + (freeSpace * (doneSize + childSize) / parentSize),
-                bottom: parentBounds.bottom + this.offset,
-                top: parentBounds.top - this.offset
-            };
-        } else {
-            const freeSpace = parentHeight - (tree.parent.children.length + 1) * this.offset;
-            return {
-                left: parentBounds.left + this.offset,
-                right: parentBounds.right - this.offset,
-                bottom: (last) ?
-                    parentBounds.top - this.offset * (index + 1) - freeSpace :
-                    parentBounds.top - this.offset * (index + 1) - (freeSpace * (doneSize + childSize) / parentSize),
-                top: (index == 0) ?
-                    parentBounds.top - this.offset :
-                    parentBounds.top - this.offset * (index + 1) - (freeSpace * doneSize / parentSize)
-            };
+            if (this.offsetType == 'fixed') {
+                const freeSpace = parentWidth - (tree.parent.children.length + 1) * this.offset;
+                return {
+                    left: (index == 0) ?
+                        parentBounds.left + this.offset :
+                        parentBounds.left + this.offset * (index + 1) + (freeSpace * doneSize / parentSize),
+                    right: (last) ?
+                        parentBounds.left + this.offset * (index + 1) + freeSpace :
+                        parentBounds.left + this.offset * (index + 1) + (freeSpace * (doneSize + childSize) / parentSize),
+                    bottom: parentBounds.bottom + this.offset,
+                    top: parentBounds.top - this.offset
+                };
+            } else { // this.offsetType == 'relative'
+                const relativeOffset = Math.min(parentWidth / 100 * this.offset / (tree.parent.children.length + 1), parentHeight / 100 * this.offset / (tree.parent.children.length + 1));
+                const freeSpace = parentWidth - (tree.parent.children.length + 1) * relativeOffset;
+                return {
+                    left: (index == 0) ?
+                        parentBounds.left + relativeOffset :
+                        parentBounds.left + relativeOffset * (index + 1) + (freeSpace * doneSize / parentSize),
+                    right: (last) ?
+                        parentBounds.left + relativeOffset * (index + 1) + freeSpace :
+                        parentBounds.left + relativeOffset * (index + 1) + (freeSpace * (doneSize + childSize) / parentSize),
+                    bottom: parentBounds.bottom + relativeOffset,
+                    top: parentBounds.top - relativeOffset
+                };
+            }
+        } else { // tree.parent.orientation === Orientation.VERTICAL
+            if (this.offsetType == 'fixed') {
+                const freeSpace = parentHeight - (tree.parent.children.length + 1) * this.offset;
+                return {
+                    left: parentBounds.left + this.offset,
+                    right: parentBounds.right - this.offset,
+                    bottom: (last) ?
+                        parentBounds.top - this.offset * (index + 1) - freeSpace :
+                        parentBounds.top - this.offset * (index + 1) - (freeSpace * (doneSize + childSize) / parentSize),
+                    top: (index == 0) ?
+                        parentBounds.top - this.offset :
+                        parentBounds.top - this.offset * (index + 1) - (freeSpace * doneSize / parentSize)
+                };
+            } else { // this.offsetType == 'relative'
+                const relativeOffset = Math.min(parentWidth / 100 * this.offset / (tree.parent.children.length + 1), parentHeight / 100 * this.offset / (tree.parent.children.length + 1));
+                const freeSpace = parentHeight - (tree.parent.children.length + 1) * relativeOffset;
+                return {
+                    left: parentBounds.left + relativeOffset,
+                    right: parentBounds.right - relativeOffset,
+                    bottom: (last) ?
+                        parentBounds.top - relativeOffset * (index + 1) - freeSpace :
+                        parentBounds.top - relativeOffset * (index + 1) - (freeSpace * (doneSize + childSize) / parentSize),
+                    top: (index == 0) ?
+                        parentBounds.top - relativeOffset :
+                        parentBounds.top - relativeOffset * (index + 1) - (freeSpace * doneSize / parentSize)
+                };
+            }
         }
     };
 
@@ -242,19 +275,38 @@ export class SimpleTreeMap implements Visualizer {
         return formFactory.createFormBuilder()
             .addToggleField('outline', true, {label: 'Draw outlines'})
             .addSliderField('offset', 0, {label: 'Offset', min: 0, max: 25})
+            .addChoiceField('offsetType', 'relative', { label: 'Offset type', expanded: false, choices: { relative: 'relative', fixed: 'fixed' } })
             .getForm();
     }
 
     public applySettings(settings: any) {
+        console.log(settings);
         this.drawOutlines = settings.outline;
-        this.offset = settings.offset;
 
-        // We have to create space to allow for the absolute offset of each cell
-        // Using this currently enables the best implementation for offset in all
-        // my extensive attempts thus far.
-        if (this.offset > 0) {
+        this.offset = settings.offset;
+        this.offsetType = settings.offsetType;
+
+        if (this.offsetType == 'fixed') {
+            // We have to create space to allow for the absolute offset of each cell
+            // Using this currently enables the best implementation for offset in all
+            // my extensive attempts thus far.
+            if (this.offset > 0) {
+                const oldBounds = this.rootBounds;
+                this.updateRootBounds();
+                const scaleFactor = (oldBounds.right / this.rootBounds.right); // Calculate a scalingfactor to prevent the visualization from moving
+                this.gl.scale(scaleFactor); // Actually scale
+                this.offsetScale = (300 / this.rootBounds.right); // Factor indicating how far away we are from normal scaling
+                this.offset = Math.pow(this.offset, 1.4); // Increase scaling factor for the offset, this can be tweaked, though 1.4 works well for now
+            }
+        } else { // this.offsetType == 'relative'
             const oldBounds = this.rootBounds;
-            this.updateRootBounds();
+            // Reset root bounds when we select to apply our offset as 'relative'
+            this.rootBounds = {
+                left: -(this.defaultSize / 2),
+                right: (this.defaultSize / 2),
+                bottom: -(this.defaultSize / 2),
+                top: (this.defaultSize / 2),
+            };
             const scaleFactor = (oldBounds.right / this.rootBounds.right); // Calculate a scalingfactor to prevent the visualization from moving
             this.gl.scale(scaleFactor); // Actually scale
             this.offsetScale = (300 / this.rootBounds.right); // Factor indicating how far away we are from normal scaling
