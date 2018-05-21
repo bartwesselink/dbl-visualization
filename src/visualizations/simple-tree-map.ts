@@ -138,19 +138,19 @@ export class SimpleTreeMap implements Visualizer {
 
         // Compute the new bounds which are nested within the bounds of the parent
         if (tree.parent.orientation === Orientation.HORIZONTAL) {
-            if (this.offsetType == 'fixed') {
-                const freeSpace = parentWidth - (tree.parent.children.length + 1) * this.offset;
-                return {
-                    left: (index == 0) ?
-                        parentBounds.left + this.offset :
-                        parentBounds.left + this.offset * (index + 1) + (freeSpace * doneSize / parentSize),
-                    right: (last) ?
-                        parentBounds.left + this.offset * (index + 1) + freeSpace :
-                        parentBounds.left + this.offset * (index + 1) + (freeSpace * (doneSize + childSize) / parentSize),
-                    bottom: parentBounds.bottom + this.offset,
-                    top: parentBounds.top - this.offset
-                };
-            } else { // this.offsetType == 'relative'
+            // if (this.offsetType == 'fixed') {
+            //     const freeSpace = parentWidth - (tree.parent.children.length + 1) * this.offset;
+            //     return {
+            //         left: (index == 0) ?
+            //             parentBounds.left + this.offset :
+            //             parentBounds.left + this.offset * (index + 1) + (freeSpace * doneSize / parentSize),
+            //         right: (last) ?
+            //             parentBounds.left + this.offset * (index + 1) + freeSpace :
+            //             parentBounds.left + this.offset * (index + 1) + (freeSpace * (doneSize + childSize) / parentSize),
+            //         bottom: parentBounds.bottom + this.offset,
+            //         top: parentBounds.top - this.offset
+            //     };
+            // } else { // this.offsetType == 'relative'
                 const relativeOffset = Math.min(parentWidth / 100 * this.offset / (tree.parent.children.length + 1), parentHeight / 100 * this.offset / (tree.parent.children.length + 1));
                 const freeSpace = parentWidth - (tree.parent.children.length + 1) * relativeOffset;
                 return {
@@ -163,21 +163,21 @@ export class SimpleTreeMap implements Visualizer {
                     bottom: parentBounds.bottom + relativeOffset,
                     top: parentBounds.top - relativeOffset
                 };
-            }
+            // }
         } else { // tree.parent.orientation === Orientation.VERTICAL
-            if (this.offsetType == 'fixed') {
-                const freeSpace = parentHeight - (tree.parent.children.length + 1) * this.offset;
-                return {
-                    left: parentBounds.left + this.offset,
-                    right: parentBounds.right - this.offset,
-                    bottom: (last) ?
-                        parentBounds.top - this.offset * (index + 1) - freeSpace :
-                        parentBounds.top - this.offset * (index + 1) - (freeSpace * (doneSize + childSize) / parentSize),
-                    top: (index == 0) ?
-                        parentBounds.top - this.offset :
-                        parentBounds.top - this.offset * (index + 1) - (freeSpace * doneSize / parentSize)
-                };
-            } else { // this.offsetType == 'relative'
+            // if (this.offsetType == 'fixed') {
+            //     const freeSpace = parentHeight - (tree.parent.children.length + 1) * this.offset;
+            //     return {
+            //         left: parentBounds.left + this.offset,
+            //         right: parentBounds.right - this.offset,
+            //         bottom: (last) ?
+            //             parentBounds.top - this.offset * (index + 1) - freeSpace :
+            //             parentBounds.top - this.offset * (index + 1) - (freeSpace * (doneSize + childSize) / parentSize),
+            //         top: (index == 0) ?
+            //             parentBounds.top - this.offset :
+            //             parentBounds.top - this.offset * (index + 1) - (freeSpace * doneSize / parentSize)
+            //     };
+            // } else { // this.offsetType == 'relative'
                 const relativeOffset = Math.min(parentWidth / 100 * this.offset / (tree.parent.children.length + 1), parentHeight / 100 * this.offset / (tree.parent.children.length + 1));
                 const freeSpace = parentHeight - (tree.parent.children.length + 1) * relativeOffset;
                 return {
@@ -190,7 +190,7 @@ export class SimpleTreeMap implements Visualizer {
                         parentBounds.top - relativeOffset :
                         parentBounds.top - relativeOffset * (index + 1) - (freeSpace * doneSize / parentSize)
                 };
-            }
+            // }
         }
     };
 
@@ -236,46 +236,46 @@ export class SimpleTreeMap implements Visualizer {
         return treeHeight;
     }
 
-    /**
-     * Recursive method to calculate the maximum width or height in terms of cell/segment count for a given tree.
-     *
-     * @param {Node} tree The tree for which to calculate the max segment width or height
-     * @param {number} horizontalSegments Initial call should be 0 , parameter to track width recursively
-     * @param {number} verticalSegments Initial call should be 0 , parameter to track height recursively
-     * @returns {number} The maximum width or height in terms of cell / segment count
-     */
-    private calculateMaxSegments(tree: NodeTreeMap, horizontalSegments: number, verticalSegments: number): number {
-        let maxSegments = Math.max(horizontalSegments, verticalSegments);
-
-        for (let i = 0; i < tree.children.length; i++) {
-            if (maxSegments == 0) {
-                if (tree.orientation === Orientation.HORIZONTAL) {
-                    maxSegments = this.calculateMaxSegments(tree.children[i], horizontalSegments + tree.children.length, verticalSegments + 1);
-                } else {
-                    maxSegments = this.calculateMaxSegments(tree.children[i], horizontalSegments + 1, verticalSegments + tree.children.length);
-                }
-            } else {
-                let newMax;
-                if (tree.orientation === Orientation.HORIZONTAL) {
-                    newMax = this.calculateMaxSegments(tree.children[i], horizontalSegments + tree.children.length, verticalSegments + 1);
-                } else {
-                    newMax = this.calculateMaxSegments(tree.children[i], horizontalSegments + 1, verticalSegments + tree.children.length);
-                }
-
-                if (newMax > maxSegments) {
-                    maxSegments = newMax;
-                }
-
-            }
-        }
-        return maxSegments;
-    }
+    // /**
+    //  * Recursive method to calculate the maximum width or height in terms of cell/segment count for a given tree.
+    //  *
+    //  * @param {Node} tree The tree for which to calculate the max segment width or height
+    //  * @param {number} horizontalSegments Initial call should be 0 , parameter to track width recursively
+    //  * @param {number} verticalSegments Initial call should be 0 , parameter to track height recursively
+    //  * @returns {number} The maximum width or height in terms of cell / segment count
+    //  */
+    // private calculateMaxSegments(tree: NodeTreeMap, horizontalSegments: number, verticalSegments: number): number {
+    //     let maxSegments = Math.max(horizontalSegments, verticalSegments);
+    //
+    //     for (let i = 0; i < tree.children.length; i++) {
+    //         if (maxSegments == 0) {
+    //             if (tree.orientation === Orientation.HORIZONTAL) {
+    //                 maxSegments = this.calculateMaxSegments(tree.children[i], horizontalSegments + tree.children.length, verticalSegments + 1);
+    //             } else {
+    //                 maxSegments = this.calculateMaxSegments(tree.children[i], horizontalSegments + 1, verticalSegments + tree.children.length);
+    //             }
+    //         } else {
+    //             let newMax;
+    //             if (tree.orientation === Orientation.HORIZONTAL) {
+    //                 newMax = this.calculateMaxSegments(tree.children[i], horizontalSegments + tree.children.length, verticalSegments + 1);
+    //             } else {
+    //                 newMax = this.calculateMaxSegments(tree.children[i], horizontalSegments + 1, verticalSegments + tree.children.length);
+    //             }
+    //
+    //             if (newMax > maxSegments) {
+    //                 maxSegments = newMax;
+    //             }
+    //
+    //         }
+    //     }
+    //     return maxSegments;
+    // }
 
     public getForm(formFactory: FormFactory) {
         return formFactory.createFormBuilder()
             .addToggleField('outline', true, {label: 'Draw outlines'})
             .addSliderField('offset', 0, {label: 'Offset', min: 0, max: 25})
-            .addChoiceField('offsetType', 'relative', { label: 'Offset type', expanded: false, choices: { relative: 'relative', fixed: 'fixed' } })
+            // .addChoiceField('offsetType', 'relative', { label: 'Offset type', expanded: false, choices: { relative: 'relative', fixed: 'fixed' } })
             .getForm();
     }
 
@@ -285,52 +285,52 @@ export class SimpleTreeMap implements Visualizer {
         this.offset = settings.offset;
         this.offsetType = settings.offsetType;
 
-        if (this.offsetType == 'fixed') {
-            // We have to create space to allow for the absolute offset of each cell
-            // Using this currently enables the best implementation for offset in all
-            // my extensive attempts thus far.
-            if (this.offset > 0) {
-                const oldBounds = this.rootBounds;
-                this.updateRootBounds();
-                const scaleFactor = (oldBounds.right / this.rootBounds.right); // Calculate a scalingfactor to prevent the visualization from moving
-                this.gl.scale(scaleFactor); // Actually scale
-                this.offsetScale = (300 / this.rootBounds.right); // Factor indicating how far away we are from normal scaling
-                this.offset = Math.pow(this.offset, 1.4); // Increase scaling factor for the offset, this can be tweaked, though 1.4 works well for now
-            }
-        } else { // this.offsetType == 'relative'
-            const oldBounds = this.rootBounds;
-            // Reset root bounds when we select to apply our offset as 'relative'
-            this.rootBounds = {
-                left: -(this.defaultSize / 2),
-                right: (this.defaultSize / 2),
-                bottom: -(this.defaultSize / 2),
-                top: (this.defaultSize / 2),
-            };
-            const scaleFactor = (oldBounds.right / this.rootBounds.right); // Calculate a scalingfactor to prevent the visualization from moving
-            this.gl.scale(scaleFactor); // Actually scale
-            this.offsetScale = (300 / this.rootBounds.right); // Factor indicating how far away we are from normal scaling
-            this.offset = Math.pow(this.offset, 1.4); // Increase scaling factor for the offset, this can be tweaked, though 1.4 works well for now
-        }
+        // if (this.offsetType == 'fixed') {
+        //     // We have to create space to allow for the absolute offset of each cell
+        //     // Using this currently enables the best implementation for offset in all
+        //     // my extensive attempts thus far.
+        //     if (this.offset > 0) {
+        //         const oldBounds = this.rootBounds;
+        //         this.updateRootBounds();
+        //         const scaleFactor = (oldBounds.right / this.rootBounds.right); // Calculate a scalingfactor to prevent the visualization from moving
+        //         this.gl.scale(scaleFactor); // Actually scale
+        //         this.offsetScale = (300 / this.rootBounds.right); // Factor indicating how far away we are from normal scaling
+        //         this.offset = Math.pow(this.offset, 1.4); // Increase scaling factor for the offset, this can be tweaked, though 1.4 works well for now
+        //     }
+        // } else { // this.offsetType == 'relative'
+        //     const oldBounds = this.rootBounds;
+        //     // Reset root bounds when we select to apply our offset as 'relative'
+        //     this.rootBounds = {
+        //         left: -(this.defaultSize / 2),
+        //         right: (this.defaultSize / 2),
+        //         bottom: -(this.defaultSize / 2),
+        //         top: (this.defaultSize / 2),
+        //     };
+        //     const scaleFactor = (oldBounds.right / this.rootBounds.right); // Calculate a scalingfactor to prevent the visualization from moving
+        //     this.gl.scale(scaleFactor); // Actually scale
+        //     this.offsetScale = (300 / this.rootBounds.right); // Factor indicating how far away we are from normal scaling
+        //     this.offset = Math.pow(this.offset, 1.4); // Increase scaling factor for the offset, this can be tweaked, though 1.4 works well for now
+        // }
 
         this.gl.releaseBuffers();       // remove old data from buffers
         this.draw(this.tree, this.gl);  // fill buffers with new data
         this.gl.render();               // force a render
     }
 
-    /**
-     * Utility function to calculate the new size for the upscaled base-square of the visualization
-     */
-    public updateRootBounds(): void {
-        // Caluclate how much offset we need at most based on width/height segment count.
-        const maxSegments = this.calculateMaxSegments(this.tree, 0, 0);
-
-        this.rootBounds = {
-            left: -(this.defaultSize / 2) - this.offset * this.treeHeight * maxSegments,
-            right: (this.defaultSize / 2) + this.offset * this.treeHeight * maxSegments,
-            bottom: -(this.defaultSize / 2) - this.offset * this.treeHeight * maxSegments,
-            top: (this.defaultSize / 2) + this.offset * this.treeHeight * maxSegments
-        };
-    }
+    // /**
+    //  * Utility function to calculate the new size for the upscaled base-square of the visualization
+    //  */
+    // public updateRootBounds(): void {
+    //     // Caluclate how much offset we need at most based on width/height segment count.
+    //     const maxSegments = this.calculateMaxSegments(this.tree, 0, 0);
+    //
+    //     this.rootBounds = {
+    //         left: -(this.defaultSize / 2) - this.offset * this.treeHeight * maxSegments,
+    //         right: (this.defaultSize / 2) + this.offset * this.treeHeight * maxSegments,
+    //         bottom: -(this.defaultSize / 2) - this.offset * this.treeHeight * maxSegments,
+    //         top: (this.defaultSize / 2) + this.offset * this.treeHeight * maxSegments
+    //     };
+    // }
 
     public getName(): string {
         return 'Simple Tree Map';
