@@ -209,7 +209,7 @@ export class OpenGL{
             pos.push((x + radx * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + rady * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
         }
         
-        this.drawArcImpl(pos, color, ((end - start) > 90 ? 2 : 1) * Math.max(radx, rady));
+        this.drawArcImpl(pos, color, (end - start) > 90 ? (2 * Math.max(radx, rady)) : Math.max(radx, rady));
     }
     
     //draws a partial circle
@@ -226,7 +226,7 @@ export class OpenGL{
         }
         pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
         
-        this.drawArcImpl(pos, color, ((end - start) > 90 ? 2 : 1) * radius);
+        this.drawArcImpl(pos, color, (end - start) > 90 ? (2 * radius) : radius);
     }
     
     //draws an arc
@@ -499,12 +499,13 @@ export class OpenGL{
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
         
-//        this.arrays.push({
-//            pos: posBuffer,
-//            color: this.toColor(color),
-//            mode: this.gl.LINE_LOOP,
-//            length: pos.length / 2
-//        });
+        this.arrays.push({
+            pos: posBuffer,
+            color: this.toColor(color),
+            mode: this.gl.LINE_LOOP,
+            size: (end - start) > 90 ? (2 * far) : far, 
+            length: pos.length / 2
+        });
     }
     
     //draws a ring slice
