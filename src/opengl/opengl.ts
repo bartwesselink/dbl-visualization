@@ -646,35 +646,42 @@ export class OpenGL{
         }
     }
     
+    private isVisible(elem: Element): boolean {
+        if((this.mode == Mode.WIDTH_FIRST && elem.size < ((this.WIDTH / this.factor) / this.width) * this.SIZETHRESHOLD) || (this.mode == Mode.HEIGHT_FIRST && elem.size < ((this.HEIGHT / this.factor) / this.height) * this.SIZETHRESHOLD)){
+            return false;
+        }else{
+            return true;
+        }
+    }
+        
     //renders the given element
     private drawElement(elem: Element): void {
-        if((this.mode == Mode.WIDTH_FIRST && elem.size < ((this.WIDTH / this.factor) / this.width) * this.SIZETHRESHOLD) || (this.mode == Mode.HEIGHT_FIRST && elem.size < ((this.HEIGHT / this.factor) / this.height) * this.SIZETHRESHOLD)){
-            return;
-        }
-        if(elem.pos != null){
-            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
-            this.gl.vertexAttribPointer(this.shader.shaderAttribPosition,             //attribute
-                                        2,                                            //2D so two values per iteration: x, y
-                                        this.gl.FLOAT,                                //data type is float32
-                                        false,                                        //no normalisation
-                                        0,                                            //stride = automatic
-                                        elem.offset == null ? 0 : elem.offset);       //skip
-            this.gl.enableVertexAttribArray(this.shader.shaderAttribPosition);
-        }
-        
-        if(elem.color != null){
-            this.gl.uniform1f(this.gl.getUniformLocation(this.shader.shader, "color"), elem.color);
-        }
-        
-        if(elem.indices == null){
-            this.gl.drawArrays(elem.mode, 0, elem.length);
-        }else{
-            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, elem.indices);
-            this.gl.drawElements(elem.mode, elem.length, this.gl.UNSIGNED_BYTE, 0);
-        }
-        
-        if(elem.overlay != null){
-            this.drawElement(elem.overlay);
+        if(this.isVisible(elem)){
+            if(elem.pos != null){
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
+                this.gl.vertexAttribPointer(this.shader.shaderAttribPosition,             //attribute
+                                            2,                                            //2D so two values per iteration: x, y
+                                            this.gl.FLOAT,                                //data type is float32
+                                            false,                                        //no normalisation
+                                            0,                                            //stride = automatic
+                                            elem.offset == null ? 0 : elem.offset);       //skip
+                this.gl.enableVertexAttribArray(this.shader.shaderAttribPosition);
+            }
+            
+            if(elem.color != null){
+                this.gl.uniform1f(this.gl.getUniformLocation(this.shader.shader, "color"), elem.color);
+            }
+            
+            if(elem.indices == null){
+                this.gl.drawArrays(elem.mode, 0, elem.length);
+            }else{
+                this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, elem.indices);
+                this.gl.drawElements(elem.mode, elem.length, this.gl.UNSIGNED_BYTE, 0);
+            }
+            
+            if(elem.overlay != null){
+                this.drawElement(elem.overlay);
+            }
         }
     }
     
