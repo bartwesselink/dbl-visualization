@@ -33,8 +33,6 @@ export class OpenGL{
         
         this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
         this.gl.enable(this.gl.BLEND);
-        this.gl.depthFunc(gl.LEQUAL);
-        this.gl.enable(gl.DEPTH_TEST);  
         
         console.log("OpenGL version: " + this.gl.getParameter(gl.VERSION));
         console.log("GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
@@ -638,7 +636,7 @@ export class OpenGL{
     
     //clear the screen
     private clear(): void {
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     }
     
     //draw all the OpenGL buffers
