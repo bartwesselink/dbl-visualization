@@ -197,12 +197,8 @@ export class WindowComponent implements OnInit {
             return;
         }
         
-        this.gl = new OpenGL(gl);
-        
         try{
-            //a bit redundant right now, but useful if we ever want to implement more shaders
-            var shader: Shader = this.gl.initShaders();
-            this.gl.useShader(shader);
+            this.gl = new OpenGL(gl);
         }catch(error){
             this.onError((<Error>error).message);   
         }  

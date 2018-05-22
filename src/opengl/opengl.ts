@@ -35,6 +35,8 @@ export class OpenGL{
         this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
         this.gl.enable(this.gl.BLEND);
         
+        this.initShaders();
+        
         console.log("OpenGL version: " + this.gl.getParameter(gl.VERSION));
         console.log("GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
     }
@@ -187,11 +189,6 @@ export class OpenGL{
         this.colorUniform = this.gl.getUniformLocation(this.shader.shader, "color")
         
         this.drawBuffers();
-    }
-    
-    //sets the shader to use
-    public useShader(shader: Shader): void {
-        this.shader = shader;
     }
     
     //releases all the OpenGL buffers
@@ -693,7 +690,7 @@ export class OpenGL{
     }
     
     //initialises the shaders
-    public initShaders(): Shader {
+    public initShaders(): void {
         //ridiculously complicated vertex shader
         //because bit wise operators were on a vacation in GLSL -_-
         const vertexShaderSource = `
@@ -761,7 +758,7 @@ export class OpenGL{
         }
         
         //Initialise the shader object for use
-        return{
+        this.shader = {
             shader: program,
             shaderAttribPosition: this.gl.getAttribLocation(program, "pos")
         }
