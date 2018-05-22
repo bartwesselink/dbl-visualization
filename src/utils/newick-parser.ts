@@ -1,31 +1,37 @@
 import { Node } from "../models/node";
-import { Newick } from 'newick'
+import { Newick } from 'newick';
 
 export class NewickParser {
     /** @author Jordy Verhoeven */
+
+    errorMsg = "Invalid Newick file.";
+    successMsg = "Succefully parsed Newick file.";
+
+    constructor(private snackbar: any) {}
+
     public extractLines(data: string): string {
         const lines = data.split("\n");
 
         if (lines.length < 2) {
-            console.error('Invalid file supplied.');
-
+            this.feedback(this.errorMsg);
             return null;
         }
-
         data = null;
-
         return lines[1];
     }
 
-    public parseTree(data: string): Node {
-        let newick = new Newick(data);
-
+    public parseTree(data: string): Node|null {
+        let newick: any;
+        try {
+            newick = new Newick(data);
+            this.feedback(this.successMsg);
+        } catch {
+            this.feedback(this.errorMsg);
+            return;
+        }
         const first = newick.tree;
-
         const parent = this.recurse(first);
-
         newick = null;
-
         return parent;
     }
 
@@ -54,6 +60,10 @@ export class NewickParser {
         }
 
         return formatted;
+    }
+
+    private feedback(message: String): void{
+        this.snackbar.nativeElement.MaterialSnackbar.showSnackbar({message: message});
     }
     /** @end-author Jordy Verhoeven */
 }
