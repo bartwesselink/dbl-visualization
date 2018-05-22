@@ -28,7 +28,7 @@ export class Matrix{
         return vector;
     }
     
-    //multiplies the given vectory by the given matrix
+    //multiplies the given vector by the given matrix
     public static multiplyVector2D(vector: number[], matrix: number[]): number[] {
         var x = vector[0];
         var y = vector[1];
