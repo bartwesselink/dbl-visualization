@@ -70,22 +70,22 @@ export class WindowComponent implements OnInit {
             break;
         case 'w':
         case 'W':
-            this.gl.translate(0, this.DEFAULT_DT, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+            this.gl.translate(0, this.DEFAULT_DT);
             this.render();
             break;
         case 's':
         case 'S':
-            this.gl.translate(0, -this.DEFAULT_DT, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+            this.gl.translate(0, -this.DEFAULT_DT);
             this.render();    
             break;
         case 'a':
         case 'A':
-            this.gl.translate(this.DEFAULT_DT, 0, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+            this.gl.translate(this.DEFAULT_DT, 0);
             this.render();
             break;
         case 'd':
         case 'D':
-            this.gl.translate(-this.DEFAULT_DT, 0, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+            this.gl.translate(-this.DEFAULT_DT, 0);
             this.render();    
             break;
         case 'r':
@@ -118,7 +118,7 @@ export class WindowComponent implements OnInit {
     
     //called when the mouse is clicked
     public onClick(event: MouseEvent): void {
-        var coords = this.gl.transformPoint(event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
+        var coords = this.gl.transformPoint(event.layerX, event.layerY);
         console.log("click at: " + event.layerX + " | " + event.layerY + " | " + coords[0] + " | " + coords[1]);
         //TODO pass this on to the visualisation to do something with the click
     }
@@ -126,7 +126,7 @@ export class WindowComponent implements OnInit {
     //called when the mouse moves
     public onDrag(event: MouseEvent): void {
         if(this.down){
-            this.gl.translate((event.clientX - this.lastX), (event.clientY - this.lastY), this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+            this.gl.translate((event.clientX - this.lastX), (event.clientY - this.lastY))
             this.render();
         }
         this.lastX = event.clientX;

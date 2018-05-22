@@ -118,17 +118,17 @@ export class OpenGL{
     }
     
     //translates the model view by the given distance
-    public translate(dx: number, dy: number, width: number, height: number): void {
+    public translate(dx: number, dy: number): void {
         var vec = Matrix.rotateVector2D([0, 0], [dx, dy], -this.rotation);
         dx = vec[0];
         dy = vec[1];
         if(this.mode == Mode.WIDTH_FIRST){
-            height = (width / this.WIDTH) * this.HEIGHT;
+            this.height = (this.width / this.WIDTH) * this.HEIGHT;
         }else{
-            width = (height / this.HEIGHT) * this.WIDTH;
+            this.width = (this.height / this.HEIGHT) * this.WIDTH;
         }
-        dx = ((dx / width) * 2) / this.factor;
-        dy = ((-dy / height) * 2) / this.factor;
+        dx = ((dx / this.width) * 2) / this.factor;
+        dy = ((-dy / this.height) * 2) / this.factor;
         Matrix.translateSelf(this.modelviewMatrix, [dx, dy, 0]);
         this.dx += dx;
         this.dy += dy;
@@ -143,21 +143,21 @@ export class OpenGL{
     }
     
     //maps a true canvas coordinate to the imaginary OpenGL coordinate system
-    public transformPoint(x: number, y: number, width: number, height: number): number[] {
-        var loc = this.transform(x, y, width, height);
+    public transformPoint(x: number, y: number): number[] {
+        var loc = this.transform(x, y);
         loc[0] *= this.HALFWIDTH;
         loc[1] *= this.HALFHEIGHT;
         return loc;
     }
     
     //maps a true canvas coordinate to the true OpenGL coordinate system
-    private transform(x: number, y: number, width: number, height: number): number[] {
-        var dx = x - width / 2;
-        var dy = y - height / 2;
+    private transform(x: number, y: number): number[] {
+        var dx = x - this.width / 2;
+        var dy = y - this.height / 2;
         if(this.mode == Mode.WIDTH_FIRST){
-            return [((dx / width) / this.factor) * 2 - this.dx, -(((dy / height) * (height / ((width / this.WIDTH) * this.HEIGHT))) / this.factor) * 2 - this.dy];
+            return [((dx / this.width) / this.factor) * 2 - this.dx, -(((dy / this.height) * (this.height / ((this.width / this.WIDTH) * this.HEIGHT))) / this.factor) * 2 - this.dy];
         }else{
-            return [(((dx / width) * (width / ((height / this.HEIGHT) * this.WIDTH))) / this.factor) * 2 - this.dx, -((dy / height) / this.factor) * 2 - this.dy];
+            return [(((dx / this.width) * (this.width / ((this.height / this.HEIGHT) * this.WIDTH))) / this.factor) * 2 - this.dx, -((dy / this.height) / this.factor) * 2 - this.dy];
         }
     }
     
