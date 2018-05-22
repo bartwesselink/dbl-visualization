@@ -341,7 +341,7 @@ export class OpenGL{
                           x,         y + height,
                           x + width, y,
                           x,         y,
-                          Math.hypot(width, height), true, false, color, null);
+                          Math.max(width, height), true, false, color, null);
     }
     
     //draw an axis aligned quad
@@ -350,7 +350,7 @@ export class OpenGL{
                          x,         y + height,
                          x,         y,
                          x + width, y,
-                         Math.hypot(width, height), false, true, null, color);
+                         Math.max(width, height), false, true, null, color);
     }
     
     //render an axis aligned quad
@@ -359,7 +359,7 @@ export class OpenGL{
                           x,         y + height,
                           x + width, y,
                           x,         y,
-                          Math.hypot(width, height), true, true, fillColor, lineColor);
+                          Math.max(width, height), true, true, fillColor, lineColor);
     }
         
     //draw quad implementation
