@@ -209,7 +209,7 @@ export class OpenGL{
             pos.push((x + radx * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + rady * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
         }
         
-        this.drawArcImpl(pos, color);
+        this.drawArcImpl(pos, color, ((end - start) > 90 ? 2 : 1) * Math.max(radx, rady));
     }
     
     //draws a partial circle
@@ -226,21 +226,22 @@ export class OpenGL{
         }
         pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
         
-        this.drawArcImpl(pos, color);
+        this.drawArcImpl(pos, color, ((end - start) > 90 ? 2 : 1) * radius);
     }
     
     //draws an arc
-    private drawArcImpl(pos: number[], color: number[]): void {
+    private drawArcImpl(pos: number[], color: number[], size: number): void {
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
         
-//        this.arrays.push({
-//            pos: positionBuffer,
-//            color: this.toColor(color),
-//            mode: this.gl.LINE_STRIP,
-//            length: pos.length / 2
-//        });
+        this.arrays.push({
+            pos: positionBuffer,
+            color: this.toColor(color),
+            mode: this.gl.LINE_STRIP,
+            size: size,
+            length: pos.length / 2
+        });
     }
     
     //draws a straight line
