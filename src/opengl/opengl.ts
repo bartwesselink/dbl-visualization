@@ -234,13 +234,13 @@ export class OpenGL{
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
         
-        this.arrays.push({
-            pos: positionBuffer,
-            color: this.toColor(color),
-            mode: this.gl.LINE_STRIP,
-            size: size,
-            length: pos.length / 2
-        });
+//        this.arrays.push({
+//            pos: positionBuffer,
+//            color: this.toColor(color),
+//            mode: this.gl.LINE_STRIP,
+//            size: size,
+//            length: pos.length / 2
+//        });
     }
     
     //draws a straight line
@@ -277,13 +277,13 @@ export class OpenGL{
         }
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
         
-        this.arrays.push({
-            pos: positionBuffer,
-            color: this.toColor(color),
-            mode: this.gl.LINE_STRIP,
-            size: Math.max(maxx - minx, maxy - miny),
-            length: x.length
-        });
+//        this.arrays.push({
+//            pos: positionBuffer,
+//            color: this.toColor(color),
+//            mode: this.gl.LINE_STRIP,
+//            size: Math.max(maxx - minx, maxy - miny),
+//            length: x.length
+//        });
     }
     
     //fill a rotated quad
@@ -331,8 +331,8 @@ export class OpenGL{
                           a[0], a[1],
                           d[0], d[1],
                           c[0], c[1],
-                          size, fill, line, fillColor, lineColor);
-    }
+                          -100000, -1000000, size, fill, line, fillColor, lineColor);
+    }//TODO
     
     //fill an axis aligned quad
     public fillAAQuad(x: number, y: number, width: number, height: number, color: number[]): void {
@@ -340,7 +340,7 @@ export class OpenGL{
                           x,         y + height,
                           x + width, y,
                           x,         y,
-                          Math.max(width, height), true, false, color, null);
+                          x + width / 2, y + height / 2, Math.hypot(width, height), true, false, color, null);
     }
     
     //draw an axis aligned quad
@@ -349,7 +349,7 @@ export class OpenGL{
                          x,         y + height,
                          x,         y,
                          x + width, y,
-                         Math.max(width, height), false, true, null, color);
+                         x + width / 2, y + height / 2, Math.hypot(width, height), false, true, null, color);
     }
     
     //render an axis aligned quad
@@ -358,11 +358,11 @@ export class OpenGL{
                           x,         y + height,
                           x + width, y,
                           x,         y,
-                          Math.max(width, height), true, true, fillColor, lineColor);
+                          x + width / 2, y + height / 2, Math.hypot(width, height), true, true, fillColor, lineColor);
     }
         
     //draw quad implementation
-    private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, size: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
+    private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, x: number, y: number, size: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
         //position
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
@@ -378,6 +378,8 @@ export class OpenGL{
                 color: this.toColor(fillColor),
                 mode: this.gl.TRIANGLE_STRIP,
                 size: size,
+                x: x,
+                y: y,
                 length: 4
             });
         }else{
@@ -391,28 +393,28 @@ export class OpenGL{
                 this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
                 this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint8Array([0, 2, 3, 1]), this.gl.STATIC_DRAW);
                 
-                this.arrays.push({
-                    pos: positionBuffer,
-                    color: this.toColor(fillColor),
-                    mode: this.gl.TRIANGLE_STRIP,
-                    size: size,
-                    length: 4,
-                    overlay: {
-                        pos: positionBuffer,
-                        indices: indicesBuffer,
-                        color: this.toColor(lineColor),
-                        mode: this.gl.LINE_LOOP,
-                        length: 4
-                    }
-                });
+//                this.arrays.push({
+//                    pos: positionBuffer,
+//                    color: this.toColor(fillColor),
+//                    mode: this.gl.TRIANGLE_STRIP,
+//                    size: size,
+//                    length: 4,
+//                    overlay: {
+//                        pos: positionBuffer,
+//                        indices: indicesBuffer,
+//                        color: this.toColor(lineColor),
+//                        mode: this.gl.LINE_LOOP,
+//                        length: 4
+//                    }
+//                });
             }else{
-                this.arrays.push({
-                    pos: positionBuffer,
-                    color: this.toColor(lineColor),
-                    mode: this.gl.LINE_LOOP,
-                    size: size,
-                    length: 4
-                });
+//                this.arrays.push({
+//                    pos: positionBuffer,
+//                    color: this.toColor(lineColor),
+//                    mode: this.gl.LINE_LOOP,
+//                    size: size,
+//                    length: 4
+//                });
             }
         }
     }
@@ -498,13 +500,13 @@ export class OpenGL{
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
         
-        this.arrays.push({
-            pos: posBuffer,
-            color: this.toColor(color),
-            mode: this.gl.LINE_LOOP,
-            size: (end - start) > 90 ? (2 * far) : far, 
-            length: pos.length / 2
-        });
+//        this.arrays.push({
+//            pos: posBuffer,
+//            color: this.toColor(color),
+//            mode: this.gl.LINE_LOOP,
+//            size: (end - start) > 90 ? (2 * far) : far, 
+//            length: pos.length / 2
+//        });
     }
     
     //draws a ring slice
@@ -546,28 +548,28 @@ export class OpenGL{
             this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
             this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices), this.gl.STATIC_DRAW);
         
-            this.arrays.push({
-                pos: posBuffer,
-                color: this.toColor(fillColor),
-                mode: this.gl.TRIANGLE_STRIP,
-                size: (end - start) > 90 ? (2 * far) : far,
-                length: pos.length / 2,
-                overlay: {
-                    pos: posBuffer,
-                    indices: indicesBuffer,
-                    color: this.toColor(lineColor),
-                    mode: this.gl.LINE_LOOP,
-                    length: pos.length / 2
-                }
-            });
+//            this.arrays.push({
+//                pos: posBuffer,
+//                color: this.toColor(fillColor),
+//                mode: this.gl.TRIANGLE_STRIP,
+//                size: (end - start) > 90 ? (2 * far) : far,
+//                length: pos.length / 2,
+//                overlay: {
+//                    pos: posBuffer,
+//                    indices: indicesBuffer,
+//                    color: this.toColor(lineColor),
+//                    mode: this.gl.LINE_LOOP,
+//                    length: pos.length / 2
+//                }
+//            });
         }else{
-            this.arrays.push({
-                pos: posBuffer,
-                color: this.toColor(fillColor),
-                mode: this.gl.TRIANGLE_STRIP,
-                size: (end - start) > 90 ? (2 * far) : far, 
-                length: pos.length / 2,
-            });
+//            this.arrays.push({
+//                pos: posBuffer,
+//                color: this.toColor(fillColor),
+//                mode: this.gl.TRIANGLE_STRIP,
+//                size: (end - start) > 90 ? (2 * far) : far, 
+//                length: pos.length / 2,
+//            });
         }
     }
     
@@ -605,32 +607,32 @@ export class OpenGL{
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
         
         if(!(fill && line)){
-            this.arrays.push({
-                pos: posBuffer,
-                color: this.toColor(line ? lineColor : fillColor),
-                mode: fill ? this.gl.TRIANGLE_FAN : this.gl.LINE_LOOP,
-                size: size,
-                length: pos.length / 2
-            });
+//            this.arrays.push({
+//                pos: posBuffer,
+//                color: this.toColor(line ? lineColor : fillColor),
+//                mode: fill ? this.gl.TRIANGLE_FAN : this.gl.LINE_LOOP,
+//                size: size,
+//                length: pos.length / 2
+//            });
         }else{
             if(lineColor == null){
                 lineColor = fillColor;
             }
             
-            this.arrays.push({
-                pos: posBuffer,
-                color: this.toColor(fillColor),
-                mode: this.gl.TRIANGLE_FAN,
-                size: size,
-                length: pos.length / 2,
-                overlay: {
-                    pos: posBuffer,
-                    color: this.toColor(lineColor),
-                    mode: this.gl.LINE_LOOP,
-                    length: pos.length / 2 - offset,
-                    offset: offset * 4
-                }
-            });
+//            this.arrays.push({
+//                pos: posBuffer,
+//                color: this.toColor(fillColor),
+//                mode: this.gl.TRIANGLE_FAN,
+//                size: size,
+//                length: pos.length / 2,
+//                overlay: {
+//                    pos: posBuffer,
+//                    color: this.toColor(lineColor),
+//                    mode: this.gl.LINE_LOOP,
+//                    length: pos.length / 2 - offset,
+//                    offset: offset * 4
+//                }
+//            });
         }
     }
     
@@ -650,7 +652,21 @@ export class OpenGL{
         if((this.mode == Mode.WIDTH_FIRST && elem.size < ((this.WIDTH / this.factor) / this.width) * this.SIZETHRESHOLD) || (this.mode == Mode.HEIGHT_FIRST && elem.size < ((this.HEIGHT / this.factor) / this.height) * this.SIZETHRESHOLD)){
             return false;
         }else{
-            return true;
+            if(this.mode == Mode.WIDTH_FIRST){
+                console.log("c: " + (-this.dx * this.HALFWIDTH) + " | " + (-this.dy * this.HALFHEIGHT));
+                console.log("p: " + elem.x + " | " + elem.y);
+                console.log("d: " + Math.hypot(elem.x + this.dx * this.HALFWIDTH, elem.y + this.dy * this.HALFHEIGHT) + " | " + Math.hypot(this.HALFHEIGHT, this.HALFWIDTH))
+                if(elem.x + (elem.size / 2) >= -this.dx * this.HALFWIDTH - (this.HALFWIDTH / this.factor)
+                   && elem.x - (elem.size / 2) <= -this.dx * this.HALFWIDTH + (this.HALFWIDTH / this.factor)){
+                    console.log("inside");
+                    return true;
+                }else{
+                    console.log("outside");
+                }
+                return false;
+            }else{
+                return true;
+            }
         }
     }
         
