@@ -22,6 +22,7 @@ export class OpenGL{
     private rotation: number = 0;
     private width;
     private height;
+    private colorUniform: WebGLUniformLocation;
     
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
@@ -183,6 +184,7 @@ export class OpenGL{
         
         this.gl.useProgram(this.shader.shader);
         this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader.shader, "modelviewMatrix"), false, this.modelviewMatrix);
+        this.colorUniform = this.gl.getUniformLocation(this.shader.shader, "color")
         
         this.drawBuffers();
     }
@@ -669,7 +671,7 @@ export class OpenGL{
             }
             
             if(elem.color != null){
-                this.gl.uniform1f(this.gl.getUniformLocation(this.shader.shader, "color"), elem.color);
+                this.gl.uniform1f(this.colorUniform, elem.color);
             }
             
             if(elem.indices == null){
