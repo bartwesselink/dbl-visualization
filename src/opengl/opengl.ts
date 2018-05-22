@@ -1,12 +1,10 @@
 /** @author Roan Hofland */
-import {Shader} from "./shader";
 import {Element} from "./element";
 import {Matrix} from "./matrix";
 import {Mode} from "./mode";
 
 export class OpenGL{
     private gl: WebGLRenderingContext;
-    private shader: Shader;
     private modelviewMatrix;
     private arrays: Element[] = [];
     private readonly WIDTH = 1600;
@@ -20,8 +18,11 @@ export class OpenGL{
     private dx: number = 0;
     private dy: number = 0;
     private rotation: number = 0;
-    private width;
-    private height;
+    private width: number;
+    private height: number;
+    private colorUniform: WebGLUniformLocation;
+    private shader: WebGLProgram;
+    private shaderAttribPosition: number;
     
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
@@ -33,8 +34,11 @@ export class OpenGL{
         
         this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
         this.gl.enable(this.gl.BLEND);
-        this.gl.depthFunc(gl.LEQUAL);
-        this.gl.enable(gl.DEPTH_TEST);  
+        
+        this.initShaders();
+        
+        this.gl.useProgram(this.shader);
+        this.colorUniform = this.gl.getUniformLocation(this.shader, "color")
         
         console.log("OpenGL version: " + this.gl.getParameter(gl.VERSION));
         console.log("GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
@@ -119,17 +123,17 @@ export class OpenGL{
     }
     
     //translates the model view by the given distance
-    public translate(dx: number, dy: number, width: number, height: number): void {
+    public translate(dx: number, dy: number): void {
         var vec = Matrix.rotateVector2D([0, 0], [dx, dy], -this.rotation);
         dx = vec[0];
         dy = vec[1];
         if(this.mode == Mode.WIDTH_FIRST){
-            height = (width / this.WIDTH) * this.HEIGHT;
+            this.height = (this.width / this.WIDTH) * this.HEIGHT;
         }else{
-            width = (height / this.HEIGHT) * this.WIDTH;
+            this.width = (this.height / this.HEIGHT) * this.WIDTH;
         }
-        dx = ((dx / width) * 2) / this.factor;
-        dy = ((-dy / height) * 2) / this.factor;
+        dx = ((dx / this.width) * 2) / this.factor;
+        dy = ((-dy / this.height) * 2) / this.factor;
         Matrix.translateSelf(this.modelviewMatrix, [dx, dy, 0]);
         this.dx += dx;
         this.dy += dy;
@@ -144,21 +148,21 @@ export class OpenGL{
     }
     
     //maps a true canvas coordinate to the imaginary OpenGL coordinate system
-    public transformPoint(x: number, y: number, width: number, height: number): number[] {
-        var loc = this.transform(x, y, width, height);
+    public transformPoint(x: number, y: number): number[] {
+        var loc = this.transform(x, y);
         loc[0] *= this.HALFWIDTH;
         loc[1] *= this.HALFHEIGHT;
         return loc;
     }
     
     //maps a true canvas coordinate to the true OpenGL coordinate system
-    private transform(x: number, y: number, width: number, height: number): number[] {
-        var dx = x - width / 2;
-        var dy = y - height / 2;
+    private transform(x: number, y: number): number[] {
+        var dx = x - this.width / 2;
+        var dy = y - this.height / 2;
         if(this.mode == Mode.WIDTH_FIRST){
-            return [((dx / width) / this.factor) * 2 - this.dx, -(((dy / height) * (height / ((width / this.WIDTH) * this.HEIGHT))) / this.factor) * 2 - this.dy];
+            return [((dx / this.width) / this.factor) * 2 - this.dx, -(((dy / this.height) * (this.height / ((this.width / this.WIDTH) * this.HEIGHT))) / this.factor) * 2 - this.dy];
         }else{
-            return [(((dx / width) * (width / ((height / this.HEIGHT) * this.WIDTH))) / this.factor) * 2 - this.dx, -((dy / height) / this.factor) * 2 - this.dy];
+            return [(((dx / this.width) * (this.width / ((this.height / this.HEIGHT) * this.WIDTH))) / this.factor) * 2 - this.dx, -((dy / this.height) / this.factor) * 2 - this.dy];
         }
     }
     
@@ -183,15 +187,9 @@ export class OpenGL{
     public render(): void {
         this.clear();
         
-        this.gl.useProgram(this.shader.shader);
-        this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader.shader, "modelviewMatrix"), false, this.modelviewMatrix);
+        this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader, "modelviewMatrix"), false, this.modelviewMatrix);
         
         this.drawBuffers();
-    }
-    
-    //sets the shader to use
-    public useShader(shader: Shader): void {
-        this.shader = shader;
     }
     
     //releases all the OpenGL buffers
@@ -638,7 +636,7 @@ export class OpenGL{
     
     //clear the screen
     private clear(): void {
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     }
     
     //draw all the OpenGL buffers
@@ -648,35 +646,42 @@ export class OpenGL{
         }
     }
     
+    private isVisible(elem: Element): boolean {
+        if((this.mode == Mode.WIDTH_FIRST && elem.size < ((this.WIDTH / this.factor) / this.width) * this.SIZETHRESHOLD) || (this.mode == Mode.HEIGHT_FIRST && elem.size < ((this.HEIGHT / this.factor) / this.height) * this.SIZETHRESHOLD)){
+            return false;
+        }else{
+            return true;
+        }
+    }
+        
     //renders the given element
     private drawElement(elem: Element): void {
-        if((this.mode == Mode.WIDTH_FIRST && elem.size < ((this.WIDTH / this.factor) / this.width) * this.SIZETHRESHOLD) || (this.mode == Mode.HEIGHT_FIRST && elem.size < ((this.HEIGHT / this.factor) / this.height) * this.SIZETHRESHOLD)){
-            return;
-        }
-        if(elem.pos != null){
-            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
-            this.gl.vertexAttribPointer(this.shader.shaderAttribPosition,             //attribute
-                                        2,                                            //2D so two values per iteration: x, y
-                                        this.gl.FLOAT,                                //data type is float32
-                                        false,                                        //no normalisation
-                                        0,                                            //stride = automatic
-                                        elem.offset == null ? 0 : elem.offset);       //skip
-            this.gl.enableVertexAttribArray(this.shader.shaderAttribPosition);
-        }
-        
-        if(elem.color != null){
-            this.gl.uniform1f(this.gl.getUniformLocation(this.shader.shader, "color"), elem.color);
-        }
-        
-        if(elem.indices == null){
-            this.gl.drawArrays(elem.mode, 0, elem.length);
-        }else{
-            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, elem.indices);
-            this.gl.drawElements(elem.mode, elem.length, this.gl.UNSIGNED_BYTE, 0);
-        }
-        
-        if(elem.overlay != null){
-            this.drawElement(elem.overlay);
+        if(this.isVisible(elem)){
+            if(elem.pos != null){
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
+                this.gl.vertexAttribPointer(this.shaderAttribPosition,              //attribute
+                                            2,                                      //2D so two values per iteration: x, y
+                                            this.gl.FLOAT,                          //data type is float32
+                                            false,                                  //no normalisation
+                                            0,                                      //stride = automatic
+                                            elem.offset == null ? 0 : elem.offset); //skip
+                this.gl.enableVertexAttribArray(this.shaderAttribPosition);
+            }
+            
+            if(elem.color != null){
+                this.gl.uniform1f(this.colorUniform, elem.color);
+            }
+            
+            if(elem.indices == null){
+                this.gl.drawArrays(elem.mode, 0, elem.length);
+            }else{
+                this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, elem.indices);
+                this.gl.drawElements(elem.mode, elem.length, this.gl.UNSIGNED_BYTE, 0);
+            }
+            
+            if(elem.overlay != null){
+                this.drawElement(elem.overlay);
+            }
         }
     }
     
@@ -686,7 +691,7 @@ export class OpenGL{
     }
     
     //initialises the shaders
-    public initShaders(): Shader {
+    private initShaders(): void {
         //ridiculously complicated vertex shader
         //because bit wise operators were on a vacation in GLSL -_-
         const vertexShaderSource = `
@@ -754,10 +759,8 @@ export class OpenGL{
         }
         
         //Initialise the shader object for use
-        return{
-            shader: program,
-            shaderAttribPosition: this.gl.getAttribLocation(program, "pos")
-        }
+        this.shader = program,
+        this.shaderAttribPosition = this.gl.getAttribLocation(program, "pos")
     }
 }
 /** @end-author Roan Hofland */     

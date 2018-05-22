@@ -7,20 +7,16 @@ For people working with the OpenGL abstraction layer. These are the only methods
 # General
 - `public releaseBuffers(): void`    
 Releases all the buffers currently held in memory, should always be called when recomputing the scene.
-- `public useShader(shader: Shader): void`    
-Sets the shader to use for rendering the scene.
 - `public resize(width: number, height: number): void`    
 Resizes the OpenGL viewport to the optimal size for the given dimensions. Should be called on canvas resize events.
 - `public render(): void`    
 Renders the OpenGL scene.
-- `public initShaders(): Shader`    
-Intialises and returns the only shader we have at the moment.
-- `public transformPoint(x: number, y: number, width: number, height: number): number[]`    
-Maps a true canvas coordinate to the imaginary OpenGL coordinate system. The `x` and `y` parameters denote the point and the `width` and `height` denote the width and height of the canvas respectively. The returned array contains at index 0 the transformed `x` coordinate and at index 1 the transformed `y` coordinate.
+- `public transformPoint(x: number, y: number): number[]`    
+Maps a true canvas coordinate to the imaginary OpenGL coordinate system. The `x` and `y` parameters denote the point. The returned array contains at index 0 the transformed `x` coordinate and at index 1 the transformed `y` coordinate.
 - `public scale(factor: number): void`   
 Scales the OpenGL view by the given factor. Scaling is multiplicative.
-- `public translate(dx: number, dy: number, width: number, height: number): void`  
-Translates the OpenGL view by the given distance. The `dx` and `dy` parameters denote the distance to translate the model in the x and y direction respectively and the `width` and `height` respectively denote the width and height of the canvas. Translations are cumulative.
+- `public translate(dx: number, dy: number): void`  
+Translates the OpenGL view by the given distance. The `dx` and `dy` parameters denote the distance to translate the model in the x and y direction respectively. Translations are cumulative.
 - `public rotate(rotation: number): void`    
 Rotates the OpenGL view by the given number of degrees. Rotations are additive.
 - `public getRotation(): number`    
