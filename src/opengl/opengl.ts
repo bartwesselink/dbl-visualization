@@ -14,11 +14,14 @@ export class OpenGL{
     private readonly HALFWIDTH = this.WIDTH / 2;
     private readonly HALFHEIGHT = this.HEIGHT / 2;
     private readonly PRECISION = 10;
+    private readonly SIZETHRESHOLD = 0.5;
     private mode: Mode;
     private factor: number = 1;
     private dx: number = 0;
     private dy: number = 0;
     private rotation: number = 0;
+    private width;
+    private height;
     
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
@@ -165,6 +168,8 @@ export class OpenGL{
         //position the viewport in such a way that it covers the entire canvas
         //by forcing a 16:9 viewport we can make sure that even when the canvas is resized our buffers remain correct so that 
         //the visualisation does not distort. Theoretically we could also recompute all the buffers and map to a new coordinate space.
+        this.width = width;
+        this.height = height;
         if((width / this.WIDTH) * this.HEIGHT > height){
             this.mode = Mode.WIDTH_FIRST;
             this.gl.viewport(0, (height - ((width / this.WIDTH) * this.HEIGHT)) / 2, width, (width / this.WIDTH) * this.HEIGHT);
@@ -205,7 +210,7 @@ export class OpenGL{
             pos.push((x + radx * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + rady * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
         }
         
-        this.drawArcImpl(pos, color);
+        this.drawArcImpl(pos, color, (end - start) > 90 ? (2 * Math.max(radx, rady)) : Math.max(radx, rady));
     }
     
     //draws a partial circle
@@ -222,11 +227,11 @@ export class OpenGL{
         }
         pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
         
-        this.drawArcImpl(pos, color);
+        this.drawArcImpl(pos, color, (end - start) > 90 ? (2 * radius) : radius);
     }
     
     //draws an arc
-    private drawArcImpl(pos: number[], color: number[]): void {
+    private drawArcImpl(pos: number[], color: number[], size: number): void {
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
@@ -235,6 +240,7 @@ export class OpenGL{
             pos: positionBuffer,
             color: this.toColor(color),
             mode: this.gl.LINE_STRIP,
+            size: size,
             length: pos.length / 2
         });
     }
@@ -249,9 +255,27 @@ export class OpenGL{
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         const pos = [x.length + y.length];
+        var minx = Number.MAX_SAFE_INTEGER;
+        var maxx = -Number.MAX_SAFE_INTEGER;
+        var miny = Number.MAX_SAFE_INTEGER;
+        var maxy = -Number.MAX_SAFE_INTEGER;
         for(var i = 0; i < x.length; i++){
             pos[i * 2] = x[i] / this.HALFWIDTH;
             pos[i * 2 + 1] = y[i] / this.HALFHEIGHT;
+            if(x[i] >= minx){
+                if(x[i] > maxx){
+                   maxx = x[i]; 
+                }
+            }else{
+                minx = x[i];
+            }
+            if(y[i] >= miny){
+                if(y[i] > maxy){
+                   maxy = y[i]; 
+                }
+            }else{
+                miny = y[i];
+            }
         }
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
         
@@ -259,6 +283,7 @@ export class OpenGL{
             pos: positionBuffer,
             color: this.toColor(color),
             mode: this.gl.LINE_STRIP,
+            size: Math.max(maxx - minx, maxy - miny),
             length: x.length
         });
     }
@@ -270,7 +295,7 @@ export class OpenGL{
                                x + width / 2, y + height / 2,
                                x - width / 2, y - height / 2,
                                x + width / 2, y - height / 2,
-                               rotation, true, false, color, null);
+                               Math.hypot(width, height), rotation, true, false, color, null);
     }
     
      //draw a rotated quad
@@ -280,7 +305,7 @@ export class OpenGL{
                                x + width / 2, y + height / 2,
                                x + width / 2, y - height / 2,
                                x - width / 2, y - height / 2,
-                               rotation, false, true, null, color);
+                               Math.hypot(width, height), rotation, false, true, null, color);
     }
     
      //render a rotated quad
@@ -290,11 +315,11 @@ export class OpenGL{
                                x + width / 2, y + height / 2,
                                x - width / 2, y - height / 2,
                                x + width / 2, y - height / 2,
-                               rotation, true, true, fillColor, lineColor);
+                               Math.hypot(width, height), rotation, true, true, fillColor, lineColor);
     }
     
     //renders a rotated quad
-    private renderRotatedQuad(x: number, y: number, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, rotation: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
+    private renderRotatedQuad(x: number, y: number, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, size: number, rotation: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
         //a---------b
         //|   x,y   |
         //c---------d
@@ -308,7 +333,7 @@ export class OpenGL{
                           a[0], a[1],
                           d[0], d[1],
                           c[0], c[1],
-                          fill, line, fillColor, lineColor);
+                          size, fill, line, fillColor, lineColor);
     }
     
     //fill an axis aligned quad
@@ -317,7 +342,7 @@ export class OpenGL{
                           x,         y + height,
                           x + width, y,
                           x,         y,
-                          true, false, color, null);
+                          Math.max(width, height), true, false, color, null);
     }
     
     //draw an axis aligned quad
@@ -326,7 +351,7 @@ export class OpenGL{
                          x,         y + height,
                          x,         y,
                          x + width, y,
-                         false, true, null, color);
+                         Math.max(width, height), false, true, null, color);
     }
     
     //render an axis aligned quad
@@ -335,11 +360,11 @@ export class OpenGL{
                           x,         y + height,
                           x + width, y,
                           x,         y,
-                          true, true, fillColor, lineColor);
+                          Math.max(width, height), true, true, fillColor, lineColor);
     }
         
     //draw quad implementation
-    private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
+    private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, size: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
         //position
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
@@ -354,6 +379,7 @@ export class OpenGL{
                 pos: positionBuffer,
                 color: this.toColor(fillColor),
                 mode: this.gl.TRIANGLE_STRIP,
+                size: size,
                 length: 4
             });
         }else{
@@ -371,6 +397,7 @@ export class OpenGL{
                     pos: positionBuffer,
                     color: this.toColor(fillColor),
                     mode: this.gl.TRIANGLE_STRIP,
+                    size: size,
                     length: 4,
                     overlay: {
                         pos: positionBuffer,
@@ -385,6 +412,7 @@ export class OpenGL{
                     pos: positionBuffer,
                     color: this.toColor(lineColor),
                     mode: this.gl.LINE_LOOP,
+                    size: size,
                     length: 4
                 });
             }
@@ -420,7 +448,7 @@ export class OpenGL{
             pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
         }
             
-        this.renderEllipsoidImpl(pos, fill, line, lineColor, fillColor, 2);
+        this.renderEllipsoidImpl(pos, 2 * Math.max(radx, rady), fill, line, lineColor, fillColor, 2);
     }
     
     //draws a circle
@@ -453,7 +481,7 @@ export class OpenGL{
             pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
         }
             
-        this.renderEllipsoidImpl(pos, fill, line, lineColor, fillColor, 2);
+        this.renderEllipsoidImpl(pos, 2 * radius, fill, line, lineColor, fillColor, 2);
     }
     
     //draws a ring slice
@@ -476,6 +504,7 @@ export class OpenGL{
             pos: posBuffer,
             color: this.toColor(color),
             mode: this.gl.LINE_LOOP,
+            size: (end - start) > 90 ? (2 * far) : far, 
             length: pos.length / 2
         });
     }
@@ -523,6 +552,7 @@ export class OpenGL{
                 pos: posBuffer,
                 color: this.toColor(fillColor),
                 mode: this.gl.TRIANGLE_STRIP,
+                size: (end - start) > 90 ? (2 * far) : far,
                 length: pos.length / 2,
                 overlay: {
                     pos: posBuffer,
@@ -537,6 +567,7 @@ export class OpenGL{
                 pos: posBuffer,
                 color: this.toColor(fillColor),
                 mode: this.gl.TRIANGLE_STRIP,
+                size: (end - start) > 90 ? (2 * far) : far, 
                 length: pos.length / 2,
             });
         }
@@ -566,11 +597,11 @@ export class OpenGL{
         }
         pos.push((x + radius * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH, (y + radius * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT);
                 
-        this.renderEllipsoidImpl(pos, fill, line, lineColor, fillColor, 0);
+        this.renderEllipsoidImpl(pos, (end - start) > 90 ? (2 * radius) : radius, fill, line, lineColor, fillColor, 0);
     }
     
     //draws an ellipsoid
-    private renderEllipsoidImpl(pos: number[], fill: boolean, line: boolean, lineColor: number[], fillColor: number[], offset: number): void {     
+    private renderEllipsoidImpl(pos: number[], size: number, fill: boolean, line: boolean, lineColor: number[], fillColor: number[], offset: number): void {     
         var posBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
@@ -580,6 +611,7 @@ export class OpenGL{
                 pos: posBuffer,
                 color: this.toColor(line ? lineColor : fillColor),
                 mode: fill ? this.gl.TRIANGLE_FAN : this.gl.LINE_LOOP,
+                size: size,
                 length: pos.length / 2
             });
         }else{
@@ -591,6 +623,7 @@ export class OpenGL{
                 pos: posBuffer,
                 color: this.toColor(fillColor),
                 mode: this.gl.TRIANGLE_FAN,
+                size: size,
                 length: pos.length / 2,
                 overlay: {
                     pos: posBuffer,
@@ -617,6 +650,9 @@ export class OpenGL{
     
     //renders the given element
     private drawElement(elem: Element): void {
+        if((this.mode == Mode.WIDTH_FIRST && elem.size < ((this.WIDTH / this.factor) / this.width) * this.SIZETHRESHOLD) || (this.mode == Mode.HEIGHT_FIRST && elem.size < ((this.HEIGHT / this.factor) / this.height) * this.SIZETHRESHOLD)){
+            return;
+        }
         if(elem.pos != null){
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
             this.gl.vertexAttribPointer(this.shader.shaderAttribPosition,             //attribute
