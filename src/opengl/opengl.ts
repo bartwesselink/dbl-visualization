@@ -34,6 +34,40 @@ export class OpenGL{
         this.gl.enable(gl.DEPTH_TEST);   
     }
     
+    //test for a dedicated GPU
+    public isDedicatedGPU(): boolean {
+        var info = this.gl.getExtension("WEBGL_debug_renderer_info");
+        var name = this.gl.getParameter(info.UNMASKED_RENDERER_WEBGL);
+        console.log("Detected renderer: " + name);
+        if(name.indexOf("NVIDIA") != -1){
+            return true;   
+        }else if(name.indexOf("Radeon") != -1){
+            if(name.match(".*Radeon (HD ....M|R(5|7|9) M...|Pro).*")){//Radeon HD Mobile, R5/R7/R9 Mobile and RX and Pro
+                return false;
+            }else if(name.indexOf("Mobility") != -1){
+                return false;
+            }else{
+                return true;
+            }
+        }else if(name.indexOf("FirePro") != -1){
+            if(name.indexOf("FirePro M") != -1){
+                return false;
+            }else{
+                return true;
+            }
+        }else if(name.indexOf("FireGL") != -1){
+            if(name.indexOf("Mobility") != -1){
+                return false;
+            }else{
+                return true;
+            }
+        }else if(name.indexOf("FireMV") != -1){
+            return true;
+        }else{//note: no support for the AMD Wonder, Rage and Mach series since they are simply too old (<2000)
+            return false;   
+        }
+    }
+    
     //return the rotation
     public getRotation(): number {
         return this.rotation;
@@ -113,13 +147,18 @@ export class OpenGL{
     
     //maps a true canvas coordinate to the true OpenGL coordinate system
     private transform(x: number, y: number, width: number, height: number): number[] {
-        var dx = x - width / 2;
-        var dy = y - height / 2;
+        var dx = x - (width / 2);
+        var dy = y - (height / 2);
+        var loc = null;
         if(this.mode == Mode.WIDTH_FIRST){
-            return [((dx / width) / this.factor) * 2 - this.dx, -(((dy / height) * (height / ((width / this.WIDTH) * this.HEIGHT))) / this.factor) * 2 - this.dy];
+            loc = [((dx / width) / this.factor) * this.WIDTH, -(((dy / height) * (height / (width / this.WIDTH))) / this.factor)];
         }else{
-            return [(((dx / width) * (width / ((height / this.HEIGHT) * this.WIDTH))) / this.factor) * 2 - this.dx, -((dy / height) / this.factor) * 2 - this.dy];
+            loc = [(((dx / width) * (width / (height / this.HEIGHT))) / this.factor), -((dy / height) / this.factor) * this.HEIGHT];
         }
+        Matrix.rotateVector2D([0, 0], loc, this.rotation);
+        loc[0] = (loc[0] / this.HALFWIDTH) - this.dx;
+        loc[1] = (loc[1] / this.HALFHEIGHT) - this.dy;
+        return loc;
     }
     
     //resizes the viewport to the optimal size for the new canvas size
@@ -160,6 +199,89 @@ export class OpenGL{
             this.gl.deleteBuffer(elem.pos);
             this.gl.deleteBuffer(elem.indices);
         }
+    }
+    
+    //draws a partial ellipsoid
+    public drawEllipsoidalArc(x: number, y: number, radx: number, rady: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
+        const pos = [];
+        const colors = [];
+        for(var i = start; i <= end; i += precision){
+            pos.push((x + radx * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + rady * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
+            colors.push(color[0], color[1], color[2], color[3]);
+        }
+        
+        this.drawArcImpl(pos, colors);
+    }
+    
+    //draws a partial circle
+    public drawCircularArc(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
+        const pos = [];
+        const colors = [];
+        var loc = [x + radius, y];
+        var rotation = [9];
+        Matrix.multiply(rotation, Matrix.create2DTranslationMatrix([-x, -y]), Matrix.create2DRotationMatrix(precision));
+        Matrix.multiply(rotation, rotation, Matrix.create2DTranslationMatrix([x, y]));
+        Matrix.rotateVector2D([x, y], loc, start);
+        for(var i = start; i < end; i += precision){
+            pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
+            colors.push(color[0], color[1], color[2], color[3]);
+            Matrix.multiplyVector2D(loc, rotation);
+        }
+        pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
+        colors.push(color[0], color[1], color[2], color[3]);   
+        
+        this.drawArcImpl(pos, colors);
+    }
+    
+    //draws an arc
+    private drawArcImpl(pos: number[], colors: number[]): void {
+        var positionBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
+        
+        var colorBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
+        
+        this.arrays.push({
+            pos: positionBuffer,
+            color: colorBuffer,
+            mode: this.gl.LINE_STRIP,
+            length: pos.length / 2
+        });
+    }
+    
+    //draws a straight line
+    public drawLine(x1: number, y1: number, x2: number, y2: number, color: number[]): void {
+        this.drawPolyLine([x1, x2], [y1, y2], color);    
+    }
+    
+    //draws multiple continues lines
+    public drawPolyLine(x: number[], y: number[], color: number[]): void {   
+        var positionBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
+        const pos = [x.length + y.length];
+        const colors = [x.length * 4];
+        for(var i = 0; i < x.length; i++){
+            pos[i * 2] = x[i] / this.HALFWIDTH;
+            pos[i * 2 + 1] = y[i] / this.HALFHEIGHT;
+            colors[i * 4] = color[0];
+            colors[i * 4 + 1] = color[1];
+            colors[i * 4 + 2] = color[2];
+            colors[i * 4 + 3] = color[3];
+        }
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
+        
+        var colorBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
+        
+        this.arrays.push({
+            pos: positionBuffer,
+            color: colorBuffer,
+            mode: this.gl.LINE_STRIP,
+            length: x.length
+        });
     }
     
     //fill a rotated quad
@@ -348,7 +470,7 @@ export class OpenGL{
             }
         }
             
-        this.renderEllipsoidImpl(color, pos, fill, line, lineColor);
+        this.renderEllipsoidImpl(color, pos, fill, line, lineColor, 2);
     }
     
     //draws a circle
@@ -379,22 +501,174 @@ export class OpenGL{
         Matrix.multiply(rotation, Matrix.create2DTranslationMatrix([-x, -y]), Matrix.create2DRotationMatrix(precision));
         Matrix.multiply(rotation, rotation, Matrix.create2DTranslationMatrix([x, y]));
         for(var i = 0; i <= 360; i += precision){
-            if(i != 360 && line || fill){
-                Matrix.multiplyVector2D(loc, rotation);
-                pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
-                if(fill || lineColor == null){
-                    colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
-                }else{
-                    colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
-                }
+            Matrix.multiplyVector2D(loc, rotation);
+            pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
+            if(fill || lineColor == null){
+                colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+            }else{
+                colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
             }
         }
             
-        this.renderEllipsoidImpl(colors, pos, fill, line, lineColor);
+        this.renderEllipsoidImpl(colors, pos, fill, line, lineColor, 2);
+    }
+    
+    //draws a ring slice
+    public drawRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
+        const pos = [];
+        const colors = [];
+        for(var i = start; i < end; i += precision){
+            pos.push((x + far * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + far * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
+            colors.push(color[0], color[1], color[2], color[3]);
+        }
+        pos.push((x + far * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH, (y + far * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT);
+        colors.push(color[0], color[1], color[2], color[3]);
+        for(var i = end; i > start; i -= precision){
+            pos.push((x + near * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + near * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
+            colors.push(color[0], color[1], color[2], color[3]);
+        }
+        pos.push((x + near * Math.cos(start * Matrix.oneDeg)) / this.HALFWIDTH, (y + near * Math.sin(start * Matrix.oneDeg)) / this.HALFHEIGHT);
+        colors.push(color[0], color[1], color[2], color[3]);
+                
+        var colorBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
+            
+        var posBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
+        
+        this.arrays.push({
+            pos: posBuffer,
+            color: colorBuffer,
+            mode: this.gl.LINE_LOOP,
+            length: pos.length / 2
+        });
+    }
+    
+    //draws a ring slice
+    public fillRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
+        this.fillRingSliceImpl(x, y, near, far, start, end, false, color, null, precision);
+    }
+    
+    //draws a ring slice
+    public fillLinedRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
+        this.fillRingSliceImpl(x, y, near, far, start, end, true, fillColor, lineColor, precision);
+    }
+    
+    //draws a ring slice
+    private fillRingSliceImpl(x: number, y: number, near: number, far: number, start: number, end: number, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
+        const pos = [];
+        const colors = [];
+        for(var i = start; i < end; i += precision){
+            pos.push((x + far * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + far * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
+            pos.push((x + near * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + near * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
+            colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3], fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+        }
+        pos.push((x + far * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH, (y + far * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT);
+        pos.push((x + near * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH, (y + near * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT);
+        colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3], fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+                
+        var colorBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
+            
+        var posBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
+        
+        if(line){
+            var lineColorBuffer = null;
+            if(lineColor == null){
+                lineColorBuffer = colorBuffer;
+            }else{
+                lineColorBuffer = this.gl.createBuffer();
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, lineColorBuffer);
+                var lineColors = [];
+                for(var i = 0; i < pos.length / 2; i++){
+                    lineColors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+                }
+                this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(lineColors), this.gl.STATIC_DRAW);
+            }
+            
+            const indices = [pos.length / 2];
+            for(var i = 0; i < pos.length / 4; i++){
+                indices[i] = i * 2;
+                indices[pos.length / 2 - 1 - i] = i * 2 + 1;
+            }
+        
+            var indicesBuffer = this.gl.createBuffer();
+            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
+            this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices), this.gl.STATIC_DRAW);
+        
+            this.arrays.push({
+                pos: posBuffer,
+                color: colorBuffer,
+                mode: this.gl.TRIANGLE_STRIP,
+                length: pos.length / 2,
+                overlay: {
+                    pos: posBuffer,
+                    indices: indicesBuffer,
+                    color: lineColorBuffer,
+                    mode: this.gl.LINE_LOOP,
+                    length: pos.length / 2
+                }
+            });
+        }else{
+            this.arrays.push({
+                pos: posBuffer,
+                color: colorBuffer,
+                mode: this.gl.TRIANGLE_STRIP,
+                length: pos.length / 2,
+            });
+        }
+    }
+    
+    //draws a circular slice  
+    public drawCircleSlice(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
+        this.drawCircleSliceImpl(x, y, radius, start, end, false, true, null, color, precision);
+    }
+    
+    //draws a circular slice
+    public fillCircleSlice(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
+        this.drawCircleSliceImpl(x, y, radius, start, end, true, false, color, null, precision);
+    }
+    
+    //draws a circular slice
+    public fillLinedCircleSlice(x: number, y: number, radius: number, start: number, end: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
+        this.drawCircleSliceImpl(x, y, radius, start, end, true, true, fillColor, lineColor, precision);
+    }
+    
+    //draws a circular slice
+    private drawCircleSliceImpl(x: number, y: number, radius: number, start: number, end: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
+        const pos = [];
+        const colors = [];
+        pos.push(x / this.HALFWIDTH, y / this.HALFHEIGHT);
+        if(fill || lineColor == null){
+            colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+        }else{
+            colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+        }
+        for(var i = start; i < end; i += precision){
+            pos.push((x + radius * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + radius * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
+            if(fill || lineColor == null){
+                colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+            }else{
+                colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+            }
+        }
+        pos.push((x + radius * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH, (y + radius * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT);
+        if(fill || lineColor == null){
+            colors.push(fillColor[0], fillColor[1], fillColor[2], fillColor[3]);
+        }else{
+            colors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
+        }
+                
+        this.renderEllipsoidImpl(colors, pos, fill, line, lineColor, 0);
     }
     
     //draws an ellipsoid
-    private renderEllipsoidImpl(colors: number[], pos: number[], fill: boolean, line: boolean, lineColor: number[]): void {
+    private renderEllipsoidImpl(colors: number[], pos: number[], fill: boolean, line: boolean, lineColor: number[], offset: number): void {
         var colorBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
@@ -418,7 +692,7 @@ export class OpenGL{
                 lineColorBuffer = this.gl.createBuffer();
                 this.gl.bindBuffer(this.gl.ARRAY_BUFFER, lineColorBuffer);
                 var lineColors = [];
-                for(var i = 0; i < pos.length / 2 - 2; i++){
+                for(var i = 0; i < pos.length / 2 - offset; i++){
                     lineColors.push(lineColor[0], lineColor[1], lineColor[2], lineColor[3]);
                 }
                 
@@ -433,8 +707,8 @@ export class OpenGL{
                     pos: posBuffer,
                     color: lineColorBuffer,
                     mode: this.gl.LINE_LOOP,
-                    length: pos.length / 2 - 2,
-                    offset: 8
+                    length: pos.length / 2 - offset,
+                    offset: offset * 4
                 }
             });
         }

@@ -28,14 +28,15 @@ export class AppComponent {
     @ViewChild('fullScreenLoader') private fullScreenLoader: ElementRef;
 
     private parser = new NewickParser();
-
+    public darkMode = false;
     constructor(private settingsBus: SettingsBus) {
         this.createVisualizers();
 
-        // TODO: remove this example of how settings are updated
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
-            console.log(settings);
+            this.darkMode = settings.darkMode;
         });
+
+        window.addEventListener('resize', () => this.resizeActiveTab());
     }
 
     /** @author Jordy Verhoeven */
@@ -120,6 +121,10 @@ export class AppComponent {
     }
 
     private resizeActiveTab(): void {
+        if (!this.activeTab) {
+            return;
+        }
+
         setTimeout(() => {
             this.activeTab.window.setHeight();
         });
@@ -128,7 +133,7 @@ export class AppComponent {
     public async redrawAllTabs(): Promise<void> {
         for (const tab of this.tabs.slice().sort((a, b) => a === this.activeTab ? 0 : 1)) {
             if (tab.window) {
-                tab.window.computeScene();
+                await tab.window.computeScene();
             }
         }
     }

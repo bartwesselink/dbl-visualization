@@ -1,4 +1,3 @@
-/** @author Bart Wesselink */
 export interface Node {
     label: string;
     children: Node[];
@@ -13,4 +12,3 @@ export interface Node {
     original?: Node;
     expandable?: boolean;
 }
-/** @end-author Bart Wesselink */
