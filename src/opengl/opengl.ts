@@ -270,7 +270,7 @@ export class OpenGL{
             }
             if(y[i] >= miny){
                 if(y[i] > maxy){
-                   maxx = y[i]; 
+                   maxy = y[i]; 
                 }
             }else{
                 miny = y[i];
