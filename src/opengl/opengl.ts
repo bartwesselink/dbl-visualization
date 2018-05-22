@@ -19,6 +19,8 @@ export class OpenGL{
     private dx: number = 0;
     private dy: number = 0;
     private rotation: number = 0;
+    private width;
+    private height;
     
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
@@ -165,6 +167,8 @@ export class OpenGL{
         //position the viewport in such a way that it covers the entire canvas
         //by forcing a 16:9 viewport we can make sure that even when the canvas is resized our buffers remain correct so that 
         //the visualisation does not distort. Theoretically we could also recompute all the buffers and map to a new coordinate space.
+        this.width = width;
+        this.height = height;
         if((width / this.WIDTH) * this.HEIGHT > height){
             this.mode = Mode.WIDTH_FIRST;
             this.gl.viewport(0, (height - ((width / this.WIDTH) * this.HEIGHT)) / 2, width, (width / this.WIDTH) * this.HEIGHT);
@@ -270,7 +274,7 @@ export class OpenGL{
                                x + width / 2, y + height / 2,
                                x - width / 2, y - height / 2,
                                x + width / 2, y - height / 2,
-                               rotation, true, false, color, null);
+                               Math.min(width, height), rotation, true, false, color, null);
     }
     
      //draw a rotated quad
@@ -280,7 +284,7 @@ export class OpenGL{
                                x + width / 2, y + height / 2,
                                x + width / 2, y - height / 2,
                                x - width / 2, y - height / 2,
-                               rotation, false, true, null, color);
+                               Math.min(width, height), rotation, false, true, null, color);
     }
     
      //render a rotated quad
@@ -290,11 +294,11 @@ export class OpenGL{
                                x + width / 2, y + height / 2,
                                x - width / 2, y - height / 2,
                                x + width / 2, y - height / 2,
-                               rotation, true, true, fillColor, lineColor);
+                               Math.min(width, height), rotation, true, true, fillColor, lineColor);
     }
     
     //renders a rotated quad
-    private renderRotatedQuad(x: number, y: number, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, rotation: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
+    private renderRotatedQuad(x: number, y: number, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, size: number, rotation: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
         //a---------b
         //|   x,y   |
         //c---------d
@@ -308,7 +312,7 @@ export class OpenGL{
                           a[0], a[1],
                           d[0], d[1],
                           c[0], c[1],
-                          fill, line, fillColor, lineColor);
+                          size, fill, line, fillColor, lineColor);
     }
     
     //fill an axis aligned quad
@@ -317,7 +321,7 @@ export class OpenGL{
                           x,         y + height,
                           x + width, y,
                           x,         y,
-                          true, false, color, null);
+                          Math.min(width, height), true, false, color, null);
     }
     
     //draw an axis aligned quad
@@ -326,7 +330,7 @@ export class OpenGL{
                          x,         y + height,
                          x,         y,
                          x + width, y,
-                         false, true, null, color);
+                         Math.min(width, height), false, true, null, color);
     }
     
     //render an axis aligned quad
@@ -335,11 +339,11 @@ export class OpenGL{
                           x,         y + height,
                           x + width, y,
                           x,         y,
-                          true, true, fillColor, lineColor);
+                          Math.min(width, height), true, true, fillColor, lineColor);
     }
         
     //draw quad implementation
-    private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
+    private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, size: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
         //position
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
@@ -354,6 +358,7 @@ export class OpenGL{
                 pos: positionBuffer,
                 color: this.toColor(fillColor),
                 mode: this.gl.TRIANGLE_STRIP,
+                size: size,
                 length: 4
             });
         }else{
@@ -617,6 +622,9 @@ export class OpenGL{
     
     //renders the given element
     private drawElement(elem: Element): void {
+        if((this.mode == Mode.WIDTH_FIRST && elem.size < ((this.WIDTH / this.factor) / this.width)) || (this.mode == Mode.HEIGHT_FIRST&& elem.size < ((this.HEIGHT / this.factor) / this.height))){
+            return;
+        }
         if(elem.pos != null){
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
             this.gl.vertexAttribPointer(this.shader.shaderAttribPosition,             //attribute

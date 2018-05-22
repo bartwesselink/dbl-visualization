@@ -1,10 +1,11 @@
 /** @author Roan Hofland */
 export interface Element{
     pos?: WebGLBuffer;
-    color?: any;
+    color?: number;
     indices?: WebGLBuffer;
     mode: number;
     length: number;
+    size: number;
     offset?: number;
     overlay?: Element;
 }
