@@ -7,14 +7,10 @@ For people working with the OpenGL abstraction layer. These are the only methods
 # General
 - `public releaseBuffers(): void`    
 Releases all the buffers currently held in memory, should always be called when recomputing the scene.
-- `public useShader(shader: Shader): void`    
-Sets the shader to use for rendering the scene.
 - `public resize(width: number, height: number): void`    
 Resizes the OpenGL viewport to the optimal size for the given dimensions. Should be called on canvas resize events.
 - `public render(): void`    
 Renders the OpenGL scene.
-- `public initShaders(): Shader`    
-Intialises and returns the only shader we have at the moment.
 - `public transformPoint(x: number, y: number): number[]`    
 Maps a true canvas coordinate to the imaginary OpenGL coordinate system. The `x` and `y` parameters denote the point. The returned array contains at index 0 the transformed `x` coordinate and at index 1 the transformed `y` coordinate.
 - `public scale(factor: number): void`   
