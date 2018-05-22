@@ -254,18 +254,37 @@ export class OpenGL{
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         const pos = [x.length + y.length];
+        var minx = Number.MAX_SAFE_INTEGER;
+        var maxx = -Number.MAX_SAFE_INTEGER;
+        var miny = Number.MAX_SAFE_INTEGER;
+        var maxy = -Number.MAX_SAFE_INTEGER;
         for(var i = 0; i < x.length; i++){
             pos[i * 2] = x[i] / this.HALFWIDTH;
             pos[i * 2 + 1] = y[i] / this.HALFHEIGHT;
+            if(x[i] >= minx){
+                if(x[i] > maxx){
+                   maxx = x[i]; 
+                }
+            }else{
+                minx = x[i];
+            }
+            if(y[i] >= miny){
+                if(y[i] > maxy){
+                   maxx = y[i]; 
+                }
+            }else{
+                miny = y[i];
+            }
         }
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
         
-//        this.arrays.push({
-//            pos: positionBuffer,
-//            color: this.toColor(color),
-//            mode: this.gl.LINE_STRIP,
-//            length: x.length
-//        });
+        this.arrays.push({
+            pos: positionBuffer,
+            color: this.toColor(color),
+            mode: this.gl.LINE_STRIP,
+            size: Math.max(maxx - minx, maxy - miny),
+            length: x.length
+        });
     }
     
     //fill a rotated quad
