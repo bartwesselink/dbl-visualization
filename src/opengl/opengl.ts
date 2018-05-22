@@ -14,6 +14,7 @@ export class OpenGL{
     private readonly HALFWIDTH = this.WIDTH / 2;
     private readonly HALFHEIGHT = this.HEIGHT / 2;
     private readonly PRECISION = 10;
+    private readonly SIZETHRESHOLD = 0.5;
     private mode: Mode;
     private factor: number = 1;
     private dx: number = 0;
@@ -649,7 +650,7 @@ export class OpenGL{
     
     //renders the given element
     private drawElement(elem: Element): void {
-        if((this.mode == Mode.WIDTH_FIRST && elem.size < ((this.WIDTH / this.factor) / this.width)) || (this.mode == Mode.HEIGHT_FIRST&& elem.size < ((this.HEIGHT / this.factor) / this.height))){
+        if((this.mode == Mode.WIDTH_FIRST && elem.size < ((this.WIDTH / this.factor) / this.width) * this.SIZETHRESHOLD) || (this.mode == Mode.HEIGHT_FIRST && elem.size < ((this.HEIGHT / this.factor) / this.height) * this.SIZETHRESHOLD)){
             return;
         }
         if(elem.pos != null){
