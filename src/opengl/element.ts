@@ -5,7 +5,7 @@ export interface Element{
     indices?: WebGLBuffer;
     mode: number;
     length: number;
-    size: number;
+    size?: number;
     offset?: number;
     overlay?: Element;
 }
