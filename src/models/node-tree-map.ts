@@ -1,5 +1,4 @@
 import {Node} from "./node";
-import {Orientation} from "../enums/orientation";
 
 /** @author Nico Klaassen */
 
@@ -10,6 +9,6 @@ import {Orientation} from "../enums/orientation";
 export interface NodeTreeMap extends Node {
     children: NodeTreeMap[];
     parent?: NodeTreeMap;
-    orientation?: Orientation;
+    orientation?: number; // actually it is Orientation, but this cannot be imported.
 }
 /** @end-author Nico Klaassen */

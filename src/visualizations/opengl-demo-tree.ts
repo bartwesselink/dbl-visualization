@@ -24,9 +24,6 @@ export class OpenglDemoTree implements Visualizer {
 
         const draws = [];
 
-        // Dedicated GPU test
-        gl.isDedicatedGPU();
-
         // Draw axis - range and domain: [-100, 100]
         draws.push({ type: 4 /** FillAAQuad **/, options: { x: -200, y: -1, width: 400, height: 2, color: [1, 0, 0, 1] } }); // X axis
         draws.push({ type: 4 /** FillAAQuad **/, options: { x: -1, y: -200, width: 2, height: 400, color: [1, 0, 0, 1] } }); // Y axis
