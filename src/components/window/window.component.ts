@@ -164,7 +164,7 @@ export class WindowComponent implements OnInit {
     }
         
     //compute the visualisation
-    private computeScene(): Promise<void> {
+    public computeScene(): Promise<void> {
         return new Promise((resolve, reject) => {
             this.gl.releaseBuffers();
 
