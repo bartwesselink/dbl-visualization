@@ -447,7 +447,7 @@ export class OpenGL{
             pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
         }
             
-        this.renderEllipsoidImpl(pos, fill, line, lineColor, fillColor, 2);
+        this.renderEllipsoidImpl(pos, 2 * Math.max(radx, rady), fill, line, lineColor, fillColor, 2);
     }
     
     //draws a circle
@@ -480,7 +480,7 @@ export class OpenGL{
             pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
         }
             
-        this.renderEllipsoidImpl(pos, fill, line, lineColor, fillColor, 2);
+        this.renderEllipsoidImpl(pos, 2 * radius, fill, line, lineColor, fillColor, 2);
     }
     
     //draws a ring slice
@@ -596,22 +596,23 @@ export class OpenGL{
         }
         pos.push((x + radius * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH, (y + radius * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT);
                 
-        this.renderEllipsoidImpl(pos, fill, line, lineColor, fillColor, 0);
+        this.renderEllipsoidImpl(pos, (end - start) > 90 ? (2 * radius) : radius, fill, line, lineColor, fillColor, 0);
     }
     
     //draws an ellipsoid
-    private renderEllipsoidImpl(pos: number[], fill: boolean, line: boolean, lineColor: number[], fillColor: number[], offset: number): void {     
+    private renderEllipsoidImpl(pos: number[], size: number, fill: boolean, line: boolean, lineColor: number[], fillColor: number[], offset: number): void {     
         var posBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
         
         if(!(fill && line)){
-//            this.arrays.push({
-//                pos: posBuffer,
-//                color: this.toColor(line ? lineColor : fillColor),
-//                mode: fill ? this.gl.TRIANGLE_FAN : this.gl.LINE_LOOP,
-//                length: pos.length / 2
-//            });
+            this.arrays.push({
+                pos: posBuffer,
+                color: this.toColor(line ? lineColor : fillColor),
+                mode: fill ? this.gl.TRIANGLE_FAN : this.gl.LINE_LOOP,
+                size: size,
+                length: pos.length / 2
+            });
         }else{
             if(lineColor == null){
                 lineColor = fillColor;
