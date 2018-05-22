@@ -20,8 +20,8 @@ export class OpenGL{
     private dx: number = 0;
     private dy: number = 0;
     private rotation: number = 0;
-    private width;
-    private height;
+    private width: number;
+    private height: number;
     private colorUniform: WebGLUniformLocation;
     
     constructor(gl: WebGLRenderingContext){
