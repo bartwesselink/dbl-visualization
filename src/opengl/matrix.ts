@@ -8,12 +8,24 @@ export class Matrix{
     }
     
     //rotates the given vector around the given center by the given number of degrees
-    public static rotateVector2D(center: number[], vector: number[], degrees: number): number[]{
-        var translation1 = Matrix.create2DTranslationMatrix(Matrix.subtract([0, 0], center));
-        Matrix.multiply(translation1, translation1, Matrix.create2DRotationMatrix(degrees));
-        var translation2 = Matrix.create2DTranslationMatrix(center);
-        Matrix.multiply(translation2, translation1, translation2);
-        return Matrix.multiplyVector2D(vector, translation2);
+    public static rotateVector2D(center: number[], vector: number[], degrees: number): number[] {
+        //[1 0 cx]   [cos(deg) -sin(deg) 0]   [1 0 -cx]   [x]
+        //[0 1 cy] * [sin(deg) cos(deg)  0] * [0 1 -cy] * [y] = 
+        //[0 0 1 ]   [0        0         1]   [0 0 1  ]   [1]
+        //[cos(deg) -sin(deg) cx]   [1 0 -cx]   [x]
+        //[sin(deg) cos(deg)  cy] * [0 1 -cy] * [y] = 
+        //[0        0         1 ]   [0 0 1  ]   [1]
+        //[cos(deg) -sin(deg) (cos(deg) * -cx - sin(deg) * -cy + cx)]   [x]
+        //[sin(deg) cos(deg)  (sin(deg) * -cx + cos(deg) * -cy + cy)] * [y] = 
+        //[0        0         1                                   ]   [1]
+        //x = cos(deg) * x - sin(deg) * y - cos(deg) * cx - sin(deg) * cy + cx
+        //y = sin(deg) * x + cos(deg) * y - sin(deg) * cx + cos(deg) * cy + cy
+        var c = Math.cos(degrees * this.oneDeg);
+        var s = Math.sin(degrees * this.oneDeg);
+        var x = vector[0];
+        vector[0] = c * x - s * vector[1] - c * center[0] + s * center[1] + center[0];
+        vector[1] = s * x + c * vector[1] - s * center[0] - c * center[1] + center[1];
+        return vector;
     }
     
     //multiplies the given vectory by the given matrix
