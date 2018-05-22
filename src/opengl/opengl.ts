@@ -658,6 +658,7 @@ export class OpenGL{
                 console.log("d: " + Math.hypot(elem.x + this.dx * this.HALFWIDTH, elem.y + this.dy * this.HALFHEIGHT) + " | " + Math.hypot(this.HALFHEIGHT, this.HALFWIDTH))
                 if(elem.x + (elem.size / 2) >= -this.dx * this.HALFWIDTH - (this.HALFWIDTH / this.factor)
                    && elem.x - (elem.size / 2) <= -this.dx * this.HALFWIDTH + (this.HALFWIDTH / this.factor)){
+                    //TODO y bound checking
                     console.log("inside");
                     return true;
                 }else{
@@ -665,6 +666,7 @@ export class OpenGL{
                 }
                 return false;
             }else{
+                //TODO Mode HEIGHT FIRST implementation
                 return true;
             }
         }
