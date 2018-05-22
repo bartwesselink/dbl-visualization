@@ -618,19 +618,20 @@ export class OpenGL{
                 lineColor = fillColor;
             }
             
-//            this.arrays.push({
-//                pos: posBuffer,
-//                color: this.toColor(fillColor),
-//                mode: this.gl.TRIANGLE_FAN,
-//                length: pos.length / 2,
-//                overlay: {
-//                    pos: posBuffer,
-//                    color: this.toColor(lineColor),
-//                    mode: this.gl.LINE_LOOP,
-//                    length: pos.length / 2 - offset,
-//                    offset: offset * 4
-//                }
-//            });
+            this.arrays.push({
+                pos: posBuffer,
+                color: this.toColor(fillColor),
+                mode: this.gl.TRIANGLE_FAN,
+                size: size,
+                length: pos.length / 2,
+                overlay: {
+                    pos: posBuffer,
+                    color: this.toColor(lineColor),
+                    mode: this.gl.LINE_LOOP,
+                    length: pos.length / 2 - offset,
+                    offset: offset * 4
+                }
+            });
         }
     }
     
