@@ -547,26 +547,28 @@ export class OpenGL{
             this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
             this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices), this.gl.STATIC_DRAW);
         
-//            this.arrays.push({
-//                pos: posBuffer,
-//                color: this.toColor(fillColor),
-//                mode: this.gl.TRIANGLE_STRIP,
-//                length: pos.length / 2,
-//                overlay: {
-//                    pos: posBuffer,
-//                    indices: indicesBuffer,
-//                    color: this.toColor(lineColor),
-//                    mode: this.gl.LINE_LOOP,
-//                    length: pos.length / 2
-//                }
-//            });
+            this.arrays.push({
+                pos: posBuffer,
+                color: this.toColor(fillColor),
+                mode: this.gl.TRIANGLE_STRIP,
+                size: (end - start) > 90 ? (2 * far) : far,
+                length: pos.length / 2,
+                overlay: {
+                    pos: posBuffer,
+                    indices: indicesBuffer,
+                    color: this.toColor(lineColor),
+                    mode: this.gl.LINE_LOOP,
+                    length: pos.length / 2
+                }
+            });
         }else{
-//            this.arrays.push({
-//                pos: posBuffer,
-//                color: this.toColor(fillColor),
-//                mode: this.gl.TRIANGLE_STRIP,
-//                length: pos.length / 2,
-//            });
+            this.arrays.push({
+                pos: posBuffer,
+                color: this.toColor(fillColor),
+                mode: this.gl.TRIANGLE_STRIP,
+                size: (end - start) > 90 ? (2 * far) : far, 
+                length: pos.length / 2,
+            });
         }
     }
     
