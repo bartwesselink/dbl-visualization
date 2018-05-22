@@ -37,6 +37,9 @@ export class OpenGL{
         
         this.initShaders();
         
+        this.gl.useProgram(this.shader);
+        this.colorUniform = this.gl.getUniformLocation(this.shader, "color")
+        
         console.log("OpenGL version: " + this.gl.getParameter(gl.VERSION));
         console.log("GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
     }
@@ -184,9 +187,7 @@ export class OpenGL{
     public render(): void {
         this.clear();
         
-        this.gl.useProgram(this.shader);
         this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader, "modelviewMatrix"), false, this.modelviewMatrix);
-        this.colorUniform = this.gl.getUniformLocation(this.shader, "color")
         
         this.drawBuffers();
     }
