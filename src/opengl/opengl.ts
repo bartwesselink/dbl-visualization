@@ -623,7 +623,7 @@ export class OpenGL{
     //renders the given element
     private drawElement(elem: Element): void {
         if((this.mode == Mode.WIDTH_FIRST && elem.size < ((this.WIDTH / this.factor) / this.width)) || (this.mode == Mode.HEIGHT_FIRST&& elem.size < ((this.HEIGHT / this.factor) / this.height))){
-            //return;
+            return;
         }
         if(elem.pos != null){
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
