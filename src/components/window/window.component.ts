@@ -2,8 +2,6 @@ import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {Element} from '../../opengl/element';
 import {Matrix} from '../../opengl/matrix';
 import {OpenGL} from '../../opengl/opengl';
-import {Shader} from "../../opengl/shader";
-import { Observable } from "rxjs";
 import {Visualizer} from '../../interfaces/visualizer';
 import {Node} from '../../models/node';
 import {Tab} from '../../models/tab';

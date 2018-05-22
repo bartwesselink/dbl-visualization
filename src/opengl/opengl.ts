@@ -1,12 +1,10 @@
 /** @author Roan Hofland */
-import {Shader} from "./shader";
 import {Element} from "./element";
 import {Matrix} from "./matrix";
 import {Mode} from "./mode";
 
 export class OpenGL{
     private gl: WebGLRenderingContext;
-    private shader: Shader;
     private modelviewMatrix;
     private arrays: Element[] = [];
     private readonly WIDTH = 1600;
@@ -23,6 +21,8 @@ export class OpenGL{
     private width: number;
     private height: number;
     private colorUniform: WebGLUniformLocation;
+    private shader: WebGLProgram;
+    private shaderAttribPosition: number;
     
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
@@ -184,9 +184,9 @@ export class OpenGL{
     public render(): void {
         this.clear();
         
-        this.gl.useProgram(this.shader.shader);
-        this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader.shader, "modelviewMatrix"), false, this.modelviewMatrix);
-        this.colorUniform = this.gl.getUniformLocation(this.shader.shader, "color")
+        this.gl.useProgram(this.shader);
+        this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader, "modelviewMatrix"), false, this.modelviewMatrix);
+        this.colorUniform = this.gl.getUniformLocation(this.shader, "color")
         
         this.drawBuffers();
     }
@@ -658,13 +658,13 @@ export class OpenGL{
         if(this.isVisible(elem)){
             if(elem.pos != null){
                 this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
-                this.gl.vertexAttribPointer(this.shader.shaderAttribPosition,             //attribute
-                                            2,                                            //2D so two values per iteration: x, y
-                                            this.gl.FLOAT,                                //data type is float32
-                                            false,                                        //no normalisation
-                                            0,                                            //stride = automatic
-                                            elem.offset == null ? 0 : elem.offset);       //skip
-                this.gl.enableVertexAttribArray(this.shader.shaderAttribPosition);
+                this.gl.vertexAttribPointer(this.shaderAttribPosition,              //attribute
+                                            2,                                      //2D so two values per iteration: x, y
+                                            this.gl.FLOAT,                          //data type is float32
+                                            false,                                  //no normalisation
+                                            0,                                      //stride = automatic
+                                            elem.offset == null ? 0 : elem.offset); //skip
+                this.gl.enableVertexAttribArray(this.shaderAttribPosition);
             }
             
             if(elem.color != null){
@@ -690,7 +690,7 @@ export class OpenGL{
     }
     
     //initialises the shaders
-    public initShaders(): void {
+    private initShaders(): void {
         //ridiculously complicated vertex shader
         //because bit wise operators were on a vacation in GLSL -_-
         const vertexShaderSource = `
@@ -758,10 +758,8 @@ export class OpenGL{
         }
         
         //Initialise the shader object for use
-        this.shader = {
-            shader: program,
-            shaderAttribPosition: this.gl.getAttribLocation(program, "pos")
-        }
+        this.shader = program,
+        this.shaderAttribPosition = this.gl.getAttribLocation(program, "pos")
     }
 }
 /** @end-author Roan Hofland */     
