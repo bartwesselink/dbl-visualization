@@ -40,10 +40,13 @@
 
         <app-welcome-page [visualizers]="visualizers" [hidden]="tabs.length > 0"></app-welcome-page>
     </main>
-
     <dialog class="mdl-dialog full-screen-loader" #fullScreenLoader tabindex="-1">
         <div class="mdl-dialog__content">
             <app-loader></app-loader>
         </div>
     </dialog>
+    <div #snackbar class="mdl-js-snackbar mdl-snackbar">
+        <div class="mdl-snackbar__text"></div>
+        <button class="mdl-snackbar__action" type="button"></button>
+    </div>
 </div>

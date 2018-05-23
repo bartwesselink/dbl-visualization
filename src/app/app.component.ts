@@ -28,8 +28,9 @@ export class AppComponent implements OnInit {
 
     @ViewChild(SidebarComponent) private sidebar: SidebarComponent;
     @ViewChild('fullScreenLoader') private fullScreenLoader: ElementRef;
+    @ViewChild("snackbar") private snackbar: ElementRef;
 
-    private parser = new NewickParser();
+    private parser: NewickParser;
     public darkMode = false;
     constructor(private settingsBus: SettingsBus) {
         this.createVisualizers();
@@ -43,6 +44,8 @@ export class AppComponent implements OnInit {
 
     public ngOnInit(): void {
         dialogPolyfill.registerDialog(this.fullScreenLoader.nativeElement);
+
+        this.parser = new NewickParser(this.snackbar);
     }
 
     /** @author Jordy Verhoeven */
