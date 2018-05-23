@@ -4,5 +4,5 @@
 
     <span (click)="select()" class="tree-navigator-label" [class.tree-navigator-unnamed]="node.label === ''" [class.tree-navigator-selected]="node.original.selected">{{ node.label === '' ? '(unnamed)' : node.label }}</span>
 
-    <app-tree-navigator [tree]="node.children"></app-tree-navigator>
+    <app-tree-navigator [tree]="node.children" #component></app-tree-navigator>
 </div>

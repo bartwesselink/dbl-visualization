@@ -1,6 +1,7 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {Node} from '../../models/node';
 import {SelectBus} from '../../providers/select-bus';
+import {TreeNavigatorItemComponent} from '../tree-navigator-item/tree-navigator-item.component';
 
 @Component({
     selector: 'app-tree-navigator',
@@ -10,21 +11,10 @@ export class TreeNavigatorComponent implements OnInit {
     /** @author Bart Wesselink */
     @Input() tree: Node|Node[];
     @Input() parent: boolean = false;
+    @ViewChildren(TreeNavigatorItemComponent) items: QueryList<TreeNavigatorItemComponent>;
     public current: Node[] = [];
 
     constructor(private selectBus: SelectBus) {
-    }
-
-    public hasNode(node: Node): boolean {
-        let foundChild;
-
-        if (this.tree === node) {
-            foundChild = node;
-        } else if (this.tree instanceof Array) {
-            foundChild = this.tree.find((item: Node) => item === node);
-        }
-
-        return foundChild != null;
     }
 
     public static transformToNavigatorNode(node: Node): Node {
@@ -43,7 +33,11 @@ export class TreeNavigatorComponent implements OnInit {
 
         if (this.parent) {
             this.selectBus.nodeSelected.subscribe((node: Node) => {
+                this.expandNode(node, this.tree as Node[]);
 
+                this.items.forEach((item: TreeNavigatorItemComponent) => {
+                    item.checkExpand();
+                });
             });
         }
     }
@@ -82,6 +76,20 @@ export class TreeNavigatorComponent implements OnInit {
         for (const node of (this.tree as Node[])) {
             this.current.push(TreeNavigatorComponent.transformToNavigatorNode(node));
         }
+    }
+
+    private expandNode(needle: Node, haystack: Node[]): boolean {
+        for (const node of haystack) {
+            if (node === needle) {
+                return true;
+            } else if (this.expandNode(needle, node.children)) {
+                node.forceExpand = true;
+
+                return true;
+            }
+        }
+
+        return false;
     }
     /** @end-author Bart Wesselink */
 }

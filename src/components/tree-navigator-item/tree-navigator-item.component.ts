@@ -1,4 +1,4 @@
-import {Component, Input, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {Node} from '../../models/node';
 import {TreeNavigatorComponent} from '../tree-navigator/tree-navigator.component';
 import {SelectBus} from '../../providers/select-bus';
@@ -7,12 +7,22 @@ import {SelectBus} from '../../providers/select-bus';
     selector: 'app-tree-navigator-item',
     templateUrl: './tree-navigator-item.component.html',
 })
-export class TreeNavigatorItemComponent {
+export class TreeNavigatorItemComponent implements OnInit {
     /** @author Bart Wesselink */
     @Input() node: Node;
-    @ViewChild(TreeNavigatorComponent) recursiveChildTree?: TreeNavigatorComponent;
+    @ViewChild('component') recursiveChildTree?: TreeNavigatorComponent;
 
     constructor(private selectBus: SelectBus) {
+    }
+
+    ngOnInit(): void {
+        this.checkExpand();
+    }
+
+    public checkExpand(): void {
+        if (this.node.original.forceExpand === true) {
+            this.toggle();
+        }
     }
 
     public toggle(): void {
