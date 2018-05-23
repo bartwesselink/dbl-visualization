@@ -126,10 +126,10 @@ export class OpenglDemoTree implements Visualizer {
         draws.push({ type: 19 /** FillLinedRingSlice **/, options: { x: -500, y: -165, near: 50, far: 100, start: (360 / 3) * 2, end: (360 / 3) * 3, fillColor: [1, 0, 0, 1], lineColor: [0, 0, 0, 1] }});
 
         // draw calls for lines
-        draws.push({ type: 16 /** DrawPolyLine **/, options: { x: [-100, 100], y: [-100, 100], color: [0, 0, 0, 1] } });
         draws.push({ type: 16 /** DrawPolyLine **/, options: { x: [-500, -200, 0, 200, 500], y: [100, 170, 100, 100, 170], color: [0, 0, 0, 1] } });
 
         draws.push({ type: 14 /** DrawCircularArc **/, options: { x: 150, y: 100, radius: 50, start: 0, end: 180, color: [0, 0, 0, 1] } });
+        draws.push({ type: 13 /** DrawEllipsoidalArc **/, options: { x: 0, y: -100, radx: 100, rady: 30, start: 0, end: 180, color: [0, 0, 0, 1] } });
 
         return draws;
     }
