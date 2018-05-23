@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, ViewChild} from '@angular/core';
 import {Tab} from '../models/tab';
 import { Node } from '../models/node';
 import {NewickParser} from '../utils/newick-parser';
@@ -13,7 +13,7 @@ import {SimpleTreeMap} from "../visualizations/simple-tree-map";
     selector: 'app-root',
     templateUrl: './app.component.html',
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
     public tabs: Tab[] = [];
     public tree: Node;
     public visualizers: Visualizer[];
@@ -33,9 +33,7 @@ export class AppComponent implements OnInit {
         });
 
         window.addEventListener('resize', () => this.resizeActiveTab());
-    }
 
-    ngOnInit() {
         this.parser = new NewickParser(this.snackbar);
     }
 
