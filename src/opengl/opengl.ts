@@ -345,7 +345,7 @@ export class OpenGL{
                           x,         y + height,
                           x + width, y,
                           x,         y,
-                          x + width / 2, y + height / 2, Math.hypot(width, height), true, false, color, null);
+                          x + width / 2, y + height / 2, Math.min(width, height), true, false, color, null);
     }
     
     //draw an axis aligned quad
@@ -354,7 +354,7 @@ export class OpenGL{
                          x,         y + height,
                          x,         y,
                          x + width, y,
-                         x + width / 2, y + height / 2, Math.hypot(width, height), false, true, null, color);
+                         x + width / 2, y + height / 2, Math.min(width, height), false, true, null, color);
     }
     
     //render an axis aligned quad
@@ -363,7 +363,7 @@ export class OpenGL{
                           x,         y + height,
                           x + width, y,
                           x,         y,
-                          x + width / 2, y + height / 2, Math.hypot(width, height), true, true, fillColor, lineColor);
+                          x + width / 2, y + height / 2, Math.min(width, height), true, true, fillColor, lineColor);
     }
         
     //draw quad implementation
@@ -670,7 +670,7 @@ export class OpenGL{
                 //console.log("c: " + (-this.dx * this.HALFWIDTH) + " | " + (-this.dy * this.HALFHEIGHT));
                 //console.log("p: " + elem.x + " | " + elem.y);
                 //console.log("hh: " + hh);
-                if(Math.hypot(elem.x + (this.dx * this.HALFWIDTH), elem.y + (this.dy * this.HALFHEIGHT)) - elem.size <= Math.hypot(this.HALFWIDTH, hh) / this.factor){
+                if(Math.hypot(elem.x + (this.dx * this.HALFWIDTH), elem.y + (this.dy * this.HALFHEIGHT)) - elem.span <= Math.hypot(this.HALFWIDTH, hh) / this.factor){
                     //console.log("inside");
                     return true;
                 }else{

@@ -5,6 +5,7 @@ export interface Element{
     indices?: WebGLBuffer;
     mode: number;
     length: number;
+    span: number;
     size?: number;
     x?: number;
     y?: number;
