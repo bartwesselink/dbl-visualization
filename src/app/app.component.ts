@@ -9,6 +9,10 @@ import {SettingsBus} from '../providers/settings-bus';
 import {Settings} from '../interfaces/settings';
 import {OpenglDemoTree} from "../visualizations/opengl-demo-tree";
 import {SimpleTreeMap} from "../visualizations/simple-tree-map";
+import {WorkerManager} from '../utils/worker-manager';
+
+declare var dialogPolyfill;
+
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -17,10 +21,13 @@ export class AppComponent implements OnInit {
     public tabs: Tab[] = [];
     public tree: Node;
     public visualizers: Visualizer[];
+    public showFullScreenLoader: boolean = false;
 
     private activeTab: Tab;
+    private amountOfWindowsLoading: number = 0;
 
     @ViewChild(SidebarComponent) private sidebar: SidebarComponent;
+    @ViewChild('fullScreenLoader') private fullScreenLoader: ElementRef;
     @ViewChild("snackbar") private snackbar: ElementRef;
 
     private parser: NewickParser;
@@ -35,7 +42,9 @@ export class AppComponent implements OnInit {
         window.addEventListener('resize', () => this.resizeActiveTab());
     }
 
-    ngOnInit() {
+    public ngOnInit(): void {
+        dialogPolyfill.registerDialog(this.fullScreenLoader.nativeElement);
+
         this.parser = new NewickParser(this.snackbar);
     }
 
@@ -89,6 +98,29 @@ export class AppComponent implements OnInit {
         }
     }
 
+    public updateLoading(isLoading: boolean) {
+        if (isLoading) {
+            this.amountOfWindowsLoading++;
+        } else {
+            this.amountOfWindowsLoading--;
+        }
+
+        // check if we need to show the full screen modal, in case there is no visualization yet
+        if (this.amountOfWindowsLoading > 0 && this.showFullScreenLoader) {
+            // check if modal is already open, to prevent any errors
+            if (!this.fullScreenLoader.nativeElement.open) {
+                this.fullScreenLoader.nativeElement.showModal();
+            }
+        } else if (this.showFullScreenLoader) {
+            this.showFullScreenLoader = false;
+            this.fullScreenLoader.nativeElement.close();
+        }
+    }
+
+    public isLoading(): boolean {
+        return this.amountOfWindowsLoading > 0;
+    }
+
     private createVisualizers(): void {
         this.visualizers = [
             new OpenglDemoTree(),
@@ -107,10 +139,10 @@ export class AppComponent implements OnInit {
         });
     }
 
-    private redrawAllTabs(): void {
-        for (const tab of this.tabs) {
+    private async redrawAllTabs(): Promise<void> {
+        for (const tab of this.tabs.slice().sort((a, b) => a === this.activeTab ? 0 : 1)) {
             if (tab.window) {
-                tab.window.startScene();
+                await tab.window.computeScene();
             }
         }
     }
@@ -123,6 +155,7 @@ export class AppComponent implements OnInit {
         });
 
         this.switchTab(this.tabs[this.tabs.length - 1]); // always show new visualization when tab is added
+        this.showFullScreenLoader = true;
     }
     /** @end-author Bart Wesselink */
 }
