@@ -659,13 +659,13 @@ export class OpenGL{
         var total = 0;
         for(var i = 0; i < this.arrays.length; i++){
             vertices += this.drawElement(this.arrays[i])
-            total += this.arrays[i].length;
+            total += this.arrays[i].overlay == null ? this.arrays[i].length : (this.arrays[i].length + this.arrays[i].overlay.length);
         }
         console.log("[OpenGL] Rendered " + vertices + " out of " + total + " vertices")
     }
     
     private isVisible(elem: Element): boolean {
-        if((this.mode == Mode.WIDTH_FIRST && elem.size < ((this.WIDTH / this.factor) / this.width) * this.SIZETHRESHOLD) || (this.mode == Mode.HEIGHT_FIRST && elem.size < ((this.HEIGHT / this.factor) / this.height) * this.SIZETHRESHOLD)){
+        if((this.mode == Mode.WIDTH_FIRST && elem.span < ((this.WIDTH / this.factor) / this.width) * this.SIZETHRESHOLD) || (this.mode == Mode.HEIGHT_FIRST && elem.span < ((this.HEIGHT / this.factor) / this.height) * this.SIZETHRESHOLD)){
             return false;
         }else{
             if(this.mode == Mode.WIDTH_FIRST){
@@ -673,7 +673,7 @@ export class OpenGL{
                 //console.log("c: " + (-this.dx * this.HALFWIDTH) + " | " + (-this.dy * this.HALFHEIGHT));
                 //console.log("p: " + elem.x + " | " + elem.y);
                 //console.log("hh: " + hh);
-                if(Math.hypot(elem.x + (this.dx * this.HALFWIDTH), elem.y + (this.dy * this.HALFHEIGHT)) - elem.span <= Math.hypot(this.HALFWIDTH, hh) / this.factor){
+                if(Math.hypot(elem.x + (this.dx * this.HALFWIDTH), elem.y + (this.dy * this.HALFHEIGHT)) - elem.size <= Math.hypot(this.HALFWIDTH, hh) / this.factor){
                     //console.log("inside");
                     return true;
                 }else{
