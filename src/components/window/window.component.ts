@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Element} from '../../opengl/element';
 import {Matrix} from '../../opengl/matrix';
 import {OpenGL} from '../../opengl/opengl';
@@ -10,6 +10,9 @@ import {Tab} from '../../models/tab';
 import {Form} from '../../form/form';
 import {FormFactory} from '../../form/form-factory';
 import {OpenglDemoTree} from '../../visualizations/opengl-demo-tree';
+import {WorkerManager} from '../../utils/worker-manager';
+import {DrawType} from '../../enums/draw-type';
+import {FormComponent} from '../form/form.component';
 
 @Component({
     selector: 'app-window',
@@ -21,6 +24,8 @@ export class WindowComponent implements OnInit {
     @Input('snackbar') private snackbar: any;
     @Input('visualizer') public visualizer: Visualizer;
     @Input('tab') public tab: Tab;
+
+    @Output() private loading: EventEmitter<boolean> = new EventEmitter<boolean>();
 
     public form: Form|null;
 
@@ -36,18 +41,19 @@ export class WindowComponent implements OnInit {
     private lastX: number;
     private lastY: number;
     private readonly ZOOM_NORMALISATION = 40;
+    private lastSettings: object;
+
     private readonly ROTATION_NORMALISATION = 10;
     private readonly DEFAULT_DR = 1;
     private readonly DEFAULT_DT = 5;
     private readonly DEFAULT_DS = 0.1;
 
-    constructor(private formFactory: FormFactory) {
-
-    }
+    constructor(private formFactory: FormFactory, private workerManager: WorkerManager) {}
 
     ngOnInit() {
         this.tab.window = this; // create reference in order to enable tab-manager to communicate with component
         this.form = this.visualizer.getForm(this.formFactory);
+        this.lastSettings = this.form.getFormGroup().value;
 
         this.setHeight();
         this.startScene();
@@ -63,7 +69,8 @@ export class WindowComponent implements OnInit {
     }
 
     public change(value: object) {
-        this.visualizer.applySettings(value);
+        this.lastSettings = value;
+        this.computeScene();
     }
 
     public keyEvent(event: KeyboardEvent): void {
@@ -154,11 +161,10 @@ export class WindowComponent implements OnInit {
         this.render();
     }
 
-    public startScene(): void {
+    public async startScene(): Promise<void> {
         this.init();
-        this.computeScene();
+        await this.computeScene();
 
-        setTimeout(() => this.redraw(), 100);
     }
 
     public destroyScene(): void {
@@ -166,18 +172,31 @@ export class WindowComponent implements OnInit {
     }
 
     //compute the visualisation
-    private computeScene(): void {
-        this.gl.releaseBuffers();
+    public computeScene(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.gl.releaseBuffers();
 
-        if (!this.visualizer) {
-            return;
-        }
+            if (!this.visualizer) {
+                return;
+            }
 
-        if (!this.tree && !(this.visualizer instanceof OpenglDemoTree)) { // only the demo visualizer can be rendered without data
-            return; // there is no tree yet
-        }
+            if (!this.tree && !(this.visualizer instanceof OpenglDemoTree)) { // only the demo visualizer can be rendered without data
+                return; // there is no tree yet
+            }
 
-        this.visualizer.draw(this.tree, this.gl);
+            this.startLoading();
+
+            this.workerManager.startWorker(this.gl,this.visualizer.draw, { tree: this.tree, settings: this.lastSettings })
+                .then(() => {
+                    setTimeout(() => {
+                        this.redraw();
+
+                        this.stopLoading();
+                    }, 100);
+
+                    resolve();
+                });
+        });
     }
 
     //fallback rendering for when some OpenGL error occurs
@@ -237,6 +256,14 @@ export class WindowComponent implements OnInit {
             this.gl.resize(this.canvas.nativeElement.width, this.canvas.nativeElement.height);
             this.redraw();
         });
+    }
+
+    private startLoading() {
+        this.loading.emit(true);
+    }
+
+    private stopLoading() {
+        this.loading.emit(false);
     }
     /** @end-author Bart Wesselink */
 }

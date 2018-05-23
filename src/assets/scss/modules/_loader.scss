@@ -1,0 +1,14 @@
+/** @author Bart Wesselink */
+.loader {
+  vertical-align: middle;
+  margin-right: 1rem;
+}
+
+.full-screen-loader {
+  width: fit-content;
+
+  .loader {
+    margin-right: 0;
+  }
+}
+/** @end-author Bart Wesselink */
