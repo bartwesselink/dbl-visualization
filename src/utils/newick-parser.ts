@@ -34,7 +34,7 @@ export class NewickParser {
     private recurse(node: any, parent: Node = null): any {
         const label = node.name;
         const children = node.branchset;
-        const length = node.length? node.length : this.defaultNodeLength;
+        const length = node.length ? node.length : this.defaultNodeLength;
 
         const formatted: Node = {
             label: label,
