@@ -23,7 +23,7 @@ export class OpenGL{
     private colorUniform: WebGLUniformLocation;
     private shader: WebGLProgram;
     private shaderAttribPosition: number;
-    
+
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
         
@@ -34,12 +34,12 @@ export class OpenGL{
         
         this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
         this.gl.enable(this.gl.BLEND);
-        
+
         this.initShaders();
-        
+
         this.gl.useProgram(this.shader);
         this.colorUniform = this.gl.getUniformLocation(this.shader, "color")
-        
+
         console.log("OpenGL version: " + this.gl.getParameter(gl.VERSION));
         console.log("GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
     }
@@ -159,11 +159,17 @@ export class OpenGL{
     private transform(x: number, y: number): number[] {
         var dx = x - this.width / 2;
         var dy = y - this.height / 2;
+        var loc = null;
+
         if(this.mode == Mode.WIDTH_FIRST){
-            return [((dx / this.width) / this.factor) * 2 - this.dx, -(((dy / this.height) * (this.height / ((this.width / this.WIDTH) * this.HEIGHT))) / this.factor) * 2 - this.dy];
+            loc = [((dx / this.width) / this.factor) * this.WIDTH, -(((dy / this.height) * (this.height / (this.width / this.WIDTH))) / this.factor)];
         }else{
-            return [(((dx / this.width) * (this.width / ((this.height / this.HEIGHT) * this.WIDTH))) / this.factor) * 2 - this.dx, -((dy / this.height) / this.factor) * 2 - this.dy];
+            loc = [(((dx / this.width) * (this.width / (this.height / this.HEIGHT))) / this.factor), -((dy / this.height) / this.factor) * this.HEIGHT];
         }
+        Matrix.rotateVector2D([0, 0], loc, this.rotation);
+        loc[0] = (loc[0] / this.HALFWIDTH) - this.dx;
+        loc[1] = (loc[1] / this.HALFHEIGHT) - this.dy;
+        return loc;
     }
     
     //resizes the viewport to the optimal size for the new canvas size
@@ -191,7 +197,7 @@ export class OpenGL{
         
         this.drawBuffers();
     }
-    
+
     //releases all the OpenGL buffers
     public releaseBuffers(): void {
         while(this.arrays.length > 0){
@@ -233,7 +239,7 @@ export class OpenGL{
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
-        
+
         this.arrays.push({
             pos: positionBuffer,
             color: this.toColor(color),
@@ -262,21 +268,21 @@ export class OpenGL{
             pos[i * 2 + 1] = y[i] / this.HALFHEIGHT;
             if(x[i] >= minx){
                 if(x[i] > maxx){
-                   maxx = x[i]; 
+                   maxx = x[i];
                 }
             }else{
                 minx = x[i];
             }
             if(y[i] >= miny){
                 if(y[i] > maxy){
-                   maxy = y[i]; 
+                   maxy = y[i];
                 }
             }else{
                 miny = y[i];
             }
         }
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
-        
+
         this.arrays.push({
             pos: positionBuffer,
             color: this.toColor(color),
@@ -502,7 +508,7 @@ export class OpenGL{
             pos: posBuffer,
             color: this.toColor(color),
             mode: this.gl.LINE_LOOP,
-            size: (end - start) > 90 ? (2 * far) : far, 
+            size: (end - start) > 90 ? (2 * far) : far,
             length: pos.length / 2
         });
     }
@@ -565,7 +571,7 @@ export class OpenGL{
                 pos: posBuffer,
                 color: this.toColor(fillColor),
                 mode: this.gl.TRIANGLE_STRIP,
-                size: (end - start) > 90 ? (2 * far) : far, 
+                size: (end - start) > 90 ? (2 * far) : far,
                 length: pos.length / 2,
             });
         }
@@ -599,7 +605,7 @@ export class OpenGL{
     }
     
     //draws an ellipsoid
-    private renderEllipsoidImpl(pos: number[], size: number, fill: boolean, line: boolean, lineColor: number[], fillColor: number[], offset: number): void {     
+    private renderEllipsoidImpl(pos: number[], size: number, fill: boolean, line: boolean, lineColor: number[], fillColor: number[], offset: number): void {
         var posBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
@@ -616,7 +622,7 @@ export class OpenGL{
             if(lineColor == null){
                 lineColor = fillColor;
             }
-            
+
             this.arrays.push({
                 pos: posBuffer,
                 color: this.toColor(fillColor),
@@ -653,7 +659,7 @@ export class OpenGL{
             return true;
         }
     }
-        
+
     //renders the given element
     private drawElement(elem: Element): void {
         if(this.isVisible(elem)){
@@ -667,29 +673,29 @@ export class OpenGL{
                                             elem.offset == null ? 0 : elem.offset); //skip
                 this.gl.enableVertexAttribArray(this.shaderAttribPosition);
             }
-            
+
             if(elem.color != null){
                 this.gl.uniform1f(this.colorUniform, elem.color);
             }
-            
+
             if(elem.indices == null){
                 this.gl.drawArrays(elem.mode, 0, elem.length);
             }else{
                 this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, elem.indices);
                 this.gl.drawElements(elem.mode, elem.length, this.gl.UNSIGNED_BYTE, 0);
             }
-            
+
             if(elem.overlay != null){
                 this.drawElement(elem.overlay);
             }
         }
     }
-    
+
     //creates a color from the given array
     private toColor(array: number[]): number{
         return array[0] * 0x00FF0000 + array[1] * 0x0000FF00 + array[2] * 0x000000FF;
     }
-    
+
     //initialises the shaders
     private initShaders(): void {
         //ridiculously complicated vertex shader

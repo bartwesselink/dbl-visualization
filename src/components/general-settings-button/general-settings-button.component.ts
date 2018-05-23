@@ -4,6 +4,8 @@ import {FormFactory} from '../../form/form-factory';
 import {SettingsBus} from '../../providers/settings-bus';
 import {Settings} from '../../interfaces/settings';
 
+declare var dialogPolyfill;
+
 @Component({
     selector: 'app-general-settings-button',
     templateUrl: './general-settings-button.component.html',
@@ -18,7 +20,7 @@ export class GeneralSettingsButtonComponent implements OnInit {
 
     public ngOnInit(): void {
         this.createForm();
-
+        dialogPolyfill.registerDialog(this.dialog.nativeElement);
         // emit first value
         this.updateValue();
     }
