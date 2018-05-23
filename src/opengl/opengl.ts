@@ -673,6 +673,7 @@ export class OpenGL{
                 //console.log("c: " + (-this.dx * this.HALFWIDTH) + " | " + (-this.dy * this.HALFHEIGHT));
                 //console.log("p: " + elem.x + " | " + elem.y);
                 //console.log("hh: " + hh);
+                //TODO bug land, especially so when trying to visualise the STM
                 if(Math.hypot(elem.x + (this.dx * this.HALFWIDTH), elem.y + (this.dy * this.HALFHEIGHT)) - elem.size <= Math.hypot(this.HALFWIDTH, hh) / this.factor){
                     //console.log("inside");
                     return true;
