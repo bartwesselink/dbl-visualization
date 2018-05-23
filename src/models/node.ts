@@ -5,7 +5,7 @@ export interface Node {
     parent?: Node;
     subTreeSize?: number;
 
-    selected: boolean;
+    selected?: boolean;
     selectedNode?: Node; // reference in the root node, such that is shared over all windows and selection can easily be undone
 
     // these are only present in tree-navigator
