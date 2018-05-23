@@ -40,15 +40,15 @@ export class OpenGL{
         this.gl.useProgram(this.shader);
         this.colorUniform = this.gl.getUniformLocation(this.shader, "color")
         
-        console.log("OpenGL version: " + this.gl.getParameter(gl.VERSION));
-        console.log("GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
+        console.log("[OpenGL] OpenGL version: " + this.gl.getParameter(gl.VERSION));
+        console.log("[OpenGL] GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
     }
     
     //test for a dedicated GPU
     public isDedicatedGPU(): boolean {
         var info = this.gl.getExtension("WEBGL_debug_renderer_info");
         var name = this.gl.getParameter(info.UNMASKED_RENDERER_WEBGL);
-        console.log("Detected renderer: " + name);
+        console.log("[OpenGL] Detected renderer: " + name);
         if(name.indexOf("NVIDIA") != -1){
             return true;   
         }else if(name.indexOf("Radeon") != -1){
@@ -178,6 +178,7 @@ export class OpenGL{
         //the visualisation does not distort. Theoretically we could also recompute all the buffers and map to a new coordinate space.
         this.width = width;
         this.height = height;
+        console.log("[OpenGL] Viewport resolution: " + width + "x" + height);
         if((width / this.WIDTH) * this.HEIGHT > height){
             this.mode = Mode.WIDTH_FIRST;
             this.gl.viewport(0, (height - ((width / this.WIDTH) * this.HEIGHT)) / 2, width, (width / this.WIDTH) * this.HEIGHT);
@@ -335,8 +336,8 @@ export class OpenGL{
                           a[0], a[1],
                           d[0], d[1],
                           c[0], c[1],
-                          -100000, -1000000, size, fill, line, fillColor, lineColor);
-    }//TODO
+                          x, y, size, fill, line, fillColor, lineColor);
+    }
     
     //fill an axis aligned quad
     public fillAAQuad(x: number, y: number, width: number, height: number, color: number[]): void {
@@ -649,9 +650,13 @@ export class OpenGL{
     
     //draw all the OpenGL buffers
     private drawBuffers(): void {
+        var vertices = 0;
+        var total = 0;
         for(var i = 0; i < this.arrays.length; i++){
-            this.drawElement(this.arrays[i]);
+            vertices += this.drawElement(this.arrays[i])
+            total += this.arrays[i].length;
         }
+        console.log("[OpenGL] Rendered " + vertices + " out of " + total + " vertices")
     }
     
     private isVisible(elem: Element): boolean {
@@ -660,21 +665,16 @@ export class OpenGL{
         }else{
             if(this.mode == Mode.WIDTH_FIRST){
                 var hh = ((this.WIDTH / this.width) * this.height) / 2;
-                console.log("c: " + (-this.dx * this.HALFWIDTH) + " | " + (-this.dy * this.HALFHEIGHT));
-                console.log("p: " + elem.x + " | " + elem.y);
-                console.log("hh: " + hh);
-                return true;
-
-                if(elem.x + (elem.size / 2) >= -this.dx * this.HALFWIDTH - (this.HALFWIDTH / this.factor)
-                   && elem.x - (elem.size / 2) <= -this.dx * this.HALFWIDTH + (this.HALFWIDTH / this.factor)
-                   && elem.y + (elem.size / 2) >= -this.dy * this.HALFHEIGHT - (hh / this.factor)){
-                    //TODO y bound checking
-                    console.log("inside");
+                //console.log("c: " + (-this.dx * this.HALFWIDTH) + " | " + (-this.dy * this.HALFHEIGHT));
+                //console.log("p: " + elem.x + " | " + elem.y);
+                //console.log("hh: " + hh);
+                if(Math.hypot(elem.x + (this.dx * this.HALFWIDTH), elem.y + (this.dy * this.HALFHEIGHT)) - elem.size <= Math.hypot(this.HALFWIDTH, hh)){
+                    //console.log("inside");
                     return true;
                 }else{
-                    console.log("outside");
+                    //console.log("outside");
+                    return false;
                 }
-                return false;
             }else{
                 //TODO Mode HEIGHT FIRST implementation
                 return true;
@@ -683,7 +683,7 @@ export class OpenGL{
     }
         
     //renders the given element
-    private drawElement(elem: Element): void {
+    private drawElement(elem: Element): number {
         if(this.isVisible(elem)){
             if(elem.pos != null){
                 this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
@@ -708,8 +708,12 @@ export class OpenGL{
             }
             
             if(elem.overlay != null){
-                this.drawElement(elem.overlay);
+                return this.drawElement(elem.overlay) + elem.length;
+            }else{
+                return elem.length;
             }
+        }else{
+            return 0;
         }
     }
     
