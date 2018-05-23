@@ -53,7 +53,7 @@ export class WindowComponent implements OnInit {
     ngOnInit() {
         this.tab.window = this; // create reference in order to enable tab-manager to communicate with component
         this.form = this.visualizer.getForm(this.formFactory);
-        this.lastSettings = this.form.getFormGroup().value;
+        this.lastSettings = this.form != null ? this.form.getFormGroup().value : {};
 
         this.setHeight();
         this.startScene();

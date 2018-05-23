@@ -116,6 +116,21 @@ export class OpenglDemoTree implements Visualizer {
             }
         }
 
+        // draw calls for slices
+        draws.push({ type: 20 /** DrawCircleSlice **/, options: { x: 500, y: -165, radius: 100, start: 0, end: (360 / 3), color: [1, 0, 0, 1] }});
+        draws.push({ type: 21 /** FillCircleSlice **/, options: { x: 500 - 50, y: -165, radius: 100, start: (360 / 3), end: (360 / 3) * 2, color: [1, 0, 0, 1] }});
+        draws.push({ type: 22 /** FillLinedCircleSlice **/, options: { x: 500, y: -165, radius: 100, start: (360 / 3) * 2, end: (360 / 3) * 3, fillColor: [1, 0, 0, 1], lineColor: [0, 0, 0, 1] }});
+
+        draws.push({ type: 17 /** DrawRingSlice **/, options: { x: -500, y: -165, near: 50, far: 100, start: 0, end: (360 / 3), color: [1, 0, 0, 1] }});
+        draws.push({ type: 18 /** FillRingSlice **/, options: { x: -500, y: -165, near: 75, far: 100, start: (360 / 3), end: (360 / 3) * 2, color: [1, 0, 0, 1] }});
+        draws.push({ type: 19 /** FillLinedRingSlice **/, options: { x: -500, y: -165, near: 50, far: 100, start: (360 / 3) * 2, end: (360 / 3) * 3, fillColor: [1, 0, 0, 1], lineColor: [0, 0, 0, 1] }});
+
+        // draw calls for lines
+        draws.push({ type: 16 /** DrawPolyLine **/, options: { x: [-100, 100], y: [-100, 100], color: [0, 0, 0, 1] } });
+        draws.push({ type: 16 /** DrawPolyLine **/, options: { x: [-500, -200, 0, 200, 500], y: [100, 170, 100, 100, 170], color: [0, 0, 0, 1] } });
+
+        draws.push({ type: 14 /** DrawCircularArc **/, options: { x: 150, y: 100, radius: 50, start: 0, end: 180, color: [0, 0, 0, 1] } });
+
         return draws;
     }
 
