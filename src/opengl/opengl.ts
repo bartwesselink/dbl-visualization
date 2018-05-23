@@ -41,6 +41,16 @@ export class OpenGL{
         console.log("Detected renderer: " + name);
         if(name.indexOf("NVIDIA") != -1){
             return true;   
+        }else if(name.indexOf("GeForce") != -1){
+            return true;
+        }else if(name.indexOf("Quadro") != -1){
+            return true;
+        }else if(name.indexOf("TITAN V") != -1){
+            return true;
+        }else if(name.indexOf("GPU Accelerator") != -1){
+            return true;
+        }else if(name.indexOf("NVS") != -1){
+            return true;
         }else if(name.indexOf("Radeon") != -1){
             if(name.match(".*Radeon (HD ....M|R(5|7|9) M...|Pro).*")){//Radeon HD Mobile, R5/R7/R9 Mobile and RX and Pro
                 return false;
