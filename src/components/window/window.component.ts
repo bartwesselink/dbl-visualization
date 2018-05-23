@@ -56,7 +56,7 @@ export class WindowComponent implements OnInit {
             this.snackbar.MaterialSnackbar.showSnackbar({
                 message: "You are using integrated graphics, this could diminish your experience.",
                 timeout: 1e8, // practically infinite
-                actionHandler: () => { this.snackbar.MaterialSnackbar.cleanup_(); },
+                actionHandler: () => { this.snackbar.MaterialSnackbar.cleanup_(); }, // close on click
                 actionText: "CLOSE"
             });
         }
