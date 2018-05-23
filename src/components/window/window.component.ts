@@ -136,7 +136,6 @@ export class WindowComponent implements OnInit {
     //called when the mouse is clicked
     public onClick(event: MouseEvent): void {
         var coords = this.gl.transformPoint(event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
-        console.log("click at: " + event.layerX + " | " + event.layerY + " | " + coords[0] + " | " + coords[1]);
         //TODO pass this on to the visualisation to do something with the click
     }
 
