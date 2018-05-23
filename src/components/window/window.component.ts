@@ -68,6 +68,7 @@ export class WindowComponent implements OnInit {
             node.selected = true;
 
             this.redrawAllScenes();
+            this.scaleToNode(node);
         });
     }
     
@@ -189,7 +190,6 @@ export class WindowComponent implements OnInit {
     public async startScene(): Promise<void> {
         this.init();
         await this.computeScene();
-
     }
 
     public destroyScene(): void {
@@ -198,6 +198,10 @@ export class WindowComponent implements OnInit {
 
     public redrawAllScenes(): void { // redraws all canvases through the AppComponent
         this.redrawAll.next();
+    }
+
+    public scaleToNode(node: Node): void {
+
     }
 
     //compute the visualisation
