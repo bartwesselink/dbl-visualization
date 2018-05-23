@@ -29,7 +29,6 @@ export class AppComponent implements OnInit {
     @ViewChild(SidebarComponent) private sidebar: SidebarComponent;
     @ViewChild("snackbar") public snackbar: ElementRef;
     @ViewChild('fullScreenLoader') private fullScreenLoader: ElementRef;
-    @ViewChild("snackbar") public snackbar: ElementRef;
 
     private parser: NewickParser;
     public darkMode = false;
