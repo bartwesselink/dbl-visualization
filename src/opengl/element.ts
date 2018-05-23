@@ -6,8 +6,8 @@ export interface Element{
     mode: number;
     length: number;
     size?: number;
-    x: number;
-    y: number;
+    x?: number;
+    y?: number;
     offset?: number;
     overlay?: Element;
 }
