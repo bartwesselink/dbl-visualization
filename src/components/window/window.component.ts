@@ -24,6 +24,7 @@ import {SelectBus} from '../../providers/select-bus';
 export class WindowComponent implements OnInit {
     @ViewChild('canvas') private canvas: ElementRef;
     @Input('tree') private tree: Node;
+    @Input('snackbar') private snackbar: any;
     @Input('visualizer') public visualizer: Visualizer;
     @Input('tab') public tab: Tab;
 
@@ -33,13 +34,13 @@ export class WindowComponent implements OnInit {
     public form: Form|null;
 
     private context: CanvasRenderingContext2D;
-  
+
     /** @author Roan Hofland */
     private errored: boolean = false;
     private lastError: string;
-    
+
     private gl: OpenGL;
-    
+
     private down: boolean = false;
     private lastX: number;
     private lastY: number;
@@ -77,13 +78,22 @@ export class WindowComponent implements OnInit {
 
         this.setHeight();
         this.startScene();
+
+        if(!this.gl.isDedicatedGPU()) {
+            this.snackbar.MaterialSnackbar.showSnackbar({
+                message: "You are using integrated graphics, this could diminish your experience.",
+                timeout: 1e8, // practically infinite
+                actionHandler: () => { this.snackbar.MaterialSnackbar.cleanup_(); }, // close on click
+                actionText: "CLOSE"
+            });
+        }
     }
 
     public change(value: object) {
         this.lastSettings = value;
         this.computeScene();
     }
-    
+
     public keyEvent(event: KeyboardEvent): void {
         switch(event.key){
         case 'q':
@@ -104,7 +114,7 @@ export class WindowComponent implements OnInit {
         case 's':
         case 'S':
             this.gl.translate(0, -this.DEFAULT_DT, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
-            this.render();    
+            this.render();
             break;
         case 'a':
         case 'A':
@@ -114,7 +124,7 @@ export class WindowComponent implements OnInit {
         case 'd':
         case 'D':
             this.gl.translate(-this.DEFAULT_DT, 0, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
-            this.render();    
+            this.render();
             break;
         case 'r':
         case 'R':
@@ -133,17 +143,17 @@ export class WindowComponent implements OnInit {
             break;
         }
     }
-    
+
     //called when the mouse is pressed
     public mouseDown(): void {
         this.down = true;
     }
-    
+
     //called when the mouse is realsed
     public mouseUp(): void {
         this.down = false;
     }
-    
+
     //called when the mouse is clicked
     public onClick(event: MouseEvent): void {
         var coords = this.gl.transformPoint(event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
@@ -171,7 +181,7 @@ export class WindowComponent implements OnInit {
         if(this.down){
             this.gl.rotate(event.deltaY / this.ROTATION_NORMALISATION);
         }else{
-            this.gl.scale(Math.max(0.1, 1.0 - (event.deltaY / this.ZOOM_NORMALISATION)));    
+            this.gl.scale(Math.max(0.1, 1.0 - (event.deltaY / this.ZOOM_NORMALISATION)));
         }
         this.render();
     }
@@ -179,6 +189,7 @@ export class WindowComponent implements OnInit {
     public async startScene(): Promise<void> {
         this.init();
         await this.computeScene();
+
     }
 
     public destroyScene(): void {
@@ -188,7 +199,7 @@ export class WindowComponent implements OnInit {
     public redrawAllScenes(): void { // redraws all canvases through the AppComponent
         this.redrawAll.next();
     }
-        
+
     //compute the visualisation
     public computeScene(): Promise<void> {
         return new Promise((resolve, reject) => {
@@ -220,7 +231,7 @@ export class WindowComponent implements OnInit {
             /** @end-author Bart Wesselink */
         });
     }
-  
+
     //fallback rendering for when some OpenGL error occurs
     private onError(error): void {
         this.errored = true;
@@ -228,37 +239,37 @@ export class WindowComponent implements OnInit {
         console.error(error);
         this.context = this.canvas.nativeElement.getContext('2d');
         this.context.clearRect(0, 0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
-        
+
         this.context.font = "30px Verdana";
         this.context.fillStyle = "red";
         this.context.fillText("An internal OpenGL error occurred: " + error, 10, this.canvas.nativeElement.height / 2);
     }
-  
+
     //draw OpenGL stuff
     public render(): void {
         this.gl.render();
     }
-  
+
     //initialise OpenGL
     private init(): void {
         var gl: WebGLRenderingContext = this.canvas.nativeElement.getContext('webgl', {preserveDrawingBuffer: true});
-        
+
         if(!gl){
             this.onError("No WebGL present");
             return;
         }
-        
+
         this.gl = new OpenGL(gl);
-        
+
         try{
             //a bit redundant right now, but useful if we ever want to implement more shaders
             var shader: Shader = this.gl.initShaders();
             this.gl.useShader(shader);
         }catch(error){
-            this.onError((<Error>error).message);   
-        }  
+            this.onError((<Error>error).message);
+        }
     }
-  
+
     //redraw the canvas
     private redraw(): void {
         if(this.errored){

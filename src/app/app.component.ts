@@ -1,4 +1,4 @@
-import {Component, ElementRef, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Tab} from '../models/tab';
 import { Node } from '../models/node';
 import {NewickParser} from '../utils/newick-parser';
@@ -11,11 +11,13 @@ import {OpenglDemoTree} from "../visualizations/opengl-demo-tree";
 import {SimpleTreeMap} from "../visualizations/simple-tree-map";
 import {WorkerManager} from '../utils/worker-manager';
 
+declare var dialogPolyfill;
+
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
     public tabs: Tab[] = [];
     public tree: Node;
     public visualizers: Visualizer[];
@@ -25,9 +27,10 @@ export class AppComponent {
     private amountOfWindowsLoading: number = 0;
 
     @ViewChild(SidebarComponent) private sidebar: SidebarComponent;
+    @ViewChild("snackbar") public snackbar: ElementRef;
     @ViewChild('fullScreenLoader') private fullScreenLoader: ElementRef;
 
-    private parser = new NewickParser();
+    private parser: NewickParser;
     public darkMode = false;
     constructor(private settingsBus: SettingsBus) {
         this.createVisualizers();
@@ -37,6 +40,12 @@ export class AppComponent {
         });
 
         window.addEventListener('resize', () => this.resizeActiveTab());
+    }
+
+    public ngOnInit(): void {
+        dialogPolyfill.registerDialog(this.fullScreenLoader.nativeElement);
+
+        this.parser = new NewickParser(this.snackbar);
     }
 
     /** @author Jordy Verhoeven */

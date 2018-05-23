@@ -29,7 +29,7 @@
             <div class="holder-app">
                 <section *ngFor="let tab of tabs;" class="mdl-layout__tab-panel full-height" [class.is-active]="tab.active">
                     <div class="page-content full-height">
-                        <app-window [tree]="tree" [visualizer]="tab.visualizer" [tab]="tab" (loading)="updateLoading($event)" (redrawAll)="redrawAllTabs()"></app-window>
+                        <app-window [tree]="tree" [visualizer]="tab.visualizer" [tab]="tab" (loading)="updateLoading($event)" (redrawAll)="redrawAllTabs()" [snackbar]="snackbar"></app-window>
                     </div>
                 </section>
             </div>
@@ -46,4 +46,9 @@
             <app-loader></app-loader>
         </div>
     </dialog>
+
+    <div #snackbar class="mdl-js-snackbar mdl-snackbar">
+        <div class="mdl-snackbar__text"></div>
+        <button class="mdl-snackbar__action" type="button"></button>
+    </div>
 </div>
