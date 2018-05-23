@@ -127,13 +127,17 @@ export class OpenGL{
         var vec = Matrix.rotateVector2D([0, 0], [dx, dy], -this.rotation);
         dx = vec[0];
         dy = vec[1];
+        var w;
+        var h;
         if(this.mode == Mode.WIDTH_FIRST){
-            this.height = (this.width / this.WIDTH) * this.HEIGHT;
+            h = (this.width / this.WIDTH) * this.HEIGHT;
+            w = this.width;
         }else{
-            this.width = (this.height / this.HEIGHT) * this.WIDTH;
+            w = (this.height / this.HEIGHT) * this.WIDTH;
+            h = this.height;
         }
-        dx = ((dx / this.width) * 2) / this.factor;
-        dy = ((-dy / this.height) * 2) / this.factor;
+        dx = ((dx / w) * 2) / this.factor;
+        dy = ((-dy / h) * 2) / this.factor;
         Matrix.translateSelf(this.modelviewMatrix, [dx, dy, 0]);
         this.dx += dx;
         this.dy += dy;
@@ -408,13 +412,15 @@ export class OpenGL{
 //                    }
 //                });
             }else{
-//                this.arrays.push({
-//                    pos: positionBuffer,
-//                    color: this.toColor(lineColor),
-//                    mode: this.gl.LINE_LOOP,
-//                    size: size,
-//                    length: 4
-//                });
+                this.arrays.push({
+                    pos: positionBuffer,
+                    color: this.toColor(lineColor),
+                    mode: this.gl.LINE_LOOP,
+                    size: size,
+                    x: x,
+                    y: y,
+                    length: 4
+                });
             }
         }
     }
@@ -653,11 +659,15 @@ export class OpenGL{
             return false;
         }else{
             if(this.mode == Mode.WIDTH_FIRST){
+                var hh = ((this.WIDTH / this.width) * this.height) / 2;
                 console.log("c: " + (-this.dx * this.HALFWIDTH) + " | " + (-this.dy * this.HALFHEIGHT));
                 console.log("p: " + elem.x + " | " + elem.y);
-                console.log("d: " + Math.hypot(elem.x + this.dx * this.HALFWIDTH, elem.y + this.dy * this.HALFHEIGHT) + " | " + Math.hypot(this.HALFHEIGHT, this.HALFWIDTH))
+                console.log("hh: " + hh);
+                return true;
+
                 if(elem.x + (elem.size / 2) >= -this.dx * this.HALFWIDTH - (this.HALFWIDTH / this.factor)
-                   && elem.x - (elem.size / 2) <= -this.dx * this.HALFWIDTH + (this.HALFWIDTH / this.factor)){
+                   && elem.x - (elem.size / 2) <= -this.dx * this.HALFWIDTH + (this.HALFWIDTH / this.factor)
+                   && elem.y + (elem.size / 2) >= -this.dy * this.HALFHEIGHT - (hh / this.factor)){
                     //TODO y bound checking
                     console.log("inside");
                     return true;
