@@ -1,4 +1,4 @@
-<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header" #layoutContainer [class.dark-mode]="darkMode">
     <header class="mdl-layout__header">
         <div class="mdl-layout__header-row header-row">
             <span class="mdl-layout-title">DBL 1D</span>
@@ -7,7 +7,7 @@
 
             <div>
                 <app-general-settings-button></app-general-settings-button>
-                <app-help-button></app-help-button>
+                <app-help-button [container]="layoutContainer"></app-help-button>
                 <app-upload-tool (newContent)="parseTree($event)"></app-upload-tool>
             </div>
         </div>
@@ -39,4 +39,8 @@
 
         <app-welcome-page [visualizers]="visualizers" [hidden]="tabs.length > 0"></app-welcome-page>
     </main>
+    <div #snackbar class="mdl-js-snackbar mdl-snackbar">
+        <div class="mdl-snackbar__text"></div>
+        <button class="mdl-snackbar__action" type="button"></button>
+    </div>
 </div>
