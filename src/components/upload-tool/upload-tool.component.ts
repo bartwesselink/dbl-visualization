@@ -19,14 +19,7 @@ export class UploadToolComponent {
         // Create callback for the file reader
         fileReader.onload = function(e){
             var content: string = fileReader.result;
-
-            if(content.substring(0, 7).toLowerCase() == 'newick;'){
-                self.newContent.emit(content);
-            } else if(content.trim().slice(-1) == ';') { // Trim whitespaces and line feed at end
-                self.newContent.emit('newick;\n' + content);
-            } else {
-                alert(self.errorMsg);
-            }
+            self.newContent.emit(content);
         };
 
         if(this.fileTypeWhitelist.includes(file.type))

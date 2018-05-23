@@ -9,7 +9,16 @@ export class NewickParser {
 
     constructor(private snackbar: any) {}
 
-    public extractLines(data: string): string {
+    public extractLines(data: string): string|null {
+        if(!(data.substring(0, 7).toLowerCase() == 'newick;')) {
+            if(data.trim().slice(-1) == ';') { // Trim whitespaces and line feed at end
+                data = 'newick;\n' + data;
+            } else {
+                this.feedback(this.errorMsg);
+                return null;
+            }
+        }
+
         const lines = data.split("\n");
 
         if (lines.length < 2) {
