@@ -27,8 +27,8 @@ export class AppComponent implements OnInit {
     private amountOfWindowsLoading: number = 0;
 
     @ViewChild(SidebarComponent) private sidebar: SidebarComponent;
+    @ViewChild("snackbar") public snackbar: ElementRef;
     @ViewChild('fullScreenLoader') private fullScreenLoader: ElementRef;
-    @ViewChild("snackbar") private snackbar: ElementRef;
 
     private parser: NewickParser;
     public darkMode = false;
