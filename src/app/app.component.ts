@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
     private activeTab: Tab;
 
     @ViewChild(SidebarComponent) private sidebar: SidebarComponent;
-    @ViewChild("snackbar") private snackbar: ElementRef;
+    @ViewChild("snackbar") public snackbar: ElementRef;
 
     private parser: NewickParser;
     public darkMode = false;

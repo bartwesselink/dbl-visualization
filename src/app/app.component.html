@@ -28,7 +28,7 @@
             <div class="holder-app">
                 <section *ngFor="let tab of tabs;" class="mdl-layout__tab-panel full-height" [class.is-active]="tab.active">
                     <div class="page-content full-height">
-                        <app-window [tree]="tree" [visualizer]="tab.visualizer" [tab]="tab"></app-window>
+                        <app-window [tree]="tree" [visualizer]="tab.visualizer" [tab]="tab" [snackbar]="snackbar"></app-window>
                     </div>
                 </section>
             </div>
