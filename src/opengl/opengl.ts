@@ -298,7 +298,7 @@ export class OpenGL{
                                x + width / 2, y + height / 2,
                                x - width / 2, y - height / 2,
                                x + width / 2, y - height / 2,
-                               Math.hypot(width, height), rotation, true, false, color, null);
+                               Math.hypot(width, height), Math.min(width, height), rotation, true, false, color, null);
     }
     
      //draw a rotated quad
@@ -308,7 +308,7 @@ export class OpenGL{
                                x + width / 2, y + height / 2,
                                x + width / 2, y - height / 2,
                                x - width / 2, y - height / 2,
-                               Math.hypot(width, height), rotation, false, true, null, color);
+                               Math.hypot(width, height), Math.min(width, height), rotation, false, true, null, color);
     }
     
      //render a rotated quad
@@ -318,11 +318,11 @@ export class OpenGL{
                                x + width / 2, y + height / 2,
                                x - width / 2, y - height / 2,
                                x + width / 2, y - height / 2,
-                               Math.hypot(width, height), rotation, true, true, fillColor, lineColor);
+                               Math.hypot(width, height), Math.min(width, height), rotation, true, true, fillColor, lineColor);
     }
     
     //renders a rotated quad
-    private renderRotatedQuad(x: number, y: number, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, size: number, rotation: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
+    private renderRotatedQuad(x: number, y: number, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, size: number, span: number, rotation: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
         //a---------b
         //|   x,y   |
         //c---------d
@@ -336,7 +336,7 @@ export class OpenGL{
                           a[0], a[1],
                           d[0], d[1],
                           c[0], c[1],
-                          x, y, size, fill, line, fillColor, lineColor);
+                          x, y, size, span, fill, line, fillColor, lineColor);
     }
     
     //fill an axis aligned quad
@@ -345,7 +345,7 @@ export class OpenGL{
                           x,         y + height,
                           x + width, y,
                           x,         y,
-                          x + width / 2, y + height / 2, Math.min(width, height), true, false, color, null);
+                          x + width / 2, y + height / 2, Math.hypot(width, height), Math.min(width, height), true, false, color, null);
     }
     
     //draw an axis aligned quad
@@ -354,7 +354,7 @@ export class OpenGL{
                          x,         y + height,
                          x,         y,
                          x + width, y,
-                         x + width / 2, y + height / 2, Math.min(width, height), false, true, null, color);
+                         x + width / 2, y + height / 2, Math.hypot(width, height), Math.min(width, height), false, true, null, color);
     }
     
     //render an axis aligned quad
@@ -363,11 +363,11 @@ export class OpenGL{
                           x,         y + height,
                           x + width, y,
                           x,         y,
-                          x + width / 2, y + height / 2, Math.min(width, height), true, true, fillColor, lineColor);
+                          x + width / 2, y + height / 2, Math.hypot(width, height), Math.min(width, height), true, true, fillColor, lineColor);
     }
         
     //draw quad implementation
-    private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, x: number, y: number, size: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
+    private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, x: number, y: number, size: number, span: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
         //position
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
@@ -383,6 +383,7 @@ export class OpenGL{
                 color: this.toColor(fillColor),
                 mode: this.gl.TRIANGLE_STRIP,
                 size: size,
+                span: span,
                 x: x,
                 y: y,
                 length: 4
@@ -403,6 +404,7 @@ export class OpenGL{
                     color: this.toColor(fillColor),
                     mode: this.gl.TRIANGLE_STRIP,
                     size: size,
+                    span: span,
                     x: x,
                     y: y,
                     length: 4,
@@ -420,6 +422,7 @@ export class OpenGL{
                     color: this.toColor(lineColor),
                     mode: this.gl.LINE_LOOP,
                     size: size,
+                    span: span,
                     x: x,
                     y: y,
                     length: 4
