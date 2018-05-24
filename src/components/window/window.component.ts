@@ -53,7 +53,7 @@ export class WindowComponent implements OnInit {
     ngOnInit() {
         this.tab.window = this; // create reference in order to enable tab-manager to communicate with component
         this.form = this.visualizer.getForm(this.formFactory);
-        this.lastSettings = this.form.getFormGroup().value;
+        this.lastSettings = this.form != null ? this.form.getFormGroup().value : {};
 
         this.setHeight();
         this.startScene();
@@ -136,7 +136,6 @@ export class WindowComponent implements OnInit {
     //called when the mouse is clicked
     public onClick(event: MouseEvent): void {
         var coords = this.gl.transformPoint(event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
-        console.log("click at: " + event.layerX + " | " + event.layerY + " | " + coords[0] + " | " + coords[1]);
         //TODO pass this on to the visualisation to do something with the click
     }
 
