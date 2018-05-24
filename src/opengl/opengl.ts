@@ -691,39 +691,44 @@ export class OpenGL{
             }
         }
     }
-        
+    
     //renders the given element
     private drawElement(elem: Element): number {
         if(this.isVisible(elem)){
-            if(elem.pos != null){
-                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
-                this.gl.vertexAttribPointer(this.shaderAttribPosition,              //attribute
-                                            2,                                      //2D so two values per iteration: x, y
-                                            this.gl.FLOAT,                          //data type is float32
-                                            false,                                  //no normalisation
-                                            0,                                      //stride = automatic
-                                            elem.offset == null ? 0 : elem.offset); //skip
-                this.gl.enableVertexAttribArray(this.shaderAttribPosition);
-            }
-            
-            if(elem.color != null){
-                this.gl.uniform1f(this.colorUniform, elem.color);
-            }
-            
-            if(elem.indices == null){
-                this.gl.drawArrays(elem.mode, 0, elem.length);
-            }else{
-                this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, elem.indices);
-                this.gl.drawElements(elem.mode, elem.length, this.gl.UNSIGNED_BYTE, 0);
-            }
-            
-            if(elem.overlay != null){
-                return this.drawElement(elem.overlay) + elem.length;
-            }else{
-                return elem.length;
-            }
+            return this.drawElementImpl(elem);
         }else{
             return 0;
+        }
+    }
+        
+    //renders the given element
+    private drawElementImpl(elem: Element): number {
+        if(elem.pos != null){
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
+            this.gl.vertexAttribPointer(this.shaderAttribPosition,              //attribute
+                                        2,                                      //2D so two values per iteration: x, y
+                                        this.gl.FLOAT,                          //data type is float32
+                                        false,                                  //no normalisation
+                                        0,                                      //stride = automatic
+                                        elem.offset == null ? 0 : elem.offset); //skip
+            this.gl.enableVertexAttribArray(this.shaderAttribPosition);
+        }
+            
+        if(elem.color != null){
+            this.gl.uniform1f(this.colorUniform, elem.color);
+        }
+            
+        if(elem.indices == null){
+            this.gl.drawArrays(elem.mode, 0, elem.length);
+        }else{
+            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, elem.indices);
+            this.gl.drawElements(elem.mode, elem.length, this.gl.UNSIGNED_BYTE, 0);
+        }
+            
+        if(elem.overlay != null){
+            return this.drawElementImpl(elem.overlay) + elem.length;
+        }else{
+            return elem.length;
         }
     }
     
