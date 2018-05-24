@@ -213,7 +213,7 @@ export class OpenGL{
             pos.push((x + radx * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + rady * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
         }
         
-        this.drawArcImpl(pos, color, (end - start) > 90 ? (2 * Math.max(radx, rady)) : Math.max(radx, rady));
+//        this.drawArcImpl(pos, color, (end - start) > 90 ? (2 * Math.max(radx, rady)) : Math.max(radx, rady));
     }
     
     //draws a partial circle
@@ -230,11 +230,13 @@ export class OpenGL{
         }
         pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
         
-        this.drawArcImpl(pos, color, (end - start) > 90 ? (2 * radius) : radius);
+        var delta = (end - start);
+//        this.drawArcImpl(pos, color, (end - start) > 90 ? (2 * radius) : radius);
+//        if(end - start > )
     }
     
     //draws an arc
-    private drawArcImpl(pos: number[], color: number[], size: number): void {
+    private drawArcImpl(pos: number[], color: number[], x: number, y: number, size: number, span: number): void {
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
@@ -244,6 +246,9 @@ export class OpenGL{
 //            color: this.toColor(color),
 //            mode: this.gl.LINE_STRIP,
 //            size: size,
+//            x: x,
+//            y: y,
+//            span: span,
 //            length: pos.length / 2
 //        });
     }
@@ -298,7 +303,7 @@ export class OpenGL{
                                x + width / 2, y + height / 2,
                                x - width / 2, y - height / 2,
                                x + width / 2, y - height / 2,
-                               Math.hypot(width, height), Math.min(width, height), rotation, true, false, color, null);
+                               Math.hypot(width, height) / 2, Math.min(width, height), rotation, true, false, color, null);
     }
     
      //draw a rotated quad
@@ -308,7 +313,7 @@ export class OpenGL{
                                x + width / 2, y + height / 2,
                                x + width / 2, y - height / 2,
                                x - width / 2, y - height / 2,
-                               Math.hypot(width, height), Math.min(width, height), rotation, false, true, null, color);
+                               Math.hypot(width, height) / 2, Math.min(width, height), rotation, false, true, null, color);
     }
     
      //render a rotated quad
@@ -318,7 +323,7 @@ export class OpenGL{
                                x + width / 2, y + height / 2,
                                x - width / 2, y - height / 2,
                                x + width / 2, y - height / 2,
-                               Math.hypot(width, height), Math.min(width, height), rotation, true, true, fillColor, lineColor);
+                               Math.hypot(width, height) / 2, Math.min(width, height), rotation, true, true, fillColor, lineColor);
     }
     
     //renders a rotated quad
@@ -345,7 +350,7 @@ export class OpenGL{
                           x,         y + height,
                           x + width, y,
                           x,         y,
-                          x + width / 2, y + height / 2, Math.hypot(width, height), Math.min(width, height), true, false, color, null);
+                          x + width / 2, y + height / 2, Math.hypot(width, height) / 2, Math.min(width, height), true, false, color, null);
     }
     
     //draw an axis aligned quad
@@ -354,7 +359,7 @@ export class OpenGL{
                          x,         y + height,
                          x,         y,
                          x + width, y,
-                         x + width / 2, y + height / 2, Math.hypot(width, height), Math.min(width, height), false, true, null, color);
+                         x + width / 2, y + height / 2, Math.hypot(width, height) / 2, Math.min(width, height), false, true, null, color);
     }
     
     //render an axis aligned quad
@@ -363,11 +368,11 @@ export class OpenGL{
                           x,         y + height,
                           x + width, y,
                           x,         y,
-                          x + width / 2, y + height / 2, Math.hypot(width, height), Math.min(width, height), true, true, fillColor, lineColor);
+                          x + width / 2, y + height / 2, Math.hypot(width, height) / 2, Math.min(width, height), true, true, fillColor, lineColor);
     }
         
     //draw quad implementation
-    private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, x: number, y: number, size: number, span: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
+    private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, x: number, y: number, rad: number, span: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
         //position
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
@@ -382,7 +387,7 @@ export class OpenGL{
                 pos: positionBuffer,
                 color: this.toColor(fillColor),
                 mode: this.gl.TRIANGLE_STRIP,
-                size: size,
+                rad: rad,
                 span: span,
                 x: x,
                 y: y,
@@ -403,7 +408,7 @@ export class OpenGL{
                     pos: positionBuffer,
                     color: this.toColor(fillColor),
                     mode: this.gl.TRIANGLE_STRIP,
-                    size: size,
+                    rad: rad,
                     span: span,
                     x: x,
                     y: y,
@@ -421,7 +426,7 @@ export class OpenGL{
                     pos: positionBuffer,
                     color: this.toColor(lineColor),
                     mode: this.gl.LINE_LOOP,
-                    size: size,
+                    rad: rad,
                     span: span,
                     x: x,
                     y: y,
@@ -674,7 +679,7 @@ export class OpenGL{
                 //console.log("p: " + elem.x + " | " + elem.y);
                 //console.log("hh: " + hh);
                 //TODO bug land, especially so when trying to visualise the STM
-                if(Math.hypot(elem.x + (this.dx * this.HALFWIDTH), elem.y + (this.dy * this.HALFHEIGHT)) - elem.size <= Math.hypot(this.HALFWIDTH, hh) / this.factor){
+                if(Math.hypot(elem.x + (this.dx * this.HALFWIDTH), elem.y + (this.dy * this.HALFHEIGHT)) - elem.rad <= Math.hypot(this.HALFWIDTH, hh) / this.factor){
                     //console.log("inside");
                     return true;
                 }else{
@@ -683,7 +688,7 @@ export class OpenGL{
                 }
             }else{
                 var hw = ((this.HEIGHT / this.height) * this.width) / 2;
-                if(Math.hypot(elem.x + (this.dx * this.HALFWIDTH), elem.y + (this.dy * this.HALFHEIGHT)) - elem.size <= Math.hypot(hw, this.HALFHEIGHT) / this.factor){
+                if(Math.hypot(elem.x + (this.dx * this.HALFWIDTH), elem.y + (this.dy * this.HALFHEIGHT)) - elem.rad <= Math.hypot(hw, this.HALFHEIGHT) / this.factor){
                     return true;
                 }else{
                     return false;

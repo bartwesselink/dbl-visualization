@@ -6,7 +6,7 @@ export interface Element{
     mode: number;
     length: number;
     span?: number;
-    size?: number;
+    rad?: number;
     x?: number;
     y?: number;
     offset?: number;
