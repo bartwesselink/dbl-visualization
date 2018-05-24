@@ -230,27 +230,31 @@ export class OpenGL{
         }
         pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
         
-        var delta = (end - start);
-//        this.drawArcImpl(pos, color, (end - start) > 90 ? (2 * radius) : radius);
-//        if(end - start > )
+        if(end - start >= 90){
+            this.drawArcImpl(pos, color, x, y, radius, 2 * radius);
+        }else{
+            var dcx = radius * Math.cos(start + ((end - start) / 2));
+            var dcy = radius * Math.sin(start + ((end - start) / 2));
+            this.drawArcImpl(pos, color, dcx, dcy, Math.hypot(dcx, dcy) * 1.4, Math.hypot(radius, radius));
+        }
     }
     
     //draws an arc
-    private drawArcImpl(pos: number[], color: number[], x: number, y: number, size: number, span: number): void {
+    private drawArcImpl(pos: number[], color: number[], x: number, y: number, rad: number, span: number): void {
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
         
-//        this.arrays.push({
-//            pos: positionBuffer,
-//            color: this.toColor(color),
-//            mode: this.gl.LINE_STRIP,
-//            size: size,
-//            x: x,
-//            y: y,
-//            span: span,
-//            length: pos.length / 2
-//        });
+        this.arrays.push({
+            pos: positionBuffer,
+            color: this.toColor(color),
+            mode: this.gl.LINE_STRIP,
+            rad: rad,
+            x: x,
+            y: y,
+            span: span,
+            length: pos.length / 2
+        });
     }
     
     //draws a straight line
