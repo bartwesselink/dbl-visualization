@@ -682,8 +682,12 @@ export class OpenGL{
                     return false;
                 }
             }else{
-                //TODO Mode HEIGHT FIRST implementation
-                return true;
+                var hw = ((this.HEIGHT / this.height) * this.width) / 2;
+                if(Math.hypot(elem.x + (this.dx * this.HALFWIDTH), elem.y + (this.dy * this.HALFHEIGHT)) - elem.size <= Math.hypot(hw, this.HALFHEIGHT) / this.factor){
+                    return true;
+                }else{
+                    return false;
+                }
             }
         }
     }
