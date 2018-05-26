@@ -60,6 +60,18 @@ export class HelpButtonComponent implements OnInit{
                     element: '.mdl-layout__tab-panel.is-active'
                 },
                 {
+                    intro: "You are able to move the window by dragging, and able to zoom by using the scroll wheel.",
+                    element: '.mdl-layout__tab-panel.is-active'
+                },
+                {
+                    intro: "You can also use the keyboard: W, A, S, D for moving around, R and F for zooming and T for going back to the default view.",
+                    element: '.mdl-layout__tab-panel.is-active'
+                },
+                {
+                    intro: "By holding the left mouse button and scrolling you can rotate the view, alternatively you can use Q and E to do this with the keyboard.",
+                    element: '.mdl-layout__tab-panel.is-active'
+                },
+                {
                     intro: "If you want to change something about the current visualization, click here.",
                     element: '.mdl-layout__tab-panel.is-active app-visualization-settings-button button',
                     clickStart: true,
