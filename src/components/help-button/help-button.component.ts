@@ -1,5 +1,5 @@
 import {Component, ElementRef, Input, OnInit} from '@angular/core';
-import {introJs} from 'intro.js';
+import * as introJs from 'intro.js';
 
 @Component({
     selector: 'app-help-button',
