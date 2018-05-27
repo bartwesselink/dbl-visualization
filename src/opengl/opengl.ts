@@ -301,7 +301,7 @@ export class OpenGL{
     public drawPolyLine(x: number[], y: number[], color: number[]): void {   
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
-        const pos = [x.length + y.length];
+        var pos = new Float32Array(x.length + y.length);
         var minx = Number.MAX_SAFE_INTEGER;
         var maxx = -Number.MAX_SAFE_INTEGER;
         var miny = Number.MAX_SAFE_INTEGER;
@@ -324,7 +324,7 @@ export class OpenGL{
                 miny = y[i];
             }
         }
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
 
         this.arrays.push({
             pos: positionBuffer,
