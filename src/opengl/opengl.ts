@@ -479,7 +479,7 @@ export class OpenGL{
             pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
         }
             
-        this.renderEllipsoidImpl(pos, 2 * Math.max(radx, rady), fill, line, lineColor, fillColor, 2);
+        this.renderEllipsoidImpl(pos, x, y, Math.max(radx, rady), 2 * Math.max(radx, rady), fill, line, lineColor, fillColor, 2);
     }
     
     //draws a circle
@@ -512,7 +512,7 @@ export class OpenGL{
             pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
         }
             
-        this.renderEllipsoidImpl(pos, 2 * radius, fill, line, lineColor, fillColor, 2);
+        this.renderEllipsoidImpl(pos, x, y, radius, 2 * radius, fill, line, lineColor, fillColor, 2);
     }
     
     //draws a ring slice
