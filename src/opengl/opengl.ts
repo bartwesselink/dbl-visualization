@@ -213,7 +213,7 @@ export class OpenGL{
             pos.push((x + radx * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + rady * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
         }
         
-        if(end - start >= 90){
+        if(end - start > 90){
             this.drawArcImpl(pos, color, x, y, Math.max(radx, rady), 2 * Math.max(radx, rady));
         }else{
             var dcx = x + ((pos[0] + pos[pos.length - 2]) / 2);
@@ -237,7 +237,7 @@ export class OpenGL{
         }
         pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
         
-        if(end - start >= 90){
+        if(end - start > 90){
             this.drawArcImpl(pos, color, x, y, radius, 2 * radius);
         }else{
             var dcx = radius * 0.71 * Math.cos(start + ((end - start) / 2));
@@ -532,7 +532,7 @@ export class OpenGL{
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
         
         
-        if(end - start >= 90){
+        if(end - start > 90){
             this.arrays.push({
                 pos: posBuffer,
                 color: this.toColor(color),
@@ -598,7 +598,7 @@ export class OpenGL{
             this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
             this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices), this.gl.STATIC_DRAW);
         
-            if(end - start >= 90){
+            if(end - start > 90){
                 this.arrays.push({
                     pos: posBuffer,
                     color: this.toColor(fillColor),
@@ -638,7 +638,7 @@ export class OpenGL{
                 });
             }
         }else{
-            if(end - start >= 90){
+            if(end - start > 90){
                 this.arrays.push({
                     pos: posBuffer,
                     color: this.toColor(fillColor),
