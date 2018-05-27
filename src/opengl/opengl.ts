@@ -214,6 +214,13 @@ export class OpenGL{
         }
         
 //        this.drawArcImpl(pos, color, (end - start) > 90 ? (2 * Math.max(radx, rady)) : Math.max(radx, rady));
+        if(end - start >= 90){
+            this.drawArcImpl(pos, color, x, y, Math.max(radx, rady), 2 * Math.max(radx, rady));
+        }else{
+            var dcx = radx * Math.cos(start + ((end - start) / 2));
+            var dcy = rady * Math.sin(start + ((end - start) / 2));
+            this.drawArcImpl(pos, color, dcx, dcy, Math.hypot(dcx, dcy) * 1.4, Math.hypot(radx, rady));
+        }
     }
     
     //draws a partial circle
@@ -235,7 +242,7 @@ export class OpenGL{
         }else{
             var dcx = radius * Math.cos(start + ((end - start) / 2));
             var dcy = radius * Math.sin(start + ((end - start) / 2));
-            this.drawArcImpl(pos, color, dcx, dcy, Math.hypot(dcx, dcy) * 1.4, Math.hypot(radius, radius));
+            this.drawArcImpl(pos, color, dcx, dcy, radius * 0.77, Math.hypot(radius, radius));
         }
     }
     
