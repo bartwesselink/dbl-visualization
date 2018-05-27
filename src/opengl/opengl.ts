@@ -301,7 +301,7 @@ export class OpenGL{
     public drawPolyLine(x: number[], y: number[], color: number[]): void {   
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
-        var pos = new Float32Array(x.length + y.length);
+        const pos = new Float32Array(x.length + y.length);
         var minx = Number.MAX_SAFE_INTEGER;
         var maxx = -Number.MAX_SAFE_INTEGER;
         var miny = Number.MAX_SAFE_INTEGER;
@@ -418,11 +418,16 @@ export class OpenGL{
         //position
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
-        const pos = [x1 / this.HALFWIDTH,  y1 / this.HALFHEIGHT, 
-                     x2 / this.HALFWIDTH,  y2 / this.HALFHEIGHT, 
-                     x3 / this.HALFWIDTH,  y3 / this.HALFHEIGHT, 
-                     x4 / this.HALFWIDTH,  y4 / this.HALFHEIGHT];
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
+        const pos = new Float32Array(8);
+        pos[0] = x1 / this.HALFWIDTH;
+        pos[1] = y1 / this.HALFHEIGHT;
+        pos[2] = x2 / this.HALFWIDTH;
+        pos[3] = y2 / this.HALFHEIGHT;
+        pos[4] = x3 / this.HALFWIDTH;
+        pos[5] = y3 / this.HALFHEIGHT;
+        pos[6] = x4 / this.HALFWIDTH;
+        pos[7] = y4 / this.HALFHEIGHT;
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
         
         if(!line){
             this.arrays.push({
