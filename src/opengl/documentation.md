@@ -33,9 +33,9 @@ Resets the rotation back to 0 degrees.
 Resets the origin back to (0, 0).
 - `public isDedicatedGPU(): boolean`    
 Checks whether or not the GPU used by OpenGL is a dedicated GPU.
-- `public getWidth(canvasheight: number, canvaswidth: number): number`    
+- `public getWidth(): number`    
 Returns the width of the visible OpenGL canvas space. 
-- `public getHeight(canvasheight: number, canvaswidth: number): number`    
+- `public getHeight(): number`    
 Returns the height of the visible OpenGL canvas space.
 - `public setBackgroundColor(r: number, g: number, b: number): void`   
 Sets the viewport background color. Arguments should be in range 0-1. Changes will only take effect after a rerender.
