@@ -37,9 +37,9 @@ Resets the rotation back to 0 degrees.
 Resets the origin back to (0, 0).
 - `public isDedicatedGPU(): boolean`    
 Checks whether or not the GPU used by OpenGL is a dedicated GPU.
-- `public getWidth(canvasheight: number, canvaswidth: number): number`
+- `public getWidth(canvasheight: number, canvaswidth: number): number`    
 Returns the width of the visible OpenGL canvas space. 
-- `public getHeight(canvasheight: number, canvaswidth: number): number`
+- `public getHeight(canvasheight: number, canvaswidth: number): number`    
 Returns the height of the visible OpenGL canvas space.
 
 # Rendering
