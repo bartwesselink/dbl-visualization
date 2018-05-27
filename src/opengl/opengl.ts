@@ -298,13 +298,16 @@ export class OpenGL{
         }
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
         
-//        this.arrays.push({
-//            pos: positionBuffer,
-//            color: this.toColor(color),
-//            mode: this.gl.LINE_STRIP,
-//            size: Math.max(maxx - minx, maxy - miny),
-//            length: x.length
-//        });
+        this.arrays.push({
+            pos: positionBuffer,
+            color: this.toColor(color),
+            mode: this.gl.LINE_STRIP,
+            x: (maxx + minx) / 2,
+            y: (maxy + miny) / 2,
+            rad: Math.hypot(maxx - minx, maxy - miny) / 2,
+            span: Math.hypot(maxx - minx, maxy - miny),
+            length: x.length
+        });
     }
     
     //fill a rotated quad
