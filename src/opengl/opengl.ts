@@ -44,6 +44,24 @@ export class OpenGL{
         console.log("[OpenGL] GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
     }
     
+    //gets the visible canvas width in imaginary OpenGL space
+    public getWidth(canvasheight: number, canvaswidth: number): number{
+        if(this.mode == Mode.WIDTH_FIRST){
+            return this.WIDTH / this.factor;
+        }else{
+            return (this.WIDTH * (canvasheight / canvaswidth)) / this.factor;
+        }
+    }
+    
+    //gets the visible canvas height in imaginary OpenGL space
+    public getHeight(canvasheight: number, canvaswidth: number): number{
+        if(this.mode == Mode.HEIGHT_FIRST){
+            return this.HEIGHT / this.factor;
+        }else{
+            return (this.HEIGHT * (canvaswidth / canvasheight)) / this.factor;
+        }
+    }
+    
     //test for a dedicated GPU
     public isDedicatedGPU(): boolean {
         var info = this.gl.getExtension("WEBGL_debug_renderer_info");
