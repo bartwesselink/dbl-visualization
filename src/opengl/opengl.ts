@@ -213,13 +213,13 @@ export class OpenGL{
             pos.push((x + radx * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + rady * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
         }
         
-//        this.drawArcImpl(pos, color, (end - start) > 90 ? (2 * Math.max(radx, rady)) : Math.max(radx, rady));
         if(end - start >= 90){
             this.drawArcImpl(pos, color, x, y, Math.max(radx, rady), 2 * Math.max(radx, rady));
         }else{
-            var dcx = radx * Math.cos(start + ((end - start) / 2));
-            var dcy = rady * Math.sin(start + ((end - start) / 2));
-            this.drawArcImpl(pos, color, dcx, dcy, Math.hypot(dcx, dcy) * 1.4, Math.hypot(radx, rady));
+            var dcx = (pos[0] + pos[pos.length - 2]) / 2;
+            var dcy = (pos[1] + pos[pos.length - 1]) / 2;
+            var dist = Math.hypot(pos[0] - dcx, pos[1] - dcy[1]);
+            this.drawArcImpl(pos, color, dcx, dcy, dist, 2 * dist);
         }
     }
     
@@ -242,7 +242,7 @@ export class OpenGL{
         }else{
             var dcx = radius * 0.71 * Math.cos(start + ((end - start) / 2));
             var dcy = radius * 0.71 * Math.sin(start + ((end - start) / 2));
-            this.drawArcImpl(pos, color, dcx, dcy, radius * 0.71, 1.42 * radius);
+            this.drawArcImpl(pos, color, dcx, dcy, radius * 0.71, radius * 1.42);
         }
     }
     
