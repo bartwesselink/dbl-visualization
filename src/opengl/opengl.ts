@@ -598,28 +598,71 @@ export class OpenGL{
             this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
             this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices), this.gl.STATIC_DRAW);
         
-//            this.arrays.push({
-//                pos: posBuffer,
-//                color: this.toColor(fillColor),
-//                mode: this.gl.TRIANGLE_STRIP,
-//                size: (end - start) > 90 ? (2 * far) : far,
-//                length: pos.length / 2,
-//                overlay: {
-//                    pos: posBuffer,
-//                    indices: indicesBuffer,
-//                    color: this.toColor(lineColor),
-//                    mode: this.gl.LINE_LOOP,
-//                    length: pos.length / 2
-//                }
-//            });
+            if(end - start >= 90){
+                this.arrays.push({
+                    pos: posBuffer,
+                    color: this.toColor(fillColor),
+                    mode: this.gl.TRIANGLE_STRIP,
+                    x: x,
+                    y: y,
+                    rad: far,
+                    span: far * 2,
+                    length: pos.length / 2,
+                    overlay: {
+                        pos: posBuffer,
+                        indices: indicesBuffer,
+                        color: this.toColor(lineColor),
+                        mode: this.gl.LINE_LOOP,
+                        length: pos.length / 2
+                    }
+                });
+            }else{
+                var dcx = far * 0.71 * Math.cos(start + ((end - start) / 2));
+                var dcy = far * 0.71 * Math.sin(start + ((end - start) / 2));
+                this.arrays.push({
+                    pos: posBuffer,
+                    color: this.toColor(fillColor),
+                    mode: this.gl.TRIANGLE_STRIP,
+                    x: x + dcx,
+                    y: y + dcy,
+                    rad: far * 0.71,
+                    span: far * 1.42,
+                    length: pos.length / 2,
+                    overlay: {
+                        pos: posBuffer,
+                        indices: indicesBuffer,
+                        color: this.toColor(lineColor),
+                        mode: this.gl.LINE_LOOP,
+                        length: pos.length / 2
+                    }
+                });
+            }
         }else{
-//            this.arrays.push({
-//                pos: posBuffer,
-//                color: this.toColor(fillColor),
-//                mode: this.gl.TRIANGLE_STRIP,
-//                size: (end - start) > 90 ? (2 * far) : far, 
-//                length: pos.length / 2,
-//            });
+            if(end - start >= 90){
+                this.arrays.push({
+                    pos: posBuffer,
+                    color: this.toColor(fillColor),
+                    mode: this.gl.TRIANGLE_STRIP,
+                    x: x,
+                    y: y,
+                    rad: far,
+                    span: far * 2,
+                    length: pos.length / 2
+                });
+            }else{
+                var dcx = far * 0.71 * Math.cos(start + ((end - start) / 2));
+                var dcy = far * 0.71 * Math.sin(start + ((end - start) / 2));
+                this.arrays.push({
+                    pos: posBuffer,
+                    color: this.toColor(fillColor),
+                    mode: this.gl.TRIANGLE_STRIP,
+                    x: x + dcx,
+                    y: y + dcy,
+                    rad: far * 0.71,
+                    span: far * 1.42,
+                    length: pos.length / 2
+                });
+            }
         }
     }
     
