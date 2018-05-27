@@ -216,9 +216,9 @@ export class OpenGL{
         if(end - start > 90){
             this.drawArcImpl(pos, color, x, y, Math.max(radx, rady), 2 * Math.max(radx, rady));
         }else{
-            var dcx = x + ((pos[0] + pos[pos.length - 2]) / 2);
-            var dcy = y + ((pos[1] + pos[pos.length - 1]) / 2);
-            var dist = Math.hypot(pos[0] - dcx, pos[1] - dcy[1]);
+            var dcx = ((pos[0] + pos[pos.length - 2]) * this.HALFWIDTH) / 2;
+            var dcy = ((pos[1] + pos[pos.length - 1]) * this.HALFHEIGHT) / 2;
+            var dist = Math.hypot(pos[0] - dcx, pos[1] - dcy);
             this.drawArcImpl(pos, color, dcx, dcy, dist, 2 * dist);
         }
     }
