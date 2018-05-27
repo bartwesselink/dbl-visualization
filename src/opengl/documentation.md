@@ -33,6 +33,8 @@ Resets the rotation back to 0 degrees.
 Resets the origin back to (0, 0).
 - `public isDedicatedGPU(): boolean`    
 Checks whether or not the GPU used by OpenGL is a dedicated GPU.
+- `public setBackgroundColor(r: number, g: number, b: number): void`   
+Sets the viewport background color. Arguments should be in range 0-1. Changes will only take effect after a rerender.
 
 # Rendering
 
