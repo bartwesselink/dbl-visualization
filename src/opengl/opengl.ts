@@ -240,9 +240,9 @@ export class OpenGL{
         if(end - start >= 90){
             this.drawArcImpl(pos, color, x, y, radius, 2 * radius);
         }else{
-            var dcx = radius * Math.cos(start + ((end - start) / 2));
-            var dcy = radius * Math.sin(start + ((end - start) / 2));
-            this.drawArcImpl(pos, color, dcx, dcy, radius * 0.77, Math.hypot(radius, radius));
+            var dcx = radius * 0.71 * Math.cos(start + ((end - start) / 2));
+            var dcy = radius * 0.71 * Math.sin(start + ((end - start) / 2));
+            this.drawArcImpl(pos, color, dcx, dcy, radius * 0.71, 1.42 * radius);
         }
     }
     
