@@ -1,27 +1,50 @@
-# VisualizationApp
+# NGL tree
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.7.3.
+This repository contains the source code for the DBL HTI + Webtech course for group 1D.
 
-## Development server
+## Feature overview
+The following features and or functionality have been implemented:
+- Newick parser / uploader (with feedback)
+- 2 Visualizations: Generalized Pythagorean Tree, Simple (Nested) Tree Map
+- Interaction through panning / zooming / rotation
+- Tree navigator element
+- Screenshot / Export of current visualization
+- Dark-mode
+- Global settings integration for the entire tool
+- Per visualization settings capabilities
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Upcoming changes
+Here we will highlight some of the upcoming changes and improvements to our tool.
+- OpenGL/WebGL performance optimizations
+- Improved interaction through e.g. node selections
+- Additional visualizations
+- Multiple visualizations simultaneously
+- Color deficiency support
+- GPU availability information feedback to user
 
-## Code scaffolding
+## Usage tips
+1. There is a step-by-step help feature at the top right.
+2. Navigation in the canvas can also be done through:
+ - W, A, S, D : panning
+ - Q, E : rotating
+ - R, F : zooming
+ - T : reset canvas transformations
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Live demo
+A hosted version of our application can be found on: [dbl.mboezer.com](http://dbl.mboezer.com)
 
-## Build
+## Running the app locally
+### Production
+- Check if the `dist/` folder exists
+- In case this folder exists, open the `index.html` file in a browser, and you should be good to go!
+- If this directory does not (yet) exists, continue.
+- Make sure you have NodeJS ([https://nodejs.org/en/download/](https://nodejs.org/en/download/), choose LTS) and the package manager Yarn ([https://yarnpkg.com/lang/en/docs/install/](https://yarnpkg.com/lang/en/docs/install/)) installed and added to your path (meaning it should be accessible via the command line).
+- Run `yarn` from the project directory
+- Run `yarn build`
+- Repeat step 1
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+### Development
+- Make sure you have NodeJS ([https://nodejs.org/en/download/](https://nodejs.org/en/download/), choose LTS) and the package manager Yarn ([https://yarnpkg.com/lang/en/docs/install/](https://yarnpkg.com/lang/en/docs/install/)) installed and added to your path (meaning it should be accessible via the command line).
+- Run `yarn` from the project directory
+- Run `yarn start`
+- You're all setup! Live-reload should automatically update your code while you're working on it.

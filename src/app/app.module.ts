@@ -19,6 +19,10 @@ import {GeneralSettingsButtonComponent} from '../components/general-settings-but
 import {SettingsBus} from '../providers/settings-bus';
 import {MdlDirective} from '../directives/material-design/material-design.directive';
 import {WelcomePageComponent} from '../components/welcome-page/welcome-page.component';
+import {APP_BASE_HREF} from '@angular/common';
+import {WorkerManager} from '../utils/worker-manager';
+import { WebWorkerService } from 'angular2-web-worker';
+import {LoaderComponent} from '../components/loader/loader.component';
 
 @NgModule({
     declarations: [
@@ -36,6 +40,7 @@ import {WelcomePageComponent} from '../components/welcome-page/welcome-page.comp
         GeneralSettingsButtonComponent,
         MdlDirective,
         WelcomePageComponent,
+        LoaderComponent,
     ],
     imports: [
         BrowserModule,
@@ -44,7 +49,10 @@ import {WelcomePageComponent} from '../components/welcome-page/welcome-page.comp
     ],
     providers: [
         FormFactory,
+        WebWorkerService,
+        WorkerManager,
         SettingsBus,
+        {provide: APP_BASE_HREF, useValue : '/' }
     ],
     bootstrap: [AppComponent]
 })
