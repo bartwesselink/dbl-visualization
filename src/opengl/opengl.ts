@@ -694,38 +694,44 @@ export class OpenGL{
     }
     
     //draws an ellipsoid
-    private renderEllipsoidImpl(pos: number[], size: number, fill: boolean, line: boolean, lineColor: number[], fillColor: number[], offset: number): void {     
+    private renderEllipsoidImpl(pos: number[], size: number, fill: boolean, line: boolean, x: number, y: number, rad: number, span: number, lineColor: number[], fillColor: number[], offset: number): void {     
         var posBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
         
         if(!(fill && line)){
-//            this.arrays.push({
-//                pos: posBuffer,
-//                color: this.toColor(line ? lineColor : fillColor),
-//                mode: fill ? this.gl.TRIANGLE_FAN : this.gl.LINE_LOOP,
-//                size: size,
-//                length: pos.length / 2
-//            });
+            this.arrays.push({
+                pos: posBuffer,
+                color: this.toColor(line ? lineColor : fillColor),
+                mode: fill ? this.gl.TRIANGLE_FAN : this.gl.LINE_LOOP,
+                x: x,
+                y: y,
+                rad: rad,
+                span: span,
+                length: pos.length / 2
+            });
         }else{
             if(lineColor == null){
                 lineColor = fillColor;
             }
             
-//            this.arrays.push({
-//                pos: posBuffer,
-//                color: this.toColor(fillColor),
-//                mode: this.gl.TRIANGLE_FAN,
-//                size: size,
-//                length: pos.length / 2,
-//                overlay: {
-//                    pos: posBuffer,
-//                    color: this.toColor(lineColor),
-//                    mode: this.gl.LINE_LOOP,
-//                    length: pos.length / 2 - offset,
-//                    offset: offset * 4
-//                }
-//            });
+            this.arrays.push({
+                pos: posBuffer,
+                color: this.toColor(fillColor),
+                mode: this.gl.TRIANGLE_FAN,
+                x: x,
+                y: y,
+                rad: rad,
+                span: span,
+                length: pos.length / 2,
+                overlay: {
+                    pos: posBuffer,
+                    color: this.toColor(lineColor),
+                    mode: this.gl.LINE_LOOP,
+                    length: pos.length / 2 - offset,
+                    offset: offset * 4
+                }
+            });
         }
     }
     
