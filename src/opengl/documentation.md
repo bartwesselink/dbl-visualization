@@ -33,9 +33,9 @@ Resets the rotation back to 0 degrees.
 Resets the origin back to (0, 0).
 - `public isDedicatedGPU(): boolean`    
 Checks whether or not the GPU used by OpenGL is a dedicated GPU.
-- `public getWidth(canvasheight: number, canvaswidth: number): number`    
+- `public getWidth(): number`    
 Returns the width of the visible OpenGL canvas space. 
-- `public getHeight(canvasheight: number, canvaswidth: number): number`    
+- `public getHeight(): number`    
 Returns the height of the visible OpenGL canvas space.
 - `public setBackgroundColor(r: number, g: number, b: number): void`   
 Sets the viewport background color. Arguments should be in range 0-1. Changes will only take effect after a rerender.
@@ -72,7 +72,7 @@ Draws a filled quad with a line around it with a given center coordinate, width,
 Draws a filled ellipsoid with a given center coordinate, x radius, y radius, rotation and fill color. The optional precision argument specifies how good the ellipsoid approximation has to be, this value has to be a divisor of 360 for correct results. If the precision argument is not specified then the default value of 10 is used. The rotation is consistent with the unit circle meaning that the quad will rotate anticlockwise.
 - `public drawEllipsoid(x: number, y: number, radx: number, rady: number, rotation: number, lineColor: number[], precision: number): void`    
 Outlines an ellipsoid with a given center coordinate, x radius, y radius, rotation and line color. The optional precision argument specifies how good the ellipsoid approximation has to be, this value has to be a divisor of 360 for correct results. If the precision argument is not specified then the default value of 10 is used. The rotation is consistent with the unit circle meaning that the quad will rotate anticlockwise.
-- ` public fillLinedEllipsoid(x: number, y: number, radx: number, rady: number, rotation: number, fillColor: number[], lineColor: number[], precision: number): void`    
+- `public fillLinedEllipsoid(x: number, y: number, radx: number, rady: number, rotation: number, fillColor: number[], lineColor: number[], precision: number): void`    
 Draws a filled ellipsoid with a line around it with a given center coordinate, x radius, y radius, rotation, fill color and line color. If the line color is set to `null` then the fill color is also used as the line color. The optional precision argument specifies how good the ellipsoid approximation has to be, this value has to be a divisor of 360 for correct results. If the precision argument is not specified then the default value of 10 is used. The rotation is consistent with the unit circle meaning that the ellipsoid will rotate anticlockwise.
 - `public fillCircle(x: number, y: number, radius: number, fillColor: number[], precision: number): void`    
 Draws a filled circle with a given center coordinate, radius, rotation and color. The optional precision argument specifies how good the ellipsoid approximation has to be, this value has to be a divisor of 360 for correct results. If the precision argument is not specified then the default value of 10 is used.
@@ -86,7 +86,7 @@ Draws a filled circle with a line around it with a given center coordinate, x ra
 
 - `public fillLinedCircleSlice(x: number, y: number, radius: number, start: number, end: number, fillColor: number[], lineColor: number[], precision: number): void`    
 Draws a filled slice with a line around it of the circle with its center at `x` and `y` starting at `start` degrees and ending at `end` degrees and with the given `radius`. For correct results `end` should always be greater than `start`. The `end` and `start` arguments are consistent with the unit circle meaning that the direction is anti-clockwise and that 0 degrees is the 3 o' clock position. The `fillColor` specifies the color to use to fill the slice and the `lineColor` specifies the color to use to draw the outline. If the `lineColor` is `null` but `line` is set to true then the `fillColor` is used to draw the outline. The optional precision argument specifies how good the slice approximation has to be. If the precision argument is not specified then the default value of 10 is used.
-- ` public fillCircleSlice(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number): void`    
+- `public fillCircleSlice(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number): void`    
 Draws a filled slice of the circle with its center at `x` and `y` starting at `start` degrees and ending at `end` degrees and with the given `radius` and `color`. For correct results `end` should always be greater than `start`. The `end` and `start` arguments are consistent with the unit circle meaning that the direction is anti-clockwise and that 0 degrees is the 3 o' clock position. The optional precision argument specifies how good the slice approximation has to be. If the precision argument is not specified then the default value of 10 is used.
 - `public drawCircleSlice(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number): void`    
 Outlines a slice of the circle with its center at `x` and `y` starting at `start` degrees and ending at `end` degrees and with the given `radius` and `color`. For correct results `end` should always be greater than `start`. The `end` and `start` arguments are consistent with the unit circle meaning that the direction is anti-clockwise and that 0 degrees is the 3 o' clock position. The `lineColor` specifies the color to use to fill the slice. The optional precision argument specifies how good the slice approximation has to be. If the precision argument is not specified then the default value of 10 is used.
