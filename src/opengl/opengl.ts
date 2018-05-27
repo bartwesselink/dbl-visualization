@@ -45,20 +45,20 @@ export class OpenGL{
     }
     
     //gets the visible canvas width in imaginary OpenGL space
-    public getWidth(canvasheight: number, canvaswidth: number): number{
+    public getWidth(): number{
         if(this.mode == Mode.WIDTH_FIRST){
             return this.WIDTH / this.factor;
         }else{
-            return (this.WIDTH * (canvasheight / canvaswidth)) / this.factor;
+            return (this.WIDTH * (this.height / this.width)) / this.factor;
         }
     }
     
     //gets the visible canvas height in imaginary OpenGL space
-    public getHeight(canvasheight: number, canvaswidth: number): number{
+    public getHeight(): number{
         if(this.mode == Mode.HEIGHT_FIRST){
             return this.HEIGHT / this.factor;
         }else{
-            return (this.HEIGHT * (canvaswidth / canvasheight)) / this.factor;
+            return (this.HEIGHT * (this.width / this.height)) / this.factor;
         }
     }
     
