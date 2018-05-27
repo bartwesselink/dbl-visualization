@@ -71,11 +71,11 @@ export class WindowComponent implements OnInit {
             this.scaleToNode(node);
         });
     }
-    
+
     ngOnInit() {
         this.tab.window = this; // create reference in order to enable tab-manager to communicate with component
         this.form = this.visualizer.getForm(this.formFactory);
-        this.lastSettings = this.form.getFormGroup().value;
+        this.lastSettings = this.form != null ? this.form.getFormGroup().value : {};
 
         this.setHeight();
         this.startScene();
@@ -158,14 +158,13 @@ export class WindowComponent implements OnInit {
     //called when the mouse is clicked
     public onClick(event: MouseEvent): void {
         var coords = this.gl.transformPoint(event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
-        console.log("click at: " + event.layerX + " | " + event.layerY + " | " + coords[0] + " | " + coords[1]);
 
         const node: Node = this.interactionHandler.determineClick(this.tree, this.currentDraws, coords);
         if (node !== null) {
             this.selectBus.selectNode(node);
         }
     }
-    
+
     //called when the mouse moves
     public onDrag(event: MouseEvent): void {
         if(this.down){
@@ -175,7 +174,7 @@ export class WindowComponent implements OnInit {
         this.lastX = event.clientX;
         this.lastY = event.clientY;
     }
-    
+
     //called when the scroll wheel is scrolled
     public onScroll(event: WheelEvent): void {
         event.preventDefault();

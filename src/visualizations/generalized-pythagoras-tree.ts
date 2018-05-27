@@ -105,13 +105,14 @@ export class GeneralizedPythagorasTree implements Visualizer {
     }
 
     public getForm(formFactory: FormFactory): Form | null {
-        return formFactory.createFormBuilder()
-            .addTextField('test1', 'TestValue', {label: 'Test label'})
-            .addNumberField('test2', 8, {label: 'Test label'})
-            .addToggleField('test3', false, {label: 'Test label'})
-            .addChoiceField('test4', 'test', {label: 'Test label', expanded: false, choices: {test: 'test'}})
-            .addChoiceField('test5', 'test', {label: 'Test label', expanded: true, choices: {test: 'test'}})
-            .getForm();
+        return null;
+        // return formFactory.createFormBuilder()
+        //     .addTextField('test1', 'TestValue', {label: 'Test label'})
+        //     .addNumberField('test2', 8, {label: 'Test label'})
+        //     .addToggleField('test3', false, {label: 'Test label'})
+        //     .addChoiceField('test4', 'test', {label: 'Test label', expanded: false, choices: {test: 'test'}})
+        //     .addChoiceField('test5', 'test', {label: 'Test label', expanded: true, choices: {test: 'test'}})
+        //     .getForm();
     }
 
     public getName(): string {

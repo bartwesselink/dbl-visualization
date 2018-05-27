@@ -1,27 +1,18 @@
-# VisualizationApp
+# NGL tree
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.7.3.
+This repository contains the source code for the DBL HTI + Webtech course for group 1D.
 
-## Development server
-
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+## Running the app
+### Production
+- Check if the `dist/` folder exists
+- In case this folder exists, open the `index.html` file in a browser, and you should be good to go!
+- If this directory does not (yet) exists, continue.
+- Make sure you have NodeJS ([https://nodejs.org/en/download/](https://nodejs.org/en/download/), choose LTS) and the package manager Yarn ([https://yarnpkg.com/lang/en/docs/install/](https://yarnpkg.com/lang/en/docs/install/)) installed and added to your path (meaning it should be accessible via the command line).
+- Run `yarn` from the project directory
+- Run `yarn build`
+- Repeat step 1
+### Development
+- Make sure you have NodeJS ([https://nodejs.org/en/download/](https://nodejs.org/en/download/), choose LTS) and the package manager Yarn ([https://yarnpkg.com/lang/en/docs/install/](https://yarnpkg.com/lang/en/docs/install/)) installed and added to your path (meaning it should be accessible via the command line).
+- Run `yarn` from the project directory
+- Run `yarn start`
+- You're all setup! Live-reload should automatically update your code while you're working on it.
