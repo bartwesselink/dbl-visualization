@@ -531,13 +531,32 @@ export class OpenGL{
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
         
-//        this.arrays.push({
-//            pos: posBuffer,
-//            color: this.toColor(color),
-//            mode: this.gl.LINE_LOOP,
-//            size: (end - start) > 90 ? (2 * far) : far, 
-//            length: pos.length / 2
-//        });
+        
+        if(end - start >= 90){
+            this.arrays.push({
+                pos: posBuffer,
+                color: this.toColor(color),
+                mode: this.gl.LINE_LOOP,
+                x: x,
+                y: y,
+                rad: far,
+                span: far * 2,
+                length: pos.length / 2
+            });
+        }else{
+            var dcx = far * 0.71 * Math.cos(start + ((end - start) / 2));
+            var dcy = far * 0.71 * Math.sin(start + ((end - start) / 2));
+            this.arrays.push({
+                pos: posBuffer,
+                color: this.toColor(color),
+                mode: this.gl.LINE_LOOP,
+                x: x + dcx,
+                y: y + dcy,
+                rad: far * 0.71,
+                span: far * 1.42,
+                length: pos.length / 2
+            });
+        }
     }
     
     //draws a ring slice
