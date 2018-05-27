@@ -27,8 +27,8 @@ export class OpenGL{
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
         
-        //set the canvas background color to 100% transparent black
-        this.gl.clearColor(0.0, 0.0, 0.0, 0.0);
+        //set the canvas background color to white
+        this.setBackgroundColor(1.0, 1.0, 1.0);
         
         this.modelviewMatrix = Matrix.createMatrix();
         
@@ -76,6 +76,11 @@ export class OpenGL{
         }else{//note: no support for the AMD Wonder, Rage and Mach series since they are simply too old (<2000)
             return false;   
         }
+    }
+    
+    //sets the background clear color
+    public setBackgroundColor(r: number, g: number, b: number): void {
+        this.gl.clearColor(r, g, b, 1.0);
     }
     
     //return the rotation
