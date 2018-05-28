@@ -167,6 +167,15 @@ export class OpenGL{
         this.dy += dy;
     }
     
+    //translates the model view by the given distance
+    public glTranslate(dx: number, dy: number): void {
+        dx /= this.HALFWIDTH;
+        dy /= this.HALFHEIGHT;
+        Matrix.translateSelf(this.modelviewMatrix, [dx, dy, 0]);
+        this.dx += dx;
+        this.dy += dy;
+    }
+    
     //scales the model view by the given factor
     public scale(factor: number): void {
         Matrix.translateSelf(this.modelviewMatrix, [-this.dx, -this.dy, 0]);
