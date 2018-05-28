@@ -43,6 +43,10 @@ Checks whether or not the GPU used by OpenGL is a dedicated GPU.
 Returns the width of the visible OpenGL canvas space. 
 - `public getHeight(canvasheight: number, canvaswidth: number): number`    
 Returns the height of the visible OpenGL canvas space.
+- `public getXTranslation(): number`    
+Returns the aggregated translation on the x-axis in OpenGL space.
+- `public getYTranslation(): number`
+Returns the aggregated translation on the y-axis in OpenGL space.
 
 # Rendering
 
