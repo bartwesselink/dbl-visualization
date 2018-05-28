@@ -234,9 +234,9 @@ export class WindowComponent implements OnInit {
     /** @author Bart Wesselink */
     public scaleToNode(node: Node): void {
         const draw: Draw = this.interactionHandler.fetchDrawByNode(this.currentDraws, node);
-
+    console.log("Magic")
         if (draw != null) {
-            this.gl.resetTransformations();
+            this.gl.resetTranslation();
 
             let x, y;
 
@@ -325,7 +325,7 @@ export class WindowComponent implements OnInit {
                     break;
             }
 
-            this.gl.translate(-x, y, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
+            this.gl.glTranslate(-x, -y);
 
             let zoomFactor;
 
