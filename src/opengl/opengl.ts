@@ -106,14 +106,14 @@ export class OpenGL{
         return this.factor;    
     }
 
-    //return the transformation over the x axis
-    public getDx(): number {
-        return this.dx;
+    //return the translation over the x axis
+    public getXTranslation(): number {
+        return this.dx * this.HALFWIDTH;
     }
 
-    //return the transformation over the x axis
-    public getDy(): number {
-        return this.dy;
+    //return the translation over the y axis
+    public getYTranslation(): number {
+        return this.dy * this.HALFHEIGHT;
     }
     
     //reset scale, rotation and translations
