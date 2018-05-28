@@ -20,7 +20,9 @@ Maps a true canvas coordinate to the imaginary OpenGL coordinate system. The `x`
 - `public scale(factor: number): void`   
 Scales the OpenGL view by the given factor. Scaling is multiplicative.
 - `public translate(dx: number, dy: number, width: number, height: number): void`  
-Translates the OpenGL view by the given distance. The `dx` and `dy` parameters denote the distance to translate the model in the x and y direction respectively and the `width` and `height` respectively denote the width and height of the canvas. Translations are cumulative.
+Translates the OpenGL view by the given distance. The `dx` and `dy` parameters denote the distance to translate the model in the x and y direction respectively and the `width` and `height` respectively denote the width and height of the canvas. Translations are cumulative and `dx` and `dy` are in imaginary canvas space.
+- `public glTranslate(dx: number, dy: number): void`  
+Translates the OpenGL view by the given distance. The `dx` and `dy` parameters denote the distance to translate the model in the x and y direction respectively. Translations are cumulative and `dx` and `dy` are in imaginary OpenGL space.
 - `public rotate(rotation: number): void`    
 Rotates the OpenGL view by the given number of degrees. Rotations are additive.
 - `public getRotation(): number`    
