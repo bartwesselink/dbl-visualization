@@ -140,7 +140,7 @@ export class InteractionHandler {
                 if (draw.type === DrawType.DRAW_RING_SLICE || draw.type === DrawType.FILL_RING_SLICE || draw.type === DrawType.FILL_LINED_RING_SLICE) {
                     options = draw.options as RingSliceOptions;
 
-                    outerRadius = options.radius;
+                    outerRadius = options.far;
                     innerRadius = options.near;
                 } else {
                     options = draw.options as CircleSliceOptions;

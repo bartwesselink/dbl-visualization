@@ -20,6 +20,7 @@ import {AaQuadOptions} from '../../interfaces/aa-quad-options';
 import {RotatedQuadOptions} from '../../interfaces/rotated-quad-options';
 import {CircleOptions} from '../../interfaces/circle-options';
 import {EllipsoidOptions} from '../../interfaces/ellipsoid-options';
+import {RingSliceOptions} from '../../interfaces/ring-slice-options';
 
 @Component({
     selector: 'app-window',
@@ -54,6 +55,7 @@ export class WindowComponent implements OnInit {
     private lastX: number;
     private lastY: number;
     private readonly ZOOM_NORMALISATION = 40;
+    private readonly ZOOM_FOCUS_FACTOR = 6;
     private lastSettings: object;
 
     private readonly ROTATION_NORMALISATION = 10;
@@ -168,6 +170,10 @@ export class WindowComponent implements OnInit {
     public onClick(event: MouseEvent): void {
         var coords = this.gl.transformPoint(event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
 
+        if (this.tree == null) {
+            return;
+        }
+
         const node: Node = this.interactionHandler.determineElement(this.tree, this.currentDraws, coords);
         if (node !== null) {
             this.selectBus.selectNode(node);
@@ -179,11 +185,11 @@ export class WindowComponent implements OnInit {
         if(this.down){
             this.gl.translate((event.clientX - this.lastX), (event.clientY - this.lastY), this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
             this.render();
-        } else {
+        } else if (this.tree != null) {
             var coords = this.gl.transformPoint(event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
 
             const node: Node = this.interactionHandler.determineElement(this.tree, this.currentDraws, coords);
-            if (node !== null) {
+            if (node != null) {
                 if (this.lastTooltipNode !== node) {
                     this.tooltipLabel = node.label;
                     this.tooltipX = event.clientX;
@@ -245,7 +251,16 @@ export class WindowComponent implements OnInit {
                 y = draw.options.y;
             }
 
-            let size;
+            enum Orientation {
+                WIDTH,
+                HEIGHT,
+            }
+
+            let size, width, height;
+            let orientation: Orientation;
+
+            const glWidth = this.gl.getWidth(this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
+            const glHeight = this.gl.getHeight(this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
 
             switch (draw.type) {
                 case DrawType.FILL_LINED_ROTATED_QUAD:
@@ -254,7 +269,17 @@ export class WindowComponent implements OnInit {
                 case DrawType.FILL_LINED_AA_QUAD:
                 case DrawType.DRAW_AA_QUAD:
                 case DrawType.FILL_AA_QUAD:
-                    size = Math.max((draw.options as RotatedQuadOptions).width, (draw.options as RotatedQuadOptions).height);
+                    width = (draw.options as RotatedQuadOptions).width;
+                    height = (draw.options as RotatedQuadOptions).height;
+
+                    if (height > width) {
+                        orientation = Orientation.HEIGHT;
+                        size = height;
+                    } else {
+                        orientation = Orientation.WIDTH;
+                        size = width;
+                    }
+
                     break;
                 case DrawType.FILL_LINED_CIRCLE:
                 case DrawType.DRAW_CIRCLE:
@@ -262,23 +287,55 @@ export class WindowComponent implements OnInit {
                 case DrawType.FILL_LINED_CIRCLE_SLICE:
                 case DrawType.DRAW_CIRCLE_SLICE:
                 case DrawType.FILL_CIRCLE_SLICE:
-                    size = (draw.options as CircleOptions).radius;
+                    size = (draw.options as CircleOptions).radius * 2;
+
+                    if (glWidth > glHeight) {
+                        orientation = Orientation.HEIGHT;
+                    } else {
+                        orientation = Orientation.WIDTH;
+                    }
+
+                    break;
+                case DrawType.FILL_LINED_RING_SLICE:
+                case DrawType.DRAW_RING_SLICE:
+                case DrawType.FILL_RING_SLICE:
+                    size = (draw.options as RingSliceOptions).far;
+
+                    if (glWidth > glHeight) {
+                        orientation = Orientation.HEIGHT;
+                    } else {
+                        orientation = Orientation.WIDTH;
+                    }
+
                     break;
                 case DrawType.FILL_LINED_ELLIPSOID:
                 case DrawType.DRAW_ELLIPSOID:
                 case DrawType.FILL_ELLIPSOID:
-                case DrawType.FILL_LINED_RING_SLICE:
-                case DrawType.DRAW_RING_SLICE:
-                case DrawType.FILL_RING_SLICE:
-                    size = Math.max((draw.options as EllipsoidOptions).radx, (draw.options as EllipsoidOptions).rady);
+                    width = (draw.options as EllipsoidOptions).radx;
+                    height = (draw.options as EllipsoidOptions).rady;
+
+                    if (height > width) {
+                        orientation = Orientation.HEIGHT;
+                        size = height;
+                    } else {
+                        orientation = Orientation.WIDTH;
+                        size = width;
+                    }
+
                     break;
             }
 
             this.gl.translate(-x, y, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
 
-            // alpha * Math.min(this.canvas.nativeElement.clientHeight, this.canvas.nativeElement.clientWidth) = 6
-            const zoomFactor = 6 / Math.min(this.canvas.nativeElement.clientHeight, this.canvas.nativeElement.clientWidth);
-            this.gl.scale(2);
+            let zoomFactor;
+
+            if (orientation === Orientation.WIDTH) {
+                zoomFactor = glWidth / (size * this.ZOOM_FOCUS_FACTOR);
+            } else {
+                zoomFactor = glHeight / (size * this.ZOOM_FOCUS_FACTOR);
+            }
+
+            // this.gl.scale(zoomFactor);
         }
     }
     /** @end-author Bart Wesselink */
