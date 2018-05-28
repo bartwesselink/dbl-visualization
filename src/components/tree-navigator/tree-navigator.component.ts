@@ -79,6 +79,8 @@ export class TreeNavigatorComponent implements OnInit {
     }
 
     private expandNode(needle: Node, haystack: Node[]): boolean {
+        this.reload();
+        
         for (const node of haystack) {
             if (node === needle) {
                 return true;

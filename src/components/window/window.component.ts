@@ -16,6 +16,10 @@ import {FormComponent} from '../form/form.component';
 import {Draw} from '../../interfaces/draw';
 import {InteractionHandler} from '../../utils/interaction-handler';
 import {SelectBus} from '../../providers/select-bus';
+import {AaQuadOptions} from '../../interfaces/aa-quad-options';
+import {RotatedQuadOptions} from '../../interfaces/rotated-quad-options';
+import {CircleOptions} from '../../interfaces/circle-options';
+import {EllipsoidOptions} from '../../interfaces/ellipsoid-options';
 
 @Component({
     selector: 'app-window',
@@ -34,6 +38,11 @@ export class WindowComponent implements OnInit {
     public form: Form|null;
 
     private context: CanvasRenderingContext2D;
+    public tooltipActive: boolean = false;
+    public tooltipLabel: string;
+    public tooltipX: number;
+    public tooltipY: number;
+    private lastTooltipNode: Node;
 
     /** @author Roan Hofland */
     private errored: boolean = false;
@@ -159,7 +168,7 @@ export class WindowComponent implements OnInit {
     public onClick(event: MouseEvent): void {
         var coords = this.gl.transformPoint(event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
 
-        const node: Node = this.interactionHandler.determineClick(this.tree, this.currentDraws, coords);
+        const node: Node = this.interactionHandler.determineElement(this.tree, this.currentDraws, coords);
         if (node !== null) {
             this.selectBus.selectNode(node);
         }
@@ -170,7 +179,24 @@ export class WindowComponent implements OnInit {
         if(this.down){
             this.gl.translate((event.clientX - this.lastX), (event.clientY - this.lastY), this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
             this.render();
+        } else {
+            var coords = this.gl.transformPoint(event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
+
+            const node: Node = this.interactionHandler.determineElement(this.tree, this.currentDraws, coords);
+            if (node !== null) {
+                if (this.lastTooltipNode !== node) {
+                    this.tooltipLabel = node.label;
+                    this.tooltipX = event.clientX;
+                    this.tooltipY = event.clientY;
+                    this.tooltipActive = true;
+                    this.lastTooltipNode = node;
+                }
+            } else {
+                this.tooltipActive = false;
+                this.lastTooltipNode = null;
+            }
         }
+
         this.lastX = event.clientX;
         this.lastY = event.clientY;
     }
@@ -199,9 +225,63 @@ export class WindowComponent implements OnInit {
         this.redrawAll.next();
     }
 
+    /** @author Bart Wesselink */
     public scaleToNode(node: Node): void {
+        const draw: Draw = this.interactionHandler.fetchDrawByNode(this.currentDraws, node);
 
+        if (draw != null) {
+            this.gl.resetTransformations();
+
+            let x, y;
+
+            if (draw.type === DrawType.DRAW_AA_QUAD || draw.type === DrawType.FILL_AA_QUAD || draw.type === DrawType.FILL_LINED_AA_QUAD) {
+                const options: AaQuadOptions = draw.options as AaQuadOptions;
+
+                // x,y are not centered, but in bottom-left corner
+                x = options.x + options.width / 2;
+                y = options.y + options.height / 2;
+            } else {
+                x = draw.options.x;
+                y = draw.options.y;
+            }
+
+            let size;
+
+            switch (draw.type) {
+                case DrawType.FILL_LINED_ROTATED_QUAD:
+                case DrawType.DRAW_ROTATED_QUAD:
+                case DrawType.FILL_ROTATED_QUAD:
+                case DrawType.FILL_LINED_AA_QUAD:
+                case DrawType.DRAW_AA_QUAD:
+                case DrawType.FILL_AA_QUAD:
+                    size = Math.max((draw.options as RotatedQuadOptions).width, (draw.options as RotatedQuadOptions).height);
+                    break;
+                case DrawType.FILL_LINED_CIRCLE:
+                case DrawType.DRAW_CIRCLE:
+                case DrawType.FILL_CIRCLE:
+                case DrawType.FILL_LINED_CIRCLE_SLICE:
+                case DrawType.DRAW_CIRCLE_SLICE:
+                case DrawType.FILL_CIRCLE_SLICE:
+                    size = (draw.options as CircleOptions).radius;
+                    break;
+                case DrawType.FILL_LINED_ELLIPSOID:
+                case DrawType.DRAW_ELLIPSOID:
+                case DrawType.FILL_ELLIPSOID:
+                case DrawType.FILL_LINED_RING_SLICE:
+                case DrawType.DRAW_RING_SLICE:
+                case DrawType.FILL_RING_SLICE:
+                    size = Math.max((draw.options as EllipsoidOptions).radx, (draw.options as EllipsoidOptions).rady);
+                    break;
+            }
+
+            this.gl.translate(-x, y, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
+
+            // alpha * Math.min(this.canvas.nativeElement.clientHeight, this.canvas.nativeElement.clientWidth) = 6
+            const zoomFactor = 6 / Math.min(this.canvas.nativeElement.clientHeight, this.canvas.nativeElement.clientWidth);
+            this.gl.scale(2);
+        }
     }
+    /** @end-author Bart Wesselink */
 
     //compute the visualisation
     public computeScene(): Promise<void> {

@@ -87,6 +87,16 @@ export class OpenGL{
     public getZoom(): number {
         return this.factor;    
     }
+
+    //return the transformation over the x axis
+    public getDx(): number {
+        return this.dx;
+    }
+
+    //return the transformation over the x axis
+    public getDy(): number {
+        return this.dy;
+    }
     
     //reset scale, rotation and translations
     public resetTransformations(): void {

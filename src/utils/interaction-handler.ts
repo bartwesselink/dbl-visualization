@@ -5,12 +5,19 @@ import {AaQuadOptions} from '../interfaces/aa-quad-options';
 import {Node} from '../models/node';
 import {RotatedQuadOptions} from '../interfaces/rotated-quad-options';
 import {CircleOptions} from '../interfaces/circle-options';
+import {CircleSliceOptions} from '../interfaces/circle-slice-options';
+import {RingSliceOptions} from '../interfaces/ring-slice-options';
+import {EllipsoidOptions} from '../interfaces/ellipsoid-options';
 
 /** @author Bart Wesselink */
 export class InteractionHandler {
-    public determineClick(tree: Node, draws: Draw[], coords: number[]): Node|null {
+    public determineElement(tree: Node, draws: Draw[], coords: number[]): Node|null {
         const x: number = coords[0];
         const y: number = coords[1];
+
+        if (draws == null) {
+            return null;
+        }
 
         for (let i = draws.length - 1; i >= 0; i--) {
             const draw: Draw = draws[i];
@@ -25,8 +32,18 @@ export class InteractionHandler {
         return null;
     }
 
+    public fetchDrawByNode(draws: Draw[], node: Node): Draw|null {
+        for (let i = draws.length - 1; i >= 0; i--) {
+            if (draws[i].identifier === node.identifier) {
+                return draws[i];
+            }
+        }
+
+        return null;
+    }
+
     public withinDraw(draw: Draw, x: number, y: number): boolean {
-        let options, x1, y1, x2, y2;
+        let options, distance, x1, y1, x2, y2;
         const degreeToRadianMultiplier = Math.PI / 180;
 
         switch (draw.type) {
@@ -89,9 +106,70 @@ export class InteractionHandler {
                 const xDist = Math.abs(x1 - x2);
                 const yDist = Math.abs(y1 - y2);
 
-                const distance: number = Math.sqrt(xDist * xDist + yDist * yDist);
+                distance = Math.sqrt(xDist * xDist + yDist * yDist);
 
                 return distance < options.radius;
+            case DrawType.DRAW_ELLIPSOID:
+            case DrawType.FILL_ELLIPSOID:
+            case DrawType.FILL_LINED_ELLIPSOID:
+                options = draw.options as EllipsoidOptions;
+
+                x1 = options.x;
+                y1 = options.y;
+
+                const contraRotation = options.rotation; // rotation formula takes care of rotation
+                const contraRotationInRadians = contraRotation * (Math.PI / 180);
+
+                // rotate the cursor in opposite rotation
+                // @see https://stackoverflow.com/questions/17410809/how-to-calculate-rotation-in-2d-in-javascript
+                let transformedX = (Math.cos(contraRotationInRadians) * (x - x1)) + (Math.sin(contraRotationInRadians) * (y - y1)) + x1;
+                let transformedY = (Math.cos(contraRotationInRadians) * (y - y1)) - (Math.sin(contraRotationInRadians) * (x - x1)) + y1;
+
+                let equation = (Math.pow(transformedX - x1, 2)/Math.pow(options.radx, 2) + Math.pow(transformedY - y1, 2)/Math.pow(options.rady, 2)); // should be <= 1
+
+                return equation <=  1;
+            case DrawType.DRAW_CIRCLE_SLICE:
+            case DrawType.FILL_CIRCLE_SLICE:
+            case DrawType.FILL_LINED_CIRCLE_SLICE:
+            case DrawType.DRAW_RING_SLICE:
+            case DrawType.FILL_RING_SLICE:
+            case DrawType.FILL_LINED_RING_SLICE:
+                let outerRadius;
+                let innerRadius;
+
+                if (draw.type === DrawType.DRAW_RING_SLICE || draw.type === DrawType.FILL_RING_SLICE || draw.type === DrawType.FILL_LINED_RING_SLICE) {
+                    options = draw.options as RingSliceOptions;
+
+                    outerRadius = options.radius;
+                    innerRadius = options.near;
+                } else {
+                    options = draw.options as CircleSliceOptions;
+
+                    outerRadius = options.radius;
+                    innerRadius = 0;
+                }
+
+                x1 = options.x;
+                y1 = options.y;
+
+                let start = this.normalizeAngle(options.start);
+                let end = this.normalizeAngle(options.end);
+
+                distance = Math.sqrt(Math.pow(x1 - x, 2) + Math.pow(y1 - y, 2));
+
+                if (distance > outerRadius || distance < innerRadius) {
+                    return false;
+                }
+
+                let normalizedCursorVectorX = (x1 - x) / distance;
+                let normalizedCursorVectorY = (y1 - y) / distance;
+
+                let horizontalUnitVectorX = 1;
+                let horizontalUnitVectorY = 0;
+
+                const angle = Math.atan2(normalizedCursorVectorY, normalizedCursorVectorX) * 180 / Math.PI + 180;
+
+                return angle >= start && angle <= end;
         }
 
         return false;
@@ -111,6 +189,14 @@ export class InteractionHandler {
         }
 
         return null;
+    }
+
+    private normalizeAngle(angle: number) {
+        if (angle < 0) {
+            angle = 360 + angle;
+        }
+
+        return angle % 360;
     }
 }
 /** @end-author Bart Wesselink */

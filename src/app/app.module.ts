@@ -24,6 +24,7 @@ import {WorkerManager} from '../utils/worker-manager';
 import { WebWorkerService } from 'angular2-web-worker';
 import {LoaderComponent} from '../components/loader/loader.component';
 import {SelectBus} from '../providers/select-bus';
+import {TooltipComponent} from '../components/tooltip/tooltip.component';
 
 @NgModule({
     declarations: [
@@ -42,6 +43,7 @@ import {SelectBus} from '../providers/select-bus';
         MdlDirective,
         WelcomePageComponent,
         LoaderComponent,
+        TooltipComponent,
     ],
     imports: [
         BrowserModule,

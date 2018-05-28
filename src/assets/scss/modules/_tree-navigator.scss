@@ -25,10 +25,16 @@
 
 .tree-navigator-label {
   cursor: pointer;
+  padding: 0.3rem 0.5rem;
 }
 
 .tree-navigator-unnamed {
   color: #CCC;
   font-style: italic;
+}
+
+.tree-navigator-selected {
+  background: rgba(0, 0, 0, .1);
+  border: 0.0675rem solid rgba(0, 0, 0, .4);
 }
 /** @end-author Bart Wesselink */

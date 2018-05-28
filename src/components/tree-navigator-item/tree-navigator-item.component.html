@@ -1,4 +1,4 @@
-<div class="tree-navigator-item" [class.leaf]="!node.expandable">
+<div class="tree-navigator-item" [class.leaf]="!node.expandable" id="node-{{ node.identifier }}">
     <i class="material-icons toggle-state" (click)="toggle()" [hidden]="!node.expandable || node.children.length > 0">add_circle_outline</i>
     <i class="material-icons toggle-state" (click)="toggle()" [hidden]="!node.expandable || node.children.length === 0">remove_circle_outline</i>
 
