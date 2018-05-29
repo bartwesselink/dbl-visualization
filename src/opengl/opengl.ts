@@ -505,16 +505,23 @@ export class OpenGL{
     
     //renders an ellipsoid
     private drawEllipsoidImpl(x: number, y: number, radx: number, rady: number, rotation: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
-        const pos = [];
+        var pos;
+        var i = 0;
         if(fill){
-            pos.push(x / this.HALFWIDTH, y / this.HALFHEIGHT);
+            pos = new Float32Array((360 / precision) * 2 + 4);
+            pos[0] = x / this.HALFWIDTH;
+            pos[1] = y / this.HALFHEIGHT;
+            i++;
+        }else{
+            pos = new Float32Array((360 / precision) * 2 + 2);
         }
         var loc = [2];
-        for(var i = 0; i <= 360; i += precision){
-            loc[0] = x + radx * Math.cos(i * Matrix.oneDeg);
-            loc[1] = y + rady * Math.sin(i * Matrix.oneDeg);
+        for(i; i <= 360 / precision + 1; i++){
+            loc[0] = x + radx * Math.cos(i * precision * Matrix.oneDeg);
+            loc[1] = y + rady * Math.sin(i * precision * Matrix.oneDeg);
             Matrix.rotateVector2D([x, y], loc, rotation);
-            pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
+            pos[i * 2] = loc[0] / this.HALFWIDTH;
+            pos[i * 2 + 1] = loc[1] / this.HALFHEIGHT;
         }
             
         this.renderEllipsoidImpl(pos, x, y, Math.max(radx, rady), 2 * Math.max(radx, rady), fill, line, lineColor, fillColor, 2);
@@ -550,7 +557,7 @@ export class OpenGL{
             pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
         }
             
-        this.renderEllipsoidImpl(pos, x, y, radius, 2 * radius, fill, line, lineColor, fillColor, 2);
+        //this.renderEllipsoidImpl(pos, x, y, radius, 2 * radius, fill, line, lineColor, fillColor, 2);
     }
     
     //draws a ring slice
@@ -728,19 +735,19 @@ export class OpenGL{
         pos.push((x + radius * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH, (y + radius * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT);
                 
         if(end - start > 90){
-            this.renderEllipsoidImpl(pos, x, y, radius, radius * 2, fill, line, lineColor, fillColor, 0);
+            //this.renderEllipsoidImpl(pos, x, y, radius, radius * 2, fill, line, lineColor, fillColor, 0);
         }else{
             var dcx = radius * 0.71 * Math.cos(start + ((end - start) / 2));
             var dcy = radius * 0.71 * Math.sin(start + ((end - start) / 2));
-            this.renderEllipsoidImpl(pos, x + dcx, y + dcy, radius * 0.71, radius * 1.42, fill, line, lineColor, fillColor, 0);
+            //this.renderEllipsoidImpl(pos, x + dcx, y + dcy, radius * 0.71, radius * 1.42, fill, line, lineColor, fillColor, 0);
         }
     }
     
     //draws an ellipsoid
-    private renderEllipsoidImpl(pos: number[], x: number, y: number, rad: number, span: number, fill: boolean, line: boolean, lineColor: number[], fillColor: number[], offset: number): void {     
+    private renderEllipsoidImpl(pos: Float32Array, x: number, y: number, rad: number, span: number, fill: boolean, line: boolean, lineColor: number[], fillColor: number[], offset: number): void {     
         var posBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
         
         if(!(fill && line)){
             this.arrays.push({
