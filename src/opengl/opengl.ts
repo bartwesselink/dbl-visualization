@@ -237,7 +237,7 @@ export class OpenGL{
     //draws a partial ellipsoid
     public drawEllipsoidalArc(x: number, y: number, radx: number, rady: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
         const pos = new Float32Array(Math.floor((end - start) / precision) * 2 + 2);
-        for(var i = 0; end >= start + precision * i; i++){
+        for(var i = 0; end > start + precision * i; i++){
             pos[i * 2] = (x + radx * Math.cos((start + precision * i) * Matrix.oneDeg)) / this.HALFWIDTH
             pos[i * 2 + 1] = (y + rady * Math.sin((start + precision * i) * Matrix.oneDeg)) / this.HALFHEIGHT
         }
@@ -256,24 +256,26 @@ export class OpenGL{
     
     //draws a partial circle
     public drawCircularArc(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
-        const pos = [];
+        const pos = new Float32Array(Math.floor((end - start) / precision) * 2 + 2);
         var loc = [x + radius, y];
         var rotation = [9];
         Matrix.multiply(rotation, Matrix.create2DTranslationMatrix([-x, -y]), Matrix.create2DRotationMatrix(precision));
         Matrix.multiply(rotation, rotation, Matrix.create2DTranslationMatrix([x, y]));
         Matrix.rotateVector2D([x, y], loc, start);
-        for(var i = start; i < end; i += precision){
-            pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
+        for(var i = 0; end > start + precision * i; i++){
+            pos[i * 2] = loc[0] / this.HALFWIDTH;
+            pos[i * 2 + 1] = loc[1] / this.HALFHEIGHT;
             Matrix.multiplyVector2D(loc, rotation);
         }
-        pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
+        pos[i * 2] = loc[0] / this.HALFWIDTH;
+        pos[i * 2 + 1] = loc[1] / this.HALFHEIGHT;
         
         if(end - start > 90){
-            //this.drawArcImpl(pos, color, x, y, radius, 2 * radius);
+            this.drawArcImpl(pos, color, x, y, radius, 2 * radius);
         }else{
             var dcx = radius * 0.71 * Math.cos(start + ((end - start) / 2));
             var dcy = radius * 0.71 * Math.sin(start + ((end - start) / 2));
-            //this.drawArcImpl(pos, color, x + dcx, y + dcy, radius * 0.71, radius * 1.42);
+            this.drawArcImpl(pos, color, x + dcx, y + dcy, radius * 0.71, radius * 1.42);
         }
     }
     
