@@ -55,7 +55,6 @@ export class WindowComponent implements OnInit {
     private lastX: number;
     private lastY: number;
     private readonly ZOOM_NORMALISATION = 40;
-    private readonly ZOOM_FOCUS_FACTOR = 6;
     private lastSettings: object;
 
     private readonly ROTATION_NORMALISATION = 10;
@@ -65,6 +64,10 @@ export class WindowComponent implements OnInit {
 
     private currentDraws: Draw[];
     private interactionHandler: InteractionHandler;
+
+    private clickTimer: any;
+    private dragging: boolean = false;
+    private readonly clickTimerThreshold: number = 150;
 
     constructor(private formFactory: FormFactory, private workerManager: WorkerManager, private selectBus: SelectBus) {
         this.interactionHandler = new InteractionHandler();
@@ -79,7 +82,7 @@ export class WindowComponent implements OnInit {
             node.selected = true;
 
             this.redrawAllScenes();
-            this.scaleToNode(node);
+            this.interactionHandler.scaleToNode(this.gl, this.canvas, this.currentDraws, node);
         });
     }
 
@@ -108,51 +111,51 @@ export class WindowComponent implements OnInit {
 
     public keyEvent(event: KeyboardEvent): void {
         switch(event.key){
-        case 'q':
-        case 'Q':
-            this.gl.rotate(-this.DEFAULT_DR);
-            this.render();
-            break;
-        case 'e':
-        case 'E':
-            this.gl.rotate(this.DEFAULT_DR);
-            this.render();
-            break;
-        case 'w':
-        case 'W':
-            this.gl.translate(0, this.DEFAULT_DT, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
-            this.render();
-            break;
-        case 's':
-        case 'S':
-            this.gl.translate(0, -this.DEFAULT_DT, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
-            this.render();
-            break;
-        case 'a':
-        case 'A':
-            this.gl.translate(this.DEFAULT_DT, 0, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
-            this.render();
-            break;
-        case 'd':
-        case 'D':
-            this.gl.translate(-this.DEFAULT_DT, 0, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
-            this.render();
-            break;
-        case 'r':
-        case 'R':
-            this.gl.scale(1 + this.DEFAULT_DS);
-            this.render();
-            break;
-        case 'f':
-        case 'F':
-            this.gl.scale(1 - this.DEFAULT_DS);
-            this.render();
-            break;
-        case 't':
-        case 'T':
-            this.gl.resetTransformations();
-            this.render();
-            break;
+            case 'q':
+            case 'Q':
+                this.gl.rotate(-this.DEFAULT_DR);
+                this.render();
+                break;
+            case 'e':
+            case 'E':
+                this.gl.rotate(this.DEFAULT_DR);
+                this.render();
+                break;
+            case 'w':
+            case 'W':
+                this.gl.translate(0, this.DEFAULT_DT, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+                this.render();
+                break;
+            case 's':
+            case 'S':
+                this.gl.translate(0, -this.DEFAULT_DT, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+                this.render();
+                break;
+            case 'a':
+            case 'A':
+                this.gl.translate(this.DEFAULT_DT, 0, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+                this.render();
+                break;
+            case 'd':
+            case 'D':
+                this.gl.translate(-this.DEFAULT_DT, 0, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+                this.render();
+                break;
+            case 'r':
+            case 'R':
+                this.gl.scale(1 + this.DEFAULT_DS);
+                this.render();
+                break;
+            case 'f':
+            case 'F':
+                this.gl.scale(1 - this.DEFAULT_DS);
+                this.render();
+                break;
+            case 't':
+            case 'T':
+                this.gl.resetTransformations();
+                this.render();
+                break;
         }
     }
 
@@ -174,17 +177,37 @@ export class WindowComponent implements OnInit {
             return;
         }
 
-        const node: Node = this.interactionHandler.determineElement(this.tree, this.currentDraws, coords);
-        if (node !== null) {
-            this.selectBus.selectNode(node);
+        // check if the current move was a drag, or if it was just a click
+        if (!this.dragging) {
+            const node: Node = this.interactionHandler.determineElement(this.tree, this.currentDraws, coords);
+            if (node !== null) {
+                this.selectBus.selectNode(node);
+            }
+        }
+    }
+
+    private clearClickTimer(): void {
+        if (this.clickTimer !== null) {
+            clearInterval(this.clickTimer);
+            this.clickTimer = null;
         }
     }
 
     //called when the mouse moves
     public onDrag(event: MouseEvent): void {
         if(this.down){
+            this.dragging = true;
+            this.clearClickTimer();
+
+            this.clickTimer = setTimeout(() => {
+                this.dragging = false;
+            }, this.clickTimerThreshold);
+
             this.gl.translate((event.clientX - this.lastX), (event.clientY - this.lastY), this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
             this.render();
+
+            this.tooltipActive = false;
+            this.lastTooltipNode = null;
         } else if (this.tree != null) {
             var coords = this.gl.transformPoint(event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
 
@@ -230,115 +253,6 @@ export class WindowComponent implements OnInit {
     public redrawAllScenes(): void { // redraws all canvases through the AppComponent
         this.redrawAll.next();
     }
-
-    /** @author Bart Wesselink */
-    public scaleToNode(node: Node): void {
-        const draw: Draw = this.interactionHandler.fetchDrawByNode(this.currentDraws, node);
-
-        if (draw != null) {
-            this.gl.resetTransformations();
-
-            let x, y;
-
-            if (draw.type === DrawType.DRAW_AA_QUAD || draw.type === DrawType.FILL_AA_QUAD || draw.type === DrawType.FILL_LINED_AA_QUAD) {
-                const options: AaQuadOptions = draw.options as AaQuadOptions;
-
-                // x,y are not centered, but in bottom-left corner
-                x = options.x + options.width / 2;
-                y = options.y + options.height / 2;
-            } else {
-                x = draw.options.x;
-                y = draw.options.y;
-            }
-
-            enum Orientation {
-                WIDTH,
-                HEIGHT,
-            }
-
-            let size, width, height;
-            let orientation: Orientation;
-
-            const glWidth = this.gl.getWidth(this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
-            const glHeight = this.gl.getHeight(this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
-
-            switch (draw.type) {
-                case DrawType.FILL_LINED_ROTATED_QUAD:
-                case DrawType.DRAW_ROTATED_QUAD:
-                case DrawType.FILL_ROTATED_QUAD:
-                case DrawType.FILL_LINED_AA_QUAD:
-                case DrawType.DRAW_AA_QUAD:
-                case DrawType.FILL_AA_QUAD:
-                    width = (draw.options as RotatedQuadOptions).width;
-                    height = (draw.options as RotatedQuadOptions).height;
-
-                    if (height > width) {
-                        orientation = Orientation.HEIGHT;
-                        size = height;
-                    } else {
-                        orientation = Orientation.WIDTH;
-                        size = width;
-                    }
-
-                    break;
-                case DrawType.FILL_LINED_CIRCLE:
-                case DrawType.DRAW_CIRCLE:
-                case DrawType.FILL_CIRCLE:
-                case DrawType.FILL_LINED_CIRCLE_SLICE:
-                case DrawType.DRAW_CIRCLE_SLICE:
-                case DrawType.FILL_CIRCLE_SLICE:
-                    size = (draw.options as CircleOptions).radius * 2;
-
-                    if (glWidth > glHeight) {
-                        orientation = Orientation.HEIGHT;
-                    } else {
-                        orientation = Orientation.WIDTH;
-                    }
-
-                    break;
-                case DrawType.FILL_LINED_RING_SLICE:
-                case DrawType.DRAW_RING_SLICE:
-                case DrawType.FILL_RING_SLICE:
-                    size = (draw.options as RingSliceOptions).far;
-
-                    if (glWidth > glHeight) {
-                        orientation = Orientation.HEIGHT;
-                    } else {
-                        orientation = Orientation.WIDTH;
-                    }
-
-                    break;
-                case DrawType.FILL_LINED_ELLIPSOID:
-                case DrawType.DRAW_ELLIPSOID:
-                case DrawType.FILL_ELLIPSOID:
-                    width = (draw.options as EllipsoidOptions).radx;
-                    height = (draw.options as EllipsoidOptions).rady;
-
-                    if (height > width) {
-                        orientation = Orientation.HEIGHT;
-                        size = height;
-                    } else {
-                        orientation = Orientation.WIDTH;
-                        size = width;
-                    }
-
-                    break;
-            }
-
-            this.gl.translate(-x, y, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
-
-            let zoomFactor;
-
-            if (orientation === Orientation.WIDTH) {
-                zoomFactor = glWidth / (size * this.ZOOM_FOCUS_FACTOR);
-            } else {
-                zoomFactor = glHeight / (size * this.ZOOM_FOCUS_FACTOR);
-            }
-
-            // this.gl.scale(zoomFactor);
-        }
-    }
-    /** @end-author Bart Wesselink */
 
     //compute the visualisation
     public computeScene(): Promise<void> {

@@ -106,14 +106,14 @@ export class OpenGL{
         return this.factor;    
     }
 
-    //return the transformation over the x axis
-    public getDx(): number {
-        return this.dx;
+    //return the translation over the x axis
+    public getXTranslation(): number {
+        return this.dx * this.HALFWIDTH;
     }
 
-    //return the transformation over the x axis
-    public getDy(): number {
-        return this.dy;
+    //return the translation over the y axis
+    public getYTranslation(): number {
+        return this.dy * this.HALFHEIGHT;
     }
     
     //reset scale, rotation and translations
@@ -162,6 +162,15 @@ export class OpenGL{
         }
         dx = ((dx / width) * 2) / this.factor;
         dy = ((-dy / height) * 2) / this.factor;
+        Matrix.translateSelf(this.modelviewMatrix, [dx, dy, 0]);
+        this.dx += dx;
+        this.dy += dy;
+    }
+    
+    //translates the model view by the given distance
+    public glTranslate(dx: number, dy: number): void {
+        dx /= this.HALFWIDTH;
+        dy /= this.HALFHEIGHT;
         Matrix.translateSelf(this.modelviewMatrix, [dx, dy, 0]);
         this.dx += dx;
         this.dy += dy;
