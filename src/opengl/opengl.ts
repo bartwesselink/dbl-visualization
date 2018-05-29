@@ -236,10 +236,12 @@ export class OpenGL{
     
     //draws a partial ellipsoid
     public drawEllipsoidalArc(x: number, y: number, radx: number, rady: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
-        const pos = [];
-        for(var i = start; i <= end; i += precision){
-            pos.push((x + radx * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + rady * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
+        const pos = new Float32Array(Math.floor((end - start) / precision) * 2);
+        for(var i = 0; end >= start + precision * i; i++){
+            pos[i * 2] = (x + radx * Math.cos((start + precision * i) * Matrix.oneDeg)) / this.HALFWIDTH
+            pos[i * 2 + 1] = (y + rady * Math.sin((start + precision * i) * Matrix.oneDeg)) / this.HALFHEIGHT
         }
+        console.log(pos);
         
         if(end - start > 90){
             this.drawArcImpl(pos, color, x, y, Math.max(radx, rady), 2 * Math.max(radx, rady));
@@ -266,19 +268,19 @@ export class OpenGL{
         pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
         
         if(end - start > 90){
-            this.drawArcImpl(pos, color, x, y, radius, 2 * radius);
+            //this.drawArcImpl(pos, color, x, y, radius, 2 * radius);
         }else{
             var dcx = radius * 0.71 * Math.cos(start + ((end - start) / 2));
             var dcy = radius * 0.71 * Math.sin(start + ((end - start) / 2));
-            this.drawArcImpl(pos, color, x + dcx, y + dcy, radius * 0.71, radius * 1.42);
+            //this.drawArcImpl(pos, color, x + dcx, y + dcy, radius * 0.71, radius * 1.42);
         }
     }
     
     //draws an arc
-    private drawArcImpl(pos: number[], color: number[], x: number, y: number, rad: number, span: number): void {
+    private drawArcImpl(pos: Float32Array, color: number[], x: number, y: number, rad: number, span: number): void {
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
 
         this.arrays.push({
             pos: positionBuffer,
