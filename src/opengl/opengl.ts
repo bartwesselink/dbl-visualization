@@ -236,12 +236,13 @@ export class OpenGL{
     
     //draws a partial ellipsoid
     public drawEllipsoidalArc(x: number, y: number, radx: number, rady: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
-        const pos = new Float32Array(Math.floor((end - start) / precision) * 2);
+        const pos = new Float32Array(Math.floor((end - start) / precision) * 2 + 2);
         for(var i = 0; end >= start + precision * i; i++){
             pos[i * 2] = (x + radx * Math.cos((start + precision * i) * Matrix.oneDeg)) / this.HALFWIDTH
             pos[i * 2 + 1] = (y + rady * Math.sin((start + precision * i) * Matrix.oneDeg)) / this.HALFHEIGHT
         }
-        console.log(pos);
+        pos[i * 2] = (x + radx * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH
+        pos[i * 2 + 1] = (y + rady * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT
         
         if(end - start > 90){
             this.drawArcImpl(pos, color, x, y, Math.max(radx, rady), 2 * Math.max(radx, rady));
