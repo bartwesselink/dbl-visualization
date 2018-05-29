@@ -2,6 +2,7 @@
 import {Element} from "./element";
 import {Matrix} from "./matrix";
 import {Mode} from "./mode";
+import {ShaderMode} from "./shaders/shaderMode";
 
 export class OpenGL{
     private gl: WebGLRenderingContext;

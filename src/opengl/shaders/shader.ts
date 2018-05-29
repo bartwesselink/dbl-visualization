@@ -3,6 +3,7 @@ import {circleFragmentSource} from "./fragment/circleFragmentShader";
 
 export class Shader{
     private gl: WebGLRenderingContext;
+    private mode: number;
     
     public init(gl: WebGLRenderingContext): void{
         this.gl = gl;
