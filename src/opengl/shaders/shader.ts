@@ -1,5 +1,5 @@
 /** @author Roan Hofland */
-import {circleFragmentSource} from "./fragment/circleFragmentShader";
+import {fillcircleFragmentSource} from "./fragment/fillcircleFragmentShader";
 import {circleVertexSource} from "./vertex/circleVertexShader";
 import {ShaderMode} from "./shaderMode";
 
@@ -25,7 +25,7 @@ export class Shader{
         this.mode = mode;
         
         if((mode & ShaderMode.FILL_CIRCLE) > 0){
-            this.fillCircleShader = this.initShader(circleVertexSource, circleFragmentSource);
+            this.fillCircleShader = this.initShader(circleVertexSource, fillcircleFragmentSource);
         }
         
     }

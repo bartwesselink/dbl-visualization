@@ -1,5 +1,5 @@
 /** @author Roan Hofland */
-export const circleFragmentSource = `
+export const fillcircleFragmentSource = `
     varying lowp vec2 vpos;
     varying lowp float rad;
     varying lowp vec2 center;
