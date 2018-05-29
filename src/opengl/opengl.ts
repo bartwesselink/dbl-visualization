@@ -891,8 +891,8 @@ export class OpenGL{
         }
         return new Float32Array(array);
     }
-
-    //initialises the shaders
+    
+  //initialises the shaders
     private initShaders(): void {
         //ridiculously complicated vertex shader
         //because bit wise operators were on a vacation in GLSL -_-
@@ -902,21 +902,25 @@ export class OpenGL{
           uniform mat4 modelviewMatrix;
           uniform vec3 color;
         
-          varying lowp vec4 vcolor;
+          varying lowp vec2 vpos;
           
           void main() {
               gl_Position = modelviewMatrix * pos;
-              vcolor = vec4(color, 1.0);
+              vpos = pos.xy;
           }
         `;
       
         //really simple fragment shader that just assigns the color it gets from the vertex shader
         //without transforming it in any way.
         const fragmentShaderSource = `
-          varying lowp vec4 vcolor;
+          varying lowp vec2 vpos;
         
           void main() {
-            gl_FragColor = vcolor;
+            if(length(vpos) > 0.5){
+                gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+            }else if(length(vpos) > 0.499){
+                gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0 - (0.5 - length(vpos)) * 1000.0);
+            }
           }
         `;
         
@@ -962,5 +966,76 @@ export class OpenGL{
         this.shader = program,
         this.shaderAttribPosition = this.gl.getAttribLocation(program, "pos")
     }
+
+//    //initialises the shaders
+//    private initShaders(): void {
+//        //ridiculously complicated vertex shader
+//        //because bit wise operators were on a vacation in GLSL -_-
+//        const vertexShaderSource = `
+//          attribute vec4 pos;
+//        
+//          uniform mat4 modelviewMatrix;
+//          uniform vec3 color;
+//        
+//          varying lowp vec4 vcolor;
+//          
+//          void main() {
+//              gl_Position = modelviewMatrix * pos;
+//              vcolor = vec4(color, 1.0);
+//          }
+//        `;
+//      
+//        //really simple fragment shader that just assigns the color it gets from the vertex shader
+//        //without transforming it in any way.
+//        const fragmentShaderSource = `
+//          varying lowp vec4 vcolor;
+//        
+//          void main() {
+//            gl_FragColor = vcolor;
+//          }
+//        `;
+//        
+//        //just some generic shader loading
+//        var fragmentShader;
+//        var vertexShader;
+//        {
+//            const shader = this.gl.createShader(this.gl.VERTEX_SHADER);
+//            this.gl.shaderSource(shader, vertexShaderSource);
+//            this.gl.compileShader(shader);
+//            if(!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)){
+//                var log = this.gl.getShaderInfoLog(shader);
+//                console.log(log);
+//                this.gl.deleteShader(shader);
+//                throw new Error("Vertex shader compilation failed");
+//            }else{
+//                vertexShader = shader;
+//            }
+//        }
+//        {
+//            const shader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
+//            this.gl.shaderSource(shader, fragmentShaderSource);
+//            this.gl.compileShader(shader);
+//            if(!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)){
+//                this.gl.deleteShader(shader);
+//                throw new Error("Fragment shader compilation failed");
+//            }else{
+//                fragmentShader = shader;
+//            }
+//        }
+//        
+//        //create a program using our vertex and fragment shader and link it
+//        const program = this.gl.createProgram();
+//        this.gl.attachShader(program, vertexShader);
+//        this.gl.attachShader(program, fragmentShader);
+//        this.gl.linkProgram(program);
+//        
+//        if(!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)){
+//            throw new Error("Shader link status wrong");
+//        }
+//        
+//        //Initialise the shader object for use
+//        this.shader = program,
+//        this.shaderAttribPosition = this.gl.getAttribLocation(program, "pos")
+//    }
 }
 /** @end-author Roan Hofland */     
