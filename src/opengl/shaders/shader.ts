@@ -1,12 +1,33 @@
 /** @author Roan Hofland */
 import {circleFragmentSource} from "./fragment/circleFragmentShader";
+import {circleVertexSource} from "./vertex/circleVertexShader";
+import {ShaderMode} from "./shaderMode";
 
 export class Shader{
     private gl: WebGLRenderingContext;
     private mode: number;
+
+    private fillCircleShader: WebGLProgram = null;
+
+    public getShader(mode: ShaderMode): WebGLProgram {
+        switch(mode){
+        case ShaderMode.FILL_CIRCLE:
+            return this.fillCircleShader;
+        }
+    }
     
-    public init(gl: WebGLRenderingContext): void{
+    public isShaderEnabled(mode: ShaderMode): boolean {
+        return (this.mode & mode) > 0;
+    }
+    
+    public init(gl: WebGLRenderingContext, mode: number): void{
         this.gl = gl;
+        this.mode = mode;
+        
+        if((mode & ShaderMode.FILL_CIRCLE) > 0){
+            this.fillCircleShader = this.initShader(circleVertexSource, circleFragmentSource);
+        }
+        
     }
     
     private initShader(vss: string, fss: string): WebGLProgram {
