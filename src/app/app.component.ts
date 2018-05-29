@@ -10,6 +10,7 @@ import {Settings} from '../interfaces/settings';
 import {OpenglDemoTree} from "../visualizations/opengl-demo-tree";
 import {SimpleTreeMap} from "../visualizations/simple-tree-map";
 import {WorkerManager} from '../utils/worker-manager';
+import {Sunburst} from '../visualizations/sunburst';
 
 declare var dialogPolyfill;
 
@@ -126,6 +127,7 @@ export class AppComponent implements OnInit {
             new OpenglDemoTree(),
             new GeneralizedPythagorasTree(),
             new SimpleTreeMap(),
+            new Sunburst(),
         ];
     }
 
