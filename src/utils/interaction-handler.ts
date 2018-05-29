@@ -1,4 +1,3 @@
-import {WindowComponent} from '../components/window/window.component';
 import {Draw} from '../interfaces/draw';
 import {DrawType} from '../enums/draw-type';
 import {AaQuadOptions} from '../interfaces/aa-quad-options';
@@ -8,9 +7,14 @@ import {CircleOptions} from '../interfaces/circle-options';
 import {CircleSliceOptions} from '../interfaces/circle-slice-options';
 import {RingSliceOptions} from '../interfaces/ring-slice-options';
 import {EllipsoidOptions} from '../interfaces/ellipsoid-options';
+import {OpenGL} from '../opengl/opengl';
+import {ElementRef} from '@angular/core';
+import {Matrix} from '../opengl/matrix';
 
 /** @author Bart Wesselink */
 export class InteractionHandler {
+    private readonly ZOOM_FOCUS_FACTOR = 6;
+
     public determineElement(tree: Node, draws: Draw[], coords: number[]): Node|null {
         const x: number = coords[0];
         const y: number = coords[1];
@@ -43,7 +47,7 @@ export class InteractionHandler {
     }
 
     public withinDraw(draw: Draw, x: number, y: number): boolean {
-        let options, distance, x1, y1, x2, y2;
+        let options, distance, x1, y1, x2, y2, contraRotation, transformed, transformedX, transformedY;
         const degreeToRadianMultiplier = Math.PI / 180;
 
         switch (draw.type) {
@@ -52,30 +56,27 @@ export class InteractionHandler {
             case DrawType.FILL_LINED_ROTATED_QUAD:
                 options = draw.options as RotatedQuadOptions;
 
-                const rotation = options.rotation;
+                let centerX = options.x;
+                let centerY = options.y;
 
-                const xCenter = options.x;
-                const yCenter = options.y;
+                contraRotation = -options.rotation;
 
-                /** @see https://stackoverflow.com/questions/16667961/check-if-point-is-inside-a-rotated-rectangle-with-different-rectangle-origins */
-                let c: number = Math.cos(-rotation * degreeToRadianMultiplier);
-                let s: number = Math.sin(-rotation * degreeToRadianMultiplier);
+                // rotate the cursor in opposite rotation
+                transformed = Matrix.rotateVector2D([centerX, centerY], [x, y], contraRotation);
+                transformedX = transformed[0];
+                transformedY = transformed[1];
 
-                x1  = xCenter;
-                y1  = yCenter;
-                let w: number  = options.width;
-                let h: number  = options.height;
+                x1 = options.x - options.width / 2;
+                y1 = options.y - options.height / 2;
+                x2 = options.x + options.width / 2;
+                y2 = options.y + options.height / 2;
 
-                let rotX: number = x + c * (xCenter - x1) - s * (yCenter - y1);
-                let rotY: number = y + s * (xCenter - x1) + c * (yCenter - y1);
-
-                let lx: number = x1 - w / 2;
-                let rx: number = x1 + w / 2;
-                let ty = y1 - h / 2;
-                let by: number = y1 + h / 2;
-
-                return lx <= rotX && rotX <= rx && ty <= rotY && rotY <= by;
-                /** @end-see*/
+                return (
+                    transformedX >= x1 &&
+                    transformedY >= y1 &&
+                    transformedX <= x2 &&
+                    transformedY <= y2
+                );
             case DrawType.DRAW_AA_QUAD:
             case DrawType.FILL_AA_QUAD:
             case DrawType.FILL_LINED_AA_QUAD:
@@ -117,13 +118,12 @@ export class InteractionHandler {
                 x1 = options.x;
                 y1 = options.y;
 
-                const contraRotation = options.rotation; // rotation formula takes care of rotation
-                const contraRotationInRadians = contraRotation * (Math.PI / 180);
+                contraRotation = -options.rotation;
 
                 // rotate the cursor in opposite rotation
-                // @see https://stackoverflow.com/questions/17410809/how-to-calculate-rotation-in-2d-in-javascript
-                let transformedX = (Math.cos(contraRotationInRadians) * (x - x1)) + (Math.sin(contraRotationInRadians) * (y - y1)) + x1;
-                let transformedY = (Math.cos(contraRotationInRadians) * (y - y1)) - (Math.sin(contraRotationInRadians) * (x - x1)) + y1;
+                transformed = Matrix.rotateVector2D([x1, y1], [x, y], contraRotation);
+                transformedX = transformed[0];
+                transformedY = transformed[1];
 
                 let equation = (Math.pow(transformedX - x1, 2)/Math.pow(options.radx, 2) + Math.pow(transformedY - y1, 2)/Math.pow(options.rady, 2)); // should be <= 1
 
@@ -191,12 +191,119 @@ export class InteractionHandler {
         return null;
     }
 
+    public scaleToNode(gl: OpenGL, canvas: ElementRef, currentDraws: Draw[], node: Node): void {
+        const draw: Draw = this.fetchDrawByNode(currentDraws, node);
+
+        if (draw != null) {
+            gl.resetTranslation();
+
+            let x, y;
+
+            if (draw.type === DrawType.DRAW_AA_QUAD || draw.type === DrawType.FILL_AA_QUAD || draw.type === DrawType.FILL_LINED_AA_QUAD) {
+                const options: AaQuadOptions = draw.options as AaQuadOptions;
+
+                // x,y are not centered, but in bottom-left corner
+                x = options.x + options.width / 2;
+                y = options.y + options.height / 2;
+            } else {
+                x = draw.options.x;
+                y = draw.options.y;
+            }
+
+            enum Orientation {
+                WIDTH,
+                HEIGHT,
+            }
+
+            let size, width, height;
+            let orientation: Orientation;
+
+            const glWidth = gl.getWidth(canvas.nativeElement.clientWidth, canvas.nativeElement.clientHeight);
+            const glHeight = gl.getHeight(canvas.nativeElement.clientWidth, canvas.nativeElement.clientHeight);
+
+            switch (draw.type) {
+                case DrawType.FILL_LINED_ROTATED_QUAD:
+                case DrawType.DRAW_ROTATED_QUAD:
+                case DrawType.FILL_ROTATED_QUAD:
+                case DrawType.FILL_LINED_AA_QUAD:
+                case DrawType.DRAW_AA_QUAD:
+                case DrawType.FILL_AA_QUAD:
+                    width = (draw.options as RotatedQuadOptions).width;
+                    height = (draw.options as RotatedQuadOptions).height;
+
+                    if (height > width) {
+                        orientation = Orientation.HEIGHT;
+                        size = height;
+                    } else {
+                        orientation = Orientation.WIDTH;
+                        size = width;
+                    }
+
+                    break;
+                case DrawType.FILL_LINED_CIRCLE:
+                case DrawType.DRAW_CIRCLE:
+                case DrawType.FILL_CIRCLE:
+                case DrawType.FILL_LINED_CIRCLE_SLICE:
+                case DrawType.DRAW_CIRCLE_SLICE:
+                case DrawType.FILL_CIRCLE_SLICE:
+                    size = (draw.options as CircleOptions).radius * 2;
+
+                    if (glWidth > glHeight) {
+                        orientation = Orientation.HEIGHT;
+                    } else {
+                        orientation = Orientation.WIDTH;
+                    }
+
+                    break;
+                case DrawType.FILL_LINED_RING_SLICE:
+                case DrawType.DRAW_RING_SLICE:
+                case DrawType.FILL_RING_SLICE:
+                    size = (draw.options as RingSliceOptions).far;
+
+                    if (glWidth > glHeight) {
+                        orientation = Orientation.HEIGHT;
+                    } else {
+                        orientation = Orientation.WIDTH;
+                    }
+
+                    break;
+                case DrawType.FILL_LINED_ELLIPSOID:
+                case DrawType.DRAW_ELLIPSOID:
+                case DrawType.FILL_ELLIPSOID:
+                    width = (draw.options as EllipsoidOptions).radx;
+                    height = (draw.options as EllipsoidOptions).rady;
+
+                    if (height > width) {
+                        orientation = Orientation.HEIGHT;
+                        size = height;
+                    } else {
+                        orientation = Orientation.WIDTH;
+                        size = width;
+                    }
+
+                    break;
+            }
+
+            gl.glTranslate(-x, -y);
+
+            let zoomFactor;
+
+            if (orientation === Orientation.WIDTH) {
+                zoomFactor = glWidth / (size * this.ZOOM_FOCUS_FACTOR);
+            } else {
+                zoomFactor = glHeight / (size * this.ZOOM_FOCUS_FACTOR);
+            }
+
+            gl.scale(zoomFactor);
+        }
+    }
+
     private normalizeAngle(angle: number) {
         if (angle < 0) {
             angle = 360 + angle;
         }
 
-        return angle % 360;
+        return angle !== 0 && angle % 360 === 0 ? 360 : angle % 360;
     }
 }
 /** @end-author Bart Wesselink */
