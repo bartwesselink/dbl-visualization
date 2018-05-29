@@ -569,19 +569,25 @@ export class OpenGL{
     
     //draws a ring slice
     public drawRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
-        const pos = [];
+        const pos = new Float32Array(Math.floor((end - start) / precision) * 4 + 4);
+        var c = 0;
         for(var i = start; i < end; i += precision){
-            pos.push((x + far * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + far * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
+            pos[c * 2] = (x + far * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH;
+            pos[c++ * 2 + 1] = (y + far * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT;
         }
-        pos.push((x + far * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH, (y + far * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT);
+        pos[c * 2] = (x + far * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH;
+        pos[c++ * 2 + 1] = (y + far * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT;
         for(var i = end; i > start; i -= precision){
-            pos.push((x + near * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + near * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
+            pos[c * 2] = (x + near * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH;
+            pos[c++ * 2 + 1] = (y + near * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT;
         }
-        pos.push((x + near * Math.cos(start * Matrix.oneDeg)) / this.HALFWIDTH, (y + near * Math.sin(start * Matrix.oneDeg)) / this.HALFHEIGHT);
+        pos[c * 2] = (x + near * Math.cos(start * Matrix.oneDeg)) / this.HALFWIDTH;
+        pos[c++ * 2 + 1] = (y + near * Math.sin(start * Matrix.oneDeg)) / this.HALFHEIGHT;
             
+        console.log(pos)
         var posBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
         
         if(end - start > 90){
             this.arrays.push({
