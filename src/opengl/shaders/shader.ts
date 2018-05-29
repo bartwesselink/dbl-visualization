@@ -3,6 +3,8 @@ import {fillcircleFragmentSource} from "./fragment/fillcircleFragmentShader";
 import {circleVertexSource} from "./vertex/circleVertexShader";
 import {ShaderMode} from "./shaderMode";
 import {FillCircleShader} from "./impl/fillcircleShader";
+import {Element} from "../element";
+import {Matrix} from "../matrix";
 
 export class Shader{
     private gl: WebGLRenderingContext;
@@ -14,14 +16,28 @@ export class Shader{
     constructor(gl: WebGLRenderingContext, mode: number){
         this.gl = gl;
         this.mode = mode;
-    
         if((mode & ShaderMode.FILL_CIRCLE) > 0){
-            
+            this.fillCircleShader = new FillCircleShader();
+            this.fillCircleShader.init(this, gl);
+            this.gl.useProgram(this.fillCircleShader.shader);
+            this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.fillCircleShader.shader, "modelviewMatrix"), false, Matrix.createMatrix());
         }
     }
     
     public renderElement(elem: Element): void {
+        console.log("rendering element");
+        this.fillCircleShader.preProcess(elem, this.gl);
         
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
+        this.gl.vertexAttribPointer(this.fillCircleShader.attribPosition,   //attribute
+                                    2,                                      //2D so two values per iteration: x, y
+                                    this.gl.FLOAT,                          //data type is float32
+                                    false,                                  //no normalisation
+                                    0,                                      //stride = automatic
+                                    0);                                     //skip
+        this.gl.enableVertexAttribArray(this.fillCircleShader.attribPosition);
+        
+        this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, elem.length);
     }
     
     public isShaderEnabled(mode: ShaderMode): boolean {
@@ -49,6 +65,8 @@ export class Shader{
             this.gl.shaderSource(shader, fss);
             this.gl.compileShader(shader);
             if(!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)){
+                var log = this.gl.getShaderInfoLog(shader);
+                console.log(log);
                 this.gl.deleteShader(shader);
                 throw new Error("Fragment shader compilation failed");
             }else{

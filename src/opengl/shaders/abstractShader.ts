@@ -6,6 +6,6 @@ export interface ShaderBase{
     attribPosition: number;
 
     init(shader: Shader, gl: WebGLRenderingContext): void;
-    preProcess(elem: Element): void;
+    preProcess(elem: Element, gl: WebGLRenderingContext): void;
 }
 /** @end-author Roan Hofland */  

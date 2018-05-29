@@ -4,6 +4,7 @@ import {Matrix} from "./matrix";
 import {Mode} from "./mode";
 import {ShaderMode} from "./shaders/shaderMode";
 import {Shader} from "./shaders/shader";
+import { CircleElement } from "./shaders/elem/circleElement";
 
 export class OpenGL{
     private gl: WebGLRenderingContext;
@@ -41,8 +42,10 @@ export class OpenGL{
 
         this.initShaders();
 
-        this.gl.useProgram(this.shaderi);
-        this.colorUniform = this.gl.getUniformLocation(this.shader, "color")
+        if(this.shaderi != null){//broken
+            this.gl.useProgram(this.shaderi);
+            this.colorUniform = this.gl.getUniformLocation(this.shader, "color")
+        }
 
         console.log("[OpenGL] OpenGL version: " + this.gl.getParameter(gl.VERSION));
         console.log("[OpenGL] GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
@@ -224,7 +227,13 @@ export class OpenGL{
     public render(): void {
         this.clear();
         
-        this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader, "modelviewMatrix"), false, this.modelviewMatrix);
+        console.log("start render");
+        
+        if(this.shaderi != null){//TODO broken
+            this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader, "modelviewMatrix"), false, this.modelviewMatrix);
+        }
+        
+        console.log("drawing buffers");
         
         this.drawBuffers();
     }
@@ -534,7 +543,32 @@ export class OpenGL{
     //draws a circle
     public fillCircle(x: number, y: number, radius: number, fillColor: number[], precision: number = this.PRECISION): void {
         if(this.shader.isShaderEnabled(ShaderMode.FILL_CIRCLE)){
-            const pos 
+            //XXX ref
+            var positionBuffer = this.gl.createBuffer();
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
+            const pos = new Float32Array(8);
+            pos[0] = (x + radius) / this.HALFWIDTH;
+            pos[1] = (y + radius) / this.HALFHEIGHT;
+            pos[2] = (x - radius) / this.HALFWIDTH;
+            pos[3] = (y + radius) / this.HALFHEIGHT;
+            pos[4] = (x + radius) / this.HALFWIDTH;
+            pos[5] = (y - radius) / this.HALFHEIGHT;
+            pos[6] = (x - radius) / this.HALFWIDTH;
+            pos[7] = (y - radius) / this.HALFHEIGHT;
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
+
+            this.arrays.push(<CircleElement>{
+                pos: positionBuffer,
+                color: null,
+                x: x,
+                y: y,
+                rad: radius,
+                span: radius,
+                length: pos.length / 2,
+                radius: radius / this.HALFHEIGHT /100,
+                shader: ShaderMode.FILL_CIRCLE
+            });
+            
         }else{
             this.drawCircleImpl(x, y, radius, true, false, fillColor, null, precision);
         }
@@ -827,11 +861,12 @@ export class OpenGL{
         var mode = null;//null is default
         for(var i = 0; i < this.arrays.length; i++){
             elem = this.arrays[i];
-            if(elem.mode == null){
+            if(elem.mode != null){
                 vertices += this.drawElement(elem);
                 total += elem.overlay == null ? elem.length : (elem.length + elem.overlay.length);
             }else{
-                
+                console.log("call shader");
+                this.shader.renderElement(elem);
             }
         }
         console.log("[OpenGL] Rendered " + vertices + " out of " + total + " vertices")
@@ -977,8 +1012,8 @@ export class OpenGL{
         }
         
         //Initialise the shader object for use
-        this.shaderi = program,
-        this.shaderAttribPosition = this.gl.getAttribLocation(program, "pos")
+        //this.shaderi = program,
+        //this.shaderAttribPosition = this.gl.getAttribLocation(program, "pos")
     }
 
 //    //initialises the shaders
