@@ -744,19 +744,23 @@ export class OpenGL{
     
     //draws a circular slice
     private drawCircleSliceImpl(x: number, y: number, radius: number, start: number, end: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
-        const pos = [];
-        pos.push(x / this.HALFWIDTH, y / this.HALFHEIGHT);
-        for(var i = start; i < end; i += precision){
-            pos.push((x + radius * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + radius * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
+        const pos = new Float32Array(Math.floor((end - start) / precision) * 2 + 4);
+        pos[0] = x / this.HALFWIDTH;
+        pos[1] = y / this.HALFHEIGHT;
+        for(var i = 0; end > start + i * precision; i++){
+            pos[i * 2 + 2] = (x + radius * Math.cos((start + i * precision) * Matrix.oneDeg)) / this.HALFWIDTH;
+            pos[i * 2 + 3] = (y + radius * Math.sin((start + i * precision) * Matrix.oneDeg)) / this.HALFHEIGHT;
         }
-        pos.push((x + radius * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH, (y + radius * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT);
+        pos[i * 2 + 2] = (x + radius * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH;
+        pos[i * 2 + 3] = (y + radius * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT;
+        console.log(pos)
                 
         if(end - start > 90){
-            //this.renderEllipsoidImpl(pos, x, y, radius, radius * 2, fill, line, lineColor, fillColor, 0);
+            this.renderEllipsoidImpl(pos, x, y, radius, radius * 2, fill, line, lineColor, fillColor, 0);
         }else{
             var dcx = radius * 0.71 * Math.cos(start + ((end - start) / 2));
             var dcy = radius * 0.71 * Math.sin(start + ((end - start) / 2));
-            //this.renderEllipsoidImpl(pos, x + dcx, y + dcy, radius * 0.71, radius * 1.42, fill, line, lineColor, fillColor, 0);
+            this.renderEllipsoidImpl(pos, x + dcx, y + dcy, radius * 0.71, radius * 1.42, fill, line, lineColor, fillColor, 0);
         }
     }
     
