@@ -544,20 +544,27 @@ export class OpenGL{
     
     //renders a circle
     private drawCircleImpl(x: number, y: number, radius: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
-        const pos = [];
+        var pos;
+        var i = 0;
         if(fill){
-            pos.push(x / this.HALFWIDTH, y / this.HALFHEIGHT);
+            pos = new Float32Array((360 / precision) * 2 + 4);
+            pos[0] = x / this.HALFWIDTH;
+            pos[1] = y / this.HALFHEIGHT;
+            i++;
+        }else{
+            pos = new Float32Array((360 / precision) * 2 + 2);
         }
         var loc = [x + radius, y];
         var rotation = [9];
         Matrix.multiply(rotation, Matrix.create2DTranslationMatrix([-x, -y]), Matrix.create2DRotationMatrix(precision));
         Matrix.multiply(rotation, rotation, Matrix.create2DTranslationMatrix([x, y]));
-        for(var i = 0; i <= 360; i += precision){
+        for(i; i <= 360 / precision + 1; i++){
             Matrix.multiplyVector2D(loc, rotation);
-            pos.push(loc[0] / this.HALFWIDTH, loc[1] / this.HALFHEIGHT);
+            pos[i * 2] = loc[0] / this.HALFWIDTH;
+            pos[i * 2 + 1] = loc[1] / this.HALFHEIGHT;
         }
             
-        //this.renderEllipsoidImpl(pos, x, y, radius, 2 * radius, fill, line, lineColor, fillColor, 2);
+        this.renderEllipsoidImpl(pos, x, y, radius, 2 * radius, fill, line, lineColor, fillColor, 2);
     }
     
     //draws a ring slice
