@@ -565,7 +565,7 @@ export class OpenGL{
                 rad: radius,
                 span: radius,
                 length: pos.length / 2,
-                radius: radius / this.HALFHEIGHT /100,
+                radius: radius / this.HALFHEIGHT,
                 shader: ShaderMode.FILL_CIRCLE
             });
             
