@@ -867,7 +867,7 @@ export class OpenGL{
         }
             
         if(elem.color != null){
-            this.gl.uniform1f(this.colorUniform, elem.color);
+            this.gl.uniform3fv(this.colorUniform, elem.color);
         }
             
         if(elem.indices == null){
@@ -885,8 +885,11 @@ export class OpenGL{
     }
 
     //creates a color from the given array
-    private toColor(array: number[]): number{
-        return array[0] * 0x00FF0000 + array[1] * 0x0000FF00 + array[2] * 0x000000FF;
+    private toColor(array: number[]): Float32Array{//TODO optimise, just a temporary fix
+        while(array.length > 3){
+            array.pop();
+        }
+        return new Float32Array(array);
     }
 
     //initialises the shaders
@@ -897,15 +900,13 @@ export class OpenGL{
           attribute vec4 pos;
         
           uniform mat4 modelviewMatrix;
-          uniform float color;
+          uniform vec3 color;
         
           varying lowp vec4 vcolor;
           
           void main() {
               gl_Position = modelviewMatrix * pos;
-              float b = mod(color, 256.0) * 0.00390625;
-              float g = ((mod(color, 65536.0) * 0.00390625) - b) * 0.00390625;
-              vcolor = vec4(((mod(color, 16777216.0) * 0.0000152587890625) - g - (b * 0.00390625)) * 0.00390625, g, b, 1.0);
+              vcolor = vec4(color, 1.0);
           }
         `;
       
