@@ -3,6 +3,7 @@ import {Element} from "./element";
 import {Matrix} from "./matrix";
 import {Mode} from "./mode";
 import {ShaderMode} from "./shaders/shaderMode";
+import {Shader} from "./shaders/shader";
 
 export class OpenGL{
     private gl: WebGLRenderingContext;
@@ -22,11 +23,13 @@ export class OpenGL{
     private width: number;
     private height: number;
     private colorUniform: WebGLUniformLocation;
-    private shader: WebGLProgram;
+    private shaderi: WebGLProgram;
     private shaderAttribPosition: number;
+    private shader: Shader;
 
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
+        this.shader = new Shader(gl, ShaderMode.ALL);//TODO
         
         //set the canvas background color to white
         this.setBackgroundColor(1.0, 1.0, 1.0);
@@ -38,7 +41,7 @@ export class OpenGL{
 
         this.initShaders();
 
-        this.gl.useProgram(this.shader);
+        this.gl.useProgram(this.shaderi);
         this.colorUniform = this.gl.getUniformLocation(this.shader, "color")
 
         console.log("[OpenGL] OpenGL version: " + this.gl.getParameter(gl.VERSION));
@@ -530,7 +533,11 @@ export class OpenGL{
     
     //draws a circle
     public fillCircle(x: number, y: number, radius: number, fillColor: number[], precision: number = this.PRECISION): void {
-        this.drawCircleImpl(x, y, radius, true, false, fillColor, null, precision);
+        if(this.shader.isShaderEnabled(ShaderMode.FILL_CIRCLE)){
+            const pos 
+        }else{
+            this.drawCircleImpl(x, y, radius, true, false, fillColor, null, precision);
+        }
     }
             
     //draws a circle
@@ -816,9 +823,16 @@ export class OpenGL{
     private drawBuffers(): void {
         var vertices = 0;
         var total = 0;
+        var elem;
+        var mode = null;//null is default
         for(var i = 0; i < this.arrays.length; i++){
-            vertices += this.drawElement(this.arrays[i])
-            total += this.arrays[i].overlay == null ? this.arrays[i].length : (this.arrays[i].length + this.arrays[i].overlay.length);
+            elem = this.arrays[i];
+            if(elem.mode == null){
+                vertices += this.drawElement(elem);
+                total += elem.overlay == null ? elem.length : (elem.length + elem.overlay.length);
+            }else{
+                
+            }
         }
         console.log("[OpenGL] Rendered " + vertices + " out of " + total + " vertices")
     }
@@ -963,7 +977,7 @@ export class OpenGL{
         }
         
         //Initialise the shader object for use
-        this.shader = program,
+        this.shaderi = program,
         this.shaderAttribPosition = this.gl.getAttribLocation(program, "pos")
     }
 

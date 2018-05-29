@@ -2,35 +2,33 @@
 import {fillcircleFragmentSource} from "./fragment/fillcircleFragmentShader";
 import {circleVertexSource} from "./vertex/circleVertexShader";
 import {ShaderMode} from "./shaderMode";
+import {FillCircleShader} from "./impl/fillcircleShader";
 
 export class Shader{
     private gl: WebGLRenderingContext;
-    private mode: number;
+    private mode: number = 0;
+    private currentMode: ShaderMode = null;
 
-    private fillCircleShader: WebGLProgram = null;
+    private fillCircleShader: FillCircleShader = null;
 
-    public getShader(mode: ShaderMode): WebGLProgram {
-        switch(mode){
-        case ShaderMode.FILL_CIRCLE:
-            return this.fillCircleShader;
+    constructor(gl: WebGLRenderingContext, mode: number){
+        this.gl = gl;
+        this.mode = mode;
+    
+        if((mode & ShaderMode.FILL_CIRCLE) > 0){
+            
         }
+    }
+    
+    public renderElement(elem: Element): void {
+        
     }
     
     public isShaderEnabled(mode: ShaderMode): boolean {
         return (this.mode & mode) > 0;
     }
     
-    public init(gl: WebGLRenderingContext, mode: number): void{
-        this.gl = gl;
-        this.mode = mode;
-        
-        if((mode & ShaderMode.FILL_CIRCLE) > 0){
-            this.fillCircleShader = this.initShader(circleVertexSource, fillcircleFragmentSource);
-        }
-        
-    }
-    
-    private initShader(vss: string, fss: string): WebGLProgram {
+    public initShader(vss: string, fss: string): WebGLProgram {
         var fragmentShader;
         var vertexShader;
         {
