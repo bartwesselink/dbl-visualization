@@ -111,51 +111,51 @@ export class WindowComponent implements OnInit {
 
     public keyEvent(event: KeyboardEvent): void {
         switch(event.key){
-        case 'q':
-        case 'Q':
-            this.gl.rotate(-this.DEFAULT_DR);
-            this.render();
-            break;
-        case 'e':
-        case 'E':
-            this.gl.rotate(this.DEFAULT_DR);
-            this.render();
-            break;
-        case 'w':
-        case 'W':
-            this.gl.translate(0, this.DEFAULT_DT, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
-            this.render();
-            break;
-        case 's':
-        case 'S':
-            this.gl.translate(0, -this.DEFAULT_DT, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
-            this.render();
-            break;
-        case 'a':
-        case 'A':
-            this.gl.translate(this.DEFAULT_DT, 0, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
-            this.render();
-            break;
-        case 'd':
-        case 'D':
-            this.gl.translate(-this.DEFAULT_DT, 0, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
-            this.render();
-            break;
-        case 'r':
-        case 'R':
-            this.gl.scale(1 + this.DEFAULT_DS);
-            this.render();
-            break;
-        case 'f':
-        case 'F':
-            this.gl.scale(1 - this.DEFAULT_DS);
-            this.render();
-            break;
-        case 't':
-        case 'T':
-            this.gl.resetTransformations();
-            this.render();
-            break;
+            case 'q':
+            case 'Q':
+                this.gl.rotate(-this.DEFAULT_DR);
+                this.render();
+                break;
+            case 'e':
+            case 'E':
+                this.gl.rotate(this.DEFAULT_DR);
+                this.render();
+                break;
+            case 'w':
+            case 'W':
+                this.gl.translate(0, this.DEFAULT_DT, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+                this.render();
+                break;
+            case 's':
+            case 'S':
+                this.gl.translate(0, -this.DEFAULT_DT, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+                this.render();
+                break;
+            case 'a':
+            case 'A':
+                this.gl.translate(this.DEFAULT_DT, 0, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+                this.render();
+                break;
+            case 'd':
+            case 'D':
+                this.gl.translate(-this.DEFAULT_DT, 0, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+                this.render();
+                break;
+            case 'r':
+            case 'R':
+                this.gl.scale(1 + this.DEFAULT_DS);
+                this.render();
+                break;
+            case 'f':
+            case 'F':
+                this.gl.scale(1 - this.DEFAULT_DS);
+                this.render();
+                break;
+            case 't':
+            case 'T':
+                this.gl.resetTransformations();
+                this.render();
+                break;
         }
     }
 
@@ -207,7 +207,7 @@ export class WindowComponent implements OnInit {
             this.render();
 
             this.tooltipActive = false;
-            this.lastTooltipNode = false;
+            this.lastTooltipNode = null;
         } else if (this.tree != null) {
             var coords = this.gl.transformPoint(event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
 
