@@ -628,17 +628,21 @@ export class OpenGL{
     
     //draws a ring slice
     private fillRingSliceImpl(x: number, y: number, near: number, far: number, start: number, end: number, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
-        const pos = [];
-        for(var i = start; i < end; i += precision){
-            pos.push((x + far * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + far * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
-            pos.push((x + near * Math.cos(i * Matrix.oneDeg)) / this.HALFWIDTH, (y + near * Math.sin(i * Matrix.oneDeg)) / this.HALFHEIGHT);
+        const pos = new Float32Array(Math.floor((end - start) / precision) * 4 + 4);
+        for(var i = 0; end > start + i * precision; i++){
+            pos[i * 4] = (x + far * Math.cos((start + i * precision) * Matrix.oneDeg)) / this.HALFWIDTH;
+            pos[i * 4 + 1] = (y + far * Math.sin((start + i * precision) * Matrix.oneDeg)) / this.HALFHEIGHT;
+            pos[i * 4 + 2] = (x + near * Math.cos((start + i * precision) * Matrix.oneDeg)) / this.HALFWIDTH;
+            pos[i * 4 + 3] = (y + near * Math.sin((start + i * precision) * Matrix.oneDeg)) / this.HALFHEIGHT;
         }
-        pos.push((x + far * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH, (y + far * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT);
-        pos.push((x + near * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH, (y + near * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT);
+        pos[i * 4] = (x + far * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH;
+        pos[i * 4 + 1] = (y + far * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT;
+        pos[i * 4 + 2] = (x + near * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH;
+        pos[i * 4 + 3] = (y + near * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT;
             
         var posBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(pos), this.gl.STATIC_DRAW);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
         
         if(line){
             if(lineColor == null){
