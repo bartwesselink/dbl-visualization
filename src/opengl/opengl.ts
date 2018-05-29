@@ -905,8 +905,9 @@ export class OpenGL{
           varying lowp vec2 vpos;
           
           void main() {
-              gl_Position = modelviewMatrix * pos;
-              vpos = pos.xy;
+              vec4 p = modelviewMatrix * pos;
+              gl_Position = p;
+              vpos = p.xy;
           }
         `;
       
@@ -916,10 +917,8 @@ export class OpenGL{
           varying lowp vec2 vpos;
         
           void main() {
-            if(length(vpos) > 0.5){
+            if(vpos.x * vpos.x * 3.1604938271604938271604938271605 + vpos.y * vpos.y > 0.25){
                 gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-            }else if(length(vpos) > 0.499){
-                gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0 - (0.5 - length(vpos)) * 1000.0);
             }
           }
         `;
