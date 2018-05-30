@@ -12,6 +12,7 @@ export class Shader{
     private opengl: OpenGL;
     private mode: number = 0;
     private currentMode: ShaderMode = null;
+    private modelviewMatrix: Float32Array;
 
     private fillCircleShader: FillCircleShader = null;
 
@@ -25,6 +26,10 @@ export class Shader{
             this.gl.useProgram(this.fillCircleShader.shader);
             this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.fillCircleShader.shader, "modelviewMatrix"), false, Matrix.createMatrix());
         }
+    }
+    
+    public prepareRenderPass(){
+        this.modelviewMatrix = this.opengl.getModelviewMatrix();
     }
     
     public renderElement(elem: Element): void {
