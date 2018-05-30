@@ -44,7 +44,6 @@ export class Shader{
     }
     
     public switchShader(mode: ShaderMode): void{
-        console.log("Switch on mode: " + mode);
         switch(mode){
         case ShaderMode.FILL_CIRCLE:
             this.setShader(this.fillCircleShader);
@@ -64,21 +63,19 @@ export class Shader{
     }
     
     public renderElement(elem: Element): void {
-        console.log("elem mode: " + elem.shader);
         if(elem.shader != this.currentShaderMode){
             this.switchShader(elem.shader);
         }
-        console.log('render with: ' + this.shader);
         
         this.shader.preProcess(elem, this.gl, this.opengl);
         
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
-        this.gl.vertexAttribPointer(this.shader.attribPosition,             //attribute
-                                    2,                                      //2D so two values per iteration: x, y
-                                    this.gl.FLOAT,                          //data type is float32
-                                    false,                                  //no normalisation
-                                    0,                                      //stride = automatic
-                                    0);                                     //skip
+        this.gl.vertexAttribPointer(this.shader.attribPosition, //attribute
+                                    2,                          //2D so two values per iteration: x, y
+                                    this.gl.FLOAT,              //data type is float32
+                                    false,                      //no normalisation
+                                    0,                          //stride = automatic
+                                    0);                         //skip
         this.gl.enableVertexAttribArray(this.shader.attribPosition);
         
         this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, elem.length);
