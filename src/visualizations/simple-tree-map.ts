@@ -13,6 +13,7 @@ export class SimpleTreeMap implements Visualizer {
         const originalTree = input.tree;
         const draws: Draw[] = [];
         const settings: any = input.settings;
+        console.log("settings: " + Object.getOwnPropertyNames(settings));
 
         // define variables
         const defaultSize = 600;

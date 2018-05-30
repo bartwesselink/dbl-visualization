@@ -3,7 +3,7 @@ import {Element} from '../../opengl/element';
 import {Matrix} from '../../opengl/matrix';
 import {OpenGL} from '../../opengl/opengl';
 import {Shader} from "../../opengl/shader";
-import { Observable } from "rxjs";
+import {Observable} from "rxjs";
 import {Visualizer} from '../../interfaces/visualizer';
 import {Node} from '../../models/node';
 import {Tab} from '../../models/tab';
@@ -21,6 +21,10 @@ import {RotatedQuadOptions} from '../../interfaces/rotated-quad-options';
 import {CircleOptions} from '../../interfaces/circle-options';
 import {EllipsoidOptions} from '../../interfaces/ellipsoid-options';
 import {RingSliceOptions} from '../../interfaces/ring-slice-options';
+import {Settings} from "../../interfaces/settings";
+import {SettingsBus} from "../../providers/settings-bus";
+import {Palette} from "../../models/palette";
+import {Palettes} from "../../utils/palettes";
 
 @Component({
     selector: 'app-window',
@@ -36,7 +40,7 @@ export class WindowComponent implements OnInit {
     @Output() private loading: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() private redrawAll: EventEmitter<void> = new EventEmitter<void>();
 
-    public form: Form|null;
+    public form: Form | null;
 
     private context: CanvasRenderingContext2D;
     public tooltipActive: boolean = false;
@@ -44,6 +48,10 @@ export class WindowComponent implements OnInit {
     public tooltipX: number;
     public tooltipY: number;
     private lastTooltipNode: Node;
+
+    /** @author Nico Klaassen */
+    private palette: Palette;
+    /** @end-author */
 
     /** @author Roan Hofland */
     private errored: boolean = false;
@@ -69,7 +77,7 @@ export class WindowComponent implements OnInit {
     private dragging: boolean = false;
     private readonly clickTimerThreshold: number = 150;
 
-    constructor(private formFactory: FormFactory, private workerManager: WorkerManager, private selectBus: SelectBus) {
+    constructor(private formFactory: FormFactory, private workerManager: WorkerManager, private selectBus: SelectBus, private settingsBus: SettingsBus) {
         this.interactionHandler = new InteractionHandler();
 
         this.selectBus.nodeSelected.subscribe((node: Node) => {
@@ -84,6 +92,13 @@ export class WindowComponent implements OnInit {
             this.redrawAllScenes();
             this.interactionHandler.scaleToNode(this.gl, this.canvas, this.currentDraws, node);
         });
+
+        this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
+            this.palette = this.getPalette(settings.palette);
+            console.log("Palette: " + this.palette.primary.rgba);
+
+            this.redrawAllScenes();
+        });
     }
 
     ngOnInit() {
@@ -94,11 +109,13 @@ export class WindowComponent implements OnInit {
         this.setHeight();
         this.startScene();
 
-        if(!this.gl.isDedicatedGPU()) {
+        if (!this.gl.isDedicatedGPU()) {
             this.snackbar.MaterialSnackbar.showSnackbar({
                 message: "You are using integrated graphics, this could diminish your experience.",
                 timeout: 1e8, // practically infinite
-                actionHandler: () => { this.snackbar.MaterialSnackbar.cleanup_(); }, // close on click
+                actionHandler: () => {
+                    this.snackbar.MaterialSnackbar.cleanup_();
+                }, // close on click
                 actionText: "CLOSE"
             });
         }
@@ -110,7 +127,7 @@ export class WindowComponent implements OnInit {
     }
 
     public keyEvent(event: KeyboardEvent): void {
-        switch(event.key){
+        switch (event.key) {
             case 'q':
             case 'Q':
                 this.gl.rotate(-this.DEFAULT_DR);
@@ -195,7 +212,7 @@ export class WindowComponent implements OnInit {
 
     //called when the mouse moves
     public onDrag(event: MouseEvent): void {
-        if(this.down){
+        if (this.down) {
             this.dragging = true;
             this.clearClickTimer();
 
@@ -233,9 +250,9 @@ export class WindowComponent implements OnInit {
     //called when the scroll wheel is scrolled
     public onScroll(event: WheelEvent): void {
         event.preventDefault();
-        if(this.down){
+        if (this.down) {
             this.gl.rotate(event.deltaY / this.ROTATION_NORMALISATION);
-        }else{
+        } else {
             this.gl.scale(Math.max(0.1, 1.0 - (event.deltaY / this.ZOOM_NORMALISATION)));
         }
         this.render();
@@ -270,7 +287,10 @@ export class WindowComponent implements OnInit {
             this.startLoading();
 
             /** @author Bart Wesselink */
-            this.workerManager.startWorker(this.gl, this.visualizer.draw,{ tree: this.tree, settings: this.lastSettings })
+            this.workerManager.startWorker(this.gl, this.visualizer.draw, {
+                tree: this.tree,
+                settings: this.lastSettings
+            })
                 .then((draws: Draw[]) => {
                     setTimeout(() => {
                         this.redraw();
@@ -308,30 +328,31 @@ export class WindowComponent implements OnInit {
     private init(): void {
         var gl: WebGLRenderingContext = this.canvas.nativeElement.getContext('webgl', {preserveDrawingBuffer: true});
 
-        if(!gl){
+        if (!gl) {
             this.onError("No WebGL present");
             return;
         }
 
         this.gl = new OpenGL(gl);
 
-        try{
+        try {
             //a bit redundant right now, but useful if we ever want to implement more shaders
             var shader: Shader = this.gl.initShaders();
             this.gl.useShader(shader);
-        }catch(error){
+        } catch (error) {
             this.onError((<Error>error).message);
         }
     }
 
     //redraw the canvas
     private redraw(): void {
-        if(this.errored){
+        if (this.errored) {
             this.onError(this.lastError);
-        }else{
+        } else {
             this.render();
         }
     }
+
     /** @end-author Roan Hofland */
     /** @author Bart Wesselink */
     public setHeight(): void {
@@ -352,5 +373,18 @@ export class WindowComponent implements OnInit {
     private stopLoading() {
         this.loading.emit(false);
     }
+
     /** @end-author Bart Wesselink */
+
+    /** @author Nico Klaassen */
+    private getPalette(paletteString: string): Palette {
+        switch (paletteString) {
+            case 'default':
+                return Palettes.default;
+            case 'alt':
+                return Palettes.alt;
+        }
+        console.log("Error, going too far!");
+        return Palettes.default;
+    }
 }

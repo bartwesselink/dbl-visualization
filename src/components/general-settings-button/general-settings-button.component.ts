@@ -15,7 +15,7 @@ export class GeneralSettingsButtonComponent implements OnInit {
     public form: Form;
     @ViewChild('dialog') private dialog: ElementRef;
 
-    constructor (private formFactory: FormFactory, private settingsBus: SettingsBus) {
+    constructor(private formFactory: FormFactory, private settingsBus: SettingsBus) {
     }
 
     public ngOnInit(): void {
@@ -43,7 +43,11 @@ export class GeneralSettingsButtonComponent implements OnInit {
     private createForm(): void {
         this.form = this.formFactory
             .createFormBuilder()
-            .addToggleField('darkMode', false, { label: 'Dark mode' })
+            .addToggleField('darkMode', false, {label: 'Dark mode'})
+            /** @author Nico Klaassen */
+            .addToggleField('colorMode', false, {label: 'Color mode'})
+            .addChoiceField('palette', 'default', {label: 'Color palette', expanded: false, choices: {default: 'default', alt: 'alt'}})
+            /** @end-author Nico Klaassen */
             .getForm();
     }
 

@@ -10,6 +10,7 @@ import {Settings} from '../interfaces/settings';
 import {OpenglDemoTree} from "../visualizations/opengl-demo-tree";
 import {SimpleTreeMap} from "../visualizations/simple-tree-map";
 import {WorkerManager} from '../utils/worker-manager';
+import {Palettes} from '../utils/palettes';
 
 declare var dialogPolyfill;
 
@@ -32,11 +33,15 @@ export class AppComponent implements OnInit {
 
     private parser: NewickParser;
     public darkMode = false;
+    public palette = Palettes.default;
     constructor(private settingsBus: SettingsBus) {
         this.createVisualizers();
 
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
             this.darkMode = settings.darkMode;
+            this.palette = Palettes.default;/*settings.palette;*/
+            console.log("pallete app: " + Object.getOwnPropertyNames(this.palette));
+            console.log("colorMode : " + settings.colorMode);
         });
 
         window.addEventListener('resize', () => this.resizeActiveTab());

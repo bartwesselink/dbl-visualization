@@ -11,5 +11,14 @@ export class Palettes {
             Color.fromHex('D75749')
         ]
     );
+    static alt = new Palette(
+        Color.fromHex('F21D2F'),
+        Color.fromHex('023859'),
+        [
+            Color.fromHex('0367A6'),
+            Color.fromHex('F2CD5C'),
+            Color.fromHex('F26A4B')
+        ]
+    );
 
 }

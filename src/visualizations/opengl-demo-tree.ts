@@ -137,6 +137,16 @@ export class OpenglDemoTree implements Visualizer {
     }
 
     public getForm(formFactory: FormFactory) {
+        /** Added as example by Nico (code by Bart)
+         return formFactory.createFormBuilder()
+             .addTextField('test1', 'TestValue', {label: 'Test label'})
+             .addNumberField('test2', 8, {label: 'Test label'})
+             .addToggleField('test3', false, {label: 'Test label'})
+             .addChoiceField('test4', 'test', {label: 'Test label', expanded: false, choices: {test: 'test'}})
+             .addChoiceField('test5', 'test', {label: 'Test label', expanded: true, choices: {test: 'test'}})
+             .getForm();
+         */
+
         return formFactory.createFormBuilder()
             .addSliderField('r', 0, { label: 'Red', min: 0, max: 255 })
             .addSliderField('g', 255, { label: 'Green', min: 0, max: 255 })
