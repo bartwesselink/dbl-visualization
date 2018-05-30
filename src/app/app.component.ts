@@ -39,9 +39,6 @@ export class AppComponent implements OnInit {
 
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
             this.darkMode = settings.darkMode;
-            this.palette = Palettes.default;/*settings.palette;*/
-            console.log("pallete app: " + Object.getOwnPropertyNames(this.palette));
-            console.log("colorMode : " + settings.colorMode);
         });
 
         window.addEventListener('resize', () => this.resizeActiveTab());

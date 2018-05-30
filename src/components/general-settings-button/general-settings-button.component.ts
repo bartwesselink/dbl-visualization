@@ -45,8 +45,8 @@ export class GeneralSettingsButtonComponent implements OnInit {
             .createFormBuilder()
             .addToggleField('darkMode', false, {label: 'Dark mode'})
             /** @author Nico Klaassen */
-            .addToggleField('colorMode', false, {label: 'Color mode'})
-            .addChoiceField('palette', 'default', {label: 'Color palette', expanded: false, choices: {default: 'default', alt: 'alt'}})
+            .addToggleField('colorMode', true, {label: 'Color mode'})
+            .addChoiceField('palette', 'default', {label: 'Color palette', expanded: false, choices: {default: 'default', alt: 'alt', greyScale: 'greyScale'}})
             /** @end-author Nico Klaassen */
             .getForm();
     }

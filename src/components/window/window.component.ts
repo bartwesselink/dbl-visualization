@@ -94,7 +94,11 @@ export class WindowComponent implements OnInit {
         });
 
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
-            this.palette = this.getPalette(settings.palette);
+            if (!settings.colorMode) {
+                this.palette = Palettes.greyScale;
+            } else {
+                this.palette = this.getPalette(settings.palette);
+            }
             console.log("Palette: " + this.palette.primary.rgba);
 
             this.redrawAllScenes();
@@ -383,6 +387,8 @@ export class WindowComponent implements OnInit {
                 return Palettes.default;
             case 'alt':
                 return Palettes.alt;
+            case 'greyScale':
+                return Palettes.greyScale;
         }
         console.log("Error, going too far!");
         return Palettes.default;
