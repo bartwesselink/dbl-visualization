@@ -1,5 +1,5 @@
 /** @author Roan Hofland */
-export const circleVertexSource = `
+export const vertexSource = `
     attribute vec4 pos;
     
     uniform mat4 modelviewMatrix;

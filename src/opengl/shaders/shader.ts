@@ -1,11 +1,11 @@
 /** @author Roan Hofland */
-import {fillcircleFragmentSource} from "./fragment/fillcircleFragmentShader";
-import {circleVertexSource} from "./vertex/circleVertexShader";
 import {ShaderMode} from "./shaderMode";
 import {FillCircleShader} from "./impl/fillcircleShader";
 import {Element} from "../element";
 import {Matrix} from "../matrix";
 import {OpenGL} from "../opengl";
+import {ShaderBase} from "./abstractShader";
+import {DrawCircleShader} from "./impl/drawcircleShader";
 
 export class Shader{
     private gl: WebGLRenderingContext;
@@ -13,8 +13,10 @@ export class Shader{
     private mode: number = 0;
     private currentMode: ShaderMode = null;
     private modelviewMatrix: Float32Array;
+    private shader: ShaderBase;
 
     private fillCircleShader: FillCircleShader = null;
+    private drawCircleShader: DrawCircleShader = null;
 
     constructor(gl: WebGLRenderingContext, opengl: OpenGL, mode: number){
         this.gl = gl;
@@ -23,18 +25,41 @@ export class Shader{
         if((mode & ShaderMode.FILL_CIRCLE) > 0){
             this.fillCircleShader = new FillCircleShader();
             this.fillCircleShader.init(this, gl);
-            this.gl.useProgram(this.fillCircleShader.shader);
-            this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.fillCircleShader.shader, "modelviewMatrix"), false, Matrix.createMatrix());
+        }
+        if((mode & ShaderMode.DRAW_CIRCLE) > 0){
+            this.drawCircleShader = new DrawCircleShader();
+            this.drawCircleShader.init(this, gl);
         }
     }
     
-    public prepareRenderPass(){
+    public prepareRenderPass(): void{
         this.modelviewMatrix = this.opengl.getModelviewMatrix();
     }
     
+    public switchShader(mode: ShaderMode): void{
+        switch(mode){
+        case ShaderMode.FILL_CIRCLE:
+            this.setShader(this.fillCircleShader);
+            break;
+        case ShaderMode.DRAW_CIRCLE:
+            this.setShader(this.drawCircleShader);
+            break;
+        }
+        
+        this.prepareRenderPass();
+    }
+    
+    private setShader(shader: ShaderBase): void{
+        this.gl.useProgram(shader.shader);
+        this.shader = shader;
+    }
+    
     public renderElement(elem: Element): void {
-        this.gl.uniformMatrix4fv(this.fillCircleShader.modelviewUniform, false, this.opengl.getModelviewMatrix());
-        this.fillCircleShader.preProcess(elem, this.gl, this.opengl);
+        if(elem.mode != this.currentMode){
+            this.switchShader(elem.mode);
+        }
+        
+        this.shader.preProcess(elem, this.gl, this.opengl);
         
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
         this.gl.vertexAttribPointer(this.fillCircleShader.attribPosition,   //attribute
