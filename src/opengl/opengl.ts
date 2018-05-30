@@ -34,6 +34,24 @@ export class OpenGL{
         this.gl.enable(gl.DEPTH_TEST);   
     }
     
+    //gets the visible canvas width in imaginary OpenGL space
+    public getWidth(canvasheight: number, canvaswidth: number): number{
+        if(this.mode == Mode.WIDTH_FIRST){
+            return this.WIDTH / this.factor;
+        }else{
+            return (this.WIDTH * (canvasheight / canvaswidth)) / this.factor;
+        }
+    }
+    
+    //gets the visible canvas height in imaginary OpenGL space
+    public getHeight(canvasheight: number, canvaswidth: number): number{
+        if(this.mode == Mode.HEIGHT_FIRST){
+            return this.HEIGHT / this.factor;
+        }else{
+            return (this.HEIGHT * (canvaswidth / canvasheight)) / this.factor;
+        }
+    }
+    
     //test for a dedicated GPU
     public isDedicatedGPU(): boolean {
         var info = this.gl.getExtension("WEBGL_debug_renderer_info");
@@ -41,6 +59,16 @@ export class OpenGL{
         console.log("Detected renderer: " + name);
         if(name.indexOf("NVIDIA") != -1){
             return true;   
+        }else if(name.indexOf("GeForce") != -1){
+            return true;
+        }else if(name.indexOf("Quadro") != -1){
+            return true;
+        }else if(name.indexOf("TITAN V") != -1){
+            return true;
+        }else if(name.indexOf("GPU Accelerator") != -1){
+            return true;
+        }else if(name.indexOf("NVS") != -1){
+            return true;
         }else if(name.indexOf("Radeon") != -1){
             if(name.match(".*Radeon (HD ....M|R(5|7|9) M...|Pro).*")){//Radeon HD Mobile, R5/R7/R9 Mobile and RX and Pro
                 return false;
