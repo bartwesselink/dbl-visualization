@@ -10,10 +10,10 @@ export class OpenGL{
     private gl: WebGLRenderingContext;
     private modelviewMatrix;
     private arrays: Element[] = [];
-    private readonly WIDTH = 1600;
-    private readonly HEIGHT = 900;
-    private readonly HALFWIDTH = this.WIDTH / 2;
-    private readonly HALFHEIGHT = this.HEIGHT / 2;
+    public readonly WIDTH = 1600;
+    public readonly HEIGHT = 900;
+    public readonly HALFWIDTH = this.WIDTH / 2;
+    public readonly HALFHEIGHT = this.HEIGHT / 2;
     private readonly PRECISION = 10;
     private readonly SIZETHRESHOLD = 0.5;
     private mode: Mode;
