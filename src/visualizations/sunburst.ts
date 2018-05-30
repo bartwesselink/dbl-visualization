@@ -11,17 +11,31 @@ export class Sunburst implements Visualizer {
         const tree = input.tree;
         const draws: Draw[] = [];
 
-        let lineColor = [1, 0, 0, 1];
-        let fillColor = [0, 0, 0, 1];
+        let startColor = [52 / 255, 99 / 255, 10 / 255, 1];
         let baseRadius = 60;
         let scaleRadius = 0.9;
+        let radiusMargin = 4;
+        let sliceMargin = 2;
 
-        const generate = (node: Node, startAngle: number, endAngle: number, near: number, innerRadius: number) => {
+        const generate = (node: Node, startAngle: number, endAngle: number,near: number, innerRadius: number, color: number[], depth: number = 0) => {
             let far = near + innerRadius;
+            let drawnEndAngle = endAngle;
 
-            draws.push({ type: 19 /** FillLinedRingSlice **/, identifier: node.identifier, options: { x: 0, y: 0, near: near, far: far, start: startAngle, end: endAngle, fillColor: [1, 0, 0, 1], lineColor: [0, 0, 0, 1] }});
+            if (depth !== 0) {
+                near += radiusMargin;
+                drawnEndAngle -= sliceMargin;
+            }
+
+            draws.push({ type: 17 /** FillRingSlice **/, identifier: node.identifier, options: { x: 0, y: 0, near: near, far: far, start: startAngle, end: drawnEndAngle, color: color }});
 
             let newStartAngle = startAngle;
+
+            // work from a darker color to a lighter color, based on sub tree size
+            const dividableR: number = 255 - color[0] * 255;
+            const dividableG: number = 255 - color[1] * 255;
+            const dividableB: number = 255 - color[2] * 255;
+
+            const dividable = Math.min(dividableR, dividableG, dividableB);
 
             for (const child of node.children) {
                 // calculate the fraction of the ring slice. Minus one is to extract the root of the current subtree
@@ -30,7 +44,16 @@ export class Sunburst implements Visualizer {
                 // convert fraction to an angle, and increase the startAngle
                 const angle = (endAngle - startAngle) * factor + newStartAngle;
 
-                generate(child, newStartAngle, angle, far, innerRadius * scaleRadius);
+                console.log(child.subTreeDepth);
+
+                // start calculating the color part
+                const r: number = color[0] * 255 + dividable * factor;
+                const g: number = color[1] * 255 + dividable * factor;
+                const b: number = color[2] * 255 + dividable * factor;
+
+                let newColor = [r / 255, g / 255, b / 255, 1];
+
+                generate(child, newStartAngle, angle, far, innerRadius * scaleRadius, newColor, depth + 1);
 
                 // iterate to the the next angle
                 newStartAngle = angle;
@@ -38,7 +61,7 @@ export class Sunburst implements Visualizer {
             }
         };
 
-        generate(tree, 0, 360, 0, baseRadius);
+        generate(tree, 0, 360, 0, baseRadius, startColor);
 
         return draws;
     }

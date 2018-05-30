@@ -5,6 +5,7 @@ export interface Node {
     identifier: number;
     parent?: Node;
     subTreeSize?: number;
+    subTreeDepth?: number;
 
     selected?: boolean;
     selectedNode?: Node; // reference in the root node, such that is shared over all windows and selection can easily be undone

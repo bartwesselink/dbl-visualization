@@ -47,7 +47,7 @@ export class NewickParser {
         return parent;
     }
 
-    private recurse(node: any, parent: Node = null, identifier: { id: number } = { id: 0 }): any { // identifier is a object to ensure reference-passing
+    private recurse(node: any, parent: Node = null, identifier: { id: number } = { id: 0 }, depth: number = 0): any { // identifier is a object to ensure reference-passing
         const label = node.name;
         const children = node.branchset;
         const length = node.length ? node.length : this.defaultNodeLength;
@@ -58,6 +58,7 @@ export class NewickParser {
             subTreeSize: 1,
             identifier: identifier.id,
             length: length,
+            subTreeDepth: depth,
             parent,
         };
 
@@ -65,15 +66,22 @@ export class NewickParser {
 
         if (children != null) {
             let i = 0;
+            let maxDepth: number = 0;
 
             for (const child of children) {
-                const formattedChildNode = this.recurse(child, formatted, identifier);
+                const formattedChildNode = this.recurse(child, formatted, identifier, depth + 1);
                 formatted.children[i] = formattedChildNode;
 
                 formatted.subTreeSize += formattedChildNode.subTreeSize;
 
+                if (formattedChildNode.subTreeDepth > maxDepth) {
+                    maxDepth = formattedChildNode.subTreeDepth;
+                }
+
                 i++;
             }
+
+            formatted.subTreeDepth = maxDepth + 1;
         }
 
         return formatted;
