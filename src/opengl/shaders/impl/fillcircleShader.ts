@@ -6,6 +6,7 @@ import {Shader} from "../shader";
 import {CircleElement} from "../elem/circleElement";
 import {Element} from "../../element";
 import {OpenGL} from "../../opengl";
+import {Matrix} from "../../matrix";
 
 export class FillCircleShader implements ShaderBase{
     public shader: WebGLProgram;
@@ -25,8 +26,8 @@ export class FillCircleShader implements ShaderBase{
     }
     
     public preProcess(elem: Element, gl: WebGLRenderingContext, opengl: OpenGL): void {
-        gl.uniform1f(this.centerXUniform, ((opengl.getRX() * elem.x - opengl.getRY() * elem.y) / opengl.HALFWIDTH + opengl.getDX()) * opengl.getZoom());
-        gl.uniform1f(this.centerYUniform, ((opengl.getRY() * elem.x + opengl.getRX() * elem.y) / opengl.HALFHEIGHT + opengl.getDY()) * opengl.getZoom());
+        gl.uniform1f(this.centerXUniform, ((opengl.getRX() * elem.x - opengl.getRY() * elem.y) / opengl.HALFWIDTH + (opengl.getDX() * opengl.getRX() * opengl.HALFWIDTH - opengl.getDY() * opengl.getRY() * opengl.HALFHEIGHT) / opengl.HALFWIDTH) * opengl.getZoom());
+        gl.uniform1f(this.centerYUniform, ((opengl.getRY() * elem.x + opengl.getRX() * elem.y) / opengl.HALFHEIGHT + (opengl.getDX() * opengl.getRY() * opengl.HALFWIDTH + opengl.getDY() * opengl.getRX() * opengl.HALFHEIGHT) / opengl.HALFHEIGHT) * opengl.getZoom());
         gl.uniform1f(this.radiusUniform, (elem as CircleElement).radius * opengl.getZoom());
     }
 }

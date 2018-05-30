@@ -174,8 +174,8 @@ export class OpenGL{
         Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(1 / this.HALFHEIGHT, 1 / this.HALFWIDTH));
         Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]); 
         this.rotation += rotation;
-        this.rx = Math.cos(this.rotation);
-        this.ry = Math.sin(this.rotation);
+        this.rx = Math.cos(-this.rotation * Matrix.oneDeg);
+        this.ry = Math.sin(-this.rotation * Matrix.oneDeg);
     }
     
     //translates the model view by the given distance
