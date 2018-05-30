@@ -15,6 +15,7 @@ export class FillCircleShader implements ShaderBase{
     private centerXUniform: WebGLUniformLocation;
     private centerYUniform: WebGLUniformLocation;
     private radiusUniform: WebGLUniformLocation;
+    private colorUniform: WebGLUniformLocation;
 
     public init(shader: Shader, gl: WebGLRenderingContext): void{
         this.shader = shader.initShader(circleVertexSource, fillcircleFragmentSource);
@@ -22,6 +23,7 @@ export class FillCircleShader implements ShaderBase{
         this.centerXUniform = gl.getUniformLocation(this.shader, "cx");
         this.centerYUniform = gl.getUniformLocation(this.shader, "cy");
         this.radiusUniform = gl.getUniformLocation(this.shader, "radius");
+        this.colorUniform = gl.getUniformLocation(this.shader, "color");
         this.attribPosition = gl.getAttribLocation(this.shader, "pos");
     }
     
@@ -31,6 +33,7 @@ export class FillCircleShader implements ShaderBase{
         gl.uniform1f(this.centerXUniform, ((opengl.getRX() * tx - opengl.getRY() * ty) / opengl.HALFWIDTH) * opengl.getZoom());
         gl.uniform1f(this.centerYUniform, ((opengl.getRY() * tx + opengl.getRX() * ty) / opengl.HALFHEIGHT) * opengl.getZoom());
         gl.uniform1f(this.radiusUniform, (elem as CircleElement).radius * opengl.getZoom());
+        gl.uniform3fv(this.colorUniform, elem.color);
     }
 }
 /** @end-author Roan Hofland */  

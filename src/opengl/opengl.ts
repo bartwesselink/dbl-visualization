@@ -251,17 +251,15 @@ export class OpenGL{
     
     //render the OpenGL scene
     public render(): void {
+        console.time('render');
         this.clear();
-        
-        console.log("start render");
-        
+                
         if(this.shaderi != null){//TODO broken
             this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader, "modelviewMatrix"), false, this.modelviewMatrix);
         }
         
-        console.log("drawing buffers");
-        
         this.drawBuffers();
+        console.timeEnd('render');
     }
 
     //releases all the OpenGL buffers
@@ -585,7 +583,7 @@ export class OpenGL{
 
             this.arrays.push(<CircleElement>{
                 pos: positionBuffer,
-                color: null,
+                color: fillColor,
                 x: x,
                 y: y,
                 rad: radius,
@@ -891,7 +889,6 @@ export class OpenGL{
                 vertices += this.drawElement(elem);
                 total += elem.overlay == null ? elem.length : (elem.length + elem.overlay.length);
             }else{
-                console.log("call shader");
                 this.shader.renderElement(elem);
             }
         }

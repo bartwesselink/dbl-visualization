@@ -28,7 +28,6 @@ export class Shader{
     }
     
     public renderElement(elem: Element): void {
-        console.log("rendering element");
         this.gl.uniformMatrix4fv(this.fillCircleShader.modelviewUniform, false, this.opengl.getModelviewMatrix());
         this.fillCircleShader.preProcess(elem, this.gl, this.opengl);
         
