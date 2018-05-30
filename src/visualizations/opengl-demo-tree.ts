@@ -3,43 +3,47 @@ import {Node} from '../models/node';
 import {OpenGL} from '../opengl/opengl';
 import {FormFactory} from '../form/form-factory';
 import {Form} from "../form/form";
+import {Draw} from '../interfaces/draw';
+import {VisualizerInput} from '../interfaces/visualizer-input';
+import {DrawType} from '../enums/draw-type';
 
 /** @author Nico Klaassen */
 export class OpenglDemoTree implements Visualizer {
-    private sinewaves: boolean;
-    private gl: OpenGL;
-    private tree: Node;
-    private mainColor: number[];
+    public draw(input: VisualizerInput): Draw[] {
+        const tree = input.tree;
+        let settings = input.settings;
 
-    constructor() {
-        // Initialize settings
-        this.mainColor = [0, 1, 0, 1];
-        this.sinewaves = true;
-    }
+        const mainColor = [
+            settings.r / 255,
+            settings.g / 255,
+            settings.b / 255,
+            settings.a / 255
+        ];
 
-    public draw(tree: Node, gl: OpenGL) {
-        this.gl = gl; // So we have access to this in the entire class.
-        this.tree = tree;
+        const sinewaves: boolean = settings.sinewaves;
+
+        const draws = [];
 
         // Draw axis - range and domain: [-100, 100]
-        gl.fillAAQuad(-200, -1, 400, 2, [1, 0, 0, 1]); // X axis
-        gl.fillAAQuad(-1, -200, 2, 400, [1, 0, 0, 1]); // Y axis
+        draws.push({ type: 4 /** FillAAQuad **/, options: { x: -200, y: -1, width: 400, height: 2, color: [1, 0, 0, 1] } }); // X axis
+        draws.push({ type: 4 /** FillAAQuad **/, options: { x: -1, y: -200, width: 2, height: 400, color: [1, 0, 0, 1] } }); // Y axis
 
         for (let i = 0; i <= 20; i++) {
             const offset = 10 * i;
-            gl.fillAAQuad(offset, -1, 2, 2, [0, 0, 0, 1]); // x+ ticks
-            gl.fillAAQuad(-offset, -1, 2, 2, [0, 0, 0, 1]); // x- ticks
-            gl.fillAAQuad(-1, offset, 2, 2, [0, 0, 0, 1]);  // y+ ticks
-            gl.fillAAQuad(-1, -offset, 2, 2, [0, 0, 0, 1]); // y- ticks
+
+            draws.push({ type: 4 /** FillAAQuad **/, options: { x: offset, y: -1, width: 2, height: 2, color: [0, 0, 0, 1] } }); // x+ ticks
+            draws.push({ type: 4 /** FillAAQuad **/, options: { x: -offset, y: -1, width: 2, height: 2, color: [0, 0, 0, 1] } }); // x- ticks
+            draws.push({ type: 4 /** FillAAQuad **/, options: { x: -1, y: offset, width: 2, height: 2, color: [0, 0, 0, 1] } }); // y+ ticks
+            draws.push({ type: 4 /** FillAAQuad **/, options: { x: -1, y: -offset, width: 2, height: 2, color: [0, 0, 0, 1] } }); // y- ticks
         }
 
         // Some big green quad examples
         // Note that the misalignment of the top-left rectangle is intentional to highlight it is being drawn based on
         // an (x, y) center coordinate. Where-as (x, y) is the bottom-left coordinate for the other quads.
-        gl.fillAAQuad(100, 100, 100, 100, this.mainColor);
-        gl.drawAAQuad(100, -200, 100, 100, this.mainColor);
-        gl.fillLinedAAQuad(-200, -200, 100, 100, this.mainColor, [0, 0, 0, 1]);
-        gl.drawRotatedQuad(-200, 100, 100, 100, 45, this.mainColor);
+        draws.push({ type: 4 /** FillAAQuad **/, options: { x: 100, y: 100, width: 100, height: 100, color: mainColor } });
+        draws.push({ type: 5 /** DrawAAQuad **/, options: { x: 100, y: -200, width: 100, height: 100, color: mainColor } });
+        draws.push({ type: 6 /** FillLinedAAQuad **/, options: { x: -200, y: -200, width: 100, height: 100, fillColor: mainColor, lineColor: [0, 0, 0, 1] } });
+        draws.push({ type: 2 /** DrawRotatedQuad **/, options: { x: -200, y: 100, width: 100, height: 100, rotation: 45, color: mainColor } });
 
         // Rotation dense example
         let startX = -720;
@@ -60,8 +64,9 @@ export class OpenglDemoTree implements Visualizer {
             ];
             const x = startX + offsetX * i;
             const rotationDegrees = rotationOffset * i;
-            gl.fillLinedRotatedQuad(x, startY, quadWidth, quadHeight, rotationDegrees, randomColor, outlineColor);
-            gl.fillLinedEllipsoid(x, -startY, radiusX, radiusY, rotationDegrees, randomColor, outlineColor); // Optional, precision: number
+
+            draws.push({ type: 3 /** FillLinedRotatedQuad **/, options: { x: x, y: startY, width: quadWidth, height: quadHeight, rotation: rotationDegrees, fillColor: randomColor, lineColor: outlineColor } });
+            draws.push({ type: 9 /** FillLinedEllipsoid **/, options: { x: x, y: -startY, radx: radiusX, rady: radiusY, rotation: rotationDegrees, fillColor: randomColor, lineColor: outlineColor } });
         }
 
         // Rotation sparse example
@@ -84,11 +89,12 @@ export class OpenglDemoTree implements Visualizer {
             ];
             const x = startX + offsetX * i;
             const rotationDegrees = rotationOffset * i;
-            gl.fillLinedRotatedQuad(x, startY, quadWidth, quadHeight, rotationDegrees, randomColor, outlineColor);
-            gl.fillLinedEllipsoid(x, -startY, radiusX, radiusY, rotationDegrees, randomColor, outlineColor); // optional, precision: number
+
+            draws.push({ type: 3 /** FillLinedRotatedQuad **/, options: { x: x, y: startY, width: quadWidth, height: quadHeight, rotation: rotationDegrees, fillColor: randomColor, lineColor: outlineColor } });
+            draws.push({ type: 9 /** FillLinedEllipsoid **/, options: { x: x, y: startY, radx: radiusX, rady: radiusY, rotation: rotationDegrees, fillColor: randomColor, lineColor: outlineColor } });
         }
 
-        if (this.sinewaves) {
+        if (sinewaves) {
             // Sine wave example
             startX = -720;
             startY = 30;
@@ -101,14 +107,33 @@ export class OpenglDemoTree implements Visualizer {
                 const x = i / Math.PI;
                 const y = amplitude * Math.sin(x) + startY; // Standard mathematical sine curve form; a + b*sin(c (x-d) )
                 if (i % 2 === 0) {
-                    gl.drawCircle(startX + i * 4, y, radius, outlineColor); // optional, precision: number
-                    gl.drawCircle(startX + i * 4, -y, radius, outlineColor); // optional, precision: number
+                    draws.push({ type: 11 /** DrawCircle **/, options: { x: startX + i * 4, y: y, radius: radius, color: outlineColor } });
+                    draws.push({ type: 11 /** DrawCircle **/, options: { x: startX + i * 4, y: -y, radius: radius, color: outlineColor } });
                 } else {
-                    gl.fillCircle(startX + i * 4, y, radius, fillColor); // optional, precision: number
-                    gl.fillCircle(startX + i * 4, -y, radius, fillColor); // optional, precision: number
+                    draws.push({ type: 10 /** FillCircle **/, options: { x: startX + i * 4, y: y, radius: radius, color: fillColor } });
+                    draws.push({ type: 10 /** FillCircle **/, options: { x: startX + i * 4, y: -y, radius: radius, color: fillColor } });
                 }
             }
         }
+
+        // draw calls for slices
+        draws.push({ type: 20 /** DrawCircleSlice **/, options: { x: 500, y: -165, radius: 100, start: 0, end: (360 / 3), color: [1, 0, 0, 1] }});
+        draws.push({ type: 21 /** FillCircleSlice **/, options: { x: 500 - 50, y: -165, radius: 100, start: (360 / 3), end: (360 / 3) * 2, color: [1, 0, 0, 1] }});
+        draws.push({ type: 22 /** FillLinedCircleSlice **/, options: { x: 500, y: -165, radius: 100, start: (360 / 3) * 2, end: (360 / 3) * 3, fillColor: [1, 0, 0, 1], lineColor: [0, 0, 0, 1] }});
+
+        draws.push({ type: 17 /** DrawRingSlice **/, options: { x: -500, y: -165, near: 50, far: 100, start: 0, end: (360 / 3), color: [1, 0, 0, 1] }});
+        draws.push({ type: 18 /** FillRingSlice **/, options: { x: -500, y: -165, near: 75, far: 100, start: (360 / 3), end: (360 / 3) * 2, color: [1, 0, 0, 1] }});
+        draws.push({ type: 19 /** FillLinedRingSlice **/, options: { x: -500, y: -165, near: 50, far: 100, start: (360 / 3) * 2, end: (360 / 3) * 3, fillColor: [1, 0, 0, 1], lineColor: [0, 0, 0, 1] }});
+
+        // draw calls for lines
+        draws.push({ type: 16 /** DrawPolyLine **/, options: { x: [-500, -200, 0, 200, 500], y: [100, 170, 100, 100, 170], color: [0, 0, 0, 1] } });
+
+        draws.push({ type: 14 /** DrawCircularArc **/, options: { x: 150, y: 100, radius: 50, start: 0, end: 180, color: [0, 0, 0, 1] } });
+        draws.push({ type: 13 /** DrawEllipsoidalArc **/, options: { x: 0, y: -100, radx: 100, rady: 30, start: 0, end: 180, color: [0, 0, 0, 1] } });
+
+        draws.push({ type: 9 /** FillLinedEllipsoid **/, identifier: 0, options: { x: 500, y: 500, radx: 100, rady: 200, rotation: 45, fillColor: [0, 0, 0, 1], lineColor: [0, 0, 0, 1] } });
+
+        return draws;
     }
 
     public getForm(formFactory: FormFactory) {
@@ -119,21 +144,6 @@ export class OpenglDemoTree implements Visualizer {
             .addSliderField('a', 255, { label: 'Alpha', min: 0, max: 255 })
             .addToggleField('sinewaves', true, { label: 'Sine waves' })
             .getForm();
-    }
-
-    public applySettings(settings: any){
-        // Update the color of the 4 big center objects
-        this.mainColor = [
-            settings.r / 255,
-            settings.g / 255,
-            settings.b / 255,
-            settings.a / 255
-        ]
-        this.sinewaves = settings.sinewaves; // update whether we should draw the sine waves
-
-        this.gl.releaseBuffers();       // remove old data from buffers
-        this.draw(this.tree, this.gl);  // fill buffers with new data
-        this.gl.render();               // force a render
     }
 
     public getName(): string {

@@ -1,5 +1,5 @@
-import {Component, OnInit} from '@angular/core';
-import {introJs} from 'intro.js';
+import {Component, ElementRef, Input, OnInit} from '@angular/core';
+import * as introJs from 'intro.js';
 
 @Component({
     selector: 'app-help-button',
@@ -7,10 +7,13 @@ import {introJs} from 'intro.js';
 })
 export class HelpButtonComponent implements OnInit{
     /** @author Mathijs Boezer */
+
+    @Input() container: Element;
+
     private tour: any;
 
     ngOnInit(): void {
-        this.tour = introJs();
+        this.tour = introJs(this.container);
 
         /** Each step in the tour is followed in the same order as entered in the steps array below
          *  Each step has the following format:
@@ -54,6 +57,18 @@ export class HelpButtonComponent implements OnInit{
                 },
                 {
                     intro: "This is the visualization window, your dataset will be visualized here according to your selected visualization.",
+                    element: '.mdl-layout__tab-panel.is-active'
+                },
+                {
+                    intro: "You are able to move the window by dragging, and able to zoom by using the scroll wheel.",
+                    element: '.mdl-layout__tab-panel.is-active'
+                },
+                {
+                    intro: "You can also use the keyboard: W, A, S, D for moving around, R and F for zooming and T for going back to the default view.",
+                    element: '.mdl-layout__tab-panel.is-active'
+                },
+                {
+                    intro: "By holding the left mouse button and scrolling you can rotate the view, alternatively you can use Q and E to do this with the keyboard.",
                     element: '.mdl-layout__tab-panel.is-active'
                 },
                 {
