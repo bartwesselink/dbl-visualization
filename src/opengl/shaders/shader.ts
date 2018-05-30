@@ -81,6 +81,9 @@ export class Shader{
         this.gl.linkProgram(program);
         
         if(!this.gl.getProgramParameter(program, this.gl.LINK_STATUS)){
+            var log = this.gl.getProgramInfoLog(program);
+            console.log(log);
+            this.gl.deleteProgram(program);
             throw new Error("Shader link status wrong");
         }
         
