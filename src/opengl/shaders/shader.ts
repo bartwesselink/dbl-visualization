@@ -29,7 +29,7 @@ export class Shader{
     
     public renderElement(elem: Element): void {
         console.log("rendering element");
-        this.fillCircleShader.preProcess(elem, this.gl);
+        this.fillCircleShader.preProcess(elem, this.gl, this.opengl);
         
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
         this.gl.vertexAttribPointer(this.fillCircleShader.attribPosition,   //attribute
