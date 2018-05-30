@@ -6,6 +6,7 @@ import {OpenGL} from "../opengl";
 export interface ShaderBase{
     shader: WebGLProgram;
     attribPosition: number;
+    modelviewUniform: WebGLUniformLocation;
 
     init(shader: Shader, gl: WebGLRenderingContext): void;
     preProcess(elem: Element, gl: WebGLRenderingContext, opengl: OpenGL): void;

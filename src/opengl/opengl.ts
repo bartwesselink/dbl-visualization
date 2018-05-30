@@ -8,7 +8,7 @@ import { CircleElement } from "./shaders/elem/circleElement";
 
 export class OpenGL{
     private gl: WebGLRenderingContext;
-    private modelviewMatrix;
+    public modelviewMatrix;
     private arrays: Element[] = [];
     public readonly WIDTH = 1600;
     public readonly HEIGHT = 900;
