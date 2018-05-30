@@ -583,7 +583,7 @@ export class OpenGL{
 
             this.arrays.push(<CircleElement>{
                 pos: positionBuffer,
-                color: fillColor,
+                color: this.toColor(fillColor),
                 x: x,
                 y: y,
                 rad: radius,
