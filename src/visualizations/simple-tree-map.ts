@@ -18,6 +18,9 @@ export class SimpleTreeMap implements Visualizer {
         const defaultSize = 600;
         let colorA: number[] = [255 / 255, 153 / 255, 0, 1];
         let colorB: number[] = [51 / 255, 0, 255 / 255, 1];
+        let defaultLineColor: number[] = [0, 0, 0, 1];
+        let lineColor: number[] = defaultLineColor;
+        let selectedColor: number[] = [255 / 255, 100 / 255, 0, 1];
         let colorDifference: number[] = [
             colorB[0] - colorA[0],
             colorB[1] - colorA[1],
@@ -86,7 +89,10 @@ export class SimpleTreeMap implements Visualizer {
                 label: tree.label,
                 children: [],
                 subTreeSize: tree.subTreeSize,
-                parent: parent
+                parent: parent,
+                selected: tree.selected,
+                selectedNode: tree.selectedNode,
+                identifier: tree.identifier,
             };
 
             for (let i = 0; i < tree.children.length; i++) {
@@ -268,18 +274,31 @@ export class SimpleTreeMap implements Visualizer {
          * @param {Bounds} bounds The bounding-box indicating where we should draw the current root
          * @param {boolean} internalNode Whether we are recursing on internal nodes, or on the root of the initial input tree
          * @param {number[]} color The color with which we should draw our current bounding-box based rectangle
+         * @param {boolean} selected Whether one of its parent was selected
          */
-        const drawTree = (tree: Node, bounds: Bounds, internalNode: boolean, color: number[]): void => {
+        const drawTree = (tree: Node, bounds: Bounds, internalNode: boolean, color: number[], selected: boolean = false): void => {
             let doneSize = 0; // How many subtree-nodes are already taking up space within the bounds.
+
+            if (tree.selected) {
+                selected = true;
+
+                if (!drawOutlines) {
+                    color = selectedColor;
+                } else {
+                    lineColor = selectedColor;
+                }
+            } else {
+                lineColor = defaultLineColor;
+            }
 
             let width = Math.abs(bounds.right - bounds.left);
             let height = Math.abs(bounds.top - bounds.bottom);
 
             // Draw the bounds of the current node
             if (drawOutlines) {
-                draws.push({ type: 6 /** FillLinedAAQuad **/, options: { x: bounds.left, y: bounds.bottom, width: width, height: height, fillColor: color, lineColor: [0, 0, 0, 1] } });
+                draws.push({ type: 6 /** FillLinedAAQuad **/, identifier: tree.identifier, options: { x: bounds.left, y: bounds.bottom, width: width, height: height, fillColor: color, lineColor: lineColor } });
             } else {
-                draws.push({ type: 4 /** FillAAQuad **/, options: { x: bounds.left, y: bounds.bottom, width: width, height: height, color: color }});
+                draws.push({ type: 4 /** FillAAQuad **/, identifier: tree.identifier, options: { x: bounds.left, y: bounds.bottom, width: width, height: height, color: color }});
             }
 
             // Compute color and size per child, recurse on each child with the new - and nested - bounds.
@@ -296,7 +315,7 @@ export class SimpleTreeMap implements Visualizer {
                     colorA[3] + colorDifference[3] * (childNode.subTreeSize / totalNodes)
                 ];
 
-                drawTree(childNode, childBounds, true, childColor);
+                drawTree(childNode, childBounds, true, childColor, selected);
             }
         };
 

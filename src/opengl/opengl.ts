@@ -105,6 +105,16 @@ export class OpenGL{
     public getZoom(): number {
         return this.factor;    
     }
+
+    //return the translation over the x axis
+    public getXTranslation(): number {
+        return this.dx * this.HALFWIDTH;
+    }
+
+    //return the translation over the y axis
+    public getYTranslation(): number {
+        return this.dy * this.HALFHEIGHT;
+    }
     
     //reset scale, rotation and translations
     public resetTransformations(): void {
@@ -152,6 +162,15 @@ export class OpenGL{
         }
         dx = ((dx / width) * 2) / this.factor;
         dy = ((-dy / height) * 2) / this.factor;
+        Matrix.translateSelf(this.modelviewMatrix, [dx, dy, 0]);
+        this.dx += dx;
+        this.dy += dy;
+    }
+    
+    //translates the model view by the given distance
+    public glTranslate(dx: number, dy: number): void {
+        dx /= this.HALFWIDTH;
+        dy /= this.HALFHEIGHT;
         Matrix.translateSelf(this.modelviewMatrix, [dx, dy, 0]);
         this.dx += dx;
         this.dy += dy;
