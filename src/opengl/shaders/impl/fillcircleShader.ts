@@ -25,8 +25,8 @@ export class FillCircleShader implements ShaderBase{
     }
     
     public preProcess(elem: Element, gl: WebGLRenderingContext, opengl: OpenGL): void {
-        gl.uniform1f(this.centerXUniform, elem.x / opengl.HALFWIDTH);
-        gl.uniform1f(this.centerYUniform, elem.y / opengl.HALFHEIGHT);
+        gl.uniform1f(this.centerXUniform, (opengl.getRX() * elem.x - opengl.getRY() * elem.y) / opengl.HALFWIDTH + opengl.getDX());
+        gl.uniform1f(this.centerYUniform, (opengl.getRY() * elem.x + opengl.getRX() * elem.y) / opengl.HALFHEIGHT + opengl.getDY());
         gl.uniform1f(this.radiusUniform, (elem as CircleElement).radius);
     }
 }

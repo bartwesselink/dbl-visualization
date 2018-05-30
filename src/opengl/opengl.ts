@@ -8,7 +8,7 @@ import { CircleElement } from "./shaders/elem/circleElement";
 
 export class OpenGL{
     private gl: WebGLRenderingContext;
-    public modelviewMatrix;
+    private modelviewMatrix: Float32Array;
     private arrays: Element[] = [];
     public readonly WIDTH = 1600;
     public readonly HEIGHT = 900;
@@ -21,6 +21,8 @@ export class OpenGL{
     private dx: number = 0;
     private dy: number = 0;
     private rotation: number = 0;
+    private rx: number = 1;
+    private ry: number = 0;
     private width: number;
     private height: number;
     private colorUniform: WebGLUniformLocation;
@@ -49,6 +51,26 @@ export class OpenGL{
 
         console.log("[OpenGL] OpenGL version: " + this.gl.getParameter(gl.VERSION));
         console.log("[OpenGL] GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
+    }
+    
+    public getModelviewMatrix(): Float32Array{
+        return this.modelviewMatrix;
+    }
+    
+    public getDY(): number{
+        return this.dy;
+    }
+    
+    public getDX(): number{
+        return this.dx;
+    }
+    
+    public getRY(): number{
+        return this.ry;
+    }
+    
+    public getRX(): number{
+        return this.rx;
     }
     
     //gets the visible canvas width in imaginary OpenGL space
@@ -133,6 +155,8 @@ export class OpenGL{
     //reset all rotations
     public resetRotation(): void {
         this.rotate(-this.rotation);
+        this.rx = 1;
+        this.ry = 0;
     }
     
     //reset all translations
@@ -150,6 +174,8 @@ export class OpenGL{
         Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(1 / this.HALFHEIGHT, 1 / this.HALFWIDTH));
         Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]); 
         this.rotation += rotation;
+        this.rx = Math.cos(this.rotation);
+        this.ry = Math.sin(this.rotation);
     }
     
     //translates the model view by the given distance
