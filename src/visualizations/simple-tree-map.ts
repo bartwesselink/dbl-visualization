@@ -27,7 +27,7 @@ export class SimpleTreeMap implements Visualizer {
         let totalNodes: number;
         let offset: number = settings.offset;
         let offsetType: string = settings.offsetType;
-        let tree: NodeTreeMap;
+        let tree: NodeTreeMap = originalTree as NodeTreeMap;
         let rootBounds: Bounds = {
             left: -(defaultSize / 2),
             right: (defaultSize / 2),
@@ -74,27 +74,6 @@ export class SimpleTreeMap implements Visualizer {
         }
 
         // define functions
-        /**
-         * Augments the tree from the bottom up.
-         *
-         * @param {Node} tree
-         * @param {NodeTreeMap} parent : optional
-         * @returns {NodeTreeMap}
-         */
-        const augmentTree = (tree: Node, parent?: NodeTreeMap): NodeTreeMap => {
-            let augmentedTree = {
-                label: tree.label,
-                children: [],
-                subTreeSize: tree.subTreeSize,
-                parent: parent
-            };
-
-            for (let i = 0; i < tree.children.length; i++) {
-                augmentedTree.children.push(augmentTree(tree.children[i], augmentedTree));
-            }
-
-            return augmentedTree;
-        };
 
         /**
          * Function which augments the tree data structure and adds in an orientation.
@@ -299,8 +278,6 @@ export class SimpleTreeMap implements Visualizer {
                 drawTree(childNode, childBounds, true, childColor);
             }
         };
-
-        tree = augmentTree(originalTree);
 
         totalNodes = originalTree.subTreeSize;
         treeHeight = calculateTreeHeight(tree, 0);
