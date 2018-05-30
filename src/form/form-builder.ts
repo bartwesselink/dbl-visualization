@@ -38,7 +38,7 @@ export class FormBuilder {
     }
 
     public addSliderField(name: string, defaultValue: number, options: SliderFormOptions): FormBuilder {
-        this.addField(name, FormType.Slider, defaultValue, options);
+        this.addField(name, FormType.Slider, String(defaultValue), options);
 
         return this;
     }
