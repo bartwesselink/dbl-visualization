@@ -25,6 +25,7 @@ import {Settings} from "../../interfaces/settings";
 import {SettingsBus} from "../../providers/settings-bus";
 import {Palette} from "../../models/palette";
 import {Palettes} from "../../utils/palettes";
+import {VisualizerInput} from "../../interfaces/visualizer-input";
 
 @Component({
     selector: 'app-window',
@@ -63,7 +64,7 @@ export class WindowComponent implements OnInit {
     private lastX: number;
     private lastY: number;
     private readonly ZOOM_NORMALISATION = 40;
-    private lastSettings: object;
+    private lastSettings: any;
 
     private readonly ROTATION_NORMALISATION = 10;
     private readonly DEFAULT_DR = 1;
@@ -93,23 +94,28 @@ export class WindowComponent implements OnInit {
             this.interactionHandler.scaleToNode(this.gl, this.canvas, this.currentDraws, node);
         });
 
+        /** @author Nico Klaassen */
+        /** Color palette support */
+        this.palette = Palettes.default;
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
             if (!settings.colorMode) {
                 this.palette = Palettes.greyScale;
             } else {
                 this.palette = this.getPalette(settings.palette);
             }
-            console.log("Palette: " + this.palette.primary.rgba);
 
+            this.lastSettings.palette = this.palette;
             this.redrawAllScenes();
         });
+        /** @end-author Nico Klaassen */
     }
 
     ngOnInit() {
         this.tab.window = this; // create reference in order to enable tab-manager to communicate with component
         this.form = this.visualizer.getForm(this.formFactory);
         this.lastSettings = this.form != null ? this.form.getFormGroup().value : {};
-
+        this.palette = Palettes.default;
+        this.lastSettings.palette = this.palette;
         this.setHeight();
         this.startScene();
 
@@ -127,6 +133,7 @@ export class WindowComponent implements OnInit {
 
     public change(value: object) {
         this.lastSettings = value;
+        this.lastSettings.palette = this.palette;
         this.computeScene();
     }
 
@@ -390,7 +397,6 @@ export class WindowComponent implements OnInit {
             case 'greyScale':
                 return Palettes.greyScale;
         }
-        console.log("Error, going too far!");
-        return Palettes.default;
+        return Palettes.default; // Fallback
     }
 }

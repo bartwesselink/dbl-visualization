@@ -17,8 +17,8 @@ export class SimpleTreeMap implements Visualizer {
 
         // define variables
         const defaultSize = 600;
-        let colorA: number[] = [255 / 255, 153 / 255, 0, 1];
-        let colorB: number[] = [51 / 255, 0, 255 / 255, 1];
+        let colorA: number[] = settings.palette.primary.rgba;//[255 / 255, 153 / 255, 0, 1];
+        let colorB: number[] = settings.palette.accents[2].rgba;//[51 / 255, 0, 255 / 255, 1];
         let defaultLineColor: number[] = [0, 0, 0, 1];
         let lineColor: number[] = defaultLineColor;
         let selectedColor: number[] = [255 / 255, 100 / 255, 0, 1];
