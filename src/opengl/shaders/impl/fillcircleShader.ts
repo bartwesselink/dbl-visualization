@@ -4,6 +4,8 @@ import {fillcircleFragmentSource} from "../fragment/fillcircleFragmentShader";
 import {circleVertexSource} from "../vertex/circleVertexShader";
 import {Shader} from "../shader";
 import {CircleElement} from "../elem/circleElement";
+import {Element} from "../../element";
+import {OpenGL} from "../../opengl";
 
 export class FillCircleShader implements ShaderBase{
     public shader: WebGLProgram;
@@ -23,9 +25,10 @@ export class FillCircleShader implements ShaderBase{
         console.log("done1");
     }
     
-    public preProcess(elem: Element, gl: WebGLRenderingContext): void {
-        gl.uniform1f(this.radiusUniform, (elem as CircleElement).x);
-        gl.uniform1f(this.radiusUniform, (elem as CircleElement).y);
+    public preProcess(elem: Element, gl: WebGLRenderingContext, opengl: OpenGL): void {
+        gl.uniform1f(this.centerXUniform, elem.x /800);
+        gl.uniform1f(this.centerYUniform, elem.y /450);
+        console.log("center at " + elem.x + " | " + elem.y);
         gl.uniform1f(this.radiusUniform, (elem as CircleElement).radius);
     }
 }

@@ -5,16 +5,19 @@ import {ShaderMode} from "./shaderMode";
 import {FillCircleShader} from "./impl/fillcircleShader";
 import {Element} from "../element";
 import {Matrix} from "../matrix";
+import {OpenGL} from "../opengl";
 
 export class Shader{
     private gl: WebGLRenderingContext;
+    private opengl: OpenGL;
     private mode: number = 0;
     private currentMode: ShaderMode = null;
 
     private fillCircleShader: FillCircleShader = null;
 
-    constructor(gl: WebGLRenderingContext, mode: number){
+    constructor(gl: WebGLRenderingContext, opengl: OpenGL, mode: number){
         this.gl = gl;
+        this.opengl = opengl;
         this.mode = mode;
         if((mode & ShaderMode.FILL_CIRCLE) > 0){
             this.fillCircleShader = new FillCircleShader();
