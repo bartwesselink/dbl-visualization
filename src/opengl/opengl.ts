@@ -32,7 +32,7 @@ export class OpenGL{
 
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
-        this.shader = new Shader(gl, this, ShaderMode.ALL);//TODO
+        this.shader = new Shader(gl, this, ShaderMode.FILL_CIRCLE);//TODO
         
         //set the canvas background color to white
         this.setBackgroundColor(1.0, 1.0, 1.0);
@@ -256,6 +256,8 @@ export class OpenGL{
                 
         if(this.shaderi != null){//TODO broken
             this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader, "modelviewMatrix"), false, this.modelviewMatrix);
+        }else{
+            this.shader.prepareRenderPass();
         }
         
         this.drawBuffers();

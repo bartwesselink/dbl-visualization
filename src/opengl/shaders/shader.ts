@@ -11,7 +11,7 @@ export class Shader{
     private gl: WebGLRenderingContext;
     private opengl: OpenGL;
     private mode: number = 0;
-    private currentMode: ShaderMode = null;
+    private currentShaderMode: ShaderMode = null;
     private modelviewMatrix: Float32Array;
     private shader: ShaderBase;
 
@@ -34,9 +34,17 @@ export class Shader{
     
     public prepareRenderPass(): void{
         this.modelviewMatrix = this.opengl.getModelviewMatrix();
+        this.prepareShader();
+    }
+    
+    private prepareShader(): void{
+        if(this.shader != null){
+            this.gl.uniformMatrix4fv(this.shader.modelviewUniform, false, this.modelviewMatrix);
+        }
     }
     
     public switchShader(mode: ShaderMode): void{
+        console.log("Switch on mode: " + mode);
         switch(mode){
         case ShaderMode.FILL_CIRCLE:
             this.setShader(this.fillCircleShader);
@@ -46,7 +54,8 @@ export class Shader{
             break;
         }
         
-        this.prepareRenderPass();
+        this.currentShaderMode = mode;
+        this.prepareShader();
     }
     
     private setShader(shader: ShaderBase): void{
@@ -55,20 +64,22 @@ export class Shader{
     }
     
     public renderElement(elem: Element): void {
-        if(elem.mode != this.currentMode){
-            this.switchShader(elem.mode);
+        console.log("elem mode: " + elem.shader);
+        if(elem.shader != this.currentShaderMode){
+            this.switchShader(elem.shader);
         }
+        console.log('render with: ' + this.shader);
         
         this.shader.preProcess(elem, this.gl, this.opengl);
         
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
-        this.gl.vertexAttribPointer(this.fillCircleShader.attribPosition,   //attribute
+        this.gl.vertexAttribPointer(this.shader.attribPosition,             //attribute
                                     2,                                      //2D so two values per iteration: x, y
                                     this.gl.FLOAT,                          //data type is float32
                                     false,                                  //no normalisation
                                     0,                                      //stride = automatic
                                     0);                                     //skip
-        this.gl.enableVertexAttribArray(this.fillCircleShader.attribPosition);
+        this.gl.enableVertexAttribArray(this.shader.attribPosition);
         
         this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, elem.length);
     }
