@@ -569,32 +569,7 @@ export class OpenGL{
     //draws a circle
     public fillCircle(x: number, y: number, radius: number, fillColor: number[], precision: number = this.PRECISION): void {
         if(this.shader.isShaderEnabled(ShaderMode.FILL_CIRCLE)){
-            //XXX ref
-            var positionBuffer = this.gl.createBuffer();
-            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
-            const pos = new Float32Array(8);
-            pos[0] = (x + radius) / this.HALFWIDTH;
-            pos[1] = (y + radius) / this.HALFHEIGHT;
-            pos[2] = (x - radius) / this.HALFWIDTH;
-            pos[3] = (y + radius) / this.HALFHEIGHT;
-            pos[4] = (x + radius) / this.HALFWIDTH;
-            pos[5] = (y - radius) / this.HALFHEIGHT;
-            pos[6] = (x - radius) / this.HALFWIDTH;
-            pos[7] = (y - radius) / this.HALFHEIGHT;
-            this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
-
-            this.arrays.push(<CircleElement>{
-                pos: positionBuffer,
-                color: this.toColor(fillColor),
-                x: x,
-                y: y,
-                rad: radius,
-                span: radius,
-                length: pos.length / 2,
-                radius: radius / this.HALFHEIGHT,
-                shader: ShaderMode.FILL_CIRCLE
-            });
-            
+            this.shaderCircle(x, y, radius, ShaderMode.FILL_CIRCLE, this.toColor(fillColor), null);
         }else{
             this.drawCircleImpl(x, y, radius, true, false, fillColor, null, precision);
         }
@@ -602,12 +577,20 @@ export class OpenGL{
             
     //draws a circle
     public drawCircle(x: number, y: number, radius: number, lineColor: number[], precision: number = this.PRECISION): void {
-        this.drawCircleImpl(x, y, radius, false, true, null, lineColor, precision);
+        if(this.shader.isShaderEnabled(ShaderMode.DRAW_CIRCLE)){
+            this.shaderCircle(x, y, radius, ShaderMode.DRAW_CIRCLE, this.toColor(lineColor), null);
+        }else{
+            this.drawCircleImpl(x, y, radius, false, true, null, lineColor, precision);
+        }
     }
                     
     //draws a circle
     public fillLinedCircle(x: number, y: number, radius: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
-        this.drawCircleImpl(x, y, radius, true, true, fillColor, lineColor, precision);
+        if(this.shader.isShaderEnabled(ShaderMode.LINED_CIRCLE)){
+            this.shaderCircle(x, y, radius, ShaderMode.LINED_CIRCLE, this.toColor(fillColor), this.toColor(lineColor));
+        }else{
+            this.drawCircleImpl(x, y, radius, true, true, fillColor, lineColor, precision);
+        }
     }
     
     //renders a circle
@@ -633,6 +616,48 @@ export class OpenGL{
         }
             
         this.renderEllipsoidImpl(pos, x, y, radius, 2 * radius, fill, line, lineColor, fillColor, 2);
+    }
+    
+    private shaderCircle(x: number, y: number, radius: number, mode: ShaderMode, mainColor: Float32Array, extraColor: Float32Array){
+        var positionBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
+        const pos = new Float32Array(8);
+        pos[0] = (x + radius) / this.HALFWIDTH;
+        pos[1] = (y + radius) / this.HALFHEIGHT;
+        pos[2] = (x - radius) / this.HALFWIDTH;
+        pos[3] = (y + radius) / this.HALFHEIGHT;
+        pos[4] = (x + radius) / this.HALFWIDTH;
+        pos[5] = (y - radius) / this.HALFHEIGHT;
+        pos[6] = (x - radius) / this.HALFWIDTH;
+        pos[7] = (y - radius) / this.HALFHEIGHT;
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
+
+        if(mode != ShaderMode.LINED_CIRCLE){
+            this.arrays.push(<CircleElement>{
+                pos: positionBuffer,
+                color: mainColor,
+                x: x,
+                y: y,
+                rad: radius,
+                span: radius * 2,
+                length: pos.length / 2,
+                radius: radius / this.HALFHEIGHT,
+                shader: mode
+            });
+        }else{
+            this.arrays.push(<CircleElement>{
+                pos: positionBuffer,
+                color: mainColor,
+                lineColor: extraColor,
+                x: x,
+                y: y,
+                rad: radius,
+                span: radius * 2,
+                length: pos.length / 2,
+                radius: radius / this.HALFHEIGHT,
+                shader: ShaderMode.LINED_CIRCLE
+            });
+        }
     }
     
     //draws a ring slice
