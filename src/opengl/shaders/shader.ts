@@ -7,6 +7,7 @@ import {OpenGL} from "../opengl";
 import {ShaderBase} from "./abstractShader";
 import {DrawCircleShader} from "./impl/drawcircleShader";
 import {LineCircleShader} from "./impl/linecircleShader";
+import {CopyShader} from "./impl/copyShader";
 
 export class Shader{
     private gl: WebGLRenderingContext;
@@ -16,6 +17,8 @@ export class Shader{
     private modelviewMatrix: Float32Array;
     private shader: ShaderBase;
 
+    private copyShader: CopyShader = null;
+
     private fillCircleShader: FillCircleShader = null;
     private drawCircleShader: DrawCircleShader = null;
     private lineCircleShader: LineCircleShader = null;
@@ -24,6 +27,9 @@ export class Shader{
         this.gl = gl;
         this.opengl = opengl;
         this.mode = mode;
+        this.copyShader = new CopyShader();
+        this.copyShader.init(this, this.gl);
+        this.setShader(this.copyShader);
         if((mode & ShaderMode.FILL_CIRCLE) > 0){
             this.fillCircleShader = new FillCircleShader();
             this.fillCircleShader.init(this, gl);
@@ -71,12 +77,28 @@ export class Shader{
         this.shader = shader;
     }
     
+    public bindDefault(): void {
+        if(this.currentShaderMode != null){
+            this.setShader(this.copyShader);
+            this.currentShaderMode = null;
+            this.prepareShader();
+        }
+    }
+    
+    public preProcess(elem: Element){
+        this.shader.preProcess(elem, this.gl, this.opengl);
+    }
+    
+    public defaultAttribPosition(): number{
+        return this.shader.attribPosition;
+    }
+    
     public renderElement(elem: Element): void {
         if(elem.shader != this.currentShaderMode){
             this.switchShader(elem.shader);
         }
         
-        this.shader.preProcess(elem, this.gl, this.opengl);
+        this.preProcess(elem);
         
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
         this.gl.vertexAttribPointer(this.shader.attribPosition, //attribute

@@ -25,14 +25,11 @@ export class OpenGL{
     private ry: number = 0;
     private width: number;
     private height: number;
-    private colorUniform: WebGLUniformLocation;
-    private shaderi: WebGLProgram;
-    private shaderAttribPosition: number;
     private shader: Shader;
 
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
-        this.shader = new Shader(gl, this, ShaderMode.ALL);//TODO
+        this.shader = new Shader(gl, this, 0);//TODO
         
         //set the canvas background color to white
         this.setBackgroundColor(1.0, 1.0, 1.0);
@@ -41,13 +38,6 @@ export class OpenGL{
         
         this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
         this.gl.enable(this.gl.BLEND);
-
-        this.initShaders();
-
-        if(this.shaderi != null){//broken
-            this.gl.useProgram(this.shaderi);
-            this.colorUniform = this.gl.getUniformLocation(this.shader, "color")
-        }
 
         console.log("[OpenGL] OpenGL version: " + this.gl.getParameter(gl.VERSION));
         console.log("[OpenGL] GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
@@ -258,11 +248,7 @@ export class OpenGL{
         console.time('render');
         this.clear();
                 
-        if(this.shaderi != null){//TODO broken
-            this.gl.uniformMatrix4fv(this.gl.getUniformLocation(this.shader, "modelviewMatrix"), false, this.modelviewMatrix);
-        }else{
-            this.shader.prepareRenderPass();
-        }
+        this.shader.prepareRenderPass();
         
         this.drawBuffers();
         console.timeEnd('render');
@@ -913,15 +899,10 @@ export class OpenGL{
         var vertices = 0;
         var total = 0;
         var elem;
-        var mode = null;//null is default
         for(var i = 0; i < this.arrays.length; i++){
             elem = this.arrays[i];
-            if(elem.mode != null){
-                vertices += this.drawElement(elem);
-                total += elem.overlay == null ? elem.length : (elem.length + elem.overlay.length);
-            }else{
-                this.shader.renderElement(elem);
-            }
+            vertices += this.drawElement(elem);
+            total += elem.overlay == null ? elem.length : (elem.length + elem.overlay.length);
         }
         console.log("[OpenGL] Rendered " + vertices + " out of " + total + " vertices")
     }
@@ -951,7 +932,12 @@ export class OpenGL{
     //renders the given element
     private drawElement(elem: Element): number {
         if(this.isVisible(elem)){
-            return this.drawElementImpl(elem);
+            if(elem.mode != null){
+                return this.drawElementImpl(elem);
+            }else{
+                this.shader.renderElement(elem);
+                return -4;
+            }
         }else{
             return 0;
         }
@@ -959,19 +945,20 @@ export class OpenGL{
         
     //renders the given element
     private drawElementImpl(elem: Element): number {
+        this.shader.bindDefault();
         if(elem.pos != null){
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
-            this.gl.vertexAttribPointer(this.shaderAttribPosition,              //attribute
+            this.gl.vertexAttribPointer(this.shader.defaultAttribPosition(),    //attribute
                                         2,                                      //2D so two values per iteration: x, y
                                         this.gl.FLOAT,                          //data type is float32
                                         false,                                  //no normalisation
                                         0,                                      //stride = automatic
                                         elem.offset == null ? 0 : elem.offset); //skip
-            this.gl.enableVertexAttribArray(this.shaderAttribPosition);
+            this.gl.enableVertexAttribArray(this.shader.defaultAttribPosition());
         }
             
         if(elem.color != null){
-            this.gl.uniform3fv(this.colorUniform, elem.color);
+            this.shader.preProcess(elem);
         }
             
         if(elem.indices == null){
