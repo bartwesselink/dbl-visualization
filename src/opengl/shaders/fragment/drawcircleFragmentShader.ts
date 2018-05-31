@@ -12,7 +12,7 @@ export const fragmentSource = `
         if(val <= radius + 0.003 && val >= radius - 0.003){
             gl_FragColor = vec4(color, 1.0 - pow(250.0 * abs(radius - val), 1.4));
         }else{
-            gl_FragColor = vec4(1.0,0.0,0.0,0.1);
+            discard;
         }
     }
 `;
