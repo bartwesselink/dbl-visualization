@@ -12,7 +12,7 @@ export class FillCircleShader extends CircleShader{
         return shader.initShader(vertexSource, fragmentSource);
     }
     
-    public postProcess(elem: Element, gl: WebGLRenderingContext): void {
+    public postProcess(elem: Element, gl: WebGLRenderingContext, opengl: OpenGL): void {
         gl.uniform3fv(this.colorUniform, elem.color);
     }
     

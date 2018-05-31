@@ -29,13 +29,13 @@ export abstract class CircleShader implements ShaderBase{
         gl.uniform1f(this.centerXUniform, ((opengl.getRX() * tx - opengl.getRY() * ty) / opengl.HALFWIDTH) * opengl.getZoom());
         gl.uniform1f(this.centerYUniform, ((opengl.getRY() * tx + opengl.getRX() * ty) / opengl.HALFHEIGHT) * opengl.getZoom());
         gl.uniform1f(this.radiusUniform, (elem as CircleElement).radius * opengl.getZoom());
-        this.postProcess(elem, gl);
+        this.postProcess(elem, gl, opengl);
     }
     
     abstract preInit(shader: Shader): WebGLProgram;
     
     abstract postInit(gl: WebGLRenderingContext): void;
     
-    abstract postProcess(elem: Element, gl: WebGLRenderingContext): void;
+    abstract postProcess(elem: Element, gl: WebGLRenderingContext, opengl: OpenGL): void;
 }
 /** @end-author Roan Hofland */  
