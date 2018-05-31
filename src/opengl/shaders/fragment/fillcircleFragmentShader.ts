@@ -14,5 +14,5 @@ export const fragmentSource = `
             discard;
         }
     }
-    `;
+`;
 /** @end-author Roan Hofland */     

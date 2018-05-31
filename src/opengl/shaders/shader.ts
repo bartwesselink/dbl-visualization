@@ -6,6 +6,7 @@ import {Matrix} from "../matrix";
 import {OpenGL} from "../opengl";
 import {ShaderBase} from "./abstractShader";
 import {DrawCircleShader} from "./impl/drawcircleShader";
+import {LineCircleShader} from "./impl/linecircleShader";
 
 export class Shader{
     private gl: WebGLRenderingContext;
@@ -17,6 +18,7 @@ export class Shader{
 
     private fillCircleShader: FillCircleShader = null;
     private drawCircleShader: DrawCircleShader = null;
+    private lineCircleShader: LineCircleShader = null;
 
     constructor(gl: WebGLRenderingContext, opengl: OpenGL, mode: number){
         this.gl = gl;
@@ -29,6 +31,10 @@ export class Shader{
         if((mode & ShaderMode.DRAW_CIRCLE) > 0){
             this.drawCircleShader = new DrawCircleShader();
             this.drawCircleShader.init(this, gl);
+        }
+        if((mode & ShaderMode.LINED_CIRCLE) > 0){
+            this.lineCircleShader = new LineCircleShader();
+            this.lineCircleShader.init(this, gl);
         }
     }
     
@@ -50,6 +56,9 @@ export class Shader{
             break;
         case ShaderMode.DRAW_CIRCLE:
             this.setShader(this.drawCircleShader);
+            break;
+        case ShaderMode.LINED_CIRCLE:
+            this.setShader(this.lineCircleShader);
             break;
         }
         

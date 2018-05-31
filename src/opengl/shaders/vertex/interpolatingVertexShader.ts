@@ -11,5 +11,5 @@ export const vertexSource = `
         gl_Position = p;
         vpos = p.xy;
     }
-  `;
+`;
 /** @end-author Roan Hofland */  
