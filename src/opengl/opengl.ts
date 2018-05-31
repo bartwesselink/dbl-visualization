@@ -617,14 +617,14 @@ export class OpenGL{
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         const pos = new Float32Array(8);
-        pos[0] = (x + radius) / this.HALFWIDTH;
-        pos[1] = (y + radius) / this.HALFHEIGHT;
-        pos[2] = (x - radius) / this.HALFWIDTH;
-        pos[3] = (y + radius) / this.HALFHEIGHT;
-        pos[4] = (x + radius) / this.HALFWIDTH;
-        pos[5] = (y - radius) / this.HALFHEIGHT;
-        pos[6] = (x - radius) / this.HALFWIDTH;
-        pos[7] = (y - radius) / this.HALFHEIGHT;
+        pos[0] = (x + radius * 1.001) / this.HALFWIDTH;
+        pos[1] = (y + radius * 1.001) / this.HALFHEIGHT;
+        pos[2] = (x - radius * 1.001) / this.HALFWIDTH;
+        pos[3] = (y + radius * 1.001) / this.HALFHEIGHT;
+        pos[4] = (x + radius * 1.001) / this.HALFWIDTH;
+        pos[5] = (y - radius * 1.001) / this.HALFHEIGHT;
+        pos[6] = (x - radius * 1.001) / this.HALFWIDTH;
+        pos[7] = (y - radius * 1.001) / this.HALFHEIGHT;
         this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
 
         if(mode != ShaderMode.LINED_CIRCLE){
