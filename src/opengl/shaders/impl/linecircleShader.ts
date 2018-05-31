@@ -15,7 +15,7 @@ export class LineCircleShader extends CircleShader{
         return shader.initShader(vertexSource, fragmentSource);
     }
     
-    public postProcess(elem: Element, gl: WebGLRenderingContext, opengl: OpenGL): void {
+    public postProcess(elem: Element, gl: WebGLRenderingContext): void {
         gl.uniform3fv(this.colorUniform, elem.color);
         gl.uniform3fv(this.lineColorUniform, (elem as CircleElement).lineColor);
     }
