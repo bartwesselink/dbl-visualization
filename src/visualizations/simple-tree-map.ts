@@ -5,6 +5,7 @@ import {NodeTreeMap} from '../models/node-tree-map';
 import {FormFactory} from '../form/form-factory';
 import {VisualizerInput} from '../interfaces/visualizer-input';
 import {Draw} from '../interfaces/draw';
+import {Palette} from "../models/palette";
 
 /** @author Nico Klaassen */
 
@@ -13,21 +14,24 @@ export class SimpleTreeMap implements Visualizer {
         const originalTree = input.tree;
         const draws: Draw[] = [];
         const settings: any = input.settings;
+        const palette: Palette = input.palette;
         console.log("settings: " + Object.getOwnPropertyNames(settings));
 
         // define variables
         const defaultSize = 600;
-        let colorA: number[] = settings.palette.primary.rgba;//[255 / 255, 153 / 255, 0, 1];
-        let colorB: number[] = settings.palette.accents[2].rgba;//[51 / 255, 0, 255 / 255, 1];
+        let colorA: number[] = palette.primary.rgba;//[255 / 255, 153 / 255, 0, 1];
+        let colorB: number[] = palette.secondary.rgba;//[51 / 255, 0, 255 / 255, 1];
         let defaultLineColor: number[] = [0, 0, 0, 1];
         let lineColor: number[] = defaultLineColor;
         let selectedColor: number[] = [255 / 255, 100 / 255, 0, 1];
+
         let colorDifference: number[] = [
             colorB[0] - colorA[0],
             colorB[1] - colorA[1],
             colorB[2] - colorA[2],
             colorB[3] - colorA[3]
         ];
+
         let totalNodes: number;
         let offset: number = settings.offset;
         let offsetType: string = settings.offsetType;
@@ -123,27 +127,7 @@ export class SimpleTreeMap implements Visualizer {
             }
         };
 
-        /**
-         * Function which calculates the height of the given tree recursively
-         *
-         * @param {Node} tree Tree for which to calculate the height for
-         * @param {number} currentHeight Initially should be 0, variable to track current height.
-         * @returns {number} The height of the tree
-         */
-        const calculateTreeHeight = (tree: Node, currentHeight: number): number => {
-            let treeHeight = currentHeight;
-            for (let i = 0; i < tree.children.length; i++) {
-                if (treeHeight == 0) {
-                    treeHeight = calculateTreeHeight(tree.children[i], currentHeight + 1);
-                } else {
-                    const newHeight = calculateTreeHeight(tree.children[i], currentHeight + 1);
-                    if (newHeight > treeHeight) {
-                        treeHeight = newHeight;
-                    }
-                }
-            }
-            return treeHeight;
-        };
+
 
         /** setBounds calculates the new and nested bounding-box (bounds) for a particular child-node and stores it on the
          * node itself.
@@ -320,10 +304,12 @@ export class SimpleTreeMap implements Visualizer {
             }
         };
 
+
         tree = augmentTree(originalTree);
 
         totalNodes = originalTree.subTreeSize;
-        treeHeight = calculateTreeHeight(tree, 0);
+        // treeHeight = calculateTreeHeight(tree, 0);
+        // recursiveDepth(tree, 0);
 
         // Initialize orientation
         tree.orientation = Orientation.HORIZONTAL;

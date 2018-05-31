@@ -1,5 +1,5 @@
-import { Node } from "../models/node";
-import { Newick } from 'newick';
+import {Node} from "../models/node";
+import {Newick} from 'newick';
 
 export class NewickParser {
     /** @author Jordy Verhoeven */
@@ -7,11 +7,12 @@ export class NewickParser {
     errorMsg = "Invalid Newick file.";
     successMsg = "Succefully parsed Newick file.";
 
-    constructor(private snackbar: any) {}
+    constructor(private snackbar: any) {
+    }
 
-    public extractLines(data: string): string|null {
-        if(!(data.substring(0, 7).toLowerCase() == 'newick;')) {
-            if(data.trim().slice(-1) == ';') { // Trim whitespaces and line feed at end
+    public extractLines(data: string): string | null {
+        if (!(data.substring(0, 7).toLowerCase() == 'newick;')) {
+            if (data.trim().slice(-1) == ';') { // Trim whitespaces and line feed at end
                 data = 'newick;\n' + data;
             } else {
                 this.feedback(this.errorMsg);
@@ -30,7 +31,7 @@ export class NewickParser {
         return lines[1];
     }
 
-    public parseTree(data: string): Node|null {
+    public parseTree(data: string): Node | null {
         let newick: any;
         try {
             newick = new Newick(data);
@@ -41,13 +42,13 @@ export class NewickParser {
         }
         const first = newick.tree;
         const parent = this.recurse(first);
-
         newick = null;
+        this.recursiveDepth(parent, 0);
 
         return parent;
     }
 
-    private recurse(node: any, parent: Node = null, identifier: { id: number } = { id: 0 }): any { // identifier is a object to ensure reference-passing
+    private recurse(node: any, parent: Node = null, identifier: { id: number } = {id: 0}): any { // identifier is a object to ensure reference-passing
         const label = node.name;
         const children = node.branchset;
         const length = node.length ? node.length : this.defaultNodeLength;
@@ -79,8 +80,44 @@ export class NewickParser {
         return formatted;
     }
 
-    private feedback(message: String): void{
+    /**
+     * Function which calculates the height of the given tree recursively
+     *
+     * @param {Node} tree Tree for which to calculate the height for
+     * @param {number} currentHeight Initially should be 0, variable to track current height.
+     * @returns {number} The height of the tree
+     */
+    private calculateTreeHeight(tree: Node, currentHeight: number): number {
+        let treeHeight = currentHeight;
+        for (let child of tree.children) {
+            if (treeHeight == 0) {
+                treeHeight = this.calculateTreeHeight(child, currentHeight + 1);
+            } else {
+                const newHeight = this.calculateTreeHeight(child, currentHeight + 1);
+                if (newHeight > treeHeight) {
+                    treeHeight = newHeight;
+                }
+            }
+        }
+        return treeHeight;
+    };
+
+    /**
+     * TODO: COMMENT
+     * @param {Node} tree
+     * @param {number} depth
+     */
+    private recursiveDepth(tree: Node, depth: number): void {
+        tree.maxDepth = this.calculateTreeHeight(tree, 0);
+        tree.depth = depth;
+        for (let child of tree.children) {
+            this.recursiveDepth(child, depth + 1);
+        }
+    };
+
+    private feedback(message: String): void {
         this.snackbar.nativeElement.MaterialSnackbar.showSnackbar({message: message});
     }
+
     /** @end-author Jordy Verhoeven */
 }

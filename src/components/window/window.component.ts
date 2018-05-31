@@ -64,7 +64,7 @@ export class WindowComponent implements OnInit {
     private lastX: number;
     private lastY: number;
     private readonly ZOOM_NORMALISATION = 40;
-    private lastSettings: any;
+    private lastSettings: object;
 
     private readonly ROTATION_NORMALISATION = 10;
     private readonly DEFAULT_DR = 1;
@@ -104,7 +104,6 @@ export class WindowComponent implements OnInit {
                 this.palette = this.getPalette(settings.palette);
             }
 
-            this.lastSettings.palette = this.palette;
             this.redrawAllScenes();
         });
         /** @end-author Nico Klaassen */
@@ -115,7 +114,6 @@ export class WindowComponent implements OnInit {
         this.form = this.visualizer.getForm(this.formFactory);
         this.lastSettings = this.form != null ? this.form.getFormGroup().value : {};
         this.palette = Palettes.default;
-        this.lastSettings.palette = this.palette;
         this.setHeight();
         this.startScene();
 
@@ -133,7 +131,6 @@ export class WindowComponent implements OnInit {
 
     public change(value: object) {
         this.lastSettings = value;
-        this.lastSettings.palette = this.palette;
         this.computeScene();
     }
 
@@ -300,7 +297,8 @@ export class WindowComponent implements OnInit {
             /** @author Bart Wesselink */
             this.workerManager.startWorker(this.gl, this.visualizer.draw, {
                 tree: this.tree,
-                settings: this.lastSettings
+                settings: this.lastSettings,
+                palette: this.palette
             })
                 .then((draws: Draw[]) => {
                     setTimeout(() => {

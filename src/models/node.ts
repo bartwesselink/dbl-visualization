@@ -13,4 +13,8 @@ export interface Node {
     original?: Node;
     expandable?: boolean;
     forceExpand?: boolean;
+
+    // temp
+    maxDepth?: number;
+    depth?: number;
 }
