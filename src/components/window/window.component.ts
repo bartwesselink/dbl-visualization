@@ -102,6 +102,7 @@ export class WindowComponent implements OnInit {
                 this.palette = Palettes.greyScale;
             } else {
                 this.palette = this.getPalette(settings.palette);
+                // this.computeColors();
             }
 
             this.redrawAllScenes();
@@ -293,7 +294,7 @@ export class WindowComponent implements OnInit {
             }
 
             this.startLoading();
-
+            this.computeColors();
             /** @author Bart Wesselink */
             this.workerManager.startWorker(this.gl, this.visualizer.draw, {
                 tree: this.tree,
@@ -314,6 +315,25 @@ export class WindowComponent implements OnInit {
             /** @end-author Bart Wesselink */
         });
     }
+    /** @author Jules Cornelissen */
+    private computeColors(){
+        let selectedDepth: number = this.findSelectedDepth(this.tree);
+        this.palette.calcGradientColorMap(selectedDepth, this.tree.maxDepth);
+    }
+
+    private findSelectedDepth(subTree: Node): number{
+        let newDepth = 0;
+        for (let child of subTree.children){
+            if (child.selected){
+                return child.depth;
+            } else {
+                newDepth = Math.max(newDepth,this.findSelectedDepth(child));
+            }
+        }
+        return newDepth;
+    }
+
+    /** @end-author Jules Cornelissen */
 
     //fallback rendering for when some OpenGL error occurs
     private onError(error): void {

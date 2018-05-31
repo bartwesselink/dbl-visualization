@@ -5,12 +5,20 @@ import {Form} from '../form/form';
 import {FormFactory} from '../form/form-factory';
 import {Draw} from '../interfaces/draw';
 import {VisualizerInput} from '../interfaces/visualizer-input';
+import {Palette} from "../models/palette";
 
 export class GeneralizedPythagorasTree implements Visualizer {
     /** @author Jules Cornelissen */
     public draw(input: VisualizerInput): Draw[] {
         const tree = input.tree;
         const draws: Draw[] = [];
+        const palette: Palette = input.palette;
+        // palette.printtoconsole();
+        // palette.calcGradientColorMap(tree);
+
+        const primaryColor = palette.primary;
+        const secondaryColor = palette.secondary;
+
 
         const weightHeight: number = 1; // !! Currently broken !! Scaling factor for the height of every rectangle that is not the root
         const defaultColor: number[] = [1, 0, 1, 0.5]; // Just some test color, translucency to show that no rectangles overlap
@@ -28,6 +36,17 @@ export class GeneralizedPythagorasTree implements Visualizer {
         // Define the base rectangle of the visualized tree, these values can later be determined in settings
         // Rectangle is an array of 5 numbers, in order: center x, center y, width (X), height (Y), angle
         let rectangle = [initialRectangleCenterX, initialRectangleCenterY, initialRectangleWidth, initialRectangleHeight, initialRectangleAngle];
+
+        //return Color.HSBtoRGB(subTreeSize / 256.0F, 1.0F, subTreeSize / (subTreeSize + 8.0F));
+
+
+        // const calcColor = (tree: Node): number[] => {
+        //     let red: number = (primaryColor.r + secondaryColor.r) / 2 * (tree.depth / tree.maxDepth);
+        //     let green: number = (primaryColor.g + secondaryColor.g) / 2 * (tree.depth / tree.maxDepth);
+        //     let blue: number = (primaryColor.b + secondaryColor.b) / 2 * (tree.depth / tree.maxDepth);
+        //     let alpha: number = (primaryColor.a + secondaryColor.a) / 2 * (tree.depth / tree.maxDepth);
+        //     return [red,green,blue,alpha];
+        // }
 
         /** calculateCenter calculates the nX and Y coordinates of the new rectangle, relative to the X and Y of the old
          * rectangle. The values calculated still need to be offset by center X and Y coordinates of the old rectangle
@@ -60,13 +79,23 @@ export class GeneralizedPythagorasTree implements Visualizer {
         const generate = (tree: Node, rectangle: number[], isSelected: boolean = false): void => {
             if (tree.selected === true || isSelected) {
                 isSelected = true;
-                color = selectedColor;
+                color = palette.gradientColorMapSelected[tree.depth];
             } else {
-                color = defaultColor;
+                color = palette.gradientColorMap[tree.depth];
             }
-
             // Draw the previously calculated rectangle
-            draws.push({ type: 1 /** FillRotatedQuad **/, identifier: tree.identifier, options: { x: rectangle[0], y: rectangle[1], width: rectangle[2], height: rectangle[3], rotation: rectangle[4] * radianToDegreeMultiplier, color: color } });
+            draws.push({
+                type: 1 /** FillRotatedQuad **/,
+                identifier: tree.identifier,
+                options: {
+                    x: rectangle[0],
+                    y: rectangle[1],
+                    width: rectangle[2],
+                    height: rectangle[3],
+                    rotation: rectangle[4] * radianToDegreeMultiplier,
+                    color: color
+                }
+            });
 
             /** This function can be considered in two ways. The first way is as it's done here. We loop over all the children
              * of a node and consider what part this child is of the parent. Thus the child calculates what relative size it is

@@ -15,6 +15,6 @@ export interface Node {
     forceExpand?: boolean;
 
     // temp
-    maxDepth?: number;
-    depth?: number;
+    maxDepth?: number; // Maximum depth of the root to a leaf in the subtree that this nodes resides in
+    depth?: number; // Depth of the node
 }

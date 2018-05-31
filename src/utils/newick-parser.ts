@@ -87,13 +87,13 @@ export class NewickParser {
      * @param {number} currentHeight Initially should be 0, variable to track current height.
      * @returns {number} The height of the tree
      */
-    private calculateTreeHeight(tree: Node, currentHeight: number): number {
+    private calculateTreeMaxDepth(tree: Node, currentHeight: number): number {
         let treeHeight = currentHeight;
         for (let child of tree.children) {
             if (treeHeight == 0) {
-                treeHeight = this.calculateTreeHeight(child, currentHeight + 1);
+                treeHeight = this.calculateTreeMaxDepth(child, currentHeight + 1);
             } else {
-                const newHeight = this.calculateTreeHeight(child, currentHeight + 1);
+                const newHeight = this.calculateTreeMaxDepth(child, currentHeight + 1);
                 if (newHeight > treeHeight) {
                     treeHeight = newHeight;
                 }
@@ -108,7 +108,7 @@ export class NewickParser {
      * @param {number} depth
      */
     private recursiveDepth(tree: Node, depth: number): void {
-        tree.maxDepth = this.calculateTreeHeight(tree, 0);
+        tree.maxDepth = this.calculateTreeMaxDepth(tree, depth);
         tree.depth = depth;
         for (let child of tree.children) {
             this.recursiveDepth(child, depth + 1);
