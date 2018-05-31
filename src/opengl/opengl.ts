@@ -142,9 +142,13 @@ export class OpenGL{
     
     //reset scale, rotation and translations
     public resetTransformations(): void {
-        this.resetTranslation();
-        this.resetZoom();
-        this.resetRotation();
+        this.rx = 1;
+        this.ry = 0;
+        this.dx = 0;
+        this.dy = 0;
+        this.rotation = 0;
+        this.factor = 1;
+        this.modelviewMatrix = Matrix.createMatrix();
     }
     
     //reset all scalings
