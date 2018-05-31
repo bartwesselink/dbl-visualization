@@ -940,8 +940,7 @@ export class OpenGL{
             if(elem.mode != null){
                 return this.drawElementImpl(elem);
             }else{
-                this.shader.renderElement(elem);
-                return -4;//TODO
+                return this.shader.renderElement(elem);
             }
         }else{
             return 0;

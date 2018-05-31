@@ -93,7 +93,7 @@ export class Shader{
         return this.shader.attribPosition;
     }
     
-    public renderElement(elem: Element): void {
+    public renderElement(elem: Element): number {
         if(elem.shader != this.currentShaderMode){
             this.switchShader(elem.shader);
         }
@@ -110,6 +110,7 @@ export class Shader{
         this.gl.enableVertexAttribArray(this.shader.attribPosition);
         
         this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, elem.length);
+        return elem.length;
     }
     
     public isShaderEnabled(mode: ShaderMode): boolean {
