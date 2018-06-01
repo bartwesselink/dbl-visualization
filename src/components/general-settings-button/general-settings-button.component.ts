@@ -3,6 +3,7 @@ import {Form} from '../../form/form';
 import {FormFactory} from '../../form/form-factory';
 import {SettingsBus} from '../../providers/settings-bus';
 import {Settings} from '../../interfaces/settings';
+import {ViewMode} from '../../enums/view-mode';
 
 declare var dialogPolyfill;
 
@@ -44,6 +45,7 @@ export class GeneralSettingsButtonComponent implements OnInit {
         this.form = this.formFactory
             .createFormBuilder()
             .addToggleField('darkMode', false, { label: 'Dark mode' })
+            .addChoiceField('viewMode', ViewMode.SIDE_BY_SIDE, { label: 'View Mode', expanded: true, choices: { sideBySide: 'Side by side', tab: 'Tabs' } })
             .getForm();
     }
 

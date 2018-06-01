@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {Tab} from '../models/tab';
 import { Node } from '../models/node';
 import {NewickParser} from '../utils/newick-parser';
@@ -10,6 +10,7 @@ import {Settings} from '../interfaces/settings';
 import {OpenglDemoTree} from "../visualizations/opengl-demo-tree";
 import {SimpleTreeMap} from "../visualizations/simple-tree-map";
 import {WorkerManager} from '../utils/worker-manager';
+import {ViewMode} from '../enums/view-mode';
 
 declare var dialogPolyfill;
 
@@ -26,17 +27,43 @@ export class AppComponent implements OnInit {
     private activeTab: Tab;
     private amountOfWindowsLoading: number = 0;
 
+    public readonly MAX_SIDE_BY_SIDE = 4;
+
     @ViewChild(SidebarComponent) private sidebar: SidebarComponent;
     @ViewChild("snackbar") public snackbar: ElementRef;
     @ViewChild('fullScreenLoader') private fullScreenLoader: ElementRef;
+    @ViewChild('appHolder') private appHolder: ElementRef;
+
+    @ViewChildren('tabSection') private tabSections: QueryList<ElementRef>;
 
     private parser: NewickParser;
     public darkMode = false;
+    public viewMode = ViewMode.SIDE_BY_SIDE;
+
+    // variables for dragging the column around
+    public windowResizeIndex: number;
+    public windowResizeLastX: number;
+    public windowResizing: boolean = false;
+
     constructor(private settingsBus: SettingsBus) {
         this.createVisualizers();
 
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
             this.darkMode = settings.darkMode;
+
+            if (this.viewMode !== settings.viewMode) {
+                this.resizeActiveTab(true);
+
+                if (settings.viewMode === ViewMode.SIDE_BY_SIDE) {
+                    if (this.tabs.length > this.MAX_SIDE_BY_SIDE) {
+                        this.snackbar.nativeElement.MaterialSnackbar.showSnackbar({message: 'Please close tabs, because for this view-mode there are only ' + this.MAX_SIDE_BY_SIDE + ' windows allowed.'});
+
+                        return;
+                    }
+                }
+            }
+
+            this.viewMode = settings.viewMode;
         });
 
         window.addEventListener('resize', () => this.resizeActiveTab());
@@ -68,6 +95,14 @@ export class AppComponent implements OnInit {
         this.addTab(visualizer);
     }
 
+    public updateVisualization(visualizer: Visualizer, tab: Tab): void {
+        tab.visualizer = visualizer;
+
+        setTimeout(() => {
+            tab.window.computeScene();
+        }, 100);
+    }
+
     public closeTab(tab: Tab) {
         tab.window.destroyScene();
 
@@ -78,6 +113,10 @@ export class AppComponent implements OnInit {
 
         if (this.tabs.length > 0 && wasActive) {
             this.switchTab(this.tabs[Math.max(index - 1, 0)]);
+        }
+
+        if (this.viewMode === ViewMode.SIDE_BY_SIDE) {
+            this.resizeActiveTab();
         }
     }
 
@@ -129,14 +168,22 @@ export class AppComponent implements OnInit {
         ];
     }
 
-    private resizeActiveTab(): void {
-        if (!this.activeTab) {
-            return;
-        }
+    private resizeActiveTab(forceAll: boolean = false): void {
+        if (this.viewMode === ViewMode.TAB && !forceAll) {
+            if (!this.activeTab) {
+                return;
+            }
 
-        setTimeout(() => {
-            this.activeTab.window.setHeight();
-        });
+            setTimeout(() => {
+                this.activeTab.window.setHeight();
+            });
+        } else {
+            for (const tab of this.tabs) {
+                setTimeout(() => {
+                    tab.window.setHeight();
+                }, 300);
+            }
+        }
     }
 
     public async redrawAllTabs(): Promise<void> {
@@ -144,6 +191,59 @@ export class AppComponent implements OnInit {
             if (tab.window) {
                 await tab.window.computeScene();
             }
+        }
+    }
+
+    public isTabViewMode(): boolean {
+        return this.viewMode === ViewMode.TAB;
+    }
+
+    public isSideBySideViewMode(): boolean {
+        return this.viewMode === ViewMode.SIDE_BY_SIDE;
+    }
+
+    public startResize($event, index: number): void {
+        this.windowResizing = true;
+        this.windowResizeIndex = index;
+        this.windowResizeLastX = $event.screenX;
+    }
+
+    public doResize($event): void {
+        if (this.windowResizing) {
+            $event.stopImmediatePropagation();
+            $event.preventDefault();
+
+            const sections = this.tabSections.toArray();
+
+            const firstTab = sections[this.windowResizeIndex];
+            const secondTab = sections[this.windowResizeIndex + 1];
+            const currentX = $event.screenX;
+            const delta = this.windowResizeLastX - currentX;
+
+            if (firstTab != null && secondTab != null) {
+                const firstElement = firstTab.nativeElement;
+                const secondElement = secondTab.nativeElement;
+
+                const firstOldWidth = firstElement.clientWidth;
+                const secondOldWidth = secondElement.clientWidth;
+
+                const firstNewWidth = firstOldWidth - delta;
+                const secondNewWidth = secondOldWidth + delta;
+
+                firstElement.style.width = firstNewWidth + 'px';
+                secondElement.style.width = secondNewWidth + 'px';
+            }
+
+            this.windowResizeLastX = $event.screenX;
+        }
+    }
+
+    public stopResize(): void {
+        if (this.windowResizing) {
+            this.windowResizing = false;
+            this.windowResizeIndex = null;
+
+            this.resizeActiveTab();
         }
     }
 
@@ -156,6 +256,12 @@ export class AppComponent implements OnInit {
 
         this.switchTab(this.tabs[this.tabs.length - 1]); // always show new visualization when tab is added
         this.showFullScreenLoader = true;
+
+        if (this.viewMode === ViewMode.SIDE_BY_SIDE) {
+            setTimeout(() => {
+                this.resizeActiveTab();
+            }, 200);
+        }
     }
     /** @end-author Bart Wesselink */
 }

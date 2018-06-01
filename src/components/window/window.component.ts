@@ -337,8 +337,8 @@ export class WindowComponent implements OnInit {
     public setHeight(): void {
         // fix to set correct canvas size
         setTimeout(() => {
-            this.canvas.nativeElement.width = this.canvas.nativeElement.scrollWidth;
-            this.canvas.nativeElement.height = this.canvas.nativeElement.scrollHeight;
+            this.canvas.nativeElement.width = this.canvas.nativeElement.parentElement.parentElement.innerWidth;
+            this.canvas.nativeElement.height = this.canvas.nativeElement.parentElement.parentElement.innerHeight;
 
             this.gl.resize(this.canvas.nativeElement.width, this.canvas.nativeElement.height);
             this.redraw();
