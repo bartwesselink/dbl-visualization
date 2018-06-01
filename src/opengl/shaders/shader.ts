@@ -1,14 +1,14 @@
 /** @author Roan Hofland */
 import {ShaderMode} from "./shaderMode";
-import {FillCircleShader} from "./impl/fillcircleShader";
+import {FillCircleShader} from "./impl/fillCircleShader";
 import {Element} from "../element";
 import {Matrix} from "../matrix";
 import {OpenGL} from "../opengl";
 import {ShaderBase} from "./abstractShader";
-import {DrawCircleShader} from "./impl/drawcircleShader";
-import {LineCircleShader} from "./impl/linecircleShader";
+import {DrawCircleShader} from "./impl/drawCircleShader";
+import {LineCircleShader} from "./impl/lineCircleShader";
 import {CopyShader} from "./impl/copyShader";
-import {FillCircleSliceShader} from "./impl/fillcircleSliceShader";
+import {FillCircleSliceShader} from "./impl/fillCircleSliceShader";
 
 export class Shader{
     private gl: WebGLRenderingContext;
