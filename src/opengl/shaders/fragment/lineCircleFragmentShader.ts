@@ -1,5 +1,7 @@
 /** @author Roan Hofland */
 export const fragmentSource = `
+    #define ratio 3.1604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938272
+
     uniform lowp float radius;
     uniform lowp float cx;
     uniform lowp float cy;
@@ -9,7 +11,7 @@ export const fragmentSource = `
     varying lowp vec2 vpos;
     
     void main() {
-        lowp float val = sqrt(pow(vpos.x - cx, 2.0) * 3.1604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938272 + pow(vpos.y - cy, 2.0));
+        lowp float val = sqrt(pow(vpos.x - cx, 2.0) * ratio + pow(vpos.y - cy, 2.0));
         lowp vec4 clr;
         if(val <= radius){
             clr = vec4(color, 1.0);
