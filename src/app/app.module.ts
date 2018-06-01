@@ -25,6 +25,7 @@ import { WebWorkerService } from 'angular2-web-worker';
 import {LoaderComponent} from '../components/loader/loader.component';
 import {SelectBus} from '../providers/select-bus';
 import {TooltipComponent} from '../components/tooltip/tooltip.component';
+import {ViewCubeComponent} from '../components/view-cube/view-cube.component';
 
 @NgModule({
     declarations: [
@@ -44,6 +45,7 @@ import {TooltipComponent} from '../components/tooltip/tooltip.component';
         WelcomePageComponent,
         LoaderComponent,
         TooltipComponent,
+        ViewCubeComponent,
     ],
     imports: [
         BrowserModule,

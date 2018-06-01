@@ -36,6 +36,9 @@ export class WindowComponent implements OnInit {
     @Output() private loading: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() private redrawAll: EventEmitter<void> = new EventEmitter<void>();
 
+    public passKeyStrokeFunction = (keyEvent: KeyboardEvent) => this.keyEvent(keyEvent);
+    public passZoomFunction = (value: number) => this.zoomValue(value);
+
     public form: Form|null;
 
     private context: CanvasRenderingContext2D;
@@ -107,6 +110,12 @@ export class WindowComponent implements OnInit {
     public change(value: object) {
         this.lastSettings = value;
         this.computeScene();
+    }
+
+    public zoomValue(value: number) {
+        this.gl.resetZoom();
+        this.gl.scale(value);
+        this.render();
     }
 
     public keyEvent(event: KeyboardEvent): void {
