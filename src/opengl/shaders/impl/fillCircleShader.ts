@@ -2,7 +2,7 @@
 import {CircleShader} from "./circleShader";
 import {Shader} from "../shader";
 import {vertexSource} from "../vertex/interpolatingVertexShader";
-import {fragmentSource} from "../fragment/fillcircleFragmentShader";
+import {fragmentSource} from "../fragment/fillCircleFragmentShader";
 import {Element} from "../../element";
 import {OpenGL} from "../../opengl";
 

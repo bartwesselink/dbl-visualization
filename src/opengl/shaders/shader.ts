@@ -8,6 +8,7 @@ import {ShaderBase} from "./abstractShader";
 import {DrawCircleShader} from "./impl/drawcircleShader";
 import {LineCircleShader} from "./impl/linecircleShader";
 import {CopyShader} from "./impl/copyShader";
+import {FillCircleSliceShader} from "./impl/fillcircleSliceShader";
 
 export class Shader{
     private gl: WebGLRenderingContext;
@@ -22,6 +23,7 @@ export class Shader{
     private fillCircleShader: FillCircleShader = null;
     private drawCircleShader: DrawCircleShader = null;
     private lineCircleShader: LineCircleShader = null;
+    private fillCircleSliceShader: FillCircleSliceShader = null;
 
     constructor(gl: WebGLRenderingContext, opengl: OpenGL, mode: number){
         this.gl = gl;

@@ -1,12 +1,12 @@
 /** @author Roan Hofland */
-import {CircleSliceShader} from "./circleSliceShader";
+import {CircleShader} from "./circleShader";
 import {Shader} from "../shader";
 import {vertexSource} from "../vertex/interpolatingVertexShader";
-import {fragmentSource} from "../fragment/fillcirclesliceFragmentShader";
+import {fragmentSource} from "../fragment/drawCircleFragmentShader";
 import {Element} from "../../element";
 import {OpenGL} from "../../opengl";
 
-export class FillCircleShader extends CircleSliceShader{
+export class DrawCircleShader extends CircleShader{
     private colorUniform: WebGLUniformLocation;
     
     public preInit(shader: Shader): WebGLProgram {
