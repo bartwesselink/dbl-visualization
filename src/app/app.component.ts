@@ -21,6 +21,7 @@ declare var dialogPolyfill;
 export class AppComponent implements OnInit {
     public tabs: Tab[] = [];
     public tree: Node;
+    private originalTree: Node;
     public visualizers: Visualizer[];
     public showFullScreenLoader: boolean = false;
 
@@ -41,13 +42,7 @@ export class AppComponent implements OnInit {
         });
 
         this.subtreeBus.subtreeSelected.subscribe((node: Node) => {
-            console.log("Drawing new node");
-            this.tree = node;
-            setTimeout(() => {
-                this.sidebar.reloadData();
-                this.redrawAllTabs();
-                for (let tab of this.tabs) tab.window.resetTransformation();
-            }, 100);
+            this.openTree(node);
         });
 
         window.addEventListener('resize', () => this.resizeActiveTab());
@@ -64,12 +59,8 @@ export class AppComponent implements OnInit {
         const line = this.parser.extractLines(data);
 
         if (line !== null) {
-            this.tree = this.parser.parseTree(line);
-
-            setTimeout(() => {
-                this.sidebar.reloadData();
-                this.redrawAllTabs();
-            }, 100);
+            this.openTree(this.parser.parseTree(line));
+            this.originalTree = this.tree;
         }
     }
     /** @end-author Jordy Verhoeven */
@@ -169,4 +160,19 @@ export class AppComponent implements OnInit {
         this.showFullScreenLoader = true;
     }
     /** @end-author Bart Wesselink */
+
+    /** @author Mathijs Boezer */
+
+    private openTree(node: Node): void {
+        this.tree = node;
+
+        setTimeout(() => {
+            this.sidebar.reloadData();
+            this.redrawAllTabs();
+        }, 100);
+    }
+
+    public restoreTree() {
+        this.openTree(this.originalTree);
+    }
 }
