@@ -10,6 +10,7 @@ import {Settings} from '../interfaces/settings';
 import {OpenglDemoTree} from "../visualizations/opengl-demo-tree";
 import {SimpleTreeMap} from "../visualizations/simple-tree-map";
 import {WorkerManager} from '../utils/worker-manager';
+import {SubtreeBus} from "../providers/subtree-bus";
 
 declare var dialogPolyfill;
 
@@ -32,11 +33,21 @@ export class AppComponent implements OnInit {
 
     private parser: NewickParser;
     public darkMode = false;
-    constructor(private settingsBus: SettingsBus) {
+    constructor(private settingsBus: SettingsBus, private subtreeBus: SubtreeBus) {
         this.createVisualizers();
 
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
             this.darkMode = settings.darkMode;
+        });
+
+        this.subtreeBus.subtreeSelected.subscribe((node: Node) => {
+            console.log("Drawing new node");
+            this.tree = node;
+            setTimeout(() => {
+                this.sidebar.reloadData();
+                this.redrawAllTabs();
+                for (let tab of this.tabs) tab.window.resetTransformation();
+            }, 100);
         });
 
         window.addEventListener('resize', () => this.resizeActiveTab());

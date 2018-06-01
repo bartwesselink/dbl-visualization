@@ -353,4 +353,9 @@ export class WindowComponent implements OnInit {
         this.loading.emit(false);
     }
     /** @end-author Bart Wesselink */
+    /** @author Mathijs Boezer */
+    public resetTransformation() {
+        this.gl.resetTransformations();
+        this.render();
+    }
 }

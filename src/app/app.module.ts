@@ -25,6 +25,7 @@ import { WebWorkerService } from 'angular2-web-worker';
 import {LoaderComponent} from '../components/loader/loader.component';
 import {SelectBus} from '../providers/select-bus';
 import {TooltipComponent} from '../components/tooltip/tooltip.component';
+import {SubtreeBus} from "../providers/subtree-bus";
 
 @NgModule({
     declarations: [
@@ -56,6 +57,7 @@ import {TooltipComponent} from '../components/tooltip/tooltip.component';
         WorkerManager,
         SettingsBus,
         SelectBus,
+        SubtreeBus,
         {provide: APP_BASE_HREF, useValue : '/' }
     ],
     bootstrap: [AppComponent]
