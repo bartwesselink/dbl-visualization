@@ -9,15 +9,17 @@ export const fragmentSource = `
     varying lowp vec2 vpos;
     
     void main() {
-        lowp float val = pow(vpos.x - cx, 2.0) * 3.1604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938272 + pow(vpos.y - cy, 2.0);
-        if(val < radius * radius){
-            if(val <= pow(radius - 0.004, 2.0)){
-                gl_FragColor = vec4(color, 1.0);
-            }else{
-                gl_FragColor = vec4(lcolor, 1.0);
-            }
+        lowp float val = sqrt(pow(vpos.x - cx, 2.0) * 3.1604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938271604938272 + pow(vpos.y - cy, 2.0));
+        lowp vec4 clr;
+        if(val <= radius){
+            clr = vec4(color, 1.0);
         }else{
-            discard;
+            clr = vec4(0.0, 0.0, 0.0, 0.0);
+        }
+        if(val <= radius + 0.0025 && val >= radius - 0.0025){
+            gl_FragColor = mix(clr, vec4(lcolor, 1.0), 1.0 - 400.0 * abs(radius - val));
+        }else{
+            gl_FragColor = clr;
         }
     }
 `;
