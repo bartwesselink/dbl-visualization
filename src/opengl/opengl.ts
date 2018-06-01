@@ -828,7 +828,7 @@ export class OpenGL{
     //draws a circular slice
     public fillCircleSlice(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
         if(this.shader.isShaderEnabled(ShaderMode.FILL_CIRCLE_SLICE)){
-            this.shaderCircleSlice(x, y, radius, start, end, ShaderMode.DRAW_CIRCLE_SLICE, this.toColor(color), null);
+            this.shaderCircleSlice(x, y, radius, start, end, ShaderMode.FILL_CIRCLE_SLICE, this.toColor(color), null);
         }else{
             this.drawCircleSliceImpl(x, y, radius, start, end, true, false, color, null, precision);
         }
@@ -837,7 +837,7 @@ export class OpenGL{
     //draws a circular slice
     public fillLinedCircleSlice(x: number, y: number, radius: number, start: number, end: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
         if(this.shader.isShaderEnabled(ShaderMode.LINED_CIRCLE_SLICE)){
-            this.shaderCircleSlice(x, y, radius, start, end, ShaderMode.DRAW_CIRCLE_SLICE, this.toColor(fillColor), this.toColor(lineColor));
+            this.shaderCircleSlice(x, y, radius, start, end, ShaderMode.LINED_CIRCLE_SLICE, this.toColor(fillColor), this.toColor(lineColor));
         }else{
             this.drawCircleSliceImpl(x, y, radius, start, end, true, true, fillColor, lineColor, precision);
         }
@@ -867,6 +867,8 @@ export class OpenGL{
                 span: radius * 2,//TODO change
                 length: pos.length / 2,
                 radius: radius / this.HALFHEIGHT,
+                start: start * Matrix.oneDeg,
+                end: end * Matrix.oneDeg,
                 shader: mode
             });
         }else{

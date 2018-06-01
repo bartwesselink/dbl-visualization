@@ -12,6 +12,8 @@ export abstract class CircleSliceShader implements ShaderBase{
     private centerXUniform: WebGLUniformLocation;
     private centerYUniform: WebGLUniformLocation;
     private radiusUniform: WebGLUniformLocation;
+    private startUniform: WebGLUniformLocation; 
+    private endUniform: WebGLUniformLocation;
 
     public init(shader: Shader, gl: WebGLRenderingContext): void{
         this.shader = this.preInit(shader);
@@ -19,6 +21,8 @@ export abstract class CircleSliceShader implements ShaderBase{
         this.centerXUniform = gl.getUniformLocation(this.shader, "cx");
         this.centerYUniform = gl.getUniformLocation(this.shader, "cy");
         this.radiusUniform = gl.getUniformLocation(this.shader, "radius");
+        this.startUniform = gl.getUniformLocation(this.shader, "start");
+        this.endUniform = gl.getUniformLocation(this.shader, "end");
         this.attribPosition = gl.getAttribLocation(this.shader, "pos");
         this.postInit(gl);
     }
@@ -29,6 +33,8 @@ export abstract class CircleSliceShader implements ShaderBase{
         gl.uniform1f(this.centerXUniform, ((opengl.getRX() * tx - opengl.getRY() * ty) / opengl.HALFWIDTH) * opengl.getZoom());
         gl.uniform1f(this.centerYUniform, ((opengl.getRY() * tx + opengl.getRX() * ty) / opengl.HALFHEIGHT) * opengl.getZoom());
         gl.uniform1f(this.radiusUniform, (elem as CircleSliceElement).radius * opengl.getZoom());
+        gl.uniform1f(this.startUniform, (elem as CircleSliceElement).start);
+        gl.uniform1f(this.endUniform, (elem as CircleSliceElement).end);
         this.postProcess(elem, gl);
     }
     

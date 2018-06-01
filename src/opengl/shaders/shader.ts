@@ -88,6 +88,16 @@ export class Shader{
         case ShaderMode.LINED_CIRCLE:
             this.setShader(this.lineCircleShader);
             break;
+        case ShaderMode.FILL_CIRCLE_SLICE:
+            console.log("shader fill slice")
+            this.setShader(this.fillCircleSliceShader);
+            break;
+//        case ShaderMode.DRAW_CIRCLE_SLICE:
+//            this.setShader(this.drawCircleSliceShader);
+//            break;
+//        case ShaderMode.LINED_CIRCLE_SLICE:
+//            this.setShader(this.lineCircleSliceShader);
+//            break;
         }
         
         this.currentShaderMode = mode;
