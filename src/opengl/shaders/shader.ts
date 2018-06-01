@@ -30,18 +30,38 @@ export class Shader{
         this.copyShader = new CopyShader();
         this.copyShader.init(this, this.gl);
         this.setShader(this.copyShader);
+        this.enable(mode);
+    }
+    
+    private enableShader(shader: ShaderMode): void{
+        this.enable(shader);
+    }
+    
+    private enable(mode: number): void{
         if((mode & ShaderMode.FILL_CIRCLE) > 0){
             this.fillCircleShader = new FillCircleShader();
-            this.fillCircleShader.init(this, gl);
+            this.fillCircleShader.init(this, this.gl);
         }
         if((mode & ShaderMode.DRAW_CIRCLE) > 0){
             this.drawCircleShader = new DrawCircleShader();
-            this.drawCircleShader.init(this, gl);
+            this.drawCircleShader.init(this, this.gl);
         }
         if((mode & ShaderMode.LINED_CIRCLE) > 0){
             this.lineCircleShader = new LineCircleShader();
-            this.lineCircleShader.init(this, gl);
+            this.lineCircleShader.init(this, this.gl);
         }
+        if((mode & ShaderMode.FILL_CIRCLE_SLICE) > 0){
+            this.fillCircleSliceShader = new FillCircleSliceShader();
+            this.fillCircleSliceShader.init(this, this.gl);
+        }
+//        if((mode & ShaderMode.DRAW_CIRCLE_SLICE) > 0){
+//            this.drawCircleSliceShader = new DrawCircleShader();
+//            this.drawCircleSliceShader.init(this, this.gl);
+//        }
+//        if((mode & ShaderMode.LINED_CIRCLE_SLICE) > 0){
+//            this.lineCircleSliceShader = new LineCircleSliceShader();
+//            this.lineCircleSliceShader.init(this, this.gl);
+//        }
     }
     
     public prepareRenderPass(): void{

@@ -5,6 +5,7 @@ import {Mode} from "./mode";
 import {ShaderMode} from "./shaders/shaderMode";
 import {Shader} from "./shaders/shader";
 import {CircleElement} from "./shaders/elem/circleElement";
+import {CircleSliceElement} from "./shaders/elem/circleSliceElement";
 
 export class OpenGL{
     private gl: WebGLRenderingContext;
@@ -817,17 +818,71 @@ export class OpenGL{
     
     //draws a circular slice  
     public drawCircleSlice(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
-        this.drawCircleSliceImpl(x, y, radius, start, end, false, true, null, color, precision);
+        if(this.shader.isShaderEnabled(ShaderMode.DRAW_CIRCLE_SLICE)){
+            this.shaderCircleSlice(x, y, radius, start, end, ShaderMode.DRAW_CIRCLE_SLICE, this.toColor(color), null);
+        }else{
+            this.drawCircleSliceImpl(x, y, radius, start, end, false, true, null, color, precision);
+        }
     }
     
     //draws a circular slice
     public fillCircleSlice(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
-        this.drawCircleSliceImpl(x, y, radius, start, end, true, false, color, null, precision);
+        if(this.shader.isShaderEnabled(ShaderMode.FILL_CIRCLE_SLICE)){
+            this.shaderCircleSlice(x, y, radius, start, end, ShaderMode.DRAW_CIRCLE_SLICE, this.toColor(color), null);
+        }else{
+            this.drawCircleSliceImpl(x, y, radius, start, end, true, false, color, null, precision);
+        }
     }
     
     //draws a circular slice
     public fillLinedCircleSlice(x: number, y: number, radius: number, start: number, end: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
-        this.drawCircleSliceImpl(x, y, radius, start, end, true, true, fillColor, lineColor, precision);
+        if(this.shader.isShaderEnabled(ShaderMode.LINED_CIRCLE_SLICE)){
+            this.shaderCircleSlice(x, y, radius, start, end, ShaderMode.DRAW_CIRCLE_SLICE, this.toColor(fillColor), this.toColor(lineColor));
+        }else{
+            this.drawCircleSliceImpl(x, y, radius, start, end, true, true, fillColor, lineColor, precision);
+        }
+    }
+    
+    private shaderCircleSlice(x: number, y: number, radius: number, start: number, end: number, mode: ShaderMode, mainColor: Float32Array, extraColor: Float32Array){
+        var positionBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
+        const pos = new Float32Array(8);
+        pos[0] = (x + radius * 1.001) / this.HALFWIDTH;
+        pos[1] = (y + radius * 1.001) / this.HALFHEIGHT;
+        pos[2] = (x - radius * 1.001) / this.HALFWIDTH;
+        pos[3] = (y + radius * 1.001) / this.HALFHEIGHT;
+        pos[4] = (x + radius * 1.001) / this.HALFWIDTH;
+        pos[5] = (y - radius * 1.001) / this.HALFHEIGHT;
+        pos[6] = (x - radius * 1.001) / this.HALFWIDTH;
+        pos[7] = (y - radius * 1.001) / this.HALFHEIGHT;
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
+
+        if(mode != ShaderMode.LINED_CIRCLE_SLICE){
+            this.arrays.push(<CircleSliceElement>{
+                pos: positionBuffer,
+                color: mainColor,
+                x: x,
+                y: y,
+                rad: radius,
+                span: radius * 2,//TODO change
+                length: pos.length / 2,
+                radius: radius / this.HALFHEIGHT,
+                shader: mode
+            });
+        }else{
+            this.arrays.push(<CircleSliceElement>{
+                pos: positionBuffer,
+                color: mainColor,
+                lineColor: extraColor,
+                x: x,
+                y: y,
+                rad: radius,
+                span: radius * 2,//TODO change
+                length: pos.length / 2,
+                radius: radius / this.HALFHEIGHT,
+                shader: ShaderMode.LINED_CIRCLE
+            });
+        }
     }
     
     //draws a circular slice
