@@ -1,5 +1,5 @@
 /** @author Roan Hofland */
-#define PI 3.1415926535897932384626433832795
+#define PI 3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930382
 #define ratio 1.7777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777778
 
 uniform lowp float radius;
@@ -16,8 +16,23 @@ void main() {
 	lowp float dy = vpos.y - cy;
 	lowp float val = sqrt(pow(dx, 2.0) + pow(dy, 2.0));
 	lowp float angle = atan(dy, dx);
-	if(val <= radius && angle >= start - PI && angle <= end - PI){
-		gl_FragColor = vec4(color, 1.0);
+	gl_FragColor = vec4(color, 0.1);
+	if(val <= radius){
+		if(start < PI){
+			if(end < PI){
+				if(angle >= start && angle <= end){
+					gl_FragColor = vec4(color, 1.0);
+				}
+			}else{
+				if(angle >= start || angle <= end - 2.0 * PI){
+					gl_FragColor = vec4(color, 1.0);
+				}
+			}
+		}else{
+			if(angle >= start - 2.0 * PI && angle <= end - 2.0 * PI){
+				gl_FragColor = vec4(color, 1.0);
+			}
+		}
 	}
 }
 /** @end-author Roan Hofland */     

@@ -30,7 +30,7 @@ export class OpenGL{
 
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
-        this.shader = new Shader(gl, this, ShaderMode.CIRCLES);//TODO
+        this.shader = new Shader(gl, this, ShaderMode.ALL);//TODO
         
         //set the canvas background color to white
         this.setBackgroundColor(1.0, 1.0, 1.0);
