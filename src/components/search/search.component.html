@@ -1,0 +1,14 @@
+<div class="search">
+    <div class="mdl-textfield mdl-js-textfield search-field">
+        <i class="material-icons">search</i>
+
+        <input class="mdl-textfield__input" type="search" placeholder="Search..." id="search" [formControl]="searchControl">
+    </div>
+
+    <div class="search-results" [hidden]="!searching">
+        <div class="search-result" *ngFor="let result of results" (click)="select(result)">{{ result.label }}</div>
+        <div class="search-result search-no-result" *ngIf="results.length == 0">No results found.</div>
+    </div>
+
+    <div class="search-results-overlay" [hidden]="!searching" (click)="close()"></div>
+</div>

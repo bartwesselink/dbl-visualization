@@ -26,6 +26,7 @@ import {LoaderComponent} from '../components/loader/loader.component';
 import {SelectBus} from '../providers/select-bus';
 import {TooltipComponent} from '../components/tooltip/tooltip.component';
 import {SubtreeBus} from "../providers/subtree-bus";
+import {SearchComponent} from '../components/search/search.component';
 
 @NgModule({
     declarations: [
@@ -45,6 +46,7 @@ import {SubtreeBus} from "../providers/subtree-bus";
         WelcomePageComponent,
         LoaderComponent,
         TooltipComponent,
+        SearchComponent,
     ],
     imports: [
         BrowserModule,

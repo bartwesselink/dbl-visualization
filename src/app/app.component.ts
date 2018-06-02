@@ -59,8 +59,14 @@ export class AppComponent implements OnInit {
         const line = this.parser.extractLines(data);
 
         if (line !== null) {
+            const hadTree = this.tree != null;
+          
             this.openTree(this.parser.parseTree(line));
             this.originalTree = this.tree;
+          
+            if(!hadTree) {
+                this.resizeActiveTab();
+            }
         }
     }
     /** @end-author Jordy Verhoeven */
