@@ -15,8 +15,8 @@ export class ViewCubeComponent implements OnInit {
     public zoomSliderValue: number = 50;
     private zoomDragging: boolean = false;
     public readonly sliderPadding: number = 5;
-    private readonly zoomMin = 0.2;
-    private readonly zoomMax = 1.8;
+    private readonly zoomMin = -2;
+    private readonly zoomMax = 20;
 
     public ngOnInit(): void {
         dialogPolyfill.registerDialog(this.dialog.nativeElement);
@@ -51,7 +51,7 @@ export class ViewCubeComponent implements OnInit {
 
 
         const zoomLevel = (this.zoomMax - (this.zoomMax - this.zoomMin) * (sliderPosition / holderHeight)) + this.zoomMin;
-        this.zoomFunction(zoomLevel);
+        this.zoomFunction(Math.pow(2.0, zoomLevel));
 
         // the formula adds padding ands makes sure the cursor is always at least 5% from the top.
         this.zoomSliderValue = sliderPosition / holderHeight * 100 * (1 - (2 * this.sliderPadding) / 100) + this.sliderPadding;
