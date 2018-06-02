@@ -10,7 +10,6 @@ export class SubtreeBus {
     public subtreeSelected: Observable<Node> = this.subtreeSelectedSubject.asObservable();
 
     public openSubtree(node: Node) {
-        console.log(node);
         this.subtreeSelectedSubject.next(node);
     }
     /** @end-author Mathijs Boezer */
