@@ -15,23 +15,18 @@ void main() {
 	lowp float dx = (vpos.x - cx) * ratio;
 	lowp float dy = vpos.y - cy;
 	lowp float val = sqrt(pow(dx, 2.0) + pow(dy, 2.0));
-	lowp float angle = atan(dy, dx);
-	gl_FragColor = vec4(color, 0.1);
 	if(val <= radius){
+		lowp float angle = atan(dy, dx);
 		if(start < PI){
 			if(end < PI){
 				if(angle >= start && angle <= end){
 					gl_FragColor = vec4(color, 1.0);
 				}
-			}else{
-				if(angle >= start || angle <= end - 2.0 * PI){
-					gl_FragColor = vec4(color, 1.0);
-				}
-			}
-		}else{
-			if(angle >= start - 2.0 * PI && angle <= end - 2.0 * PI){
+			}else if(angle >= start || angle <= end - 2.0 * PI){
 				gl_FragColor = vec4(color, 1.0);
 			}
+		}else if(angle >= start - 2.0 * PI && angle <= end - 2.0 * PI){
+			gl_FragColor = vec4(color, 1.0);
 		}
 	}
 }
