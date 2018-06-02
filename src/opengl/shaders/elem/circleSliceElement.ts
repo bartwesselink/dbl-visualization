@@ -1,12 +1,10 @@
 /** @author Roan Hofland */
-import {Element} from "../../element";
+import { CircleElement } from "./circleElement";
 
-export interface CircleSliceElement extends Element{
-    radius: number;
+export interface CircleSliceElement extends CircleElement{
     cx: number;
     cy: number;
     start: number;
     end: number;
-    lineColor?: Float32Array;
 }
 /** @end-author Roan Hofland */
