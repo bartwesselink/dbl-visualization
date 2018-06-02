@@ -24,19 +24,19 @@ export abstract class CircleShader implements ShaderBase{
     }
     
     public preProcess(elem: Element, gl: WebGLRenderingContext, opengl: OpenGL): void {
-        var tx = this.getElemX(elem) + opengl.getDX() * opengl.HALFWIDTH;
-        var ty = this.getElemY(elem) + opengl.getDY() * opengl.HALFHEIGHT;
+        var tx = this.getElementX(elem) + opengl.getDX() * opengl.HALFWIDTH;
+        var ty = this.getElementY(elem) + opengl.getDY() * opengl.HALFHEIGHT;
         gl.uniform1f(this.centerXUniform, ((opengl.getRX() * tx - opengl.getRY() * ty) / opengl.HALFWIDTH) * opengl.getZoom());
         gl.uniform1f(this.centerYUniform, ((opengl.getRY() * tx + opengl.getRX() * ty) / opengl.HALFHEIGHT) * opengl.getZoom());
         gl.uniform1f(this.radiusUniform, (elem as CircleElement).radius * opengl.getZoom());
         this.postProcess(elem, gl);
     }
     
-    public getElemX(elem: Element){
+    public getElementX(elem: Element){
         return elem.x;
     }
     
-    public getElemY(elem: Element){
+    public getElementY(elem: Element){
         return elem.y;
     }
     
