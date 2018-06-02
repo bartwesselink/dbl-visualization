@@ -149,7 +149,7 @@ export class Shader{
         return (this.mode & mode) > 0;
     }
     
-    public initShader(vss: string, fss: string): WebGLProgram {
+    public initShader(vss: any, fss: any): WebGLProgram {
         var fragmentShader;
         var vertexShader;
         {

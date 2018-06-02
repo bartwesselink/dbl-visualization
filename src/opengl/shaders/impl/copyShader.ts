@@ -3,8 +3,8 @@ import {ShaderBase} from "../abstractShader";
 import {Shader} from "../shader";
 import {Element} from "../../element";
 import {OpenGL} from "../../opengl";
-import {vertexSource} from "../vertex/copyVertexShader";
-import {fragmentSource} from "../fragment/copyFragmentShader";
+import * as vertexSource from "raw-loader!../vertex/copyVertexShader.glsl";
+import * as fragmentSource from "raw-loader!../fragment/copyFragmentShader.glsl";
 
 export class CopyShader implements ShaderBase{
     public shader: WebGLProgram;

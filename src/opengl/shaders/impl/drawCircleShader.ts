@@ -1,8 +1,8 @@
 /** @author Roan Hofland */
 import {CircleShader} from "./circleShader";
 import {Shader} from "../shader";
-import {vertexSource} from "../vertex/interpolatingVertexShader";
-import {fragmentSource} from "../fragment/drawCircleFragmentShader";
+import * as vertexSource from "raw-loader!../vertex/interpolatingVertexShader.glsl";
+import * as fragmentSource from "raw-loader!../fragment/drawCircleFragmentShader.glsl";
 import {Element} from "../../element";
 import {OpenGL} from "../../opengl";
 
