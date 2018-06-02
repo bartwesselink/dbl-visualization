@@ -20,15 +20,15 @@ void main() {
 		if(start < PI){
 			if(end < PI){
 				if(angle >= start && angle <= end){
-					gl_FragColor = vec4(color, 400.0 * ((min(min(end - angle, 0.0025 / val), angle - start)) * val + min(radius - val, 0.0)));
+					gl_FragColor = vec4(color, 400.0 * (min(min(end - angle, 0.0025 / val), angle - start) * val + min(radius - val, 0.0)));
 				}
 			}else if(angle <= end - 2.0 * PI){
-				gl_FragColor = vec4(color, 400.0 * ((min(end - angle - 2.0 * PI, 0.0025 / val)) * val + min(radius - val, 0.0)));
+				gl_FragColor = vec4(color, 400.0 * (min(end - angle - 2.0 * PI, 0.0025 / val) * val + min(radius - val, 0.0)));
 			}else if(angle >= start){
-				gl_FragColor = vec4(color, 400.0 * ((min(angle - start, 0.0025 / val)) * val + min(radius - val, 0.0)));
+				gl_FragColor = vec4(color, 400.0 * (min(angle - start, 0.0025 / val) * val + min(radius - val, 0.0)));
 			}
 		}else if(angle >= start - 2.0 * PI && angle <= end - 2.0 * PI){
-			gl_FragColor = vec4(color, 400.0 * ((min(min(angle - start + 2.0 * PI, 0.0025 / val), end - 2.0 * PI - angle)) * val + min(radius - val, 0.0)));
+			gl_FragColor = vec4(color, 400.0 * (min(min(angle - start + 2.0 * PI, 0.0025 / val), end - 2.0 * PI - angle) * val + min(radius - val, 0.0)));
 		}
 	}
 }
