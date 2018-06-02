@@ -164,15 +164,29 @@ export class AppComponent implements OnInit {
     /** @author Mathijs Boezer */
 
     private openTree(node: Node): void {
+        // since we are reusing the same tree selection needs to be reset before loading the new tree
+        if (this.tree && this.tree.selectedNode) {
+            this.tree.selectedNode.selected = false;
+            this.tree.selectedNode = null;
+        }
+
         this.tree = node;
 
         setTimeout(() => {
             this.sidebar.reloadData();
             this.redrawAllTabs();
+            this.resetAllTabTransformations();
         }, 100);
+    }
+
+    private resetAllTabTransformations() {
+        for (let tab of this.tabs) {
+            tab.window.resetTransformation();
+        }
     }
 
     public restoreTree() {
         this.openTree(this.originalTree);
     }
+    /** @end-author Mathijs Boezer */
 }

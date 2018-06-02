@@ -358,4 +358,5 @@ export class WindowComponent implements OnInit {
         this.gl.resetTransformations();
         this.render();
     }
+    /** @end-author Mathijs Boezer */
 }
