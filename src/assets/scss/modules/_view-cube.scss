@@ -92,6 +92,7 @@
 
 .view-cube-rotate {
   position: absolute;
+  z-index: 3;
   background-size: 100% 100%;
   cursor: pointer;
   width: 7rem;
@@ -169,4 +170,5 @@
 
 .help-spacing {
   margin: 0.4rem 0;
+  height: 0.8rem;
 }

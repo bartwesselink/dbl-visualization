@@ -15,8 +15,9 @@ export class ViewCubeComponent implements OnInit {
     public zoomSliderValue: number = 50;
     private zoomDragging: boolean = false;
     public readonly sliderPadding: number = 5;
-    private readonly zoomMin = 0.2;
-    private readonly zoomMax = 1.8;
+    private readonly zoomMin = 0.1;
+    private readonly zoomMax = 8;
+    private readonly zoomCenter = 1;
 
     public ngOnInit(): void {
         dialogPolyfill.registerDialog(this.dialog.nativeElement);
@@ -49,12 +50,55 @@ export class ViewCubeComponent implements OnInit {
             sliderPosition = holderHeight;
         }
 
-
-        const zoomLevel = (this.zoomMax - (this.zoomMax - this.zoomMin) * (sliderPosition / holderHeight)) + this.zoomMin;
-        this.zoomFunction(zoomLevel);
-
         // the formula adds padding ands makes sure the cursor is always at least 5% from the top.
-        this.zoomSliderValue = sliderPosition / holderHeight * 100 * (1 - (2 * this.sliderPadding) / 100) + this.sliderPadding;
+        // it also calculates how far from the center it should be, because it does not have to be the middle zoom level
+
+        const halfHeight = holderHeight / 2;
+
+        let zoomLevel, startPercentage, maxPercentage, position;
+
+        if (sliderPosition >= halfHeight) {
+            const correctedPosition = sliderPosition - halfHeight;
+
+            zoomLevel = (1 - correctedPosition / halfHeight) * (this.zoomCenter - this.zoomMin) + this.zoomMin;
+
+            this.zoomFunction(zoomLevel);
+
+            startPercentage = 50;
+            maxPercentage = 50 - this.sliderPadding;
+            position = startPercentage + correctedPosition / halfHeight * maxPercentage;
+
+            this.zoomSliderValue = position;
+        } else {
+            zoomLevel = (1 - sliderPosition / halfHeight) * (this.zoomMax - this.zoomCenter) + this.zoomCenter;
+
+            this.zoomFunction(zoomLevel);
+
+            startPercentage = this.sliderPadding;
+            maxPercentage = 50 - this.sliderPadding;
+            position = startPercentage + sliderPosition / halfHeight * maxPercentage;
+
+            this.zoomSliderValue = position;
+        }
+    }
+
+    public setZoomLevel(level: number): void {
+        level = Math.max(this.zoomMin, level);
+        level = Math.min(this.zoomMax, level);
+
+        let startPercentage, maxPercentage;
+
+        if (level <= this.zoomCenter) {
+            startPercentage = 50;
+            maxPercentage = 50 - this.sliderPadding;
+
+            this.zoomSliderValue = (1 - (level - this.zoomMin) / (this.zoomCenter - this.zoomMin)) * maxPercentage + startPercentage;
+        } else {
+            startPercentage = this.sliderPadding;
+            maxPercentage = 50 - this.sliderPadding;
+
+            this.zoomSliderValue = (1 - (level - this.zoomCenter) / (this.zoomMax - this.zoomCenter)) * maxPercentage + startPercentage;
+        }
     }
 
     public stopZoomDrag(): void {

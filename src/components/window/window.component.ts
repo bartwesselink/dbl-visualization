@@ -21,6 +21,7 @@ import {RotatedQuadOptions} from '../../interfaces/rotated-quad-options';
 import {CircleOptions} from '../../interfaces/circle-options';
 import {EllipsoidOptions} from '../../interfaces/ellipsoid-options';
 import {RingSliceOptions} from '../../interfaces/ring-slice-options';
+import {ViewCubeComponent} from '../view-cube/view-cube.component';
 
 @Component({
     selector: 'app-window',
@@ -28,6 +29,7 @@ import {RingSliceOptions} from '../../interfaces/ring-slice-options';
 })
 export class WindowComponent implements OnInit {
     @ViewChild('canvas') private canvas: ElementRef;
+    @ViewChild(ViewCubeComponent) private viewCube: ViewCubeComponent;
     @Input('tree') private tree: Node;
     @Input('snackbar') private snackbar: any;
     @Input('visualizer') public visualizer: Visualizer;
@@ -114,8 +116,7 @@ export class WindowComponent implements OnInit {
 
     public zoomValue(value: number) {
         this.gl.resetZoom();
-        this.gl.scale(value);
-        this.render();
+        this.scaleView(value);
     }
 
     public keyEvent(event: KeyboardEvent): void {
@@ -152,13 +153,11 @@ export class WindowComponent implements OnInit {
                 break;
             case 'r':
             case 'R':
-                this.gl.scale(1 + this.DEFAULT_DS);
-                this.render();
+                this.scaleView(1 + this.DEFAULT_DS);
                 break;
             case 'f':
             case 'F':
-                this.gl.scale(1 - this.DEFAULT_DS);
-                this.render();
+                this.scaleView(1 - this.DEFAULT_DS);
                 break;
             case 't':
             case 'T':
@@ -193,6 +192,13 @@ export class WindowComponent implements OnInit {
                 this.selectBus.selectNode(node);
             }
         }
+    }
+
+    private scaleView(value: number) {
+        this.gl.scale(value);
+        this.render();
+
+        this.viewCube.setZoomLevel(this.gl.getZoom());
     }
 
     private clearClickTimer(): void {
@@ -245,7 +251,7 @@ export class WindowComponent implements OnInit {
         if(this.down){
             this.gl.rotate(event.deltaY / this.ROTATION_NORMALISATION);
         }else{
-            this.gl.scale(Math.max(0.1, 1.0 - (event.deltaY / this.ZOOM_NORMALISATION)));
+            this.scaleView(Math.max(0.1, 1.0 - (event.deltaY / this.ZOOM_NORMALISATION)));
         }
         this.render();
     }
