@@ -2,6 +2,7 @@
     <div class="mdl-card__title">
         <h2 class="mdl-card__title-text">Tree Navigator</h2>
     </div>
+    <app-search [tree]="tree"></app-search>
     <div class="mdl-card__supporting-text sidebar-content" #content>
         <app-tree-navigator #navigator [tree]="tree" [parent]="true"></app-tree-navigator>
     </div>

@@ -53,12 +53,18 @@ export class AppComponent implements OnInit {
         const line = this.parser.extractLines(data);
 
         if (line !== null) {
+            const hadTree = this.tree != null;
+
             this.tree = this.parser.parseTree(line);
 
             setTimeout(() => {
                 this.sidebar.reloadData();
                 this.redrawAllTabs();
             }, 100);
+
+            if(!hadTree) {
+                this.resizeActiveTab();
+            }
         }
     }
     /** @end-author Jordy Verhoeven */

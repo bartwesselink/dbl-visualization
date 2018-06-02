@@ -33,7 +33,7 @@
                     </div>
                 </section>
             </div>
-            <div class="holder-sidebar">
+            <div class="holder-sidebar" [hidden]="!tree">
                 <app-sidebar [tree]="tree"></app-sidebar>
             </div>
         </div>
