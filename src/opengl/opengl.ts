@@ -847,17 +847,17 @@ export class OpenGL{
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         const pos = new Float32Array(8);
-        pos[0] = (x + radius * 1.001) / this.HALFWIDTH;
-        pos[1] = (y + radius * 1.001) / this.HALFHEIGHT;
-        pos[2] = (x - radius * 1.001) / this.HALFWIDTH;
-        pos[3] = (y + radius * 1.001) / this.HALFHEIGHT;
-        pos[4] = (x + radius * 1.001) / this.HALFWIDTH;
-        pos[5] = (y - radius * 1.001) / this.HALFHEIGHT;
-        pos[6] = (x - radius * 1.001) / this.HALFWIDTH;
-        pos[7] = (y - radius * 1.001) / this.HALFHEIGHT;
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
 
         if(end - start > 90){
+            pos[0] = (x + radius * 1.001) / this.HALFWIDTH;
+            pos[1] = (y + radius * 1.001) / this.HALFHEIGHT;
+            pos[2] = (x - radius * 1.001) / this.HALFWIDTH;
+            pos[3] = (y + radius * 1.001) / this.HALFHEIGHT;
+            pos[4] = (x + radius * 1.001) / this.HALFWIDTH;
+            pos[5] = (y - radius * 1.001) / this.HALFHEIGHT;
+            pos[6] = (x - radius * 1.001) / this.HALFWIDTH;
+            pos[7] = (y - radius * 1.001) / this.HALFHEIGHT;
+            
             if(mode != ShaderMode.LINED_CIRCLE_SLICE){
                 this.arrays.push(<CircleSliceElement>{
                     pos: positionBuffer,
@@ -887,8 +887,18 @@ export class OpenGL{
                 });
             }
         }else{
-            var dcx = radius * 0.71 * Math.cos(start + ((end - start) / 2));
-            var dcy = radius * 0.71 * Math.sin(start + ((end - start) / 2));
+            var dcx = radius * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
+            var dcy = radius * 0.71 * Math.sin((start + ((end - start) / 2)) * Matrix.oneDeg);
+            
+            pos[0] = (x + dcx + radius * 0.71 * 1.001) / this.HALFWIDTH;
+            pos[1] = (y + dcy + radius * 0.71 * 1.001) / this.HALFHEIGHT;
+            pos[2] = (x + dcx - radius * 0.71 * 1.001) / this.HALFWIDTH;
+            pos[3] = (y + dcy + radius * 0.71 * 1.001) / this.HALFHEIGHT;
+            pos[4] = (x + dcx + radius * 0.71 * 1.001) / this.HALFWIDTH;
+            pos[5] = (y + dcy - radius * 0.71 * 1.001) / this.HALFHEIGHT;
+            pos[6] = (x + dcx - radius * 0.71 * 1.001) / this.HALFWIDTH;
+            pos[7] = (y + dcy - radius * 0.71 * 1.001) / this.HALFHEIGHT;
+            
             if(mode != ShaderMode.LINED_CIRCLE_SLICE){
                 this.arrays.push(<CircleSliceElement>{
                     pos: positionBuffer,
@@ -922,6 +932,8 @@ export class OpenGL{
                 });
             }
         }
+        
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
     }
     
     //draws a circular slice
@@ -940,8 +952,8 @@ export class OpenGL{
         if(end - start > 90){
             this.renderEllipsoidImpl(pos, x, y, radius, radius * 2, fill, line, lineColor, fillColor, 0);
         }else{
-            var dcx = radius * 0.71 * Math.cos(start + ((end - start) / 2));
-            var dcy = radius * 0.71 * Math.sin(start + ((end - start) / 2));
+            var dcx = radius * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
+            var dcy = radius * 0.71 * Math.sin((start + ((end - start) / 2)) * Matrix.oneDeg);
             this.renderEllipsoidImpl(pos, x + dcx, y + dcy, radius * 0.71, radius * 1.42, fill, line, lineColor, fillColor, 0);
         }
     }
