@@ -2,8 +2,8 @@
 import { CircleElement } from "./circleElement";
 
 export interface CircleSliceElement extends CircleElement{
-    cx: number;
-    cy: number;
+    cx?: number;
+    cy?: number;
     start: number;
     end: number;
 }

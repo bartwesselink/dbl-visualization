@@ -857,33 +857,70 @@ export class OpenGL{
         pos[7] = (y - radius * 1.001) / this.HALFHEIGHT;
         this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
 
-        if(mode != ShaderMode.LINED_CIRCLE_SLICE){
-            this.arrays.push(<CircleSliceElement>{
-                pos: positionBuffer,
-                color: mainColor,
-                x: x,
-                y: y,
-                rad: radius,
-                span: radius * 2,//TODO change
-                length: pos.length / 2,
-                radius: radius / this.HALFHEIGHT,
-                start: start * Matrix.oneDeg,
-                end: end * Matrix.oneDeg,
-                shader: mode
-            });
+        if(end - start > 90){
+            if(mode != ShaderMode.LINED_CIRCLE_SLICE){
+                this.arrays.push(<CircleSliceElement>{
+                    pos: positionBuffer,
+                    color: mainColor,
+                    x: x,
+                    y: y,
+                    rad: radius,
+                    span: radius * 2,
+                    length: pos.length / 2,
+                    radius: radius / this.HALFHEIGHT,
+                    start: start * Matrix.oneDeg,
+                    end: end * Matrix.oneDeg,
+                    shader: mode
+                });
+            }else{
+                this.arrays.push(<CircleSliceElement>{
+                    pos: positionBuffer,
+                    color: mainColor,
+                    lineColor: extraColor,
+                    x: x,
+                    y: y,
+                    rad: radius,
+                    span: radius * 2,
+                    length: pos.length / 2,
+                    radius: radius / this.HALFHEIGHT,
+                    shader: ShaderMode.LINED_CIRCLE
+                });
+            }
         }else{
-            this.arrays.push(<CircleSliceElement>{
-                pos: positionBuffer,
-                color: mainColor,
-                lineColor: extraColor,
-                x: x,
-                y: y,
-                rad: radius,
-                span: radius * 2,//TODO change
-                length: pos.length / 2,
-                radius: radius / this.HALFHEIGHT,
-                shader: ShaderMode.LINED_CIRCLE
-            });
+            var dcx = radius * 0.71 * Math.cos(start + ((end - start) / 2));
+            var dcy = radius * 0.71 * Math.sin(start + ((end - start) / 2));
+            if(mode != ShaderMode.LINED_CIRCLE_SLICE){
+                this.arrays.push(<CircleSliceElement>{
+                    pos: positionBuffer,
+                    color: mainColor,
+                    x: x + dcx,
+                    y: y + dcy,
+                    cx: x,
+                    cy: y,
+                    rad: radius * 0.71,
+                    span: radius * 1.42,
+                    length: pos.length / 2,
+                    radius: radius / this.HALFHEIGHT,
+                    start: start * Matrix.oneDeg,
+                    end: end * Matrix.oneDeg,
+                    shader: mode
+                });
+            }else{
+                this.arrays.push(<CircleSliceElement>{
+                    pos: positionBuffer,
+                    color: mainColor,
+                    lineColor: extraColor,
+                    x: x + dcx,
+                    y: y + dcy,
+                    cx: x,
+                    cy: y,
+                    rad: radius * 0.71,
+                    span: radius * 1.42,
+                    length: pos.length / 2,
+                    radius: radius / this.HALFHEIGHT,
+                    shader: ShaderMode.LINED_CIRCLE
+                });
+            }
         }
     }
     

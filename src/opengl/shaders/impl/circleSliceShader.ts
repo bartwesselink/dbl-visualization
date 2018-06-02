@@ -21,5 +21,13 @@ export abstract class CircleSliceShader extends CircleShader{
         gl.uniform1f(this.startUniform, (elem as CircleSliceElement).start);
         gl.uniform1f(this.endUniform, (elem as CircleSliceElement).end);
     }
+    
+    public getElemX(elem: Element){
+        return (elem as CircleSliceElement).cx == null ? elem.x : (elem as CircleSliceElement).cx;
+    }
+    
+    public getElemY(elem: Element){
+        return (elem as CircleSliceElement).cy == null ? elem.y : (elem as CircleSliceElement).cy;
+    }
 }
 /** @end-author Roan Hofland */  
