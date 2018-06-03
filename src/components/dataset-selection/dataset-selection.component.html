@@ -1,12 +1,26 @@
-<div class="mdl-selectfield mdl-js-selectfield">
-    <select class="mdl-selectfield__select" id="professsion" name="professsion">
-        <option value=""></option>
-        <option value="option1">option 1</option>
-        <option value="option2">option 2</option>
-        <option value="option3">option 3</option>
-        <option value="option4">option 4</option>
-        <option value="option5">option 5</option>
-    </select>
-    <div class="mdl-selectfield__icon"><i class="material-icons">arrow_drop_down</i></div>
-    <label class="mdl-selectfield__label" for="professsion">Profession</label>
+<div class="data-selection-container">
+    <span class="data-selection-title">Example datasets</span>
+    <div>
+        <div class="mdl-selectfield mdl-js-selectfield dataset-selector">
+            <select class="mdl-selectfield__select" #defaultSelector id="defaultSelector" name="dataset">
+                <option *ngFor="let dataset of defaultDatasets" value="option1">{{dataset.title}}</option>
+            </select>
+            <div class="mdl-selectfield__icon"><i class="material-icons">arrow_drop_down</i></div>
+            <label class="mdl-selectfield__label" for="defaultSelector">Dataset</label>
+        </div>
+        <button class="mdl-button data-selection-button" (click)="loadDataset(defaultSelector.value)">Load</button>
+    </div>
+</div>
+<div class="data-selection-container">
+    <span class="data-selection-title">User uploaded datasets</span>
+    <div>
+        <div class="mdl-selectfield mdl-js-selectfield dataset-selector">
+            <select class="mdl-selectfield__select" #userSelector id="userSelector" name="dataset">
+                <option *ngFor="let dataset of userUploadedDatasets" value="{{dataset.path}}">{{dataset.title}}</option>
+            </select>
+            <div class="mdl-selectfield__icon"><i class="material-icons">arrow_drop_down</i></div>
+            <label class="mdl-selectfield__label" for="userSelector">Dataset</label>
+        </div>
+        <button class="mdl-button data-selection-button" (click)="loadDataset(userSelector.value)">Load</button>
+    </div>
 </div>
