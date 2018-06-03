@@ -82,7 +82,7 @@ export class WindowComponent implements OnInit {
             node.selected = true;
 
             this.redrawAllScenes();
-            this.interactionHandler.scaleToNode(this.gl, this.canvas, this.currentDraws, node);
+            this.interactionHandler.scaleToNode(this.gl, this.canvas, this.currentDraws, node, this.selectBus.autoZoom);
         });
     }
 

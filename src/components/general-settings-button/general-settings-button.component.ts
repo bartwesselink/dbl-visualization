@@ -44,6 +44,7 @@ export class GeneralSettingsButtonComponent implements OnInit {
         this.form = this.formFactory
             .createFormBuilder()
             .addToggleField('darkMode', false, { label: 'Dark mode' })
+            .addToggleField('autoZoom', true, { label: 'Auto zoom on interaction' })
             .getForm();
     }
 

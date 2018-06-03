@@ -191,7 +191,7 @@ export class InteractionHandler {
         return null;
     }
 
-    public scaleToNode(gl: OpenGL, canvas: ElementRef, currentDraws: Draw[], node: Node): void {
+    public scaleToNode(gl: OpenGL, canvas: ElementRef, currentDraws: Draw[], node: Node, autoZoom: boolean): void {
         const draw: Draw = this.fetchDrawByNode(currentDraws, node);
 
         if (draw != null) {
@@ -294,7 +294,9 @@ export class InteractionHandler {
                 zoomFactor = glHeight / (size * this.ZOOM_FOCUS_FACTOR);
             }
 
-            gl.scale(zoomFactor);
+            if (autoZoom) {
+                gl.scale(zoomFactor);
+            }
         }
     }
 

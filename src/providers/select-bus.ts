@@ -8,6 +8,7 @@ export class SelectBus {
     /** @author Bart Wesselink */
     private nodeSelectedSubject: Subject<Node> = new Subject<Node>();
     public nodeSelected: Observable<Node> = this.nodeSelectedSubject.asObservable();
+    public autoZoom: boolean = true;
 
     public selectNode(node: Node) {
         this.nodeSelectedSubject.next(node);
