@@ -1,19 +1,21 @@
 /** @author Roan Hofland */
-import {CircleSliceShader} from "./circleSliceShader";
+import {RingSliceShader} from "./ringSliceShader";
 import {Shader} from "../shader";
 import * as vertexSource from "raw-loader!../vertex/interpolatingVertexShader.glsl";
 import * as fragmentSource from "raw-loader!../fragment/fillRingSliceFragmentShader.glsl";
 import {Element} from "../../element";
 import {OpenGL} from "../../opengl";
 
-export class FillRingSliceShader extends CircleSliceShader{
+export class FillRingSliceShader extends RingSliceShader{
     private colorUniform: WebGLUniformLocation;
     
     public preInit(shader: Shader): WebGLProgram {
+        console.log("pre fill");
         return shader.initShader(vertexSource, fragmentSource);
     }
     
     public postProcess(elem: Element, gl: WebGLRenderingContext): void {
+        console.log("post");
         gl.uniform3fv(this.colorUniform, elem.color);
     }
     

@@ -732,7 +732,7 @@ export class OpenGL{
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         const pos = new Float32Array(8);
-
+        console.log("ring slice shader call")
         //TODO make the 90 deg distinction
         pos[0] = (x + far * 1.001) / this.HALFWIDTH;
             pos[1] = (y + far * 1.001) / this.HALFHEIGHT;
