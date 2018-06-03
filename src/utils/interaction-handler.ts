@@ -286,15 +286,15 @@ export class InteractionHandler {
 
             gl.glTranslate(-x, -y);
 
-            let zoomFactor;
-
-            if (orientation === Orientation.WIDTH) {
-                zoomFactor = glWidth / (size * this.ZOOM_FOCUS_FACTOR);
-            } else {
-                zoomFactor = glHeight / (size * this.ZOOM_FOCUS_FACTOR);
-            }
-
             if (autoZoom) {
+                let zoomFactor;
+
+                if (orientation === Orientation.WIDTH) {
+                    zoomFactor = glWidth / (size * this.ZOOM_FOCUS_FACTOR);
+                } else {
+                    zoomFactor = glHeight / (size * this.ZOOM_FOCUS_FACTOR);
+                }
+
                 gl.scale(zoomFactor);
             }
         }
