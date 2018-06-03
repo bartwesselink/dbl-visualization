@@ -1,5 +1,5 @@
 /** @author Roan Hofland */
-import { CircleElement } from "./circleElement";
+import {CircleElement} from "./circleElement";
 
 export interface CircleSliceElement extends CircleElement{
     cx?: number;

@@ -14,7 +14,6 @@ export abstract class CircleSliceShader extends CircleShader{
         super.init(shader, gl);
         this.startUniform = gl.getUniformLocation(this.shader, "start");
         this.endUniform = gl.getUniformLocation(this.shader, "end");
-        this.attribPosition = gl.getAttribLocation(this.shader, "pos");
     }
     
     public preProcess(elem: Element, gl: WebGLRenderingContext, opengl: OpenGL): void {
