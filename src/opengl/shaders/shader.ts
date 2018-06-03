@@ -9,6 +9,7 @@ import {DrawCircleShader} from "./impl/drawCircleShader";
 import {LineCircleShader} from "./impl/lineCircleShader";
 import {CopyShader} from "./impl/copyShader";
 import {FillCircleSliceShader} from "./impl/fillCircleSliceShader";
+import {FillRingSliceShader} from "./impl/fillRingSliceShader";
 
 export class Shader{
     private gl: WebGLRenderingContext;
@@ -24,6 +25,7 @@ export class Shader{
     private drawCircleShader: DrawCircleShader = null;
     private lineCircleShader: LineCircleShader = null;
     private fillCircleSliceShader: FillCircleSliceShader = null;
+    private fillRingSliceShader : FillRingSliceShader = null;
 
     constructor(gl: WebGLRenderingContext, opengl: OpenGL, mode: number){
         this.gl = gl;
@@ -57,12 +59,24 @@ export class Shader{
             this.fillCircleSliceShader.init(this, this.gl);
         }
 //        if((mode & ShaderMode.DRAW_CIRCLE_SLICE) > 0){
-//            this.drawCircleSliceShader = new DrawCircleShader();
+//            this.drawCircleSliceShader = new DrawCircleSliceShader();
 //            this.drawCircleSliceShader.init(this, this.gl);
 //        }
 //        if((mode & ShaderMode.LINED_CIRCLE_SLICE) > 0){
 //            this.lineCircleSliceShader = new LineCircleSliceShader();
 //            this.lineCircleSliceShader.init(this, this.gl);
+//        }
+        if((mode & ShaderMode.FILL_RING_SLICE) > 0){
+            this.fillRingSliceShader = new FillRingSliceShader();
+            this.fillRingSliceShader.init(this, this.gl);
+        }
+//        if((mode & ShaderMode.DRAW_RING_SLICE) > 0){
+//            this.drawRingSliceShader = new DrawRingSliceShader();
+//            this.drawRingSliceShader.init(this, this.gl);
+//        }
+//        if((mode & ShaderMode.LINED_RING_SLICE) > 0){
+//            this.lineRingSliceShader = new LineRingSliceShader();
+//            this.lineRingSliceShader.init(this, this.gl);
 //        }
     }
     
@@ -89,7 +103,6 @@ export class Shader{
             this.setShader(this.lineCircleShader);
             break;
         case ShaderMode.FILL_CIRCLE_SLICE:
-            console.log("shader fill slice")
             this.setShader(this.fillCircleSliceShader);
             break;
 //        case ShaderMode.DRAW_CIRCLE_SLICE:
@@ -97,6 +110,15 @@ export class Shader{
 //            break;
 //        case ShaderMode.LINED_CIRCLE_SLICE:
 //            this.setShader(this.lineCircleSliceShader);
+//            break;
+        case ShaderMode.FILL_RING_SLICE:
+            this.setShader(this.fillRingSliceShader);
+            break;
+//        case ShaderMode.DRAW_RING_SLICE:
+//            this.setShader(this.drawRingSliceShader);
+//            break;
+//        case ShaderMode.LINED_RING_SLICE:
+//            this.setShader(this.lineRingSliceShader);
 //            break;
         }
         
