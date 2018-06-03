@@ -26,6 +26,7 @@ import {LoaderComponent} from '../components/loader/loader.component';
 import {SelectBus} from '../providers/select-bus';
 import {TooltipComponent} from '../components/tooltip/tooltip.component';
 import {SearchComponent} from '../components/search/search.component';
+import {DatasetSelectionComponent} from "../components/dataset-selection/dataset-selection.component";
 
 @NgModule({
     declarations: [
@@ -46,6 +47,7 @@ import {SearchComponent} from '../components/search/search.component';
         LoaderComponent,
         TooltipComponent,
         SearchComponent,
+        DatasetSelectionComponent,
     ],
     imports: [
         BrowserModule,
