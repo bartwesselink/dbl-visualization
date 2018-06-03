@@ -19,8 +19,23 @@ export abstract class CircleSliceShader extends CircleShader{
     
     public preProcess(elem: Element, gl: WebGLRenderingContext, opengl: OpenGL): void {
         super.preProcess(elem, gl, opengl);
-        gl.uniform1f(this.startUniform, (elem as CircleSliceElement).start - opengl.getRotation() * Matrix.oneDeg);
-        gl.uniform1f(this.endUniform, (elem as CircleSliceElement).end - opengl.getRotation() * Matrix.oneDeg);
+        var r = (opengl.getRotation() % 360.0) * Matrix.oneDeg;
+        var a = 0;
+        if(r > Math.PI){
+            a = 2.0 * Math.PI;
+        }else if(r < -Math.PI){
+            a = -2.0 * Math.PI;
+        }
+        
+        var s = ((elem as CircleSliceElement).start - r) + a;
+        var e = ((elem as CircleSliceElement).end - r) + a;
+        if(elem.x == 2100){
+            //0 - 360 originally
+            console.log("s=", (s / Matrix.oneDeg) + " e=" + (e / Matrix.oneDeg), " r=" + opengl.getRotation(), " a=" + (a / Matrix.oneDeg));
+        }
+        
+        gl.uniform1f(this.startUniform, s);
+        gl.uniform1f(this.endUniform, e);
     }
     
     public getElementX(elem: Element){
