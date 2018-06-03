@@ -48,6 +48,11 @@ export class GeneralSettingsButtonComponent implements OnInit {
             .addToggleField('colorMode', true, {label: 'Color mode'})
             .addChoiceField('palette', 'default', {label: 'Color palette', expanded: false, choices: {default: 'default', alt: 'alt', greyScale: 'greyScale'}})
             /** @end-author Nico Klaassen */
+            /** @author Jules Cornelissen */
+            .addToggleField('gradientMapType', true, {label: 'Gradient per subtree'})
+            .addChoiceField('gradientType', 'hsv', {label: 'Gradient type', expanded: false, choices: {hsv: 'HSV', RGBLinear: 'RGB linear'}})
+            .addToggleField('invertHSV', false, {label: 'Invert HSV gradient'})
+            /** @end-author Jules Cornelissen */
             .getForm();
     }
 

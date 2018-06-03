@@ -61,9 +61,9 @@ export class GeneralizedPythagorasTree implements Visualizer {
         const generate = (tree: Node, rectangle: number[], isSelected: boolean = false): void => {
             if (tree.selected === true || isSelected) {
                 isSelected = true;
-                color = palette.gradientColorMapSelected[tree.depth];
+                color = palette.gradientColorMapSelected[tree.maxDepth][tree.depth];
             } else {
-                color = palette.gradientColorMap[tree.depth];
+                color = palette.gradientColorMap[tree.maxDepth][tree.depth];
             }
             // Draw the previously calculated rectangle
             draws.push({

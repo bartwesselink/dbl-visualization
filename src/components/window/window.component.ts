@@ -78,6 +78,10 @@ export class WindowComponent implements OnInit {
     private dragging: boolean = false;
     private readonly clickTimerThreshold: number = 150;
 
+    private gradientMapType: boolean = true;
+    private gradientType: string = "hsv";
+    private invertHSV: boolean = false;
+
     constructor(private formFactory: FormFactory, private workerManager: WorkerManager, private selectBus: SelectBus, private settingsBus: SettingsBus) {
         this.interactionHandler = new InteractionHandler();
 
@@ -102,9 +106,10 @@ export class WindowComponent implements OnInit {
                 this.palette = Palettes.greyScale;
             } else {
                 this.palette = this.getPalette(settings.palette);
-                // this.computeColors();
             }
-
+            this.gradientMapType = settings.gradientMapType;
+            this.gradientType = settings.gradientType;
+            this.invertHSV = settings.invertHSV;
             this.redrawAllScenes();
         });
         /** @end-author Nico Klaassen */
@@ -318,7 +323,7 @@ export class WindowComponent implements OnInit {
     /** @author Jules Cornelissen */
     private computeColors(){
         let selectedDepth: number = this.findSelectedDepth(this.tree);
-        this.palette.calcGradientColorMap(selectedDepth, this.tree.maxDepth);
+        this.palette.calcGradientColorMap(selectedDepth, this.tree.maxDepth, this.gradientMapType, this.gradientType, this.invertHSV);
     }
 
     private findSelectedDepth(subTree: Node): number{
