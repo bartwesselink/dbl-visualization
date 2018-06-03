@@ -660,7 +660,7 @@ export class OpenGL{
     //draws a ring slice
     public drawRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
         if(this.shader.isShaderEnabled(ShaderMode.DRAW_RING_SLICE)){
-            this.shaderRingSlice(x, y, near, far, start, end, color, null, ShaderMode.DRAW_RING_SLICE);
+            this.shaderRingSlice(x, y, near, far, start, end, this.toColor(color), null, ShaderMode.DRAW_RING_SLICE);
         }else{
             const pos = new Float32Array(Math.floor((end - start) / precision) * 4 + 4);
             var c = 0;
@@ -713,7 +713,7 @@ export class OpenGL{
     //draws a ring slice
     public fillRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
         if(this.shader.isShaderEnabled(ShaderMode.FILL_RING_SLICE)){
-            this.shaderRingSlice(x, y, near, far, start, end, color, null, ShaderMode.FILL_RING_SLICE);
+            this.shaderRingSlice(x, y, near, far, start, end, this.toColor(color), null, ShaderMode.FILL_RING_SLICE);
         }else{
             this.fillRingSliceImpl(x, y, near, far, start, end, false, color, null, precision);
         }
@@ -722,13 +722,13 @@ export class OpenGL{
     //draws a ring slice
     public fillLinedRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
         if(this.shader.isShaderEnabled(ShaderMode.LINED_RING_SLICE)){
-            this.shaderRingSlice(x, y, near, far, start, end, fillColor, lineColor, ShaderMode.LINED_RING_SLICE);
+            this.shaderRingSlice(x, y, near, far, start, end, this.toColor(fillColor), this.toColor(lineColor), ShaderMode.LINED_RING_SLICE);
         }else{
             this.fillRingSliceImpl(x, y, near, far, start, end, true, fillColor, lineColor, precision);
         }
     }
     
-    private shaderRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, mainColor: number[], extraColor: number[], mode: ShaderMode): void{
+    private shaderRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, mainColor: Float32Array, extraColor: Float32Array, mode: ShaderMode): void{
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         const pos = new Float32Array(8);
