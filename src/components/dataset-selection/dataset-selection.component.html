@@ -3,7 +3,7 @@
     <div>
         <div class="mdl-selectfield mdl-js-selectfield dataset-selector">
             <select class="mdl-selectfield__select" #defaultSelector id="defaultSelector" name="dataset">
-                <option *ngFor="let dataset of defaultDatasets" value="option1">{{dataset.title}}</option>
+                <option *ngFor="let dataset of defaultDatasets" value="{{dataset.path}}">{{dataset.title}}</option>
             </select>
             <div class="mdl-selectfield__icon"><i class="material-icons">arrow_drop_down</i></div>
             <label class="mdl-selectfield__label" for="defaultSelector">Dataset</label>
