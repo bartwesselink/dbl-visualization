@@ -320,19 +320,20 @@ export class WindowComponent implements OnInit {
             /** @end-author Bart Wesselink */
         });
     }
+
     /** @author Jules Cornelissen */
-    private computeColors(){
+    private computeColors() {
         let selectedDepth: number = this.findSelectedDepth(this.tree);
         this.palette.calcGradientColorMap(selectedDepth, this.tree.maxDepth, this.gradientMapType, this.gradientType, this.invertHSV);
     }
 
-    private findSelectedDepth(subTree: Node): number{
+    private findSelectedDepth(subTree: Node): number {
         let newDepth = 0;
-        for (let child of subTree.children){
-            if (child.selected){
+        for (let child of subTree.children) {
+            if (child.selected) {
                 return child.depth;
             } else {
-                newDepth = Math.max(newDepth,this.findSelectedDepth(child));
+                newDepth = Math.max(newDepth, this.findSelectedDepth(child));
             }
         }
         return newDepth;
