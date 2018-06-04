@@ -50,7 +50,7 @@ export class GeneralSettingsButtonComponent implements OnInit {
             /** @end-author Nico Klaassen */
             /** @author Jules Cornelissen */
             .addToggleField('gradientMapType', true, {label: 'Gradient per subtree'})
-            .addChoiceField('gradientType', 'hsv', {label: 'Gradient type', expanded: false, choices: {hsv: 'HSV', RGBLinear: 'RGB linear'}})
+            .addChoiceField('gradientType', '1', {label: 'Gradient type', expanded: false, choices: {'1': 'HSV', '2': 'RGB linear'}})
             .addToggleField('invertHSV', false, {label: 'Invert HSV gradient'})
             /** @end-author Jules Cornelissen */
             .getForm();

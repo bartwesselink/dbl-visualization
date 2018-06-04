@@ -26,6 +26,7 @@ import {SettingsBus} from "../../providers/settings-bus";
 import {Palette} from "../../models/palette";
 import {Palettes} from "../../utils/palettes";
 import {VisualizerInput} from "../../interfaces/visualizer-input";
+import {GradientType} from "../../enums/gradient-type";
 
 @Component({
     selector: 'app-window',
@@ -79,7 +80,7 @@ export class WindowComponent implements OnInit {
     private readonly clickTimerThreshold: number = 150;
 
     private gradientMapType: boolean = true;
-    private gradientType: string = "hsv";
+    private gradientType: GradientType = GradientType.HSV;
     private invertHSV: boolean = false;
 
     constructor(private formFactory: FormFactory, private workerManager: WorkerManager, private selectBus: SelectBus, private settingsBus: SettingsBus) {

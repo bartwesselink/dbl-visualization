@@ -1,4 +1,5 @@
 import {Color} from '../utils/color'
+import {GradientType} from "../enums/gradient-type";
 
 /** @author Nico Klaassen */
 export class Palette {
@@ -21,16 +22,16 @@ export class Palette {
     private invertHSV: boolean;
     private deselectedGrey: number[] = [0.5, 0.5, 0.5, 1];
 
-    public calcGradientColorMap(minDepth: number, maxDepth: number, gradientMapType: boolean, gradientType: string, invertHSV: boolean) {
+    public calcGradientColorMap(minDepth: number, maxDepth: number, gradientMapType: boolean, gradientType: GradientType, invertHSV: boolean) {
         this.gradientColorMap = [];
         this.gradientColorMapSelected = [];
         this.gradientMapType = gradientMapType;
         this.invertHSV = invertHSV;
-        switch (gradientType) {
-            case "hsv":
+        switch (+gradientType) {
+            case GradientType.HSV:
                 this.calcColorMapHSV(minDepth, maxDepth);
                 break;
-            case "RGBLinear":
+            case GradientType.RGBLinear:
                 this.calcColorMapRGBLinear(minDepth, maxDepth);
                 break;
         }
@@ -71,8 +72,8 @@ export class Palette {
                 for (let depth = 0; depth <= maxDepth; depth++) {
                     this.gradientColorMap.push([]);
                     this.gradientColorMapSelected.push([]);
-                    alpha = this.calcLinearAlphaGradient(minDepth, depth);
-                    hsvValues = this.calcHSVValues(minDepth, depth);
+                    alpha = this.calcLinearAlphaGradient(minDepth, maxDepth);
+                    hsvValues = this.calcHSVValues(minDepth, maxDepth);
                     for (let i = 0; i < hsvValues[0].length; i++) {
                         RGB = this.HSVtoRGB(hsvValues[0][i], hsvValues[1][i], hsvValues[2][i]);
                         this.gradientColorMap[depth].push([RGB[0], RGB[1], RGB[2], alpha[i]]);
@@ -83,8 +84,8 @@ export class Palette {
                 for (let depth = 0; depth <= maxDepth; depth++) {
                     this.gradientColorMap.push([]);
                     this.gradientColorMapSelected.push([]);
-                    alpha = this.calcLinearAlphaGradient(minDepth, depth);
-                    hsvValues = this.calcHSVValues(minDepth, depth);
+                    alpha = this.calcLinearAlphaGradient(minDepth, maxDepth);
+                    hsvValues = this.calcHSVValues(minDepth, maxDepth);
                     for (let i = 0; i < hsvValues[0].length; i++) {
                         RGB = this.HSVtoRGB(hsvValues[0][i], hsvValues[1][i], hsvValues[2][i]);
                         this.gradientColorMap[depth].push(this.deselectedGrey);
