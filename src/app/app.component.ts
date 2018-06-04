@@ -26,6 +26,7 @@ export class AppComponent implements OnInit {
 
     private activeTab: Tab;
     private amountOfWindowsLoading: number = 0;
+    private firstTabAdded: boolean = false;
 
     public readonly MAX_SIDE_BY_SIDE = 4;
 
@@ -248,11 +249,23 @@ export class AppComponent implements OnInit {
     }
 
     private addTab(visualizer: Visualizer) {
-        this.tabs.push({
+        const tab: Tab = {
             id: this.tabs.length + 1,
             visualizer: visualizer,
             active: false,
-        });
+        };
+
+        this.tabs.push(tab);
+
+        if (!this.firstTabAdded) {
+            setTimeout(() => {
+                if (tab.window != null) {
+                    tab.window.checkGpu();
+                }
+            }, 400); // wait for the commponent to set the window
+
+            this.firstTabAdded = true;
+        }
 
         this.switchTab(this.tabs[this.tabs.length - 1]); // always show new visualization when tab is added
         this.showFullScreenLoader = true;

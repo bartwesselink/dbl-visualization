@@ -93,7 +93,11 @@ export class WindowComponent implements OnInit {
 
         this.setHeight();
         this.startScene();
+    }
 
+    /** @author Mathijs Boezer */
+    // called from AppComponent to prevent multiple calls
+    public checkGpu(): void {
         if(!this.gl.isDedicatedGPU()) {
             this.snackbar.MaterialSnackbar.showSnackbar({
                 message: "You are using integrated graphics, this could diminish your experience.",
@@ -103,6 +107,7 @@ export class WindowComponent implements OnInit {
             });
         }
     }
+    /** @author Mathijs Boezer */
 
     public change(value: object) {
         this.lastSettings = value;
@@ -337,8 +342,8 @@ export class WindowComponent implements OnInit {
     public setHeight(): void {
         // fix to set correct canvas size
         setTimeout(() => {
-            this.canvas.nativeElement.width = this.canvas.nativeElement.parentElement.parentElement.innerWidth;
-            this.canvas.nativeElement.height = this.canvas.nativeElement.parentElement.parentElement.innerHeight;
+            this.canvas.nativeElement.width = this.canvas.nativeElement.clientWidth;
+            this.canvas.nativeElement.height = this.canvas.nativeElement.clientHeight;
 
             this.gl.resize(this.canvas.nativeElement.width, this.canvas.nativeElement.height);
             this.redraw();
