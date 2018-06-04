@@ -35,11 +35,20 @@ export class DatasetStorageService {
     public saveDataset(title: string, dataset: string): void {
         try {
             localStorage.setItem(title, dataset);
-            this.userDatasets.push( {title: title}); // add to user dataset options
-            localStorage.setItem(this.userDatasetsStorageKey, JSON.stringify(this.userDatasets)); // save extended list
+            if(!this.isDuplicate(title)) {
+                this.userDatasets.push( {title: title}); // add to user dataset options
+                localStorage.setItem(this.userDatasetsStorageKey, JSON.stringify(this.userDatasets)); // save extended list
+            }
         } catch {
             console.error('Could not save dataset to local storage, it\'s probably full.');
         }
+    }
+
+    private isDuplicate(title: string) {
+        for (let dataset of this.userDatasets) {
+            if (dataset.title === title) return true;
+        }
+        return false;
     }
 
     /** @end-author Mathijs Boezer */
