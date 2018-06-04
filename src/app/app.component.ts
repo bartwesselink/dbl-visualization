@@ -38,7 +38,7 @@ export class AppComponent implements OnInit {
 
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
             this.darkMode = settings.darkMode;
-            this.selectBus.autoZoom = settings.autoZoom;
+            this.selectBus.interactionOptions = settings.interactionSettings;
         });
 
         window.addEventListener('resize', () => this.resizeActiveTab());

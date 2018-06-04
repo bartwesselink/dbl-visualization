@@ -10,6 +10,7 @@ import {EllipsoidOptions} from '../interfaces/ellipsoid-options';
 import {OpenGL} from '../opengl/opengl';
 import {ElementRef} from '@angular/core';
 import {Matrix} from '../opengl/matrix';
+import {InteractionOptions} from "../enums/interaction-options";
 
 /** @author Bart Wesselink */
 export class InteractionHandler {
@@ -191,7 +192,9 @@ export class InteractionHandler {
         return null;
     }
 
-    public scaleToNode(gl: OpenGL, canvas: ElementRef, currentDraws: Draw[], node: Node, autoZoom: boolean): void {
+    public scaleToNode(gl: OpenGL, canvas: ElementRef, currentDraws: Draw[], node: Node, interactionOptions: InteractionOptions): void {
+        if (interactionOptions === InteractionOptions.Nothing) return;
+
         const draw: Draw = this.fetchDrawByNode(currentDraws, node);
 
         if (draw != null) {
@@ -286,7 +289,7 @@ export class InteractionHandler {
 
             gl.glTranslate(-x, -y);
 
-            if (autoZoom) {
+            if (interactionOptions === InteractionOptions.ZoomAndPan) {
                 let zoomFactor;
 
                 if (orientation === Orientation.WIDTH) {
