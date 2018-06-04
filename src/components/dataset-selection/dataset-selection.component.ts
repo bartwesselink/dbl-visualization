@@ -31,7 +31,11 @@ export class DatasetSelectionComponent {
     }
 
     private loadUserDataset(key: string) {
-        this.newContent.emit(this.datasetStorageService.getDataset(key));
+        let content = this.datasetStorageService.getDataset(key);
+
+        if(content !== null) {
+            this.newContent.emit(content);
+        }
     }
     /** @end-author Mathijs Boezer */
 }

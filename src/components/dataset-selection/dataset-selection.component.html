@@ -5,10 +5,8 @@
             <select class="mdl-selectfield__select" #defaultSelector id="defaultSelector">
                 <option *ngFor="let dataset of datasetStorageService.defaultDatasets" value="{{dataset.path}}">{{dataset.title}}</option>
             </select>
-            <div class="mdl-selectfield__icon"><i class="material-icons">arrow_drop_down</i></div>
-            <label class="mdl-selectfield__label" for="defaultSelector">Dataset</label>
         </div>
-        <button class="mdl-button data-selection-button" (click)="loadDataset(defaultSelector.value)">Load</button>
+        <button class="mdl-button data-selection-button" (click)="loadDefaultDataset(defaultSelector.value)">Load</button>
     </div>
 </div>
 <div class="data-selection-container">
@@ -18,8 +16,6 @@
             <select class="mdl-selectfield__select" #userSelector id="userSelector">
                 <option *ngFor="let dataset of datasetStorageService.userDatasets" value="{{dataset.title}}">{{dataset.title}}</option>
             </select>
-            <div class="mdl-selectfield__icon"><i class="material-icons">arrow_drop_down</i></div>
-            <label class="mdl-selectfield__label" for="userSelector">Dataset</label>
         </div>
         <button class="mdl-button data-selection-button" (click)="loadUserDataset(userSelector.value)">Load</button>
     </div>
