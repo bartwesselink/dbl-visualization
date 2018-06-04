@@ -1,4 +1,4 @@
 export enum GradientType {
-    HSV = 1,
-    RGBLinear = 2,
+    RGBLinear = 1,
+    HSV = 2,
 }

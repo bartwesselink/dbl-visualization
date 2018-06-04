@@ -14,7 +14,7 @@ export interface Node {
     expandable?: boolean;
     forceExpand?: boolean;
 
-    // temp
+    // Tree depth information for gradients and visualization calculation
     maxDepth?: number; // Maximum depth of the root to a leaf in the subtree that this nodes resides in
     depth?: number; // Depth of the node
 }

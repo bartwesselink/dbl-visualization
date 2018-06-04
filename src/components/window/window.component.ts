@@ -80,7 +80,7 @@ export class WindowComponent implements OnInit {
     private readonly clickTimerThreshold: number = 150;
 
     private gradientMapType: boolean = true;
-    private gradientType: GradientType = GradientType.HSV;
+    private gradientType: GradientType = GradientType.RGBLinear;
     private invertHSV: boolean = false;
 
     constructor(private formFactory: FormFactory, private workerManager: WorkerManager, private selectBus: SelectBus, private settingsBus: SettingsBus) {
@@ -326,6 +326,9 @@ export class WindowComponent implements OnInit {
     private computeColors() {
         let selectedDepth: number = this.findSelectedDepth(this.tree);
         this.palette.calcGradientColorMap(selectedDepth, this.tree.maxDepth, this.gradientMapType, this.gradientType, this.invertHSV);
+        // console.log(this.palette.primary.rgba)
+        // console.log(this.palette.secondary.rgba)
+        // console.log(this.palette.gradientColorMap)
     }
 
     private findSelectedDepth(subTree: Node): number {

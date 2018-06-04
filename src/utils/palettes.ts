@@ -3,12 +3,12 @@ import {Color} from './color'
 
 export class Palettes {
     static default = new Palette(
-        Color.fromHex('333741'),
-        Color.fromHex('28B799'),
+        Color.fromHex('112C61'),
+        Color.fromHex('2C9SFF'),
         [
-            Color.fromHex('F8bF39'),
-            Color.fromHex('F1EAD1'),
-            Color.fromHex('D75749')
+            Color.fromHex('1F52B2'),
+            Color.fromHex('E00200'),
+            Color.fromHex('EDEDED')
         ]
     );
     static alt = new Palette(
