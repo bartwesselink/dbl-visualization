@@ -1,6 +1,5 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import {DatasetStorageService} from "../../providers/dataset-storage-service";
-import {DatasetFile} from "../../interfaces/dataset-file";
 
 @Component({
     selector: 'app-dataset-selection',
@@ -12,11 +11,8 @@ export class DatasetSelectionComponent {
 
     constructor(public datasetStorageService: DatasetStorageService) {}
 
-    public userUploadedDatasets: DatasetFile[] = [
-        {title: 'test1', path: 'test1path'},
-    ];
-
     private loadDefaultDataset(path: string) {
+        // read text file and emit the content
         let me = this;
         let raw = new XMLHttpRequest();
         raw.open("GET", path, false);
