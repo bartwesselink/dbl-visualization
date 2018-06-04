@@ -11,7 +11,7 @@ export class DatasetSelectionComponent {
 
     constructor(public datasetStorageService: DatasetStorageService) {}
 
-    private loadDefaultDataset(path: string) {
+    public loadDefaultDataset(path: string) {
         // read text file and emit the content
         let me = this;
         let raw = new XMLHttpRequest();
@@ -26,7 +26,7 @@ export class DatasetSelectionComponent {
         raw.send(null);
     }
 
-    private loadUserDataset(key: string) {
+    public loadUserDataset(key: string) {
         let content = this.datasetStorageService.getDataset(key);
 
         if(content !== null) {
