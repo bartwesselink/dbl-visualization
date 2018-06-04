@@ -1,11 +1,6 @@
 import {Component, EventEmitter, Output} from '@angular/core';
-
-interface DatasetFile {
-    title: string;
-    path: string;
-}
-
-
+import {DatasetStorageService} from "../../providers/dataset-storage-service";
+import {DatasetFile} from "../../interfaces/dataset-file";
 
 @Component({
     selector: 'app-dataset-selection',
@@ -15,17 +10,13 @@ export class DatasetSelectionComponent {
     /** @author Mathijs Boezer */
     @Output() newContent = new EventEmitter<string>();
 
-    private defaultDataPath = '/assets/default-data/';
-    public defaultDatasets: DatasetFile[] = [
-        {title: 'NCBI Dataset', path: this.defaultDataPath + 'ncbi-taxonomy.tre'},
-        {title: 'Phylviz', path: this.defaultDataPath + 'newick_example_phyloviz.nwk'},
-    ];
+    constructor(public datasetStorageService: DatasetStorageService) {}
 
     public userUploadedDatasets: DatasetFile[] = [
         {title: 'test1', path: 'test1path'},
     ];
 
-    private loadDataset(path: string) {
+    private loadDefaultDataset(path: string) {
         let me = this;
         let raw = new XMLHttpRequest();
         raw.open("GET", path, false);
@@ -37,6 +28,10 @@ export class DatasetSelectionComponent {
             }
         };
         raw.send(null);
+    }
+
+    private loadUserDataset(key: string) {
+        this.newContent.emit(this.datasetStorageService.getDataset(key));
     }
     /** @end-author Mathijs Boezer */
 }

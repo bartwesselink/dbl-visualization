@@ -27,6 +27,7 @@ import {SelectBus} from '../providers/select-bus';
 import {TooltipComponent} from '../components/tooltip/tooltip.component';
 import {SearchComponent} from '../components/search/search.component';
 import {DatasetSelectionComponent} from "../components/dataset-selection/dataset-selection.component";
+import {DatasetStorageService} from "../providers/dataset-storage-service";
 
 @NgModule({
     declarations: [
@@ -60,6 +61,7 @@ import {DatasetSelectionComponent} from "../components/dataset-selection/dataset
         WorkerManager,
         SettingsBus,
         SelectBus,
+        DatasetStorageService,
         {provide: APP_BASE_HREF, useValue : '/' }
     ],
     bootstrap: [AppComponent]
