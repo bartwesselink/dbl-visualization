@@ -53,6 +53,7 @@ export class WindowComponent implements OnInit {
 
     /** @author Nico Klaassen */
     private palette: Palette;
+    private reversePalette: boolean;
     /** @end-author */
 
     /** @author Roan Hofland */
@@ -99,7 +100,7 @@ export class WindowComponent implements OnInit {
             this.interactionHandler.scaleToNode(this.gl, this.canvas, this.currentDraws, node);
         });
 
-        /** @author Nico Klaassen */
+        /** @author Nico Klaassen & Jules Cornelissen*/
         /** Color palette support */
         this.palette = Palettes.default;
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
@@ -111,9 +112,13 @@ export class WindowComponent implements OnInit {
             this.gradientMapType = settings.gradientMapType;
             this.gradientType = settings.gradientType;
             this.invertHSV = settings.invertHSV;
+            this.reversePalette = settings.reversePalette;
+            if (this.reversePalette) {
+                this.palette = new Palette(this.palette.secondary, this.palette.primary, this.palette.accents);
+            }
             this.redrawAllScenes();
         });
-        /** @end-author Nico Klaassen */
+        /** @end-author Nico Klaassen & Jules Cornelissen*/
     }
 
     ngOnInit() {
