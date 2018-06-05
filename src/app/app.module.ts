@@ -23,6 +23,9 @@ import {APP_BASE_HREF} from '@angular/common';
 import {WorkerManager} from '../utils/worker-manager';
 import { WebWorkerService } from 'angular2-web-worker';
 import {LoaderComponent} from '../components/loader/loader.component';
+import {SelectBus} from '../providers/select-bus';
+import {TooltipComponent} from '../components/tooltip/tooltip.component';
+import {SearchComponent} from '../components/search/search.component';
 
 @NgModule({
     declarations: [
@@ -41,6 +44,8 @@ import {LoaderComponent} from '../components/loader/loader.component';
         MdlDirective,
         WelcomePageComponent,
         LoaderComponent,
+        TooltipComponent,
+        SearchComponent,
     ],
     imports: [
         BrowserModule,
@@ -52,6 +57,7 @@ import {LoaderComponent} from '../components/loader/loader.component';
         WebWorkerService,
         WorkerManager,
         SettingsBus,
+        SelectBus,
         {provide: APP_BASE_HREF, useValue : '/' }
     ],
     bootstrap: [AppComponent]

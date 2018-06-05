@@ -13,7 +13,9 @@ export class GeneralizedPythagorasTree implements Visualizer {
         const draws: Draw[] = [];
 
         const weightHeight: number = 1; // !! Currently broken !! Scaling factor for the height of every rectangle that is not the root
-        const color: number[] = [1, 0, 1, 0.5]; // Just some test color, translucency to show that no rectangles overlap
+        const defaultColor: number[] = [1, 0, 1, 0.5]; // Just some test color, translucency to show that no rectangles overlap
+        const selectedColor: number[] = [1, 0, 1, 1];
+        let color: number[] = defaultColor;
 
         const initialRectangleCenterX: number = 0;
         const initialRectangleCenterY: number = -250;
@@ -55,9 +57,16 @@ export class GeneralizedPythagorasTree implements Visualizer {
             return [centerX, centerY];
         };
 
-        const generate = (tree: Node, rectangle: number[]): void => {
+        const generate = (tree: Node, rectangle: number[], isSelected: boolean = false): void => {
+            if (tree.selected === true || isSelected) {
+                isSelected = true;
+                color = selectedColor;
+            } else {
+                color = defaultColor;
+            }
+
             // Draw the previously calculated rectangle
-            draws.push({ type: 1 /** FillRotatedQuad **/, options: { x: rectangle[0], y: rectangle[1], width: rectangle[2], height: rectangle[3], rotation: rectangle[4] * radianToDegreeMultiplier, color: color } });
+            draws.push({ type: 1 /** FillRotatedQuad **/, identifier: tree.identifier, options: { x: rectangle[0], y: rectangle[1], width: rectangle[2], height: rectangle[3], rotation: rectangle[4] * radianToDegreeMultiplier, color: color } });
 
             /** This function can be considered in two ways. The first way is as it's done here. We loop over all the children
              * of a node and consider what part this child is of the parent. Thus the child calculates what relative size it is
@@ -84,7 +93,7 @@ export class GeneralizedPythagorasTree implements Visualizer {
                     let rotation = (angle[angle.length - 1] + angle[angle.length - 2]) / 2 + rectangle[4] - Math.PI / 2;
                     let rectangleChild = [center[0], center[1], width, height, rotation];
                     // Finally we recurse using all the previously calculated values
-                    generate(element, rectangleChild);
+                    generate(element, rectangleChild, isSelected);
                 }
             }
         };

@@ -48,6 +48,30 @@ export class SimpleTreeMap implements Visualizer {
         }
 
         // define functions
+        /**
+         * Augments the tree from the bottom up.
+         *
+         * @param {Node} tree
+         * @param {NodeTreeMap} parent : optional
+         * @returns {NodeTreeMap}
+         */
+        const augmentTree = (tree: Node, parent?: NodeTreeMap): NodeTreeMap => {
+            let augmentedTree = {
+                label: tree.label,
+                children: [],
+                subTreeSize: tree.subTreeSize,
+                parent: parent,
+                selected: tree.selected,
+                selectedNode: tree.selectedNode,
+                identifier: tree.identifier,
+            };
+
+            for (let i = 0; i < tree.children.length; i++) {
+                augmentedTree.children.push(augmentTree(tree.children[i], augmentedTree));
+            }
+
+            return augmentedTree;
+        };
 
         /**
          * Function which augments the tree data structure and adds in an orientation.
@@ -166,7 +190,6 @@ export class SimpleTreeMap implements Visualizer {
 
             // Draw the bounds of the current node
             if (drawOutlines) {
-
                 draws.push({ type: 6 /** FillLinedAAQuad **/, identifier: tree.identifier, options: { x: bounds.left, y: bounds.bottom, width: width, height: height, fillColor: color, lineColor: lineColor } });
             } else {
                 draws.push({ type: 4 /** FillAAQuad **/, identifier: tree.identifier, options: { x: bounds.left, y: bounds.bottom, width: width, height: height, color: color }});

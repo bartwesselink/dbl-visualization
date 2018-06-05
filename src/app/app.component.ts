@@ -53,12 +53,18 @@ export class AppComponent implements OnInit {
         const line = this.parser.extractLines(data);
 
         if (line !== null) {
+            const hadTree = this.tree != null;
+
             this.tree = this.parser.parseTree(line);
 
             setTimeout(() => {
                 this.sidebar.reloadData();
                 this.redrawAllTabs();
             }, 100);
+
+            if(!hadTree) {
+                this.resizeActiveTab();
+            }
         }
     }
     /** @end-author Jordy Verhoeven */
@@ -139,7 +145,7 @@ export class AppComponent implements OnInit {
         });
     }
 
-    private async redrawAllTabs(): Promise<void> {
+    public async redrawAllTabs(): Promise<void> {
         for (const tab of this.tabs.slice().sort((a, b) => a === this.activeTab ? 0 : 1)) {
             if (tab.window) {
                 await tab.window.computeScene();

@@ -13,6 +13,14 @@ import {OpenglDemoTree} from '../../visualizations/opengl-demo-tree';
 import {WorkerManager} from '../../utils/worker-manager';
 import {DrawType} from '../../enums/draw-type';
 import {FormComponent} from '../form/form.component';
+import {Draw} from '../../interfaces/draw';
+import {InteractionHandler} from '../../utils/interaction-handler';
+import {SelectBus} from '../../providers/select-bus';
+import {AaQuadOptions} from '../../interfaces/aa-quad-options';
+import {RotatedQuadOptions} from '../../interfaces/rotated-quad-options';
+import {CircleOptions} from '../../interfaces/circle-options';
+import {EllipsoidOptions} from '../../interfaces/ellipsoid-options';
+import {RingSliceOptions} from '../../interfaces/ring-slice-options';
 
 @Component({
     selector: 'app-window',
@@ -26,10 +34,16 @@ export class WindowComponent implements OnInit {
     @Input('tab') public tab: Tab;
 
     @Output() private loading: EventEmitter<boolean> = new EventEmitter<boolean>();
+    @Output() private redrawAll: EventEmitter<void> = new EventEmitter<void>();
 
     public form: Form|null;
 
     private context: CanvasRenderingContext2D;
+    public tooltipActive: boolean = false;
+    public tooltipLabel: string;
+    public tooltipX: number;
+    public tooltipY: number;
+    private lastTooltipNode: Node;
 
     /** @author Roan Hofland */
     private errored: boolean = false;
@@ -48,7 +62,29 @@ export class WindowComponent implements OnInit {
     private readonly DEFAULT_DT = 5;
     private readonly DEFAULT_DS = 0.1;
 
-    constructor(private formFactory: FormFactory, private workerManager: WorkerManager) {}
+    private currentDraws: Draw[];
+    private interactionHandler: InteractionHandler;
+
+    private clickTimer: any;
+    private dragging: boolean = false;
+    private readonly clickTimerThreshold: number = 150;
+
+    constructor(private formFactory: FormFactory, private workerManager: WorkerManager, private selectBus: SelectBus) {
+        this.interactionHandler = new InteractionHandler();
+
+        this.selectBus.nodeSelected.subscribe((node: Node) => {
+            if (this.tree.selectedNode != null) {
+                this.tree.selectedNode.selected = false;
+                this.tree.selectedNode = null;
+            }
+
+            this.tree.selectedNode = node;
+            node.selected = true;
+
+            this.redrawAllScenes();
+            this.interactionHandler.scaleToNode(this.gl, this.canvas, this.currentDraws, node);
+        });
+    }
 
     ngOnInit() {
         this.tab.window = this; // create reference in order to enable tab-manager to communicate with component
@@ -75,51 +111,51 @@ export class WindowComponent implements OnInit {
 
     public keyEvent(event: KeyboardEvent): void {
         switch(event.key){
-        case 'q':
-        case 'Q':
-            this.gl.rotate(-this.DEFAULT_DR);
-            this.render();
-            break;
-        case 'e':
-        case 'E':
-            this.gl.rotate(this.DEFAULT_DR);
-            this.render();
-            break;
-        case 'w':
-        case 'W':
-            this.gl.translate(0, this.DEFAULT_DT, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
-            this.render();
-            break;
-        case 's':
-        case 'S':
-            this.gl.translate(0, -this.DEFAULT_DT, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
-            this.render();
-            break;
-        case 'a':
-        case 'A':
-            this.gl.translate(this.DEFAULT_DT, 0, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
-            this.render();
-            break;
-        case 'd':
-        case 'D':
-            this.gl.translate(-this.DEFAULT_DT, 0, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
-            this.render();
-            break;
-        case 'r':
-        case 'R':
-            this.gl.scale(1 + this.DEFAULT_DS);
-            this.render();
-            break;
-        case 'f':
-        case 'F':
-            this.gl.scale(1 - this.DEFAULT_DS);
-            this.render();
-            break;
-        case 't':
-        case 'T':
-            this.gl.resetTransformations();
-            this.render();
-            break;
+            case 'q':
+            case 'Q':
+                this.gl.rotate(-this.DEFAULT_DR);
+                this.render();
+                break;
+            case 'e':
+            case 'E':
+                this.gl.rotate(this.DEFAULT_DR);
+                this.render();
+                break;
+            case 'w':
+            case 'W':
+                this.gl.translate(0, this.DEFAULT_DT, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+                this.render();
+                break;
+            case 's':
+            case 'S':
+                this.gl.translate(0, -this.DEFAULT_DT, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+                this.render();
+                break;
+            case 'a':
+            case 'A':
+                this.gl.translate(this.DEFAULT_DT, 0, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+                this.render();
+                break;
+            case 'd':
+            case 'D':
+                this.gl.translate(-this.DEFAULT_DT, 0, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+                this.render();
+                break;
+            case 'r':
+            case 'R':
+                this.gl.scale(1 + this.DEFAULT_DS);
+                this.render();
+                break;
+            case 'f':
+            case 'F':
+                this.gl.scale(1 - this.DEFAULT_DS);
+                this.render();
+                break;
+            case 't':
+            case 'T':
+                this.gl.resetTransformations();
+                this.render();
+                break;
         }
     }
 
@@ -136,15 +172,60 @@ export class WindowComponent implements OnInit {
     //called when the mouse is clicked
     public onClick(event: MouseEvent): void {
         var coords = this.gl.transformPoint(event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
-        //TODO pass this on to the visualisation to do something with the click
+
+        if (this.tree == null) {
+            return;
+        }
+
+        // check if the current move was a drag, or if it was just a click
+        if (!this.dragging) {
+            const node: Node = this.interactionHandler.determineElement(this.tree, this.currentDraws, coords);
+            if (node !== null) {
+                this.selectBus.selectNode(node);
+            }
+        }
+    }
+
+    private clearClickTimer(): void {
+        if (this.clickTimer !== null) {
+            clearInterval(this.clickTimer);
+            this.clickTimer = null;
+        }
     }
 
     //called when the mouse moves
     public onDrag(event: MouseEvent): void {
         if(this.down){
+            this.dragging = true;
+            this.clearClickTimer();
+
+            this.clickTimer = setTimeout(() => {
+                this.dragging = false;
+            }, this.clickTimerThreshold);
+
             this.gl.translate((event.clientX - this.lastX), (event.clientY - this.lastY), this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
             this.render();
+
+            this.tooltipActive = false;
+            this.lastTooltipNode = null;
+        } else if (this.tree != null) {
+            var coords = this.gl.transformPoint(event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
+
+            const node: Node = this.interactionHandler.determineElement(this.tree, this.currentDraws, coords);
+            if (node != null) {
+                if (this.lastTooltipNode !== node) {
+                    this.tooltipLabel = node.label;
+                    this.tooltipX = event.clientX;
+                    this.tooltipY = event.clientY;
+                    this.tooltipActive = true;
+                    this.lastTooltipNode = node;
+                }
+            } else {
+                this.tooltipActive = false;
+                this.lastTooltipNode = null;
+            }
         }
+
         this.lastX = event.clientX;
         this.lastY = event.clientY;
     }
@@ -163,11 +244,14 @@ export class WindowComponent implements OnInit {
     public async startScene(): Promise<void> {
         this.init();
         await this.computeScene();
-
     }
 
     public destroyScene(): void {
         this.gl.releaseBuffers();
+    }
+
+    public redrawAllScenes(): void { // redraws all canvases through the AppComponent
+        this.redrawAll.next();
     }
 
     //compute the visualisation
@@ -185,16 +269,20 @@ export class WindowComponent implements OnInit {
 
             this.startLoading();
 
-            this.workerManager.startWorker(this.gl,this.visualizer.draw, { tree: this.tree, settings: this.lastSettings })
-                .then(() => {
+            /** @author Bart Wesselink */
+            this.workerManager.startWorker(this.gl, this.visualizer.draw,{ tree: this.tree, settings: this.lastSettings })
+                .then((draws: Draw[]) => {
                     setTimeout(() => {
                         this.redraw();
 
                         this.stopLoading();
                     }, 100);
 
+                    this.currentDraws = draws;
+
                     resolve();
                 });
+            /** @end-author Bart Wesselink */
         });
     }
 
