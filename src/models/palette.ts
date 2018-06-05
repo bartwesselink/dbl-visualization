@@ -142,9 +142,9 @@ export class Palette {
 
     private calcLinearRGBGradient(depth: number, minDepth: number, maxDepth: number): number[] {
         let red: number = (this.secondary.r - this.primary.r) * ((depth - minDepth) / maxDepth) + this.primary.r;
-        let green: number = (this.secondary.g - this.primary.g) * ((depth - minDepth) / maxDepth) + this.secondary.g;
-        let blue: number = (this.secondary.b - this.primary.b) * ((depth - minDepth) / maxDepth) + this.secondary.b;
-        let alpha: number = (this.secondary.a - this.primary.a) * ((depth - minDepth) / maxDepth) + this.secondary.a;
+        let green: number = (this.secondary.g - this.primary.g) * ((depth - minDepth) / maxDepth) + this.primary.g;
+        let blue: number = (this.secondary.b - this.primary.b) * ((depth - minDepth) / maxDepth) + this.primary.b;
+        let alpha: number = (this.secondary.a - this.primary.a) * ((depth - minDepth) / maxDepth) + this.primary.a;
         // let red: number = (this.primary.r - this.secondary.r) * ((depth - minDepth) / maxDepth) + this.secondary.r;
         // let green: number = (this.primary.g - this.secondary.g) * ((depth - minDepth) / maxDepth) + this.secondary.g;
         // let blue: number = (this.primary.b - this.secondary.b) * ((depth - minDepth) / maxDepth) + this.secondary.b;
