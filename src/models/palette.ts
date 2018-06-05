@@ -165,8 +165,8 @@ export class Palette {
         for (let i = 0; i <= maxDepth; i++) {
             percent = (i - minDepth) / maxDepth;
             hueValues.push(((this.primary.h + (delta * percent) + 360) % 360) / 360);
-            satValues.push(this.primary.s - (this.primary.s - this.secondary.s) * percent;
-            valValues.push(this.primary.v - (this.primary.v - this.secondary.v) * percent;
+            satValues.push(this.primary.s - (this.primary.s - this.secondary.s) * percent);
+            valValues.push(this.primary.v - (this.primary.v - this.secondary.v) * percent);
         }
         return [hueValues, satValues, valValues];
     }
