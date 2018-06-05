@@ -637,7 +637,7 @@ export class OpenGL{
                 y: y,
                 rad: radius,
                 span: radius * 2,
-                length: pos.length / 2,
+                length: 4,
                 radius: radius / this.HALFHEIGHT,
                 shader: mode
             });
@@ -650,7 +650,7 @@ export class OpenGL{
                 y: y,
                 rad: radius,
                 span: radius * 2,
-                length: pos.length / 2,
+                length: 4,
                 radius: radius / this.HALFHEIGHT,
                 shader: ShaderMode.LINED_CIRCLE
             });
