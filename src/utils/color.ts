@@ -18,7 +18,7 @@ export class Color {
         this.b = b;
         this.a = alpha;
         this.rgba = [r, g, b, alpha];
-        let hsv = this.RGBToHSV();
+        let hsv = this.RGBToHSV(this.r, this.g, this.b);
         this.h = hsv[0], this.s = hsv[1], this.v = hsv[2];
     };
 
@@ -55,13 +55,16 @@ export class Color {
 
     }
 
-    /** Taken from http://www.javascripter.net/faq/rgb2hsv.htm */
-    private RGBToHSV(): number[] {
-        let r = this.r;
-        let g = this.g;
-        let b = this.b;
-        var minRGB = Math.min(r, Math.min(g, b));
-        var maxRGB = Math.max(r, Math.max(g, b));
+    /** Taken from http://www.javascripter.net/faq/rgb2hsv.htm
+     * Takes RGB as input and returns HSV
+     * @param {number} r red
+     * @param {number} g green
+     * @param {number} b blue
+     * @returns {number[]} [hue, saturation, value]
+     */
+    private RGBToHSV(r: number, g: number, b: number): number[] {
+        let minRGB = Math.min(r, Math.min(g, b));
+        let maxRGB = Math.max(r, Math.max(g, b));
         // Black-gray-white
         if (minRGB == maxRGB) {
             let computedV = minRGB;
@@ -70,10 +73,10 @@ export class Color {
         // Colors other than black-gray-white:
         let d = (r == minRGB) ? g - b : ((b == minRGB) ? r - g : b - r);
         let h = (r == minRGB) ? 3 : ((b == minRGB) ? 1 : 5);
-        let computedH = 60 * (h - d / (maxRGB - minRGB));
-        let computedS = (maxRGB - minRGB) / maxRGB;
-        let computedV = maxRGB;
-        return [computedH, computedS, computedV];
+        let calculatedHue = 60 * (h - d / (maxRGB - minRGB));
+        let calculatedSat = (maxRGB - minRGB) / maxRGB;
+        let calculatedVal = maxRGB;
+        return [calculatedHue, calculatedSat, calculatedVal];
     }
 }
 
