@@ -16,6 +16,7 @@ void main() {
 	lowp float dx = (vpos.x - cx) * ratio;
 	lowp float dy = vpos.y - cy;
 	lowp float val = sqrt(pow(dx, 2.0) + pow(dy, 2.0));
+	gl_FragColor = vec4(1.0, 0.0, 0.0, 0.1);
 	if(val <= radius + 0.0025 && val >= near){
 		lowp float angle = atan(dy, dx);
 		if(start < PI){

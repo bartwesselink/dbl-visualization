@@ -742,6 +742,7 @@ export class OpenGL{
             pos[5] = (y - far * 1.001) / this.HALFHEIGHT;
             pos[6] = (x - far * 1.001) / this.HALFWIDTH;
             pos[7] = (y - far * 1.001) / this.HALFHEIGHT;
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
             
             if(mode != ShaderMode.LINED_RING_SLICE){
                 this.arrays.push(<RingSliceElement>{
