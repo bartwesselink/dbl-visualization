@@ -14,6 +14,7 @@ declare var dialogPolyfill;
 export class GeneralSettingsButtonComponent implements OnInit {
     /** @author Bart Wesselink */
     private storageKey = 'General-settings';
+    private defaultSettings: Settings;
 
     public form: Form;
     @ViewChild('dialog') private dialog: ElementRef;
@@ -24,6 +25,7 @@ export class GeneralSettingsButtonComponent implements OnInit {
     public ngOnInit(): void {
         this.createForm();
         dialogPolyfill.registerDialog(this.dialog.nativeElement);
+        this.defaultSettings = this.form.getFormGroup().value; // save the default for potential resetting
         // get stored settings (if any)
         this.fetchPersistentSettings();
 
@@ -44,7 +46,7 @@ export class GeneralSettingsButtonComponent implements OnInit {
 
     public updateValue(): void {
         this.settingsBus.updateSettings(this.form.getFormGroup().value as Settings);
-        localStorage.setItem(this.storageKey, JSON.stringify(this.form.getFormGroup().value));
+        localStorage.setItem(this.storageKey, JSON.stringify(this.form.getFormGroup().value)); // store updated values
         console.log(JSON.stringify(this.form.getFormGroup().value));
     }
 
@@ -63,12 +65,29 @@ export class GeneralSettingsButtonComponent implements OnInit {
             })
             .getForm();
     }
+    /** @end-author Bart Wesselink */
 
+    /** @author Mathijs Boezer */
     private fetchPersistentSettings(): void {
-        if (localStorage.getItem(this.storageKey)) {
-            this.form.getFormGroup().setValue(JSON.parse(localStorage.getItem(this.storageKey)));
+        if (localStorage.getItem(this.storageKey)) { // uses defaults if nothing is saved
+            try {
+                this.loadSetting(JSON.parse(localStorage.getItem(this.storageKey)));
+            } catch {
+                console.error("Settings in storage do not correspond to expected format."); // when more settings get added this will show once
+            }
         }
     }
 
-    /** @end-author Bart Wesselink */
+    private loadSetting(setting: Settings): void {
+        this.form.getFormGroup().setValue(setting);
+    }
+
+    public resetDefault(): void {
+        this.close();
+        this.loadSetting(this.defaultSettings);
+        this.updateValue();
+        this.form.getFormGroup().
+        this.open();
+    }
+    /** @end-author Mathijs Boezer */
 }
