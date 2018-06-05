@@ -13,6 +13,8 @@ declare var dialogPolyfill;
 })
 export class GeneralSettingsButtonComponent implements OnInit {
     /** @author Bart Wesselink */
+    private storageKey = 'General-settings';
+
     public form: Form;
     @ViewChild('dialog') private dialog: ElementRef;
 
@@ -22,6 +24,9 @@ export class GeneralSettingsButtonComponent implements OnInit {
     public ngOnInit(): void {
         this.createForm();
         dialogPolyfill.registerDialog(this.dialog.nativeElement);
+        // get stored settings (if any)
+        this.fetchPersistentSettings();
+
         // emit first value
         this.updateValue();
     }
@@ -39,6 +44,8 @@ export class GeneralSettingsButtonComponent implements OnInit {
 
     public updateValue(): void {
         this.settingsBus.updateSettings(this.form.getFormGroup().value as Settings);
+        localStorage.setItem(this.storageKey, JSON.stringify(this.form.getFormGroup().value));
+        console.log(JSON.stringify(this.form.getFormGroup().value));
     }
 
     private createForm(): void {
@@ -55,6 +62,12 @@ export class GeneralSettingsButtonComponent implements OnInit {
                 expanded: false
             })
             .getForm();
+    }
+
+    private fetchPersistentSettings(): void {
+        if (localStorage.getItem(this.storageKey)) {
+            this.form.getFormGroup().setValue(JSON.parse(localStorage.getItem(this.storageKey)));
+        }
     }
 
     /** @end-author Bart Wesselink */
