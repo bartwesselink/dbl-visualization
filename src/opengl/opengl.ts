@@ -732,9 +732,8 @@ export class OpenGL{
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         const pos = new Float32Array(8);
-        console.log("ring slice shader call")
-        //TODO make the 90 deg distinction
-        pos[0] = (x + far * 1.001) / this.HALFWIDTH;
+            
+        if(end - start > 90){
             pos[1] = (y + far * 1.001) / this.HALFHEIGHT;
             pos[2] = (x - far * 1.001) / this.HALFWIDTH;
             pos[3] = (y + far * 1.001) / this.HALFHEIGHT;
@@ -742,7 +741,6 @@ export class OpenGL{
             pos[5] = (y - far * 1.001) / this.HALFHEIGHT;
             pos[6] = (x - far * 1.001) / this.HALFWIDTH;
             pos[7] = (y - far * 1.001) / this.HALFHEIGHT;
-            this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
             
             if(mode != ShaderMode.LINED_RING_SLICE){
                 this.arrays.push(<RingSliceElement>{
@@ -773,9 +771,61 @@ export class OpenGL{
                     near: near / this.HALFHEIGHT,
                     start: start * Matrix.oneDeg,
                     end: end * Matrix.oneDeg,
-                    shader: ShaderMode.LINED_CIRCLE
+                    shader: ShaderMode.LINED_RING_SLICE
                 });
             }
+        }else{
+            var dcx = far * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
+            var dcy = far * 0.71 * Math.sin((start + ((end - start) / 2)) * Matrix.oneDeg);
+            
+            pos[0] = (x + dcx + far * 0.71 * 1.001) / this.HALFWIDTH;
+            pos[1] = (y + dcy + far * 0.71 * 1.001) / this.HALFHEIGHT;
+            pos[2] = (x + dcx - far * 0.71 * 1.001) / this.HALFWIDTH;
+            pos[3] = (y + dcy + far * 0.71 * 1.001) / this.HALFHEIGHT;
+            pos[4] = (x + dcx + far * 0.71 * 1.001) / this.HALFWIDTH;
+            pos[5] = (y + dcy - far * 0.71 * 1.001) / this.HALFHEIGHT;
+            pos[6] = (x + dcx - far * 0.71 * 1.001) / this.HALFWIDTH;
+            pos[7] = (y + dcy - far * 0.71 * 1.001) / this.HALFHEIGHT;
+            
+            if(mode != ShaderMode.LINED_CIRCLE_SLICE){
+                this.arrays.push(<RingSliceElement>{
+                    pos: positionBuffer,
+                    color: mainColor,
+                    x: x + dcx,
+                    y: y + dcy,
+                    cx: x,
+                    cy: y,
+                    rad: far * 0.71,
+                    span: far * 1.42,
+                    length: pos.length / 2,
+                    near: near / this.HALFHEIGHT,
+                    radius: far / this.HALFHEIGHT,
+                    start: start * Matrix.oneDeg,
+                    end: end * Matrix.oneDeg,
+                    shader: mode
+                });
+            }else{
+                this.arrays.push(<RingSliceElement>{
+                    pos: positionBuffer,
+                    color: mainColor,
+                    lineColor: extraColor,
+                    x: x + dcx,
+                    y: y + dcy,
+                    cx: x,
+                    cy: y,
+                    rad: far * 0.71,
+                    span: far * 1.42,
+                    length: pos.length / 2,
+                    near: near / this.HALFHEIGHT,
+                    radius: far / this.HALFHEIGHT,
+                    start: start * Matrix.oneDeg,
+                    end: end * Matrix.oneDeg,
+                    shader: ShaderMode.LINED_RING_SLICE
+                });
+            }
+        }    
+        
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
     }
     
     //draws a ring slice
