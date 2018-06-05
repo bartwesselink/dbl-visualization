@@ -10,6 +10,7 @@ import {LineCircleShader} from "./impl/lineCircleShader";
 import {CopyShader} from "./impl/copyShader";
 import {FillCircleSliceShader} from "./impl/fillCircleSliceShader";
 import {FillRingSliceShader} from "./impl/fillRingSliceShader";
+import {DrawCircleSliceShader} from "./impl/drawCircleSliceShader";
 
 export class Shader{
     private gl: WebGLRenderingContext;
@@ -26,6 +27,7 @@ export class Shader{
     private lineCircleShader: LineCircleShader = null;
     private fillCircleSliceShader: FillCircleSliceShader = null;
     private fillRingSliceShader : FillRingSliceShader = null;
+    private drawCircleSliceShader: DrawCircleSliceShader = null;
 
     constructor(gl: WebGLRenderingContext, opengl: OpenGL, mode: number){
         this.gl = gl;
@@ -58,10 +60,10 @@ export class Shader{
             this.fillCircleSliceShader = new FillCircleSliceShader();
             this.fillCircleSliceShader.init(this, this.gl);
         }
-//        if((mode & ShaderMode.DRAW_CIRCLE_SLICE) > 0){
-//            this.drawCircleSliceShader = new DrawCircleSliceShader();
-//            this.drawCircleSliceShader.init(this, this.gl);
-//        }
+        if((mode & ShaderMode.DRAW_CIRCLE_SLICE) > 0){
+            this.drawCircleSliceShader = new DrawCircleSliceShader();
+            this.drawCircleSliceShader.init(this, this.gl);
+        }
 //        if((mode & ShaderMode.LINED_CIRCLE_SLICE) > 0){
 //            this.lineCircleSliceShader = new LineCircleSliceShader();
 //            this.lineCircleSliceShader.init(this, this.gl);
@@ -105,9 +107,10 @@ export class Shader{
         case ShaderMode.FILL_CIRCLE_SLICE:
             this.setShader(this.fillCircleSliceShader);
             break;
-//        case ShaderMode.DRAW_CIRCLE_SLICE:
-//            this.setShader(this.drawCircleSliceShader);
-//            break;
+        case ShaderMode.DRAW_CIRCLE_SLICE:
+            console.log("render set to slice");
+            this.setShader(this.drawCircleSliceShader);
+            break;
 //        case ShaderMode.LINED_CIRCLE_SLICE:
 //            this.setShader(this.lineCircleSliceShader);
 //            break;
