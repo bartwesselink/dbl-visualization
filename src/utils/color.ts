@@ -2,12 +2,6 @@
 
 
 export class Color {
-    static BLACK = new Color(0, 0, 0, 1);
-    static WHITE = new Color(1, 1, 1, 1);
-    static RED = new Color(1, 0, 0, 1);
-    static GREEN = new Color(0, 1, 0, 1);
-    static BLUE = new Color(0, 0, 1, 1);
-
     r: number;
     g: number;
     b: number;

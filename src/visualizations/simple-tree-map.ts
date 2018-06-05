@@ -19,18 +19,8 @@ export class SimpleTreeMap implements Visualizer {
 
         // define variables
         const defaultSize = 600;
-        let colorA: number[] = [255 / 255, 153 / 255, 0, 1];
-        let colorB: number[] = [51 / 255, 0, 255 / 255, 1];
-        let defaultLineColor: number[] = [0, 0, 0, 1];
-        let lineColor: number[] = defaultLineColor;
-        let selectedColor: number[] = [255 / 255, 100 / 255, 0, 1];
-        let colorDifference: number[] = [
-            colorB[0] - colorA[0],
-            colorB[1] - colorA[1],
-            colorB[2] - colorA[2],
-            colorB[3] - colorA[3]
-        ];
-        let totalNodes: number;
+        const lineColorSelected: number[] = [0, 0, 0, 1];
+        const lineColorUnselected: number[] = [0.3, 0.3, 0.3, 1];
         let offset: number = settings.offset;
         let tree: NodeTreeMap = originalTree as NodeTreeMap;
         let rootBounds: Bounds = {
@@ -39,10 +29,7 @@ export class SimpleTreeMap implements Visualizer {
             bottom: -(defaultSize / 2),
             top: (defaultSize / 2)
         };
-        let treeHeight: number;
         let drawOutlines: boolean = settings.outline;
-
-        drawOutlines = settings.outline;
 
         // define used enums
         enum Orientation {
@@ -59,39 +46,14 @@ export class SimpleTreeMap implements Visualizer {
          */
         const orientTreeNodes = (tree: NodeTreeMap): void => {
             // Toggle the orientation for direct children of the current node
-            if (tree.orientation === Orientation.HORIZONTAL) {
-                var childOrientation = Orientation.VERTICAL;
-            } else {
-                var childOrientation = Orientation.HORIZONTAL;
-            }
-
-            for (let i = 0; i < tree.children.length; i++) {
-                const childNode = tree.children[i];
-                childNode.orientation = childOrientation;
-                orientTreeNodes(childNode);
-            }
-        };
-
-        /**
-         * Function which calculates the height of the given tree recursively
-         *
-         * @param {Node} tree Tree for which to calculate the height for
-         * @param {number} currentHeight Initially should be 0, variable to track current height.
-         * @returns {number} The height of the tree
-         */
-        const calculateTreeHeight = (tree: Node, currentHeight: number): number => {
-            let treeHeight = currentHeight;
-            for (let i = 0; i < tree.children.length; i++) {
-                if (treeHeight == 0) {
-                    treeHeight = calculateTreeHeight(tree.children[i], currentHeight + 1);
+            for (let child of tree.children) {
+                if (tree.orientation === Orientation.HORIZONTAL) {
+                    child.orientation = Orientation.VERTICAL;
                 } else {
-                    const newHeight = calculateTreeHeight(tree.children[i], currentHeight + 1);
-                    if (newHeight > treeHeight) {
-                        treeHeight = newHeight;
-                    }
+                    child.orientation = Orientation.HORIZONTAL;
                 }
+                orientTreeNodes(child);
             }
-            return treeHeight;
         };
 
         /** setBounds calculates the new and nested bounding-box (bounds) for a particular child-node and stores it on the
@@ -105,37 +67,32 @@ export class SimpleTreeMap implements Visualizer {
          * @returns {Bounds} New bounding-box with the correct position and offset such that it is nested within parentBounds
          */
         const setBounds = (tree: NodeTreeMap, parentBounds: Bounds, doneSize: number, last: boolean, index: number): Bounds => {
-            const parentWidth = Math.abs(parentBounds.right - parentBounds.left);
-            const parentHeight = Math.abs(parentBounds.top - parentBounds.bottom);
-            const parentSize = tree.parent.subTreeSize - 1;
-            const childSize = tree.subTreeSize;
-
             // Compute the new bounds which are nested within the bounds of the parent
             if (tree.parent.orientation === Orientation.HORIZONTAL) {
-                const relativeOffset = Math.min(parentWidth / 100 * offset / (tree.parent.children.length + 1), parentHeight / 100 * offset / (tree.parent.children.length + 1));
-                const freeSpace = parentWidth - (tree.parent.children.length + 1) * relativeOffset;
+                const relativeOffset = Math.min(tree.parent.width / 100 * offset / (tree.parent.children.length + 1), tree.parent.height / 100 * offset / (tree.parent.children.length + 1));
+                const freeSpace = tree.parent.width - (tree.parent.children.length + 1) * relativeOffset;
                 return {
                     left: (index == 0) ?
                         parentBounds.left + relativeOffset :
-                        parentBounds.left + relativeOffset * (index + 1) + (freeSpace * doneSize / parentSize),
+                        parentBounds.left + relativeOffset * (index + 1) + (freeSpace * doneSize / (tree.parent.subTreeSize - 1)),
                     right: (last) ?
                         parentBounds.left + relativeOffset * (index + 1) + freeSpace :
-                        parentBounds.left + relativeOffset * (index + 1) + (freeSpace * (doneSize + childSize) / parentSize),
+                        parentBounds.left + relativeOffset * (index + 1) + (freeSpace * (doneSize + tree.subTreeSize) / (tree.parent.subTreeSize - 1)),
                     bottom: parentBounds.bottom + relativeOffset,
                     top: parentBounds.top - relativeOffset
                 };
             } else {
-                const relativeOffset = Math.min(parentWidth / 100 * offset / (tree.parent.children.length + 1), parentHeight / 100 * offset / (tree.parent.children.length + 1));
-                const freeSpace = parentHeight - (tree.parent.children.length + 1) * relativeOffset;
+                const relativeOffset = Math.min(tree.parent.width / 100 * offset / (tree.parent.children.length + 1), tree.parent.height / 100 * offset / (tree.parent.children.length + 1));
+                const freeSpace = tree.parent.height - (tree.parent.children.length + 1) * relativeOffset;
                 return {
                     left: parentBounds.left + relativeOffset,
                     right: parentBounds.right - relativeOffset,
                     bottom: (last) ?
                         parentBounds.top - relativeOffset * (index + 1) - freeSpace :
-                        parentBounds.top - relativeOffset * (index + 1) - (freeSpace * (doneSize + childSize) / parentSize),
+                        parentBounds.top - relativeOffset * (index + 1) - (freeSpace * (doneSize + tree.subTreeSize) / (tree.parent.subTreeSize - 1)),
                     top: (index == 0) ?
                         parentBounds.top - relativeOffset :
-                        parentBounds.top - relativeOffset * (index + 1) - (freeSpace * doneSize / parentSize)
+                        parentBounds.top - relativeOffset * (index + 1) - (freeSpace * doneSize / (tree.parent.subTreeSize - 1))
                 };
             }
         };
@@ -143,43 +100,32 @@ export class SimpleTreeMap implements Visualizer {
 
         /** drawTree draw the tree-map recursively.
          *
-         * @param {Node} tree The root of the subtree upon which we recurse
+         * @param {NodeTreeMap} tree The root of the subtree upon which we recurse
          * @param {Bounds} bounds The bounding-box indicating where we should draw the current root
          * @param {boolean} internalNode Whether we are recursing on internal nodes, or on the root of the initial input tree
          * @param {number[]} color The color with which we should draw our current bounding-box based rectangle
          * @param {boolean} selected Whether one of its parent was selected
          */
-        const drawTree = (tree: Node, bounds: Bounds, internalNode: boolean, selected: boolean = false): void => {
+        const drawTree = (tree: NodeTreeMap, bounds: Bounds, internalNode: boolean, selected: boolean = false): void => {
             let doneSize = 0; // How many subtree-nodes are already taking up space within the bounds.
 
             let color;
+            let lineColor;
 
             if (tree.selected === true || selected) {
                 selected = true;
                 color = palette.gradientColorMapSelected[tree.maxDepth][tree.depth];
+                lineColor = lineColorSelected;
             } else {
                 color = palette.gradientColorMap[tree.maxDepth][tree.depth];
+                lineColor = lineColorUnselected;
             }
-            //
-            // if (tree.selected) {
-            //     selected = true;
-            //
-            //     if (!drawOutlines) {
-            //         color = selectedColor;
-            //     } else {
-            //         lineColor = selectedColor;
-            //     }
-            // } else {
-            //     lineColor = defaultLineColor;
-            // }
-            lineColor = defaultLineColor;
 
             let width = Math.abs(bounds.right - bounds.left);
             let height = Math.abs(bounds.top - bounds.bottom);
 
             // Draw the bounds of the current node
             if (drawOutlines) {
-
                 draws.push({
                     type: 6 /** FillLinedAAQuad **/,
                     identifier: tree.identifier,
@@ -204,19 +150,22 @@ export class SimpleTreeMap implements Visualizer {
             for (let i = 0; i < tree.children.length; i++) {
                 const childNode = tree.children[i];
                 const childBounds = setBounds(childNode, bounds, doneSize, (i == tree.children.length - 1), i);
+                childNode.width = Math.abs(childBounds.right - childBounds.left);
+                childNode.height = Math.abs(childBounds.top - childBounds.bottom);
                 doneSize = doneSize + childNode.subTreeSize; // Add the # of nodes in the subtree rooted at the childnode to doneSize.
 
                 drawTree(childNode, childBounds, true, selected);
             }
         };
 
-        totalNodes = originalTree.subTreeSize;
-
         // Initialize orientation only when it's not yet defined
         if (!tree.orientation) {
             tree.orientation = Orientation.HORIZONTAL;
             orientTreeNodes(tree);
         }
+        // Give the default width and height
+        tree.width = defaultSize;
+        tree.height = defaultSize;
 
         drawTree(tree, rootBounds, false);
 
