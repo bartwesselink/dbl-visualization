@@ -750,7 +750,7 @@ export class OpenGL{
                     y: y,
                     rad: far,
                     span: far * 2,
-                    length: pos.length / 2,
+                    length: 4,
                     near: near / this.HALFHEIGHT,
                     radius: far / this.HALFHEIGHT,
                     start: start * Matrix.oneDeg,
@@ -766,7 +766,7 @@ export class OpenGL{
                     y: y,
                     rad: far,
                     span: far * 2,
-                    length: pos.length / 2,
+                    length: 4,
                     radius: far / this.HALFHEIGHT,
                     near: near / this.HALFHEIGHT,
                     start: start * Matrix.oneDeg,
@@ -797,7 +797,7 @@ export class OpenGL{
                     cy: y,
                     rad: far * 0.71,
                     span: far * 1.42,
-                    length: pos.length / 2,
+                    length: 4,
                     near: near / this.HALFHEIGHT,
                     radius: far / this.HALFHEIGHT,
                     start: start * Matrix.oneDeg,
@@ -815,7 +815,7 @@ export class OpenGL{
                     cy: y,
                     rad: far * 0.71,
                     span: far * 1.42,
-                    length: pos.length / 2,
+                    length: 4,
                     near: near / this.HALFHEIGHT,
                     radius: far / this.HALFHEIGHT,
                     start: start * Matrix.oneDeg,
@@ -979,7 +979,7 @@ export class OpenGL{
                     y: y,
                     rad: radius,
                     span: radius * 2,
-                    length: pos.length / 2,
+                    length: 4,
                     radius: radius / this.HALFHEIGHT,
                     start: start * Matrix.oneDeg,
                     end: end * Matrix.oneDeg,
@@ -994,11 +994,11 @@ export class OpenGL{
                     y: y,
                     rad: radius,
                     span: radius * 2,
-                    length: pos.length / 2,
+                    length: 4,
                     radius: radius / this.HALFHEIGHT,
                     start: start * Matrix.oneDeg,
                     end: end * Matrix.oneDeg,
-                    shader: ShaderMode.LINED_CIRCLE
+                    shader: ShaderMode.LINED_CIRCLE_SLICE
                 });
             }
         }else{
@@ -1024,7 +1024,7 @@ export class OpenGL{
                     cy: y,
                     rad: radius * 0.71,
                     span: radius * 1.42,
-                    length: pos.length / 2,
+                    length: 4,
                     radius: radius / this.HALFHEIGHT,
                     start: start * Matrix.oneDeg,
                     end: end * Matrix.oneDeg,
@@ -1041,9 +1041,9 @@ export class OpenGL{
                     cy: y,
                     rad: radius * 0.71,
                     span: radius * 1.42,
-                    length: pos.length / 2,
+                    length: 4,
                     radius: radius / this.HALFHEIGHT,
-                    shader: ShaderMode.LINED_CIRCLE
+                    shader: ShaderMode.LINED_CIRCLE_SLICE
                 });
             }
         }
