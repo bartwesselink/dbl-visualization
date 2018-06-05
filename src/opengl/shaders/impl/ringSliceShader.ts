@@ -17,7 +17,7 @@ export abstract class RingSliceShader extends CircleSliceShader{
     public preProcess(elem: Element, gl: WebGLRenderingContext, opengl: OpenGL): void {
         super.preProcess(elem, gl, opengl);
 
-        gl.uniform1f(this.nearUniform, (elem as RingSliceElement).near);
+        gl.uniform1f(this.nearUniform, (elem as RingSliceElement).near * opengl.getZoom());
     }
 }
 /** @end-author Roan Hofland */  
