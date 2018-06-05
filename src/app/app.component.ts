@@ -11,6 +11,7 @@ import {OpenglDemoTree} from "../visualizations/opengl-demo-tree";
 import {SimpleTreeMap} from "../visualizations/simple-tree-map";
 import {WorkerManager} from '../utils/worker-manager';
 import {SubtreeBus} from "../providers/subtree-bus";
+import {SelectBus} from "../providers/select-bus";
 
 declare var dialogPolyfill;
 
@@ -34,11 +35,12 @@ export class AppComponent implements OnInit {
 
     private parser: NewickParser;
     public darkMode = false;
-    constructor(private settingsBus: SettingsBus, private subtreeBus: SubtreeBus) {
+    constructor(private settingsBus: SettingsBus, private selectBus: SelectBus, private subtreeBus: SubtreeBus) {
         this.createVisualizers();
 
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
             this.darkMode = settings.darkMode;
+            this.selectBus.interactionOptions = settings.interactionSettings;
         });
 
         this.subtreeBus.subtreeSelected.subscribe((node: Node) => {
