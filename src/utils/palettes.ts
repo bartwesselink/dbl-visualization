@@ -4,7 +4,7 @@ import {Color} from './color'
 export class Palettes {
     static default = new Palette(
         Color.fromHex('112C61'),
-        Color.fromHex('2C9SFF'),
+        Color.fromHex('2C95FF'),
         [
             Color.fromHex('1F52B2'),
             Color.fromHex('E00200'),

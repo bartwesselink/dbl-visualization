@@ -141,7 +141,6 @@ export class Palette {
         return [red, green, blue, alpha];
     }
 
-
     private calcLinearAlphaGradient(minDepth: number, maxDepth: number): number[] {
         let alpha: number[] = [];
         for (let i = 0; i <= maxDepth; i++) {
