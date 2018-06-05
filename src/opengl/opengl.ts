@@ -734,6 +734,7 @@ export class OpenGL{
         const pos = new Float32Array(8);
             
         if(end - start > 90){
+            pos[0] = (x + far * 1.001) / this.HALFWIDTH;
             pos[1] = (y + far * 1.001) / this.HALFHEIGHT;
             pos[2] = (x - far * 1.001) / this.HALFWIDTH;
             pos[3] = (y + far * 1.001) / this.HALFHEIGHT;
