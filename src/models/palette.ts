@@ -132,23 +132,12 @@ export class Palette {
         }
     }
 
-    // private calcLinearRGBGradient(depth: number, minDepth: number, maxDepth: number): number[] {
-    //     let red: number = this.secondary.r - (this.primary.r - this.secondary.r) * ((depth - minDepth) / maxDepth);
-    //     let green: number = this.secondary.g - (this.primary.g - this.secondary.g) * ((depth - minDepth) / maxDepth);
-    //     let blue: number = this.secondary.b - (this.primary.b - this.secondary.b) * ((depth - minDepth) / maxDepth);
-    //     let alpha: number = this.secondary.a - (this.primary.a - this.secondary.a) * ((depth - minDepth) / maxDepth);
-    //     return [red, green, blue, alpha];
-    // }
-
     private calcLinearRGBGradient(depth: number, minDepth: number, maxDepth: number): number[] {
-        let red: number = (this.secondary.r - this.primary.r) * ((depth - minDepth) / maxDepth) + this.primary.r;
-        let green: number = (this.secondary.g - this.primary.g) * ((depth - minDepth) / maxDepth) + this.primary.g;
-        let blue: number = (this.secondary.b - this.primary.b) * ((depth - minDepth) / maxDepth) + this.primary.b;
-        let alpha: number = (this.secondary.a - this.primary.a) * ((depth - minDepth) / maxDepth) + this.primary.a;
-        // let red: number = (this.primary.r - this.secondary.r) * ((depth - minDepth) / maxDepth) + this.secondary.r;
-        // let green: number = (this.primary.g - this.secondary.g) * ((depth - minDepth) / maxDepth) + this.secondary.g;
-        // let blue: number = (this.primary.b - this.secondary.b) * ((depth - minDepth) / maxDepth) + this.secondary.b;
-        // let alpha: number = (this.primary.a - this.secondary.a) * ((depth - minDepth) / maxDepth) + this.secondary.a;
+        let percent: number = ((depth - minDepth) / maxDepth);
+        let red: number = this.primary.r - percent * (this.primary.r - this.secondary.r);
+        let green: number = this.primary.g - percent * (this.primary.g - this.secondary.g);
+        let blue: number = this.primary.b - percent * (this.primary.b - this.secondary.b);
+        let alpha: number = this.primary.a - percent * (this.primary.a - this.secondary.a);
         return [red, green, blue, alpha];
     }
 
@@ -165,6 +154,7 @@ export class Palette {
         let hueValues: number[] = [];
         let satValues: number[] = [];
         let valValues: number[] = [];
+        let percent: number;
         let d = this.secondary.h - this.primary.h;
         let delta: number;
         if (this.invertHSV) {
@@ -173,9 +163,10 @@ export class Palette {
             delta = d + ((Math.abs(d) < 180) ? ((d < 0) ? 360 : -360) : 0);
         }
         for (let i = 0; i <= maxDepth; i++) {
-            hueValues.push(((this.primary.h + (delta * ((i - minDepth) / maxDepth)) + 360) % 360) / 360);
-            satValues.push(this.primary.s - (this.primary.s - this.secondary.s) * (i / maxDepth));
-            valValues.push(this.primary.v - (this.primary.v - this.secondary.v) * (i / maxDepth));
+            percent = (i - minDepth) / maxDepth;
+            hueValues.push(((this.primary.h + (delta * percent) + 360) % 360) / 360);
+            satValues.push(this.primary.s - (this.primary.s - this.secondary.s) * percent;
+            valValues.push(this.primary.v - (this.primary.v - this.secondary.v) * percent;
         }
         return [hueValues, satValues, valValues];
     }
