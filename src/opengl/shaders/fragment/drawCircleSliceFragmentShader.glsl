@@ -16,7 +16,7 @@ void main() {
 	lowp float dy = vpos.y - cy;
 	lowp float val = sqrt(pow(dx, 2.0) + pow(dy, 2.0));
 	lowp float angle = atan(dy, dx);
-	if(val <= radius + 0.0025 && (val >= radius - 0.0025 || abs(angle - start) * val <= 0.0025 || abs(end - angle - 2.0 * PI) * val <= 0.0025 || abs(angle - end) * val <= 0.0025)){
+	if(val <= radius + 0.0025 && (val >= radius - 0.0025 || abs(angle - start) * val <= 0.0025 || abs(end - angle - 2.0 * PI) * val <= 0.0025 || abs(angle - end) * val <= 0.0025 || abs(angle - start + 2.0 * PI) * val <= 0.0025)){
 		if(start < PI){
 			if(end < PI){
 				if(angle >= start && angle <= end){
