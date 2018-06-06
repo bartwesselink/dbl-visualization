@@ -48,7 +48,7 @@ export class OpenGL{
     }
     
     //optimises the given shader mode
-    public optimizeFor(mode: ShaderMode){
+    public optimizeFor(mode: ShaderMode): void {
         outer: for(this.index; this.index < this.arrays.length; this.index++){
             if(this.arrays[this.index].shader != mode){
                 for(let i = this.index + 1; i < this.arrays.length; i++){
@@ -701,7 +701,8 @@ export class OpenGL{
         this.renderEllipsoidImpl(pos, x, y, radius, 2 * radius, fill, line, lineColor, fillColor, 2);
     }
     
-    private shaderCircle(x: number, y: number, radius: number, mode: ShaderMode, mainColor: Float32Array, extraColor: Float32Array){
+    //shader circle buffer subroutine
+    private shaderCircle(x: number, y: number, radius: number, mode: ShaderMode, mainColor: Float32Array, extraColor: Float32Array): void{
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         const pos = new Float32Array(8);
@@ -814,6 +815,7 @@ export class OpenGL{
         }
     }
     
+    //shader ring slice buffer subroutine
     private shaderRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, mainColor: Float32Array, extraColor: Float32Array, mode: ShaderMode): void{
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
@@ -1043,7 +1045,8 @@ export class OpenGL{
         }
     }
     
-    private shaderCircleSlice(x: number, y: number, radius: number, start: number, end: number, mode: ShaderMode, mainColor: Float32Array, extraColor: Float32Array){
+    //shader circle slice buffer subroutine
+    private shaderCircleSlice(x: number, y: number, radius: number, start: number, end: number, mode: ShaderMode, mainColor: Float32Array, extraColor: Float32Array): void {
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         const pos = new Float32Array(8);
@@ -1220,6 +1223,7 @@ export class OpenGL{
         console.log("[OpenGL] Rendered " + vertices + " out of " + total + " vertices")
     }
     
+    //checks if an element is visible
     private isVisible(elem: Element): boolean {
         if((this.mode == Mode.WIDTH_FIRST && elem.span < ((this.WIDTH / this.factor) / this.width) * this.SIZETHRESHOLD) || (this.mode == Mode.HEIGHT_FIRST && elem.span < ((this.HEIGHT / this.factor) / this.height) * this.SIZETHRESHOLD)){
             return false;
@@ -1288,7 +1292,7 @@ export class OpenGL{
     }
 
     //creates a color from the given array
-    private toColor(array: number[]): Float32Array{//TODO optimise, just a temporary fix
+    private toColor(array: number[]): Float32Array{
         while(array.length > 3){
             array.pop();
         }
