@@ -160,7 +160,7 @@ export class Shader{
     }
     
     public isShaderEnabled(mode: ShaderMode): boolean {
-        return (this.mode & mode) > 0;
+        return (this.mode & mode) > 0 && mode != 0;
     }
     
     public initShader(vss: any, fss: any): WebGLProgram {
