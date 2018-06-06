@@ -65,7 +65,7 @@ export class OpenGL{
     }
     
     //optimize default draw calls
-    public optimizeDefault(){
+    public optimizeDefault(): void{
         this.optimizeFor(null);
     }
     
