@@ -67,7 +67,7 @@ Crossed out modes are not implemented. In general you should only enable a paren
         - `CIRCULAR_ARC`
         
 ## Enable Shaders
-Visualisations that want to use shaders should explictly enable the shaders they need using one of more calls to the `gl.enableShaders(ShaderMode mode)` function. To make do this visualisations can implement the optional `enableShaders(gl: OpenGL): void` subroutine.
+Visualisations that want to use shaders should explictly enable the shaders they need using one of more calls to the `gl.enableShaders(ShaderMode mode)` function. To do this visualisations can implement the optional `enableShaders(gl: OpenGL): void` subroutine.
 
 ## Optimize Shaders
 Visualisations that use more than one shader (more than one leaf in the hierarcy above) should optimize their shader calls. This means that they should take care to group calls of the same type. If however this is not possible then there is a method that can do this afterwards. 
