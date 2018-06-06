@@ -1181,7 +1181,6 @@ export class OpenGL{
         }
         pos[i * 2 + 2] = (x + radius * Math.cos(end * Matrix.oneDeg)) / this.HALFWIDTH;
         pos[i * 2 + 3] = (y + radius * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT;
-        console.log(pos)
                 
         if(end - start > 90){
             this.renderEllipsoidImpl(pos, x, y, radius, radius * 2, fill, line, lineColor, fillColor, 0);
