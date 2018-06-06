@@ -10,12 +10,10 @@ export class FillRingSliceShader extends RingSliceShader{
     private colorUniform: WebGLUniformLocation;
     
     public preInit(shader: Shader): WebGLProgram {
-        console.log("pre fill");
         return shader.initShader(vertexSource, fragmentSource);
     }
     
     public postProcess(elem: Element, gl: WebGLRenderingContext): void {
-        console.log("post");
         gl.uniform3fv(this.colorUniform, elem.color);
     }
     

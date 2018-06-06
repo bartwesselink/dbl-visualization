@@ -10,7 +10,7 @@ export abstract class RingSliceShader extends CircleSliceShader{
 
     public init(shader: Shader, gl: WebGLRenderingContext): void{
         super.init(shader, gl);
-        console.log("ring init");
+        
         this.nearUniform = gl.getUniformLocation(this.shader, "near");
     }
     

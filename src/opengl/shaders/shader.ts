@@ -102,11 +102,9 @@ export class Shader{
             this.setShader(this.fillCircleSliceShader);
             break;
         case ShaderMode.DRAW_CIRCLE_SLICE:
-            console.log("render set to slice");
             this.setShader(this.drawCircleSliceShader);
             break;
         case ShaderMode.FILL_RING_SLICE:
-            console.log("set shader ring slice: " + this.fillRingSliceShader);
             this.setShader(this.fillRingSliceShader);
             break;
         case ShaderMode.DRAW_RING_SLICE:
