@@ -40,6 +40,32 @@ Returns the height of the visible OpenGL canvas space.
 - `public setBackgroundColor(r: number, g: number, b: number): void`   
 Sets the viewport background color. Arguments should be in range 0-1. Changes will only take effect after a rerender.
 
+# Shaders
+
+## Modes
+Crossed out modes are not implemented. In general you should only enable a parent mode if you intent to use all its child modes.    
+*Enum: ShaderMode.*
+- `ALL`
+    - `CIRCLES`
+        - `LINED_CIRCLE`
+        - `FILL_CIRCLE`
+        - `DRAW_CIRCLE`
+    - `CIRCLE_SLICES`
+        - ~~`LINED_CIRCLE_SLICE`~~
+        - `FILL_CIRCLE_SLICE`
+        - `DRAW_CIRCLE_SLICE`
+    - `RING_SLICES`
+        - ~~`LINED_RING_SLICE`~~
+        - `FILL_RING_SLICE`
+        - `DRAW_RING_SLICE`
+    - `ELLIPSOIDS`
+        - ~~`DRAW_ELLIPSOID`~~
+        - ~~`FILL_ELLIPSOID`~~
+        - ~~`LINED_ELLIPSOID`~~
+    - `ARCS`
+        - ~~`ELLIPSOIDAL_ARC`~~
+        - `CIRCULAR_ARC`
+
 # Rendering
 
 ### Color
