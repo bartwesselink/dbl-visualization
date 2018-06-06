@@ -33,53 +33,52 @@ export class Shader{
     private drawRingSliceShader: DrawRingSliceShader = null;
     private circularArcShader: CircularArcShader = null;
 
-    constructor(gl: WebGLRenderingContext, opengl: OpenGL, mode: number){
+    constructor(gl: WebGLRenderingContext, opengl: OpenGL){
         this.gl = gl;
         this.opengl = opengl;
-        this.mode = mode;
         this.copyShader = new CopyShader();
         this.copyShader.init(this, this.gl);
         this.setShader(this.copyShader);
-        this.enable(mode);
     }
     
-    private enableShader(shader: ShaderMode): void{
+    public enableShader(shader: ShaderMode): void{
         this.enable(shader);
     }
     
     private enable(mode: number): void{
-        if((mode & ShaderMode.FILL_CIRCLE) > 0){
+        if((mode & ShaderMode.FILL_CIRCLE) > 0 && this.fillCircleShader == null){
             this.fillCircleShader = new FillCircleShader();
             this.fillCircleShader.init(this, this.gl);
         }
-        if((mode & ShaderMode.DRAW_CIRCLE) > 0){
+        if((mode & ShaderMode.DRAW_CIRCLE) > 0 && this.drawCircleShader == null){
             this.drawCircleShader = new DrawCircleShader();
             this.drawCircleShader.init(this, this.gl);
         }
-        if((mode & ShaderMode.LINED_CIRCLE) > 0){
+        if((mode & ShaderMode.LINED_CIRCLE) > 0 && this.lineCircleShader == null){
             this.lineCircleShader = new LineCircleShader();
             this.lineCircleShader.init(this, this.gl);
         }
-        if((mode & ShaderMode.FILL_CIRCLE_SLICE) > 0){
+        if((mode & ShaderMode.FILL_CIRCLE_SLICE) > 0 && this.fillCircleSliceShader == null){
             this.fillCircleSliceShader = new FillCircleSliceShader();
             this.fillCircleSliceShader.init(this, this.gl);
         }
-        if((mode & ShaderMode.DRAW_CIRCLE_SLICE) > 0){
+        if((mode & ShaderMode.DRAW_CIRCLE_SLICE) > 0 && this.drawCircleSliceShader == null){
             this.drawCircleSliceShader = new DrawCircleSliceShader();
             this.drawCircleSliceShader.init(this, this.gl);
         }
-        if((mode & ShaderMode.FILL_RING_SLICE) > 0){
+        if((mode & ShaderMode.FILL_RING_SLICE) > 0 && this.fillRingSliceShader == null){
             this.fillRingSliceShader = new FillRingSliceShader();
             this.fillRingSliceShader.init(this, this.gl);
         }
-        if((mode & ShaderMode.DRAW_RING_SLICE) > 0){
+        if((mode & ShaderMode.DRAW_RING_SLICE) > 0 && this.drawRingSliceShader == null){
             this.drawRingSliceShader = new DrawRingSliceShader();
             this.drawRingSliceShader.init(this, this.gl);
         }
-        if((mode & ShaderMode.CIRCULAR_ARC) > 0){
+        if((mode & ShaderMode.CIRCULAR_ARC) > 0 && this.circularArcShader == null){
             this.circularArcShader = new CircularArcShader();
             this.circularArcShader.init(this, this.gl);
         }
+        this.mode |= mode;
     }
     
     public prepareRenderPass(): void{

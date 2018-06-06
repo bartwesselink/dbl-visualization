@@ -3,6 +3,7 @@ import {Node} from '../models/node';
 import {OpenGL} from '../opengl/opengl';
 import {FormFactory} from '../form/form-factory';
 import {Form} from "../form/form";
+import { ShaderMode } from "../opengl/shaders/shaderMode";
 
 /** @author Nico Klaassen */
 export class OpenglDemoTree implements Visualizer {
@@ -20,14 +21,14 @@ export class OpenglDemoTree implements Visualizer {
     public draw(tree: Node, gl: OpenGL) {
         this.gl = gl; // So we have access to this in the entire class.
         this.tree = tree;
-
+        
         // Dedicated GPU test
         gl.isDedicatedGPU();
 
         // Draw axis - range and domain: [-100, 100]
         gl.fillAAQuad(-200, -1, 400, 2, [1, 0, 0, 1]); // X axis
         gl.fillAAQuad(-1, -200, 2, 400, [1, 0, 0, 1]); // Y axis
-
+        
         for (let i = 0; i <= 20; i++) {
             const offset = 10 * i;
             gl.fillAAQuad(offset, -1, 2, 2, [0, 0, 0, 1]); // x+ ticks
@@ -43,7 +44,7 @@ export class OpenglDemoTree implements Visualizer {
         gl.drawAAQuad(100, -200, 100, 100, this.mainColor);
         gl.fillLinedAAQuad(-200, -200, 100, 100, this.mainColor, [0, 0, 0, 1]);
         gl.drawRotatedQuad(-200, 100, 100, 100, 45, this.mainColor);
-
+        
         // Rotation dense example
         let startX = -720;
         let startY = 300;
@@ -53,20 +54,20 @@ export class OpenglDemoTree implements Visualizer {
         let radiusX = quadWidth / 2;
         let radiusY = quadHeight / 2;
         let rotationOffset = 1;
-        let outlineColor = [0, 0, 0, 1];
+        let outlineColor = [0, 0, 0];
         for (let i = 0; i <= 360; i++) {
             const randomColor = [
-                Math.random(),
-                Math.random(),
-                Math.random(),
-                1
-            ];
+                                 Math.random(),
+                                 Math.random(),
+                                 Math.random(),
+                                 1
+                                 ];
             const x = startX + offsetX * i;
             const rotationDegrees = rotationOffset * i;
             gl.fillLinedRotatedQuad(x, startY, quadWidth, quadHeight, rotationDegrees, randomColor, outlineColor);
             gl.fillLinedEllipsoid(x, -startY, radiusX, radiusY, rotationDegrees, randomColor, outlineColor); // Optional, precision: number
         }
-
+        
         // Rotation sparse example
         startX = -720;
         startY = 225;
@@ -76,30 +77,30 @@ export class OpenglDemoTree implements Visualizer {
         radiusX = quadWidth / 2;
         radiusY = quadHeight; // Not divided by two to highlight rotation with the ellipses
         rotationOffset = 4;
-        outlineColor = [0, 0, 0, 1];
+        outlineColor = [0, 0, 0];
         for (let i = 0; i <= 90; i++) {
             // Generate random color
             const randomColor = [
-                Math.random(),
-                Math.random(),
-                Math.random(),
-                1
-            ];
+                                 Math.random(),
+                                 Math.random(),
+                                 Math.random(),
+                                 1
+                                 ];
             const x = startX + offsetX * i;
             const rotationDegrees = rotationOffset * i;
             gl.fillLinedRotatedQuad(x, startY, quadWidth, quadHeight, rotationDegrees, randomColor, outlineColor);
             gl.fillLinedEllipsoid(x, -startY, radiusX, radiusY, rotationDegrees, randomColor, outlineColor); // optional, precision: number
         }
-
+        
         if (this.sinewaves) {
             // Sine wave example
             startX = -720;
             startY = 30;
             let amplitude = 10;
             let radius = 2;
-            let fillColor = [1, 0, 0, 1];
-            outlineColor = [0, 0, 0, 1];
-
+            let fillColor = [1, 0, 0];
+            outlineColor = [0, 0, 0];
+            
             for (let i = 0; i <= 360; i++) {
                 const x = i / Math.PI;
                 const y = amplitude * Math.sin(x) + startY; // Standard mathematical sine curve form; a + b*sin(c (x-d) )
@@ -112,6 +113,7 @@ export class OpenglDemoTree implements Visualizer {
                 }
             }
         }
+
     }
 
     public getForm(formFactory: FormFactory) {
@@ -145,6 +147,14 @@ export class OpenglDemoTree implements Visualizer {
 
     public getThumbnailImage(): string|null {
         return null;
+    }
+    
+    public enableShaders(gl: OpenGL): void {
+        gl.enableShaders(ShaderMode.CIRCLES);
+    }
+    
+    public optimizeShaders(gl: OpenGL): void {
+        gl.optimizeFor(ShaderMode.ALL);
     }
 }
 /** @end-author Nico Klaassen */

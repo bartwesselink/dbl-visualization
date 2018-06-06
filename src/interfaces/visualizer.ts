@@ -10,5 +10,7 @@ export interface Visualizer {
     getForm(formFactory: FormFactory): Form|null;
     applySettings(settings: object): void;
     draw(tree: Node, gl: OpenGL): void;
+    enableShaders?(gl: OpenGL): void;
+    optimizeShaders?(gl: OpenGL): void;
 }
 /** @end-author Bart Wesselink */

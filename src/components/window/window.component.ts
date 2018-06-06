@@ -177,6 +177,9 @@ export class WindowComponent implements OnInit {
         }
 
         this.visualizer.draw(this.tree, this.gl);
+        if(this.visualizer.optimizeShaders){
+            this.visualizer.optimizeShaders(this.gl);
+        }
     }
   
     //fallback rendering for when some OpenGL error occurs
@@ -213,6 +216,10 @@ export class WindowComponent implements OnInit {
         }
         
         this.setDarkmode(WindowComponent.darkMode);
+        
+        if(this.visualizer.enableShaders){
+            this.visualizer.enableShaders(this.gl);
+        }
     }
   
     //redraw the canvas

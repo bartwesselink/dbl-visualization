@@ -33,7 +33,7 @@ export class OpenGL{
 
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
-        this.shader = new Shader(gl, this, ShaderMode.ALL);//TODO
+        this.shader = new Shader(gl, this);//TODO
         
         //set the canvas background color to white
         this.setBackgroundColor(1.0, 1.0, 1.0);
@@ -62,8 +62,6 @@ export class OpenGL{
                 break;
             }
         }
-        console.log(this.arrays);
-        console.log("index: ", this.index);
     }
     
     //gets the modelview matrix
@@ -227,6 +225,11 @@ export class OpenGL{
         Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DScalingMatrix(factor));
         Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]);
         this.factor *= factor;
+    }
+    
+    //enables the given shader
+    public enableShaders(shader: ShaderMode): void {
+        this.shader.enableShader(shader);
     }
     
     //maps a true canvas coordinate to the imaginary OpenGL coordinate system
