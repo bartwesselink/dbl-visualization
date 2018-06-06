@@ -9,6 +9,11 @@ import {SettingsBus} from '../providers/settings-bus';
 import {Settings} from '../interfaces/settings';
 import {OpenglDemoTree} from "../visualizations/opengl-demo-tree";
 import {SimpleTreeMap} from "../visualizations/simple-tree-map";
+import {WorkerManager} from '../utils/worker-manager';
+import {SelectBus} from "../providers/select-bus";
+
+declare var dialogPolyfill;
+
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -17,15 +22,18 @@ export class AppComponent implements OnInit {
     public tabs: Tab[] = [];
     public tree: Node;
     public visualizers: Visualizer[];
+    public showFullScreenLoader: boolean = false;
 
     private activeTab: Tab;
+    private amountOfWindowsLoading: number = 0;
 
     @ViewChild(SidebarComponent) private sidebar: SidebarComponent;
-    @ViewChild("snackbar") private snackbar: ElementRef;
+    @ViewChild("snackbar") public snackbar: ElementRef;
+    @ViewChild('fullScreenLoader') private fullScreenLoader: ElementRef;
 
     private parser: NewickParser;
     public darkMode = false;
-    constructor(private settingsBus: SettingsBus) {
+    constructor(private settingsBus: SettingsBus, private selectBus: SelectBus) {
         this.createVisualizers();
 
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
@@ -35,12 +43,15 @@ export class AppComponent implements OnInit {
                     tab.window.setDarkmode(this.darkMode);
                 }
             }
+            this.selectBus.interactionOptions = settings.interactionSettings;
         });
 
         window.addEventListener('resize', () => this.resizeActiveTab());
     }
 
-    ngOnInit() {
+    public ngOnInit(): void {
+        dialogPolyfill.registerDialog(this.fullScreenLoader.nativeElement);
+
         this.parser = new NewickParser(this.snackbar);
     }
 
@@ -49,12 +60,18 @@ export class AppComponent implements OnInit {
         const line = this.parser.extractLines(data);
 
         if (line !== null) {
+            const hadTree = this.tree != null;
+
             this.tree = this.parser.parseTree(line);
 
             setTimeout(() => {
                 this.sidebar.reloadData();
                 this.redrawAllTabs();
             }, 100);
+
+            if(!hadTree) {
+                this.resizeActiveTab();
+            }
         }
     }
     /** @end-author Jordy Verhoeven */
@@ -94,6 +111,29 @@ export class AppComponent implements OnInit {
         }
     }
 
+    public updateLoading(isLoading: boolean) {
+        if (isLoading) {
+            this.amountOfWindowsLoading++;
+        } else {
+            this.amountOfWindowsLoading--;
+        }
+
+        // check if we need to show the full screen modal, in case there is no visualization yet
+        if (this.amountOfWindowsLoading > 0 && this.showFullScreenLoader) {
+            // check if modal is already open, to prevent any errors
+            if (!this.fullScreenLoader.nativeElement.open) {
+                this.fullScreenLoader.nativeElement.showModal();
+            }
+        } else if (this.showFullScreenLoader) {
+            this.showFullScreenLoader = false;
+            this.fullScreenLoader.nativeElement.close();
+        }
+    }
+
+    public isLoading(): boolean {
+        return this.amountOfWindowsLoading > 0;
+    }
+
     private createVisualizers(): void {
         this.visualizers = [
             new OpenglDemoTree(),
@@ -112,10 +152,10 @@ export class AppComponent implements OnInit {
         });
     }
 
-    private redrawAllTabs(): void {
-        for (const tab of this.tabs) {
+    public async redrawAllTabs(): Promise<void> {
+        for (const tab of this.tabs.slice().sort((a, b) => a === this.activeTab ? 0 : 1)) {
             if (tab.window) {
-                tab.window.startScene();
+                await tab.window.computeScene();
             }
         }
     }
@@ -128,6 +168,7 @@ export class AppComponent implements OnInit {
         });
 
         this.switchTab(this.tabs[this.tabs.length - 1]); // always show new visualization when tab is added
+        this.showFullScreenLoader = true;
     }
     /** @end-author Bart Wesselink */
 }

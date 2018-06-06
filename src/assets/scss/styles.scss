@@ -3,6 +3,7 @@
 @import "~mdl-selectfield/dist/mdl-selectfield";
 @import "~dialog-polyfill/dialog-polyfill";
 @import "~intro.js/minified/introjs.min.css";
+@import "~material-design-icons/iconfont/material-icons.css";
 
 /** Styles component */
 @import "modules/global";
@@ -21,4 +22,7 @@
 @import "modules/visualization-settings-button";
 @import "modules/general-settings-button";
 @import "modules/dialog";
+@import "modules/loader";
 @import "modules/dark-mode";
+@import "modules/tooltip";
+@import "modules/search";

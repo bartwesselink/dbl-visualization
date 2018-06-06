@@ -24,7 +24,9 @@ export class NewickParser {
             this.feedback(this.errorMsg);
             return null;
         }
+
         data = null;
+
         return lines[1];
     }
 
@@ -39,11 +41,13 @@ export class NewickParser {
         }
         const first = newick.tree;
         const parent = this.recurse(first);
+
         newick = null;
+
         return parent;
     }
 
-    private recurse(node: any, parent: Node = null): any {
+    private recurse(node: any, parent: Node = null, identifier: { id: number } = { id: 0 }): any { // identifier is a object to ensure reference-passing
         const label = node.name;
         const children = node.branchset;
         const length = node.length ? node.length : this.defaultNodeLength;
@@ -52,15 +56,18 @@ export class NewickParser {
             label: label,
             children: new Array(children == null ? 0 : children.length),
             subTreeSize: 1,
+            identifier: identifier.id,
             length: length,
             parent,
         };
+
+        identifier.id++;
 
         if (children != null) {
             let i = 0;
 
             for (const child of children) {
-                const formattedChildNode = this.recurse(child, formatted);
+                const formattedChildNode = this.recurse(child, formatted, identifier);
                 formatted.children[i] = formattedChildNode;
 
                 formatted.subTreeSize += formattedChildNode.subTreeSize;

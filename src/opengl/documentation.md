@@ -17,7 +17,9 @@ Maps a true canvas coordinate to the imaginary OpenGL coordinate system. The `x`
 - `public scale(factor: number): void`   
 Scales the OpenGL view by the given factor. Scaling is multiplicative.
 - `public translate(dx: number, dy: number): void`  
-Translates the OpenGL view by the given distance. The `dx` and `dy` parameters denote the distance to translate the model in the x and y direction respectively. Translations are cumulative.
+Translates the OpenGL view by the given distance. The `dx` and `dy` parameters denote the distance to translate the model in the x and y direction respectively. Translations are cumulative and `dx` and `dy` are in canvas space.
+- `public glTranslate(dx: number, dy: number): void`  
+Translates the OpenGL view by the given distance. The `dx` and `dy` parameters denote the distance to translate the model in the x and y direction respectively. Translations are cumulative and `dx` and `dy` are in imaginary OpenGL space.
 - `public rotate(rotation: number): void`    
 Rotates the OpenGL view by the given number of degrees. Rotations are additive.
 - `public getRotation(): number`    
@@ -38,6 +40,10 @@ Checks whether or not the GPU used by OpenGL is a dedicated GPU.
 Returns the width of the visible OpenGL canvas space. 
 - `public getHeight(): number`    
 Returns the height of the visible OpenGL canvas space.
+- `public getXTranslation(): number`    
+Returns the aggregated translation on the x-axis in OpenGL space.
+- `public getYTranslation(): number`    
+Returns the aggregated translation on the y-axis in OpenGL space.
 - `public setBackgroundColor(r: number, g: number, b: number): void`   
 Sets the viewport background color. Arguments should be in range 0-1. Changes will only take effect after a rerender.
 - `public optimizeFor(mode: ShaderMode): void`    

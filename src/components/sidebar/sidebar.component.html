@@ -2,8 +2,9 @@
     <div class="mdl-card__title">
         <h2 class="mdl-card__title-text">Tree Navigator</h2>
     </div>
-    <div class="mdl-card__supporting-text sidebar-content">
-        <app-tree-navigator #navigator [tree]="tree"></app-tree-navigator>
+    <app-search [tree]="tree"></app-search>
+    <div class="mdl-card__supporting-text sidebar-content" #content>
+        <app-tree-navigator #navigator [tree]="tree" [parent]="true"></app-tree-navigator>
     </div>
     <div class="mdl-card__actions mdl-card--border">
         <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" (click)="contractAll()">

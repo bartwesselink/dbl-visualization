@@ -114,6 +114,16 @@ export class OpenGL{
         console.log("[OpenGL] Detected renderer: " + name);
         if(name.indexOf("NVIDIA") != -1){
             return true;   
+        }else if(name.indexOf("GeForce") != -1){
+            return true;
+        }else if(name.indexOf("Quadro") != -1){
+            return true;
+        }else if(name.indexOf("TITAN V") != -1){
+            return true;
+        }else if(name.indexOf("GPU Accelerator") != -1){
+            return true;
+        }else if(name.indexOf("NVS") != -1){
+            return true;
         }else if(name.indexOf("Radeon") != -1){
             if(name.match(".*Radeon (HD ....M|R(5|7|9) M...|Pro).*")){//Radeon HD Mobile, R5/R7/R9 Mobile and RX and Pro
                 return false;
@@ -154,6 +164,16 @@ export class OpenGL{
     //return the zoom level
     public getZoom(): number {
         return this.factor;    
+    }
+
+    //return the translation over the x axis
+    public getXTranslation(): number {
+        return this.dx * this.HALFWIDTH;
+    }
+
+    //return the translation over the y axis
+    public getYTranslation(): number {
+        return this.dy * this.HALFHEIGHT;
     }
     
     //reset scale, rotation and translations
@@ -214,6 +234,15 @@ export class OpenGL{
         }
         dx = ((dx / w) * 2) / this.factor;
         dy = ((-dy / h) * 2) / this.factor;
+        Matrix.translateSelf(this.modelviewMatrix, [dx, dy, 0]);
+        this.dx += dx;
+        this.dy += dy;
+    }
+    
+    //translates the model view by the given distance
+    public glTranslate(dx: number, dy: number): void {
+        dx /= this.HALFWIDTH;
+        dy /= this.HALFHEIGHT;
         Matrix.translateSelf(this.modelviewMatrix, [dx, dy, 0]);
         this.dx += dx;
         this.dy += dy;
