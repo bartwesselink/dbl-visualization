@@ -48,6 +48,8 @@ Returns the aggregated translation on the y-axis in OpenGL space.
 Sets the viewport background color. Arguments should be in range 0-1. Changes will only take effect after a rerender.
 - `public optimizeFor(mode: ShaderMode): void`    
 Optimises draw calls for the given shader mode. 
+- `public optimizeDefault(): void`   
+Optimises draw calls for shapes are were not drawn with a specialized shader.
 - `public enableShaders(shader: ShaderMode): void`    
 Enables the shader(s) specified by the given shader mode.
 
@@ -96,9 +98,9 @@ Visualisations that want to use shaders should explictly enable the shaders they
 ## Optimize Shaders
 Visualisations that use more than one shader (more than one leaf in the hierarcy above) should optimize their shader calls. This means that they should take care to group calls of the same type. If however this is not possible then there is a method that can do this afterwards. 
 
-To make use of this functionality a visualisation can implement the optional `optimizeShaders(gl: OpenGL): void` subroutine. In this subroutine the visualisation can then make one or more calls to the `gl.optimizeFor(ShaderMode mode)` subroutine.
+To make use of this functionality a visualisation can implement the optional `optimizeShaders(gl: OpenGL): void` subroutine. In this subroutine the visualisation can then make one or more calls to the `gl.optimizeFor(ShaderMode mode)` and one call to the `gl.optimizeDefault()` subroutine.
 
-**However doing this will change the order that shapes are drawn in. The order will be determined by the order of the `optimizeFor` calls with the first type that is optimized also being the first type that is drawn.** Other than that the optimisation procedure is stable with respect to shapes of the same type. Types that don't make use of a shader are drawn last.
+**However doing this will change the order that shapes are drawn in. The order will be determined by the order of the `optimizeFor` calls with the first type that is optimized also being the first type that is drawn.** Other than that the optimisation procedure is stable with respect to shapes of the same type. Types that don't make use of a specialized shader are drawn last or when the `gl.optimizeDefault()` subroutine was called.
         
 ## Important notes
 When using shaders to render arcs, circle slices or ring slices behavoir for start or end angles outside of 0-360 is *undefined*.
