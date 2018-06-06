@@ -218,7 +218,7 @@ export class WindowComponent implements OnInit {
             this.tooltipActive = false;
             this.lastTooltipNode = null;
         } else if (this.tree != null) {
-            var coords = this.gl.transformPoint(event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
+            var coords = this.gl.transformPoint(event.layerX, event.layerY);
 
             const node: Node = this.interactionHandler.determineElement(this.tree, this.currentDraws, coords);
             if (node != null) {
