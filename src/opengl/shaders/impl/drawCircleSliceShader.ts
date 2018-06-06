@@ -10,7 +10,6 @@ export class DrawCircleSliceShader extends CircleSliceShader{
     private colorUniform: WebGLUniformLocation;
     
     public preInit(shader: Shader): WebGLProgram {
-        console.log("bind draw circle slice");
         return shader.initShader(vertexSource, fragmentSource);
     }
     
