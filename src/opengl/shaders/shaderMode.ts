@@ -30,6 +30,6 @@ export enum ShaderMode{
     ARCS = CIRCULAR_ARC,
     
     //For debug usage only
-    ALL = CIRCLES | CIRCLE_SLICES | RING_SLICES,
+    ALL = CIRCLES | CIRCLE_SLICES | RING_SLICES | ELLIPSOIDS | ARCS,
 }
 /** @end-author Roan Hofland */  

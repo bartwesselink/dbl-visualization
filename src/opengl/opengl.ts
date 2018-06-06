@@ -7,6 +7,7 @@ import {Shader} from "./shaders/shader";
 import {CircleElement} from "./shaders/elem/circleElement";
 import {CircleSliceElement} from "./shaders/elem/circleSliceElement";
 import {RingSliceElement} from "./shaders/elem/ringSliceElement";
+import {CircularArcElement} from "./shaders/elem/circularArcElement";
 
 export class OpenGL{
     private gl: WebGLRenderingContext;
@@ -292,26 +293,87 @@ export class OpenGL{
     
     //draws a partial circle
     public drawCircularArc(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
-        const pos = new Float32Array(Math.floor((end - start) / precision) * 2 + 2);
-        var loc = [x + radius, y];
-        var rotation = [9];
-        Matrix.multiply(rotation, Matrix.create2DTranslationMatrix([-x, -y]), Matrix.create2DRotationMatrix(precision));
-        Matrix.multiply(rotation, rotation, Matrix.create2DTranslationMatrix([x, y]));
-        Matrix.rotateVector2D([x, y], loc, start);
-        for(var i = 0; end > start + precision * i; i++){
+        if(this.shader.isShaderEnabled(ShaderMode.CIRCULAR_ARC)){
+            var positionBuffer = this.gl.createBuffer();
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
+            const pos = new Float32Array(8);
+            
+            if(end - start > 90){
+                pos[0] = (x + radius * 1.001) / this.HALFWIDTH;
+                pos[1] = (y + radius * 1.001) / this.HALFHEIGHT;
+                pos[2] = (x - radius * 1.001) / this.HALFWIDTH;
+                pos[3] = (y + radius * 1.001) / this.HALFHEIGHT;
+                pos[4] = (x + radius * 1.001) / this.HALFWIDTH;
+                pos[5] = (y - radius * 1.001) / this.HALFHEIGHT;
+                pos[6] = (x - radius * 1.001) / this.HALFWIDTH;
+                pos[7] = (y - radius * 1.001) / this.HALFHEIGHT;
+                
+                this.arrays.push(<CircularArcElement>{
+                    pos: positionBuffer,
+                    color: this.toColor(color),
+                    x: x,
+                    y: y,
+                    rad: radius,
+                    span: radius * 2,
+                    length: 4,
+                    radius: radius / this.HALFHEIGHT,
+                    start: start * Matrix.oneDeg,
+                    end: end * Matrix.oneDeg,
+                    shader: ShaderMode.CIRCULAR_ARC
+                });
+            }else{
+                var dcx = radius * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
+                var dcy = radius * 0.71 * Math.sin((start + ((end - start) / 2)) * Matrix.oneDeg);
+                
+                pos[0] = (x + dcx + radius * 0.71 * 1.001) / this.HALFWIDTH;
+                pos[1] = (y + dcy + radius * 0.71 * 1.001) / this.HALFHEIGHT;
+                pos[2] = (x + dcx - radius * 0.71 * 1.001) / this.HALFWIDTH;
+                pos[3] = (y + dcy + radius * 0.71 * 1.001) / this.HALFHEIGHT;
+                pos[4] = (x + dcx + radius * 0.71 * 1.001) / this.HALFWIDTH;
+                pos[5] = (y + dcy - radius * 0.71 * 1.001) / this.HALFHEIGHT;
+                pos[6] = (x + dcx - radius * 0.71 * 1.001) / this.HALFWIDTH;
+                pos[7] = (y + dcy - radius * 0.71 * 1.001) / this.HALFHEIGHT;
+                
+                this.arrays.push(<CircularArcElement>{
+                    pos: positionBuffer,
+                    color: this.toColor(color),
+                    x: x + dcx,
+                    y: y + dcy,
+                    cx: x,
+                    cy: y,
+                    rad: radius * 0.71,
+                    span: radius * 1.42,
+                    length: 4,
+                    radius: radius / this.HALFHEIGHT,
+                    start: start * Matrix.oneDeg,
+                    end: end * Matrix.oneDeg,
+                    shader: ShaderMode.CIRCULAR_ARC
+                });
+            }   
+            
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
+        }else{
+            const pos = new Float32Array(Math.floor((end - start) / precision) * 2 + 2);
+            var loc = [x + radius, y];
+            var rotation = [9];
+            Matrix.multiply(rotation, Matrix.create2DTranslationMatrix([-x, -y]), Matrix.create2DRotationMatrix(precision));
+            Matrix.multiply(rotation, rotation, Matrix.create2DTranslationMatrix([x, y]));
+            Matrix.rotateVector2D([x, y], loc, start);
+            for(var i = 0; end > start + precision * i; i++){
+                pos[i * 2] = loc[0] / this.HALFWIDTH;
+                pos[i * 2 + 1] = loc[1] / this.HALFHEIGHT;
+                Matrix.multiplyVector2D(loc, rotation);
+            }
             pos[i * 2] = loc[0] / this.HALFWIDTH;
             pos[i * 2 + 1] = loc[1] / this.HALFHEIGHT;
-            Matrix.multiplyVector2D(loc, rotation);
-        }
-        pos[i * 2] = loc[0] / this.HALFWIDTH;
-        pos[i * 2 + 1] = loc[1] / this.HALFHEIGHT;
-        
-        if(end - start > 90){
-            this.drawArcImpl(pos, color, x, y, radius, 2 * radius);
-        }else{
-            var dcx = radius * 0.71 * Math.cos(start + ((end - start) / 2));
-            var dcy = radius * 0.71 * Math.sin(start + ((end - start) / 2));
-            this.drawArcImpl(pos, color, x + dcx, y + dcy, radius * 0.71, radius * 1.42);
+            
+            if(end - start > 90){
+                this.drawArcImpl(pos, color, x, y, radius, 2 * radius);
+            }else{
+                var dcx = radius * 0.71 * Math.cos(start + ((end - start) / 2));
+                var dcy = radius * 0.71 * Math.sin(start + ((end - start) / 2));
+                this.drawArcImpl(pos, color, x + dcx, y + dcy, radius * 0.71, radius * 1.42);
+            }
         }
     }
     

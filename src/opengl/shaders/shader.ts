@@ -12,6 +12,7 @@ import {FillCircleSliceShader} from "./impl/fillCircleSliceShader";
 import {FillRingSliceShader} from "./impl/fillRingSliceShader";
 import {DrawCircleSliceShader} from "./impl/drawCircleSliceShader";
 import {DrawRingSliceShader} from "./impl/drawRingSliceShader";
+import {CircularArcShader} from "./impl/circularArcShader";
 
 export class Shader{
     private gl: WebGLRenderingContext;
@@ -30,6 +31,7 @@ export class Shader{
     private fillRingSliceShader: FillRingSliceShader = null;
     private drawCircleSliceShader: DrawCircleSliceShader = null;
     private drawRingSliceShader: DrawRingSliceShader = null;
+    private circularArcShader: CircularArcShader = null;
 
     constructor(gl: WebGLRenderingContext, opengl: OpenGL, mode: number){
         this.gl = gl;
@@ -74,6 +76,10 @@ export class Shader{
             this.drawRingSliceShader = new DrawRingSliceShader();
             this.drawRingSliceShader.init(this, this.gl);
         }
+        if((mode & ShaderMode.CIRCULAR_ARC) > 0){
+            this.circularArcShader = new CircularArcShader();
+            this.circularArcShader.init(this, this.gl);
+        }
     }
     
     public prepareRenderPass(): void{
@@ -109,6 +115,9 @@ export class Shader{
             break;
         case ShaderMode.DRAW_RING_SLICE:
             this.setShader(this.drawRingSliceShader);            
+            break;
+        case ShaderMode.CIRCULAR_ARC:
+            this.setShader(this.circularArcShader);
             break;
         }
         
