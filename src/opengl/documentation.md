@@ -82,15 +82,15 @@ When using shaders to render arcs, circle slices or ring slices behavoir for sta
 # Rendering
 
 ### Color
-All the rendering methods will ask for a color to use. The color should be provided as an array containing the red, green, blue and alpha values as floats. These floats should all be in range 0 to 1.    
+All the rendering methods will ask for a color to use. The color should be provided as an array containing the red, green and blue values as floats. These floats should all be in range 0 to 1.    
 
 Examples:    
-- `var red = [1.0, 0.0, 0.0, 1.0];`
-- `var purple = [1.0, 0.0, 1.0, 1.0];`
-- `var black = [0.0, 0.0, 0.0, 1.0];`
+- `var red = [1.0, 0.0, 0.0];`
+- `var purple = [1.0, 0.0, 1.0];`
+- `var black = [0.0, 0.0, 0.0];`
 
 ### Precision
-All the ellipsoid methods will ask for an optional precision argument. This has to be a positive integer that is also a divisor of 360. This means that the only valid values are: `1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 18, 20, 24, 30, 36, 40, 45, 60, 72, 90, 120, 180 and 360`. The precision roughly corresponds to the length of the small lines that make up the outer perimiter of the circle, thus this means that smaller precision values imply shorter lines and thus a smoother ellipsoid. Shorter lines also implies more lines though so performance goes down when the precision value is lowered.
+All the ellipsoid methods will ask for an optional precision argument. This has to be a positive integer that is also a divisor of 360. This means that the only valid values are: `1, 2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 18, 20, 24, 30, 36, 40, 45, 60, 72, 90, 120, 180 and 360`. The precision roughly corresponds to the length of the small lines that make up the outer perimiter of the circle, thus this means that smaller precision values imply shorter lines and thus a smoother ellipsoid. Shorter lines also implies more lines though so performance goes down when the precision value is lowered. If a shader is used the precision is always infinite.
 
 ## Quads
 - `public fillAAQuad(x: number, y: number, width: number, height: number, color: number[]): void`    
