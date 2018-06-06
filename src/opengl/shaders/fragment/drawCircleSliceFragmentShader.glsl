@@ -34,8 +34,12 @@ void main() {
 	if(val <= radius){
 		if(abs(angle - start) * val <= 0.0025){
 			gl_FragColor = vec4(color, 1.0 - 400.0 * abs(start - angle) * val);
-		}else if(abs(angle - start) * val <= 0.0025){
-			gl_FragColor = vec4(color, 1.0 - 400.0 * abs(start - angle) * val);
+		}else if(abs(angle - end) * val <= 0.0025){
+			gl_FragColor = vec4(color, 1.0 - 400.0 * abs(end - angle) * val);
+		}else if(abs(angle - end + 2.0 * PI) * val <= 0.0025){
+			gl_FragColor = vec4(color, 1.0 - 400.0 * abs(angle - end + 2.0 * PI) * val);
+		}else if(abs(start - 2.0 * PI - angle) * val <= 0.0025){
+			gl_FragColor = vec4(color, 1.0 - 400.0 * abs(start - 2.0 * PI - angle) * val);
 		}
 	}
 	//	if(val <= radius && (abs(angle - start) * val <= 0.0025 || abs(end - angle - 2.0 * PI) * val <= 0.0025 || abs(angle - end) * val <= 0.0025 || abs(-angle - start + 2.0 * PI) * val <= 0.0025)){
