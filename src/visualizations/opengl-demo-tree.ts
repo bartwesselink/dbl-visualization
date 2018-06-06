@@ -132,8 +132,6 @@ export class OpenglDemoTree implements Visualizer {
         draws.push({ type: 14 /** DrawCircularArc **/, options: { x: 150, y: 100, radius: 50, start: 0, end: 180, color: [0, 0, 0, 1] } });
         draws.push({ type: 13 /** DrawEllipsoidalArc **/, options: { x: 0, y: -100, radx: 100, rady: 30, start: 0, end: 180, color: [0, 0, 0, 1] } });
 
-        draws.push({ type: 9 /** FillLinedEllipsoid **/, identifier: 0, options: { x: 500, y: 500, radx: 100, rady: 200, rotation: 45, fillColor: [0, 0, 0, 1], lineColor: [0, 0, 0, 1] } });
-
         return draws;
     }
 
@@ -156,12 +154,18 @@ export class OpenglDemoTree implements Visualizer {
     }
     
     public enableShaders(gl: OpenGL): void {
-        gl.enableShaders(ShaderMode.CIRCLES);
+        gl.enableShaders(ShaderMode.ALL);
     }
     
     public optimizeShaders(gl: OpenGL): void {
+        gl.optimizeDefault();
         gl.optimizeFor(ShaderMode.FILL_CIRCLE);
         gl.optimizeFor(ShaderMode.DRAW_CIRCLE);
+        gl.optimizeFor(ShaderMode.DRAW_CIRCLE_SLICE);
+        gl.optimizeFor(ShaderMode.FILL_CIRCLE_SLICE);
+        gl.optimizeFor(ShaderMode.DRAW_RING_SLICE);
+        gl.optimizeFor(ShaderMode.FILL_RING_SLICE);
+        gl.optimizeFor(ShaderMode.CIRCULAR_ARC);
     }
 }
 /** @end-author Nico Klaassen */

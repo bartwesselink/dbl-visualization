@@ -64,6 +64,11 @@ export class OpenGL{
         }
     }
     
+    //optimize default draw calls
+    public optimizeDefault(){
+        this.optimizeFor(null);
+    }
+    
     //gets the modelview matrix
     public getModelviewMatrix(): Float32Array{
         return this.modelviewMatrix;
