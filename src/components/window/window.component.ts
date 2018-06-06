@@ -37,6 +37,7 @@ export class WindowComponent implements OnInit {
     private readonly DEFAULT_DR = 1;
     private readonly DEFAULT_DT = 5;
     private readonly DEFAULT_DS = 0.1;
+    private static darkMode: boolean;
     
     constructor(private formFactory: FormFactory) {
 
@@ -52,6 +53,16 @@ export class WindowComponent implements OnInit {
 
     public change(value: object) {
         this.visualizer.applySettings(value);
+    }
+    
+    public setDarkmode(enabled: boolean): void {
+        WindowComponent.darkMode = enabled;
+        if(enabled){
+            this.gl.setBackgroundColor(50.0 / 255.0, 50.0 / 255.0, 50.0 / 255.0);
+        }else{
+            this.gl.setBackgroundColor(1.0, 1.0, 1.0);
+        }
+        this.render();
     }
     
     public keyEvent(event: KeyboardEvent): void {
@@ -199,7 +210,9 @@ export class WindowComponent implements OnInit {
             this.gl = new OpenGL(gl);
         }catch(error){
             this.onError((<Error>error).message);   
-        }  
+        }
+        
+        this.setDarkmode(WindowComponent.darkMode);
     }
   
     //redraw the canvas
