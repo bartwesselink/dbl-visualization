@@ -72,7 +72,7 @@ Visualisations that want to use shaders should explictly enable the shaders they
 ## Optimize Shaders
 Visualisations that use more than one shader (more than one leaf in the hierarcy above) should optimize their shader calls. This means that they should take care to group calls of the same type. If however this is not possible then there is a method that can do this afterwards. 
 
-To make use of this functionality a visualisation can implement the optional `optimizeShaders(gl: OpenGL): void` subroutine. In this subroutine the visualisation and then make one or more calls to the `gl.optimizeFor(ShaderMode mode)` subroutine.
+To make use of this functionality a visualisation can implement the optional `optimizeShaders(gl: OpenGL): void` subroutine. In this subroutine the visualisation can then make one or more calls to the `gl.optimizeFor(ShaderMode mode)` subroutine.
 
 **However doing this will chance the order that shapes are drawn in. The order will be determined by the order of the `optimizeFor` calls with the first type that is optimized also being the first type that is drawn.** Other than that the optimisation procedure is stable with respect to shapes of the same type.
         
