@@ -10,13 +10,13 @@ export enum ShaderMode{
     LINED_CIRCLE_SLICE = 0, //1 << 4,
     FILL_CIRCLE_SLICE = 1 << 5,
     DRAW_CIRCLE_SLICE = 1 << 6,
-    CIRCLE_SLICES = FILL_CIRCLE_SLICE | DRAW_CIRCLE_SLICE,
+    CIRCLE_SLICES = FILL_CIRCLE_SLICE | DRAW_CIRCLE_SLICE | LINED_CIRCLE_SLICE,
     
     //ring slices
     LINED_RING_SLICE = 0, //1 << 7,
     FILL_RING_SLICE = 1 << 8,
     DRAW_RING_SLICE = 1 << 9,
-    RING_SLICES = FILL_RING_SLICE | DRAW_RING_SLICE,
+    RING_SLICES = FILL_RING_SLICE | DRAW_RING_SLICE | LINED_RING_SLICE,
     
     //ellipsoids
     DRAW_ELLIPSOID = 0, //1 << 10,
@@ -27,7 +27,7 @@ export enum ShaderMode{
     //arcs
     ELLIPSOIDAL_ARC = 0, //1 << 13,
     CIRCULAR_ARC = 1 << 14,
-    ARCS = CIRCULAR_ARC,
+    ARCS = CIRCULAR_ARC | ELLIPSOIDAL_ARC,
     
     //For debug usage only
     ALL = CIRCLES | CIRCLE_SLICES | RING_SLICES | ELLIPSOIDS | ARCS,
