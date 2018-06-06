@@ -305,13 +305,12 @@ export class OpenGL{
     
     //render the OpenGL scene
     public render(): void {
-        console.time('render');
+        var start = performance.now();
         this.clear();
                 
         this.shader.prepareRenderPass();
         
-        this.drawBuffers();
-        console.timeEnd('render');
+        this.drawBuffers(start);
     }
 
     //releases all the OpenGL buffers
@@ -1239,7 +1238,7 @@ export class OpenGL{
     }
     
     //draw all the OpenGL buffers
-    private drawBuffers(): void {
+    private drawBuffers(start: number): void {
         var vertices = 0;
         var total = 0;
         var elem;
@@ -1248,7 +1247,7 @@ export class OpenGL{
             vertices += this.drawElement(elem);
             total += elem.overlay == null ? elem.length : (elem.length + elem.overlay.length);
         }
-        console.log("[OpenGL] Rendered " + vertices + " out of " + total + " vertices")
+        console.log("[OpenGL] Rendered " + vertices + " out of " + total + " vertices in", (performance.now() - start), "ms");
     }
     
     //checks if an element is visible
