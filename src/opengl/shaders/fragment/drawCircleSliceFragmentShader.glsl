@@ -31,21 +31,29 @@ void main() {
 			gl_FragColor = vec4(color, 1.0 - 400.0 * abs(radius - val));
 		}
 	}
-	if(val <= radius && (abs(angle - start) * val <= 0.0025 || abs(end - angle - 2.0 * PI) * val <= 0.0025 || abs(angle - end) * val <= 0.0025 || abs(angle - start + 2.0 * PI) * val <= 0.0025)){
-		gl_FragColor = vec4(color, 0.1);
-		if(start < PI){
-			if(end < PI){
-				if(angle >= start && angle <= end){
-					gl_FragColor = vec4(color, 1.0 - 400.0 * (min(abs(end - angle), abs(angle - start)) * val));
-				}
-			}else if(angle <= end - 2.0 * PI){
-				//gl_FragColor = vec4(color, 1.0 - 400.0 * (abs(end - angle - 2.0 * PI) * val));
-			}else if(angle >= start){
-				//gl_FragColor = vec4(color, 1.0 - 400.0 * (abs(angle - start) * val));
-			}
-		}else if(angle >= start - 2.0 * PI && angle <= end - 2.0 * PI){
-			//gl_FragColor = vec4(color, 1.0 - 400.0 * (min(abs(angle - start + 2.0 * PI), abs(end - 2.0 * PI - angle)) * val));
+	if(val <= radius){
+		if(abs(angle - start) * val <= 0.0025){
+			gl_FragColor = vec4(color, 1.0 - 400.0 * abs(start - angle) * val);
+		}else if(abs(angle - start) * val <= 0.0025){
+			gl_FragColor = vec4(color, 1.0 - 400.0 * abs(start - angle) * val);
 		}
 	}
+	//	if(val <= radius && (abs(angle - start) * val <= 0.0025 || abs(end - angle - 2.0 * PI) * val <= 0.0025 || abs(angle - end) * val <= 0.0025 || abs(-angle - start + 2.0 * PI) * val <= 0.0025)){
+	//		gl_FragColor = vec4(color, 1.0);
+//		if(start < PI){
+//			if(end < PI){
+//				if(angle >= start && angle <= end){
+//					//gl_FragColor = vec4(color, 1.0 - 400.0 * (min(abs(end - angle), abs(angle - start)) * val));
+//					gl_FragColor = vec4(color, 1.0 - 400.0 * abs(start - angle) * val);
+//				}
+//			}else if(angle <= end - 2.0 * PI){
+//				//gl_FragColor = vec4(color, 1.0 - 400.0 * (abs(end - angle - 2.0 * PI) * val));
+//			}else if(angle >= start){
+//				//gl_FragColor = vec4(color, 1.0 - 400.0 * (abs(angle - start) * val));
+//			}
+//		}else if(angle >= start - 2.0 * PI && angle <= end - 2.0 * PI){
+//			//gl_FragColor = vec4(color, 1.0 - 400.0 * (min(abs(angle - start + 2.0 * PI), abs(end - 2.0 * PI - angle)) * val));
+//		}
+//	}
 }
 /** @end-author Roan Hofland */
