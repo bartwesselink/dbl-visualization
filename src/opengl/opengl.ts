@@ -29,6 +29,7 @@ export class OpenGL{
     private width: number;
     private height: number;
     private shader: Shader;
+    private index: number = 0;
 
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
@@ -44,6 +45,25 @@ export class OpenGL{
 
         console.log("[OpenGL] OpenGL version: " + this.gl.getParameter(gl.VERSION));
         console.log("[OpenGL] GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
+    }
+    
+    //optimises the given shader mode
+    public optimizeFor(mode: ShaderMode){
+        outer: for(this.index; this.index < this.arrays.length; this.index++){
+            if(this.arrays[this.index].shader != mode){
+                for(let i = this.index + 1; i < this.arrays.length; i++){
+                    if(this.arrays[i].shader == mode){
+                        let tmp = this.arrays[this.index];
+                        this.arrays[this.index] = this.arrays[i];
+                        this.arrays[i] = tmp;
+                        continue outer;
+                    }
+                }
+                break;
+            }
+        }
+        console.log(this.arrays);
+        console.log("index: ", this.index);
     }
     
     //gets the modelview matrix
@@ -269,6 +289,7 @@ export class OpenGL{
             this.gl.deleteBuffer(elem.pos);
             this.gl.deleteBuffer(elem.indices);
         }
+        this.index = 0;
     }
     
     //draws a partial ellipsoid
