@@ -5,6 +5,7 @@ For people working with the OpenGL abstraction layer. These are the only methods
 `var gl = new OpenGL(WebGLRenderingContext)`
 
 # General
+## Public subroutines
 - `public releaseBuffers(): void`    
 Releases all the buffers currently held in memory, should always be called when recomputing the scene.
 - `public resize(width: number, height: number): void`    
@@ -39,6 +40,21 @@ Returns the width of the visible OpenGL canvas space.
 Returns the height of the visible OpenGL canvas space.
 - `public setBackgroundColor(r: number, g: number, b: number): void`   
 Sets the viewport background color. Arguments should be in range 0-1. Changes will only take effect after a rerender.
+- `public optimizeFor(mode: ShaderMode): void`    
+Optimises draw calls for the given shader mode. 
+
+## Available but not intended to be used
+- `public getModelviewMatrix(): Float32Array`    
+Gets the modelview matrix.
+- `public getDY(): number`    
+Gets the y translation in true OpenGL space.
+- `public getDX(): number`    
+Gets the x translation in true OpenGL space.
+- `public getRY(): number`    
+Gets the rotation on the y axis.
+- `public getRX(): number`    
+Gets the rotation on the x axis.
+
 
 # Shaders
 
