@@ -16,32 +16,36 @@ void main() {
 	lowp float dy = vpos.y - cy;
 	lowp float val = sqrt(pow(dx, 2.0) + pow(dy, 2.0));
 	lowp float angle = atan(dy, dx);
+	lowp vec4 clr;
 	if(val <= radius + 0.0025 && val >= radius - 0.0025){
 		if(start < PI){
 			if(end < PI){
 				if(angle >= start && angle <= end){
-					gl_FragColor = vec4(color, 1.0 - 400.0 * abs(radius - val));
+					clr = vec4(color, 1.0 - 400.0 * abs(radius - val));
 				}
 			}else if(angle <= end - 2.0 * PI){
-				gl_FragColor = vec4(color, 1.0 - 400.0 * abs(radius - val));
+				clr = vec4(color, 1.0 - 400.0 * abs(radius - val));
 			}else if(angle >= start){
-				gl_FragColor = vec4(color, 1.0 - 400.0 * abs(radius - val));
+				clr = vec4(color, 1.0 - 400.0 * abs(radius - val));
 			}
 		}else if(angle >= start - 2.0 * PI && angle <= end - 2.0 * PI){
-			gl_FragColor = vec4(color, 1.0 - 400.0 * abs(radius - val));
+			clr = vec4(color, 1.0 - 400.0 * abs(radius - val));
 		}
+	}else{
+		clr = vec4(0.0, 0.0, 0.0, 0.0);
 	}
 	if(val <= radius){
 		if(abs(angle - start) * val <= 0.0025){
-			gl_FragColor = vec4(color, 1.0 - 400.0 * abs(start - angle) * val);
+			clr = max(clr, vec4(color, 1.0 - 400.0 * abs(start - angle) * val));
 		}else if(abs(angle - end) * val <= 0.0025){
-			gl_FragColor = vec4(color, 1.0 - 400.0 * abs(end - angle) * val);
+			clr = max(clr, vec4(color, 1.0 - 400.0 * abs(end - angle) * val));
 		}else if(abs(angle - end + 2.0 * PI) * val <= 0.0025){
-			gl_FragColor = vec4(color, 1.0 - 400.0 * abs(angle - end + 2.0 * PI) * val);
+			clr = max(clr, vec4(color, 1.0 - 400.0 * abs(angle - end + 2.0 * PI) * val));
 		}else if(abs(start - 2.0 * PI - angle) * val <= 0.0025){
-			gl_FragColor = vec4(color, 1.0 - 400.0 * abs(start - 2.0 * PI - angle) * val);
+			clr = max(clr, vec4(color, 1.0 - 400.0 * abs(start - 2.0 * PI - angle) * val));
 		}
 	}
+	gl_FragColor = clr;
 	//	if(val <= radius && (abs(angle - start) * val <= 0.0025 || abs(end - angle - 2.0 * PI) * val <= 0.0025 || abs(angle - end) * val <= 0.0025 || abs(-angle - start + 2.0 * PI) * val <= 0.0025)){
 	//		gl_FragColor = vec4(color, 1.0);
 //		if(start < PI){
