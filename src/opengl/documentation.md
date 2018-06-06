@@ -42,6 +42,8 @@ Returns the height of the visible OpenGL canvas space.
 Sets the viewport background color. Arguments should be in range 0-1. Changes will only take effect after a rerender.
 - `public optimizeFor(mode: ShaderMode): void`    
 Optimises draw calls for the given shader mode. 
+- `public enableShaders(shader: ShaderMode): void`    
+Enables the shader(s) specified by the given shader mode.
 
 ## Available but not intended to be used
 - `public getModelviewMatrix(): Float32Array`    
