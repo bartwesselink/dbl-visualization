@@ -86,7 +86,7 @@ export class GeneralSettingsButtonComponent implements OnInit {
         this.close();
         this.loadSetting(this.defaultSettings);
         this.updateValue();
-        this.form.getFormGroup().
+        this.form.getFormGroup();
         this.open();
     }
     /** @end-author Mathijs Boezer */
