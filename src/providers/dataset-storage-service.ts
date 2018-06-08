@@ -39,7 +39,7 @@ export class DatasetStorageService {
 
     public saveDataset(title: string, dataset: string): void {
         try {
-            if(!this.isDuplicate(title)) {
+            if(!this.isDuplicate(title) || true) { // TODO remove '|| true' after testing is done
                 this.userDatasets.push( {title: title}); // add to user dataset options
                 localStorage.setItem(this.userDatasetsStorageKey, JSON.stringify(this.userDatasets)); // save extended list
                 // compression
