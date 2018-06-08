@@ -28,7 +28,6 @@ export class GeneralSettingsButtonComponent implements OnInit {
         dialogPolyfill.registerDialog(this.dialog.nativeElement);
         // get stored settings (if any)
         this.fetchPersistentSettings();
-
         // emit first value
         this.updateValue();
     }
@@ -47,7 +46,6 @@ export class GeneralSettingsButtonComponent implements OnInit {
     public updateValue(): void {
         this.settingsBus.updateSettings(this.form.getFormGroup().value as Settings);
         localStorage.setItem(this.storageKey, JSON.stringify(this.form.getFormGroup().value)); // store updated values
-        console.log(JSON.stringify(this.form.getFormGroup().value));
     }
 
     private createForm(): void {
