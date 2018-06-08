@@ -4,6 +4,7 @@ import {FormFactory} from '../../form/form-factory';
 import {SettingsBus} from '../../providers/settings-bus';
 import {Settings} from '../../interfaces/settings';
 import {InteractionOptions} from '../../enums/interaction-options';
+import {FormComponent} from "../form/form.component";
 
 declare var dialogPolyfill;
 
@@ -14,10 +15,10 @@ declare var dialogPolyfill;
 export class GeneralSettingsButtonComponent implements OnInit {
     /** @author Bart Wesselink */
     private storageKey = 'General-settings';
-    private defaultSettings: Settings;
 
     public form: Form;
     @ViewChild('dialog') private dialog: ElementRef;
+    @ViewChild('formComponent') private formComponent: FormComponent;
 
     constructor (private formFactory: FormFactory, private settingsBus: SettingsBus) {
     }
@@ -25,7 +26,6 @@ export class GeneralSettingsButtonComponent implements OnInit {
     public ngOnInit(): void {
         this.createForm();
         dialogPolyfill.registerDialog(this.dialog.nativeElement);
-        this.defaultSettings = this.form.getFormGroup().value; // save the default for potential resetting
         // get stored settings (if any)
         this.fetchPersistentSettings();
 
@@ -83,11 +83,11 @@ export class GeneralSettingsButtonComponent implements OnInit {
     }
 
     public resetDefault(): void {
-        this.close();
-        this.loadSetting(this.defaultSettings);
+        this.createForm();
         this.updateValue();
-        this.form.getFormGroup();
-        this.open();
+        setTimeout(() => {
+            this.formComponent.ngOnInit(); // rerun init
+        });
     }
     /** @end-author Mathijs Boezer */
 }
