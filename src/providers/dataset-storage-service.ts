@@ -3,6 +3,11 @@ import {Settings} from '../interfaces/settings';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {DatasetFile} from "../interfaces/dataset-file";
+import {WebWorkerService} from 'angular2-web-worker';
+import * as pako from 'pako';
+import {Draw} from "../interfaces/draw";
+
+declare var importScripts;
 
 @Injectable()
 export class DatasetStorageService {
@@ -17,7 +22,7 @@ export class DatasetStorageService {
 
     public userDatasets: DatasetFile[] = [];
 
-    constructor() {
+    constructor(private webWorkerService: WebWorkerService) {
         // get the list of user dataset keys from localstorage and populate the select box
         if (localStorage.getItem(this.userDatasetsStorageKey) !== null) {
             try {
@@ -29,18 +34,26 @@ export class DatasetStorageService {
     }
 
     public getDataset(key: string): string|null {
-        return localStorage.getItem(key);
+        return pako.inflate(localStorage.getItem(key), {to: 'string'});
     }
 
     public saveDataset(title: string, dataset: string): void {
         try {
-            localStorage.setItem(title, dataset);
             if(!this.isDuplicate(title)) {
                 this.userDatasets.push( {title: title}); // add to user dataset options
                 localStorage.setItem(this.userDatasetsStorageKey, JSON.stringify(this.userDatasets)); // save extended list
+                // compression
+                this.webWorkerService.run((dataset) => {
+                    importScripts('https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.6/pako.min.js'); //TODO make this local
+                    return pako.deflate(dataset, {to: 'string'});
+                }, dataset)
+                    .then((compressed: string) => {
+                        localStorage.setItem(title, compressed);
+                    })
+                    .catch((error) => console.log(error));
             }
         } catch {
-            console.error('Could not save dataset to local storage, it\'s probably full.');
+           console.error('Could not save dataset to local storage, it\'s probably full.');
         }
     }
 
