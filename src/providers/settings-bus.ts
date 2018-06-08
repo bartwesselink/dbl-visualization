@@ -11,7 +11,6 @@ export class SettingsBus {
 
     private currentSettings: Settings;
 
-    
     public getSettings(): Settings|null {
         if (!this.currentSettings) {
             console.error('Settings component has not been initialized yet.');
