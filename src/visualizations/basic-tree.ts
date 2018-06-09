@@ -58,7 +58,7 @@ export class BasicTree implements Visualizer {
                 }
             }
 
-            // draw node
+            // draw node on top of edges
             draws.push({
                 type: 10, // filled circle
                 options: {
