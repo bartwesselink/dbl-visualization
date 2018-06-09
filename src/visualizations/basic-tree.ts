@@ -77,7 +77,7 @@ export class BasicTree implements Visualizer {
     public getForm(formFactory: FormFactory): Form {
         return formFactory.createFormBuilder()
             .addSliderField('width', 3, { label: 'Width', min: 0.5, max: 10 })
-            .addSliderField('height', 2, { label: 'Height', min: 0.5, max: 10 })
+            .addSliderField('height', 3, { label: 'Height', min: 0.5, max: 10 })
             .getForm();
     }
 
