@@ -10,7 +10,6 @@ import {Settings} from '../interfaces/settings';
 import {OpenglDemoTree} from "../visualizations/opengl-demo-tree";
 import {SimpleTreeMap} from "../visualizations/simple-tree-map";
 import {WorkerManager} from '../utils/worker-manager';
-import {Palettes} from '../utils/palettes';
 import {SubtreeBus} from "../providers/subtree-bus";
 import {SelectBus} from "../providers/select-bus";
 
@@ -157,13 +156,17 @@ export class AppComponent implements OnInit {
         });
     }
 
-    public async redrawAllTabs(): Promise<void> {
-        for (const tab of this.tabs.slice().sort((a, b) => a === this.activeTab ? 0 : 1)) {
-            if (tab.window) {
-                console.log("compuuuute!");
+    public async redrawAllTabs(): Promise<void> { // We generally only want to recompute the tab that is active.
+        for (const tab of this.tabs) {
+            if (tab.active && tab.window) {
                 await tab.window.computeScene();
             }
         }
+        // for (const tab of this.tabs.slice().sort((a, b) => a === this.activeTab ? 0 : 1)) {
+        //     if (tab.window) {
+        //         await tab.window.computeScene();
+        //     }
+        // }
     }
 
     private addTab(visualizer: Visualizer) {

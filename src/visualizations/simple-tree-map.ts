@@ -167,10 +167,6 @@ export class SimpleTreeMap implements Visualizer {
         tree.width = defaultSize;
         tree.height = defaultSize;
 
-        console.log("generating");
-        // console.log(palette.gradientColorMapSelected[10][0]);
-        console.log(666);
-
         drawTree(tree, rootBounds, false);
 
         return draws;
