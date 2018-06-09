@@ -36,7 +36,6 @@ export class AppComponent implements OnInit {
 
     private parser: NewickParser;
     public darkMode = false;
-    public palette = Palettes.default;
 
     constructor(private settingsBus: SettingsBus, private selectBus: SelectBus, private subtreeBus: SubtreeBus) {
         this.createVisualizers();
