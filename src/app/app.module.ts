@@ -25,6 +25,7 @@ import { WebWorkerService } from 'angular2-web-worker';
 import {LoaderComponent} from '../components/loader/loader.component';
 import {SelectBus} from '../providers/select-bus';
 import {TooltipComponent} from '../components/tooltip/tooltip.component';
+import {SubtreeBus} from "../providers/subtree-bus";
 import {SearchComponent} from '../components/search/search.component';
 import {DatasetSelectionComponent} from "../components/dataset-selection/dataset-selection.component";
 import {DatasetStorageService} from "../providers/dataset-storage-service";
@@ -62,6 +63,7 @@ import {DatasetStorageService} from "../providers/dataset-storage-service";
         SettingsBus,
         SelectBus,
         DatasetStorageService,
+        SubtreeBus,
         {provide: APP_BASE_HREF, useValue : '/' }
     ],
     bootstrap: [AppComponent]
