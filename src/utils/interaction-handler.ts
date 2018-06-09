@@ -221,8 +221,8 @@ export class InteractionHandler {
             let size, width, height;
             let orientation: Orientation;
 
-            const glWidth = gl.getWidth(canvas.nativeElement.clientWidth, canvas.nativeElement.clientHeight);
-            const glHeight = gl.getHeight(canvas.nativeElement.clientWidth, canvas.nativeElement.clientHeight);
+            const glWidth = gl.getWidth();
+            const glHeight = gl.getHeight();
 
             switch (draw.type) {
                 case DrawType.FILL_LINED_ROTATED_QUAD:
