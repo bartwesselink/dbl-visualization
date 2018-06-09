@@ -1331,4 +1331,4 @@ export class OpenGL{
         return new Float32Array(array);
     }
 }
-/** @end-author Roan Hofland */     
+/** @end-author Roan Hofland */
