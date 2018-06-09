@@ -15,8 +15,8 @@ export class BasicTree implements Visualizer {
         const draws: Draw[] = [];
         const widthMultiplier = input.settings.width; // distance between nodes horizontally
         const heightMultiplier = input.settings.height; // the vertical distance between nodes in terms of subtree size
-        const color = [0, 0, 0, 1]; // black
-        const selectedColor = [0.4, 0.4, 0.4, 1]; // grey
+        const color = [0, 0, 0]; // black
+        const selectedColor = [0.4, 0.4, 0.4]; // grey
         const yOffset = -400; // move the origin to the bottom instead of middle with 50px of spacing
         const radianToDegreeMultiplier = 180 / Math.PI;
 
@@ -88,7 +88,7 @@ export class BasicTree implements Visualizer {
 
     public getForm(formFactory: FormFactory): Form {
         return formFactory.createFormBuilder()
-            .addSliderField('width', 3, { label: 'Width', min: 0.5, max: 10 })
+            .addSliderField('width', 5, { label: 'Width', min: 0.5, max: 10 })
             .addSliderField('height', 3, { label: 'Height', min: 0.5, max: 10 })
             .getForm();
     }
@@ -102,19 +102,7 @@ export class BasicTree implements Visualizer {
     }
 
     public enableShaders(gl: OpenGL): void {
-        console.log("test");
         gl.enableShaders(ShaderMode.FILL_CIRCLE);
     }
-
-    // public optimizeShaders(gl: OpenGL): void {
-    //     gl.optimizeDefault();
-    //     gl.optimizeFor(ShaderMode.FILL_CIRCLE);
-    //     gl.optimizeFor(ShaderMode.DRAW_CIRCLE);
-    //     gl.optimizeFor(ShaderMode.DRAW_CIRCLE_SLICE);
-    //     gl.optimizeFor(ShaderMode.FILL_CIRCLE_SLICE);
-    //     gl.optimizeFor(ShaderMode.DRAW_RING_SLICE);
-    //     gl.optimizeFor(ShaderMode.FILL_RING_SLICE);
-    //     gl.optimizeFor(ShaderMode.CIRCULAR_ARC);
-    // }
 }
 /** @end-author Mathijs Boezer */
