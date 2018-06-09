@@ -104,10 +104,5 @@ export class BasicTree implements Visualizer {
     public enableShaders(gl: OpenGL): void {
         gl.enableShaders(ShaderMode.FILL_CIRCLE);
     }
-    
-    public optimizeShaders(gl: OpenGL): void {
-        gl.optimizeDefault();
-        gl.optimizeFor(ShaderMode.FILL_CIRCLE);
-    }
 }
 /** @end-author Mathijs Boezer */
