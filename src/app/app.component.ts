@@ -10,12 +10,9 @@ import {Settings} from '../interfaces/settings';
 import {OpenglDemoTree} from "../visualizations/opengl-demo-tree";
 import {SimpleTreeMap} from "../visualizations/simple-tree-map";
 import {WorkerManager} from '../utils/worker-manager';
-<<<<<<< HEAD
 import {Palettes} from '../utils/palettes';
-=======
 import {SubtreeBus} from "../providers/subtree-bus";
 import {SelectBus} from "../providers/select-bus";
->>>>>>> develop
 
 declare var dialogPolyfill;
 
@@ -39,12 +36,9 @@ export class AppComponent implements OnInit {
 
     private parser: NewickParser;
     public darkMode = false;
-<<<<<<< HEAD
     public palette = Palettes.default;
-    constructor(private settingsBus: SettingsBus) {
-=======
+
     constructor(private settingsBus: SettingsBus, private selectBus: SelectBus, private subtreeBus: SubtreeBus) {
->>>>>>> develop
         this.createVisualizers();
 
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
@@ -76,10 +70,10 @@ export class AppComponent implements OnInit {
 
         if (line !== null) {
             const hadTree = this.tree != null;
-          
+
             this.openTree(this.parser.parseTree(line));
             this.originalTree = this.tree;
-          
+
             if(!hadTree) {
                 this.resizeActiveTab();
             }
