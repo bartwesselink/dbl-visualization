@@ -7,8 +7,11 @@ export class Form {
     private changeSubject: Subject<object> = new Subject<object>();
     public valueChanges: Observable<object> = this.changeSubject.asObservable();
 
+    private initialValues: any;
+
     constructor(private name: string, private formGroup: FormGroup, private fieldDefinition: FormField[]) {
         this.subscribeChanges();
+        this.initialValues = this.getFormGroup().value;
     }
 
     public getName(): string {
@@ -25,6 +28,10 @@ export class Form {
 
     public isValid(): boolean {
         return this.formGroup.valid;
+    }
+
+    public restoreDefault(): void {
+        this.getFormGroup().setValue(this.initialValues);
     }
 
     private subscribeChanges(): void {
