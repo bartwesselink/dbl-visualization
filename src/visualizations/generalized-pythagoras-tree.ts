@@ -125,7 +125,7 @@ export class GeneralizedPythagorasTree implements Visualizer {
 
         // Call the main recursive drawing function
         console.log("generating");
-        console.log(palette.gradientColorMapSelected[10][0]);
+        console.log([0, 1, 2, 3, 4]);
         generate(tree, rectangle);
         return draws;
     }

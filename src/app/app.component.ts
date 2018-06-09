@@ -108,7 +108,8 @@ export class AppComponent implements OnInit {
 
         if (tab.window) {
             setTimeout(() => {
-                tab.window.render();
+                tab.window.computeScene();
+                // tab.window.render();
             }, 100);
 
             this.resizeActiveTab();
@@ -159,6 +160,7 @@ export class AppComponent implements OnInit {
     public async redrawAllTabs(): Promise<void> {
         for (const tab of this.tabs.slice().sort((a, b) => a === this.activeTab ? 0 : 1)) {
             if (tab.window) {
+                console.log("compuuuute!");
                 await tab.window.computeScene();
             }
         }

@@ -297,7 +297,10 @@ export class WindowComponent implements OnInit {
     }
 
     public redrawAllScenes(): void { // redraws all canvases through the AppComponent
-        this.redrawAll.next();
+        // this.redrawAll.next();
+        if (this.tab.active) {
+            this.computeScene();
+        }
     }
 
     //compute the visualisation
@@ -313,10 +316,10 @@ export class WindowComponent implements OnInit {
                 return; // there is no tree yet
             }
 
-            this.startLoading();
             if (this.tree) {
                 this.computeColors();
             }
+            this.startLoading();
             /** @author Bart Wesselink */
             this.workerManager.startWorker(this.gl, this.visualizer.draw, {
                 tree: this.tree,
