@@ -314,7 +314,9 @@ export class WindowComponent implements OnInit {
             }
 
             this.startLoading();
-            this.computeColors();
+            if (this.tree) {
+                this.computeColors();
+            }
             /** @author Bart Wesselink */
             this.workerManager.startWorker(this.gl, this.visualizer.draw, {
                 tree: this.tree,
