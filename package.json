@@ -31,7 +31,8 @@
     "newick": "^2.0.0",
     "ngx-pipes": "^2.1.2",
     "rxjs": "^5.5.6",
-    "zone.js": "^0.8.19"
+    "zone.js": "^0.8.19",
+    "raw-loader": "^0.5.1"
   },
   "devDependencies": {
     "@angular/cli": "~1.7.3",

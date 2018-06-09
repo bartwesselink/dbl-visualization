@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {Node} from '../../models/node';
 import {TreeNavigatorComponent} from '../tree-navigator/tree-navigator.component';
 import {SelectBus} from '../../providers/select-bus';
@@ -15,6 +15,7 @@ export class SidebarComponent {
     @ViewChild('navigator') navigator: TreeNavigatorComponent;
     @ViewChild('content') contentHolder: ElementRef;
     @Input() tree: Node;
+    @Output() reset: EventEmitter<any> = new EventEmitter();
 
     contractAll(): void {
         this.navigator.reset();
@@ -40,5 +41,9 @@ export class SidebarComponent {
 
     public reloadData() {
         this.navigator.reload();
+    }
+
+    public resetTree() {
+        this.reset.emit();
     }
 }

@@ -3,6 +3,7 @@ import {Form} from '../../form/form';
 import {FormFactory} from '../../form/form-factory';
 import {SettingsBus} from '../../providers/settings-bus';
 import {Settings} from '../../interfaces/settings';
+import {InteractionOptions} from '../../enums/interaction-options';
 
 declare var dialogPolyfill;
 
@@ -43,6 +44,7 @@ export class GeneralSettingsButtonComponent implements OnInit {
     private createForm(): void {
         this.form = this.formFactory
             .createFormBuilder()
+<<<<<<< HEAD
             .addToggleField('darkMode', false, {label: 'Dark mode'})
             /** @author Nico Klaassen */
             .addToggleField('colorMode', true, {label: 'Color mode'})
@@ -54,6 +56,18 @@ export class GeneralSettingsButtonComponent implements OnInit {
             .addChoiceField('gradientType', '1', {label: 'Gradient type', expanded: false, choices: {'1': 'RGB linear', '2': 'HSV'}})
             .addToggleField('invertHSV', false, {label: 'Invert HSV gradient'})
             /** @end-author Jules Cornelissen */
+=======
+            .addToggleField('darkMode', false, { label: 'Dark mode' })
+            .addChoiceField('interactionSettings', InteractionOptions.ZoomAndPan, {
+                label: 'Action on clicking a node',
+                choices:{
+                    '0': 'Zoom and pan to the node',
+                    '1': 'Pan to the node',
+                    '2': 'Do nothing'
+                },
+                expanded: false
+            })
+>>>>>>> develop
             .getForm();
     }
 

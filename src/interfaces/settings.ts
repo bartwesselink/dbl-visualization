@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {GradientType} from "../enums/gradient-type";
 
 export interface Settings {
@@ -8,4 +9,11 @@ export interface Settings {
     gradientMapType: boolean;
     gradientType: GradientType;
     invertHSV: boolean;
+=======
+import {InteractionOptions} from "../enums/interaction-options";
+
+export interface Settings {
+    darkMode: boolean;
+    interactionSettings: InteractionOptions
+>>>>>>> develop
 }

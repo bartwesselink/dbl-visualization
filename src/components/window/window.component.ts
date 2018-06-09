@@ -2,8 +2,11 @@ import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} f
 import {Element} from '../../opengl/element';
 import {Matrix} from '../../opengl/matrix';
 import {OpenGL} from '../../opengl/opengl';
+<<<<<<< HEAD
 import {Shader} from "../../opengl/shader";
 import {Observable} from "rxjs";
+=======
+>>>>>>> develop
 import {Visualizer} from '../../interfaces/visualizer';
 import {Node} from '../../models/node';
 import {Tab} from '../../models/tab';
@@ -72,6 +75,7 @@ export class WindowComponent implements OnInit {
     private readonly DEFAULT_DR = 1;
     private readonly DEFAULT_DT = 5;
     private readonly DEFAULT_DS = 0.1;
+    private static darkMode: boolean;
 
     private currentDraws: Draw[];
     private interactionHandler: InteractionHandler;
@@ -97,7 +101,7 @@ export class WindowComponent implements OnInit {
             node.selected = true;
 
             this.redrawAllScenes();
-            this.interactionHandler.scaleToNode(this.gl, this.canvas, this.currentDraws, node);
+            this.interactionHandler.scaleToNode(this.gl, this.canvas, this.currentDraws, node, this.selectBus.interactionOptions);
         });
 
         /** @author Nico Klaassen & Jules Cornelissen*/
@@ -145,8 +149,19 @@ export class WindowComponent implements OnInit {
         this.lastSettings = value;
         this.computeScene();
     }
-
+    
+    public setDarkmode(enabled: boolean): void {
+        WindowComponent.darkMode = enabled;
+        if(enabled){
+            this.gl.setBackgroundColor(50.0 / 255.0, 50.0 / 255.0, 50.0 / 255.0);
+        }else{
+            this.gl.setBackgroundColor(1.0, 1.0, 1.0);
+        }
+        this.render();
+    }
+    
     public keyEvent(event: KeyboardEvent): void {
+<<<<<<< HEAD
         switch (event.key) {
             case 'q':
             case 'Q':
@@ -193,6 +208,54 @@ export class WindowComponent implements OnInit {
                 this.gl.resetTransformations();
                 this.render();
                 break;
+=======
+        switch(event.key){
+        case 'q':
+        case 'Q':
+            this.gl.rotate(-this.DEFAULT_DR);
+            this.render();
+            break;
+        case 'e':
+        case 'E':
+            this.gl.rotate(this.DEFAULT_DR);
+            this.render();
+            break;
+        case 'w':
+        case 'W':
+            this.gl.translate(0, this.DEFAULT_DT);
+            this.render();
+            break;
+        case 's':
+        case 'S':
+            this.gl.translate(0, -this.DEFAULT_DT);
+            this.render();    
+            break;
+        case 'a':
+        case 'A':
+            this.gl.translate(this.DEFAULT_DT, 0);
+            this.render();
+            break;
+        case 'd':
+        case 'D':
+            this.gl.translate(-this.DEFAULT_DT, 0);
+            this.render();    
+            break;
+        case 'r':
+        case 'R':
+            this.gl.scale(1 + this.DEFAULT_DS);
+            this.render();
+            break;
+        case 'f':
+        case 'F':
+            this.gl.scale(1 - this.DEFAULT_DS);
+            this.render();
+            break;
+        case 't':
+        case 'T':
+            this.gl.resetTransformations();
+            this.render();
+            break;
+>>>>>>> develop
         }
     }
 
@@ -208,7 +271,7 @@ export class WindowComponent implements OnInit {
 
     //called when the mouse is clicked
     public onClick(event: MouseEvent): void {
-        var coords = this.gl.transformPoint(event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
+        var coords = this.gl.transformPoint(event.layerX, event.layerY);
 
         if (this.tree == null) {
             return;
@@ -240,13 +303,13 @@ export class WindowComponent implements OnInit {
                 this.dragging = false;
             }, this.clickTimerThreshold);
 
-            this.gl.translate((event.clientX - this.lastX), (event.clientY - this.lastY), this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight)
+            this.gl.translate((event.clientX - this.lastX), (event.clientY - this.lastY));
             this.render();
 
             this.tooltipActive = false;
             this.lastTooltipNode = null;
         } else if (this.tree != null) {
-            var coords = this.gl.transformPoint(event.layerX, event.layerY, this.canvas.nativeElement.clientWidth, this.canvas.nativeElement.clientHeight);
+            var coords = this.gl.transformPoint(event.layerX, event.layerY);
 
             const node: Node = this.interactionHandler.determineElement(this.tree, this.currentDraws, coords);
             if (node != null) {
@@ -314,6 +377,10 @@ export class WindowComponent implements OnInit {
             })
                 .then((draws: Draw[]) => {
                     setTimeout(() => {
+                        if(this.visualizer.optimizeShaders){
+                            this.visualizer.optimizeShaders(this.gl);
+                        }
+                                              
                         this.redraw();
 
                         this.stopLoading();
@@ -370,13 +437,20 @@ export class WindowComponent implements OnInit {
 
     //initialise OpenGL
     private init(): void {
+<<<<<<< HEAD
         var gl: WebGLRenderingContext = this.canvas.nativeElement.getContext('webgl', {preserveDrawingBuffer: true});
 
         if (!gl) {
+=======
+        var gl: WebGLRenderingContext = this.canvas.nativeElement.getContext('webgl', {preserveDrawingBuffer: true, depth: false, alpha: false});
+        
+        if(!gl){
+>>>>>>> develop
             this.onError("No WebGL present");
             return;
         }
 
+<<<<<<< HEAD
         this.gl = new OpenGL(gl);
 
         try {
@@ -385,6 +459,18 @@ export class WindowComponent implements OnInit {
             this.gl.useShader(shader);
         } catch (error) {
             this.onError((<Error>error).message);
+=======
+        try{
+            this.gl = new OpenGL(gl);
+        }catch(error){
+            this.onError((<Error>error).message);   
+        }
+        
+        this.setDarkmode(WindowComponent.darkMode);
+        
+        if(this.visualizer.enableShaders){
+            this.visualizer.enableShaders(this.gl);
+>>>>>>> develop
         }
     }
 
@@ -419,6 +505,7 @@ export class WindowComponent implements OnInit {
     }
 
     /** @end-author Bart Wesselink */
+<<<<<<< HEAD
 
     /** @author Nico Klaassen */
     private getPalette(paletteString: string): Palette {
@@ -432,4 +519,12 @@ export class WindowComponent implements OnInit {
         }
         return Palettes.default; // Fallback
     }
+=======
+    /** @author Mathijs Boezer */
+    public resetTransformation() {
+        this.gl.resetTransformations();
+        this.render();
+    }
+    /** @end-author Mathijs Boezer */
+>>>>>>> develop
 }
