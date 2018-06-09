@@ -10,7 +10,6 @@ import {OpenGL} from "../opengl/opengl";
 /** @author Mathijs Boezer */
 export class BasicTree implements Visualizer {
     public draw(input: VisualizerInput): Draw[] {
-        let t0 = +(new Date());
         const tree: Node = input.tree;
         const draws: Draw[] = [];
         const widthMultiplier = input.settings.width; // distance between nodes horizontally
@@ -104,7 +103,7 @@ export class BasicTree implements Visualizer {
     public enableShaders(gl: OpenGL): void {
         gl.enableShaders(ShaderMode.FILL_CIRCLE);
     }
-    
+
     public optimizeShaders(gl: OpenGL): void {
         gl.optimizeDefault();
         gl.optimizeFor(ShaderMode.FILL_CIRCLE);
