@@ -20,7 +20,7 @@ export class Palette {
     /** @author Jules Cornelissen */
     private gradientMapType: boolean;
     private invertHSV: boolean;
-    private deselectedGrey: number[] = [0.5, 0.5, 0.5, 1];
+    private deselectedGrey: number[] = [0.5, 0.5, 0.5];
 
     /**
      * Calculates the gradient for the given settings
@@ -48,30 +48,27 @@ export class Palette {
     private calcColorMapHSV(selectedDepth: number, maxDepth: number) {
         let RGB: number[];
         let hsvValues: number[][];
-        let alpha: number[];
         if (this.gradientMapType) {
             if (selectedDepth === 0) {
                 for (let depth = 0; depth <= maxDepth; depth++) {
                     this.gradientColorMap.push([]);
                     this.gradientColorMapSelected.push([]);
-                    alpha = this.calcLinearAlphaGradient(selectedDepth, depth);
                     hsvValues = this.calcHSVValues(selectedDepth, depth);
                     for (let i = 0; i < hsvValues[0].length; i++) {
                         RGB = this.HSVtoRGB(hsvValues[0][i], hsvValues[1][i], hsvValues[2][i]);
-                        this.gradientColorMap[depth].push([RGB[0], RGB[1], RGB[2], alpha[i]]);
-                        this.gradientColorMapSelected[depth].push([RGB[0], RGB[1], RGB[2], alpha[i]]);
+                        this.gradientColorMap[depth].push([RGB[0], RGB[1], RGB[2]]);
+                        this.gradientColorMapSelected[depth].push([RGB[0], RGB[1], RGB[2]]);
                     }
                 }
             } else {
                 for (let depth = 0; depth <= maxDepth; depth++) {
                     this.gradientColorMap.push([]);
                     this.gradientColorMapSelected.push([]);
-                    alpha = this.calcLinearAlphaGradient(selectedDepth, depth);
                     hsvValues = this.calcHSVValues(selectedDepth, depth);
                     for (let i = 0; i < hsvValues[0].length; i++) {
                         RGB = this.HSVtoRGB(hsvValues[0][i], hsvValues[1][i], hsvValues[2][i]);
                         this.gradientColorMap[depth].push(this.deselectedGrey);
-                        this.gradientColorMapSelected[depth].push([RGB[0], RGB[1], RGB[2], alpha[i]]);
+                        this.gradientColorMapSelected[depth].push([RGB[0], RGB[1], RGB[2]]);
                     }
                 }
             }
@@ -80,24 +77,22 @@ export class Palette {
                 for (let depth = 0; depth <= maxDepth; depth++) {
                     this.gradientColorMap.push([]);
                     this.gradientColorMapSelected.push([]);
-                    alpha = this.calcLinearAlphaGradient(selectedDepth, maxDepth);
                     hsvValues = this.calcHSVValues(selectedDepth, maxDepth);
                     for (let i = 0; i < hsvValues[0].length; i++) {
                         RGB = this.HSVtoRGB(hsvValues[0][i], hsvValues[1][i], hsvValues[2][i]);
-                        this.gradientColorMap[depth].push([RGB[0], RGB[1], RGB[2], alpha[i]]);
-                        this.gradientColorMapSelected[depth].push([RGB[0], RGB[1], RGB[2], alpha[i]]);
+                        this.gradientColorMap[depth].push([RGB[0], RGB[1], RGB[2]]);
+                        this.gradientColorMapSelected[depth].push([RGB[0], RGB[1], RGB[2]]);
                     }
                 }
             } else {
                 for (let depth = 0; depth <= maxDepth; depth++) {
                     this.gradientColorMap.push([]);
                     this.gradientColorMapSelected.push([]);
-                    alpha = this.calcLinearAlphaGradient(selectedDepth, maxDepth);
                     hsvValues = this.calcHSVValues(selectedDepth, maxDepth);
                     for (let i = 0; i < hsvValues[0].length; i++) {
                         RGB = this.HSVtoRGB(hsvValues[0][i], hsvValues[1][i], hsvValues[2][i]);
                         this.gradientColorMap[depth].push(this.deselectedGrey);
-                        this.gradientColorMapSelected[depth].push([RGB[0], RGB[1], RGB[2], alpha[i]]);
+                        this.gradientColorMapSelected[depth].push([RGB[0], RGB[1], RGB[2]]);
                     }
                 }
             }
@@ -145,16 +140,7 @@ export class Palette {
         let red: number = this.primary.r - percent * (this.primary.r - this.secondary.r);
         let green: number = this.primary.g - percent * (this.primary.g - this.secondary.g);
         let blue: number = this.primary.b - percent * (this.primary.b - this.secondary.b);
-        let alpha: number = this.primary.a - percent * (this.primary.a - this.secondary.a);
-        return [red, green, blue, alpha];
-    }
-
-    private calcLinearAlphaGradient(minDepth: number, maxDepth: number): number[] {
-        let alpha: number[] = [];
-        for (let i = 0; i <= maxDepth; i++) {
-            alpha.push(this.primary.a - (this.primary.a - this.secondary.a) * ((i - minDepth) / maxDepth));
-        }
-        return alpha;
+        return [red, green, blue];
     }
 
     /**

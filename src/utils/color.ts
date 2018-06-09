@@ -5,19 +5,17 @@ export class Color {
     r: number;
     g: number;
     b: number;
-    a: number;
-    rgba: [number, number, number, number];
+    rgb: [number, number, number];
 
     h: number; // Hue [0,360) degrees
     s: number; // Saturation [0,1]
     v: number; // Value [0,1]
 
-    constructor(r?: number, g?: number, b?: number, alpha?: number) {
+    constructor(r?: number, g?: number, b?: number) {
         this.r = r;
         this.g = g;
         this.b = b;
-        this.a = alpha;
-        this.rgba = [r, g, b, alpha];
+        this.rgb = [r, g, b];
         let hsv = this.RGBToHSV(this.r, this.g, this.b);
         this.h = hsv[0], this.s = hsv[1], this.v = hsv[2];
     };
@@ -29,18 +27,7 @@ export class Color {
             g /= 255;
             b /= 255;
         }
-        return new Color(r, g, b, 1);
-    }
-
-    static fromRGBA(r: number, g: number, b: number, a: number) {
-        if (r > 1 || g > 1 || b > 1 || a > 1) {
-            // Here we assume we got passed rgb on a 0-255 scale
-            r /= 255;
-            g /= 255;
-            b /= 255;
-            a /= 255
-        }
-        return new Color(r, g, b, a);
+        return new Color(r, g, b);
     }
 
     static fromHex(hex: string) {
@@ -48,7 +35,7 @@ export class Color {
         const r = (hexInt >> 16) & 255;
         const g = (hexInt >> 8) & 255;
         const b = hexInt & 255;
-        return new Color(r / 255, g / 255, b / 255, 1);
+        return new Color(r / 255, g / 255, b / 255);
     }
 
     public fromHSV(): void {
