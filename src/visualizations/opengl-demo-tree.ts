@@ -3,6 +3,7 @@ import {Node} from '../models/node';
 import {OpenGL} from '../opengl/opengl';
 import {FormFactory} from '../form/form-factory';
 import {Form} from "../form/form";
+import {ShaderMode} from "../opengl/shaders/shaderMode";
 import {Draw} from '../interfaces/draw';
 import {VisualizerInput} from '../interfaces/visualizer-input';
 import {DrawType} from '../enums/draw-type';
@@ -54,21 +55,21 @@ export class OpenglDemoTree implements Visualizer {
         let radiusX = quadWidth / 2;
         let radiusY = quadHeight / 2;
         let rotationOffset = 1;
-        let outlineColor = [0, 0, 0, 1];
+        let outlineColor = [0, 0, 0];
         for (let i = 0; i <= 360; i++) {
             const randomColor = [
-                Math.random(),
-                Math.random(),
-                Math.random(),
-                1
-            ];
+                                 Math.random(),
+                                 Math.random(),
+                                 Math.random(),
+                                 1
+                                 ];
             const x = startX + offsetX * i;
             const rotationDegrees = rotationOffset * i;
 
             draws.push({ type: 3 /** FillLinedRotatedQuad **/, options: { x: x, y: startY, width: quadWidth, height: quadHeight, rotation: rotationDegrees, fillColor: randomColor, lineColor: outlineColor } });
             draws.push({ type: 9 /** FillLinedEllipsoid **/, options: { x: x, y: -startY, radx: radiusX, rady: radiusY, rotation: rotationDegrees, fillColor: randomColor, lineColor: outlineColor } });
         }
-
+        
         // Rotation sparse example
         startX = -720;
         startY = 225;
@@ -78,15 +79,15 @@ export class OpenglDemoTree implements Visualizer {
         radiusX = quadWidth / 2;
         radiusY = quadHeight; // Not divided by two to highlight rotation with the ellipses
         rotationOffset = 4;
-        outlineColor = [0, 0, 0, 1];
+        outlineColor = [0, 0, 0];
         for (let i = 0; i <= 90; i++) {
             // Generate random color
             const randomColor = [
-                Math.random(),
-                Math.random(),
-                Math.random(),
-                1
-            ];
+                                 Math.random(),
+                                 Math.random(),
+                                 Math.random(),
+                                 1
+                                 ];
             const x = startX + offsetX * i;
             const rotationDegrees = rotationOffset * i;
 
@@ -100,9 +101,9 @@ export class OpenglDemoTree implements Visualizer {
             startY = 30;
             let amplitude = 10;
             let radius = 2;
-            let fillColor = [1, 0, 0, 1];
-            outlineColor = [0, 0, 0, 1];
-
+            let fillColor = [1, 0, 0];
+            outlineColor = [0, 0, 0];
+            
             for (let i = 0; i <= 360; i++) {
                 const x = i / Math.PI;
                 const y = amplitude * Math.sin(x) + startY; // Standard mathematical sine curve form; a + b*sin(c (x-d) )
@@ -131,8 +132,6 @@ export class OpenglDemoTree implements Visualizer {
         draws.push({ type: 14 /** DrawCircularArc **/, options: { x: 150, y: 100, radius: 50, start: 0, end: 180, color: [0, 0, 0, 1] } });
         draws.push({ type: 13 /** DrawEllipsoidalArc **/, options: { x: 0, y: -100, radx: 100, rady: 30, start: 0, end: 180, color: [0, 0, 0, 1] } });
 
-        draws.push({ type: 9 /** FillLinedEllipsoid **/, identifier: 0, options: { x: 500, y: 500, radx: 100, rady: 200, rotation: 45, fillColor: [0, 0, 0, 1], lineColor: [0, 0, 0, 1] } });
-
         return draws;
     }
 
@@ -152,6 +151,21 @@ export class OpenglDemoTree implements Visualizer {
 
     public getThumbnailImage(): string|null {
         return null;
+    }
+    
+    public enableShaders(gl: OpenGL): void {
+        gl.enableShaders(ShaderMode.ALL);
+    }
+    
+    public optimizeShaders(gl: OpenGL): void {
+        gl.optimizeDefault();
+        gl.optimizeFor(ShaderMode.FILL_CIRCLE);
+        gl.optimizeFor(ShaderMode.DRAW_CIRCLE);
+        gl.optimizeFor(ShaderMode.DRAW_CIRCLE_SLICE);
+        gl.optimizeFor(ShaderMode.FILL_CIRCLE_SLICE);
+        gl.optimizeFor(ShaderMode.DRAW_RING_SLICE);
+        gl.optimizeFor(ShaderMode.FILL_RING_SLICE);
+        gl.optimizeFor(ShaderMode.CIRCULAR_ARC);
     }
 }
 /** @end-author Nico Klaassen */
