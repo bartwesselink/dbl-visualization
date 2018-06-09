@@ -71,8 +71,6 @@ export class BasicTree implements Visualizer {
             });
         };
         generate(tree, initialOrigin, false);
-
-        console.log(leafdepths.sort()[leafdepths.length-1]);
         return draws;
     }
 
