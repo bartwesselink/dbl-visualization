@@ -151,7 +151,7 @@ export class OpenglDemoTree implements Visualizer {
     }
 
     public getThumbnailImage(): string|null {
-        return '/assets/images/visualization-basic-tree.png';
+        return null;
     }
 }
 /** @end-author Nico Klaassen */
