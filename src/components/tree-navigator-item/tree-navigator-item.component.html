@@ -1,8 +1,8 @@
 <div class="tree-navigator-item" [class.leaf]="!node.expandable" id="node-{{ node.identifier }}">
-    <i class="material-icons toggle-state" (click)="toggle()" [hidden]="!node.expandable || node.children.length > 0">add_circle_outline</i>
-    <i class="material-icons toggle-state" (click)="toggle()" [hidden]="!node.expandable || node.children.length === 0">remove_circle_outline</i>
+    <i class="material-icons tree-navigator-item-button" (click)="toggle()" [hidden]="!node.expandable || node.children.length > 0">add_circle_outline</i>
+    <i class="material-icons tree-navigator-item-button" (click)="toggle()" [hidden]="!node.expandable || node.children.length === 0">remove_circle_outline</i>
 
     <span (click)="select()" class="tree-navigator-label" [class.tree-navigator-unnamed]="node.label === ''" [class.tree-navigator-selected]="node.original.selected">{{ node.label === '' ? '(unnamed)' : node.label }}</span>
-
+    <i class="material-icons tree-navigator-item-button" (click)="openSubtree()">open_in_new</i>
     <app-tree-navigator [tree]="node.children" #component></app-tree-navigator>
 </div>
