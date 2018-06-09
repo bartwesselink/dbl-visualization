@@ -13,6 +13,7 @@ declare var importScripts;
 export class DatasetStorageService {
     /** @author Mathijs Boezer */
     private defaultDataPath = '/assets/default-data/';
+    private pakoDataPath = 'assets/scripts/pako.js'; // no slash because document.location.href already has one at the end
     private userDatasetsStorageKey = 'userDatasets';
 
     public defaultDatasets: DatasetFile[] = [
@@ -39,16 +40,19 @@ export class DatasetStorageService {
 
     public saveDataset(title: string, dataset: string): void {
         try {
-            if(!this.isDuplicate(title) || true) { // TODO remove '|| true' after testing is done
+            if(!this.isDuplicate(title)) {
                 this.userDatasets.push( {title: title}); // add to user dataset options
                 localStorage.setItem(this.userDatasetsStorageKey, JSON.stringify(this.userDatasets)); // save extended list
+
                 // compression
-                this.webWorkerService.run((dataset) => {
-                    importScripts('https://cdnjs.cloudflare.com/ajax/libs/pako/1.0.6/pako.min.js'); //TODO make this local
+                let scriptUrl = document.location.href + this.pakoDataPath; // relative urls don't work so need location
+
+                this.webWorkerService.run(([dataset, scriptUrl]) => {
+                    importScripts(scriptUrl); // import pako
                     return pako.deflate(dataset, {to: 'string'});
-                }, dataset)
+                }, [dataset, scriptUrl])
                     .then((compressed: string) => {
-                        localStorage.setItem(title, compressed);
+                        localStorage.setItem(title, compressed); // save to storage
                     })
                     .catch((error) => console.log(error));
             }
@@ -63,6 +67,5 @@ export class DatasetStorageService {
         }
         return false;
     }
-
     /** @end-author Mathijs Boezer */
 }
