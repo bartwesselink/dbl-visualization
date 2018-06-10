@@ -49,9 +49,12 @@ export class OpenGL{
     
     //optimises the given shader mode
     public optimizeFor(mode: ShaderMode): void {
-        outer: for(this.index; this.index < this.arrays.length; this.index++){
+        while(this.index < this.arrays.length && this.arrays[this.index].shader == mode){
+            this.index++;
+        }
+        outer: for(var i = this.index + 1; this.index < this.arrays.length; this.index++){
             if(this.arrays[this.index].shader != mode){
-                for(let i = this.index + 1; i < this.arrays.length; i++){
+                for(i; i < this.arrays.length; i++){
                     if(this.arrays[i].shader == mode){
                         let tmp = this.arrays[this.index];
                         this.arrays[this.index] = this.arrays[i];
@@ -508,7 +511,7 @@ export class OpenGL{
                                Math.hypot(width, height) / 2, Math.min(width, height), rotation, true, false, color, null);
     }
     
-     //draw a rotated quad
+    //draw a rotated quad
     public drawRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): void {
         this.renderRotatedQuad(x,             y,
                                x - width / 2, y + height / 2,
@@ -518,7 +521,7 @@ export class OpenGL{
                                Math.hypot(width, height) / 2, Math.min(width, height), rotation, false, true, null, color);
     }
     
-     //render a rotated quad
+    //render a rotated quad
     public fillLinedRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, fillColor: number[], lineColor: number[]): void {
         this.renderRotatedQuad(x,             y,
                                x - width / 2, y + height / 2,
