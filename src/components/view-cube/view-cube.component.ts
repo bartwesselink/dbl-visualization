@@ -14,6 +14,7 @@ export class ViewCubeComponent implements OnInit {
     @ViewChild('zoomSliderHolder') private zoomSliderHolder: ElementRef;
     public zoomSliderValue: number = 50;
     private zoomDragging: boolean = false;
+    private intervalId: number; // id of the interval currently sending keys
     public readonly sliderPadding: number = 5;
     private readonly zoomMin = -2;
     private readonly zoomMax = 20;
@@ -75,32 +76,32 @@ export class ViewCubeComponent implements OnInit {
         this.dialog.nativeElement.close();
     }
 
-    public rotateLeft(): void {
-        this.sendFakeKey('Q');
+    public rotateLeft(start: boolean): void {
+        this.streamFakeKey('Q', start);
     }
 
-    public rotateRight(): void {
-        this.sendFakeKey('E');
+    public rotateRight(start: boolean): void {
+        this.streamFakeKey('E', start);
     }
 
     public reset(): void {
         this.sendFakeKey('T');
     }
 
-    public moveUp(): void {
-        this.sendFakeKey('W');
+    public moveUp(start: boolean): void {
+        this.streamFakeKey('W', start);
     }
 
-    public moveDown(): void {
-        this.sendFakeKey('S');
+    public moveDown(start: boolean): void {
+        this.streamFakeKey('S', start);
     }
 
-    public moveRight(): void {
-        this.sendFakeKey('D');
+    public moveRight(start: boolean): void {
+        this.streamFakeKey('D', start);
     }
 
-    public moveLeft(): void {
-        this.sendFakeKey('A');
+    public moveLeft(start: boolean): void {
+        this.streamFakeKey('A', start);
     }
 
     public setZoomLevel(level: number): void {
@@ -120,6 +121,17 @@ export class ViewCubeComponent implements OnInit {
         let fraction = (log + Math.abs(this.zoomMin)) / total;
 
         this.zoomSliderValue = (100 - (fraction * (100 - 2 * this.sliderPadding))) - this.sliderPadding;
+    }
+
+    private streamFakeKey(key: string, start: boolean): void {
+        if (start) {
+            let me = this;
+            this.intervalId = setInterval(() => {
+                me.sendFakeKey(key);
+            }, 25);
+        } else {
+            clearInterval(this.intervalId);
+        }
     }
 
     private sendFakeKey(key: string): void {
