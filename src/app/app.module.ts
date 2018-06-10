@@ -26,6 +26,8 @@ import {LoaderComponent} from '../components/loader/loader.component';
 import {SelectBus} from '../providers/select-bus';
 import {TooltipComponent} from '../components/tooltip/tooltip.component';
 import {ViewCubeComponent} from '../components/view-cube/view-cube.component';
+import {SubtreeBus} from "../providers/subtree-bus";
+import {SearchComponent} from '../components/search/search.component';
 
 @NgModule({
     declarations: [
@@ -45,6 +47,7 @@ import {ViewCubeComponent} from '../components/view-cube/view-cube.component';
         WelcomePageComponent,
         LoaderComponent,
         TooltipComponent,
+        SearchComponent,
         ViewCubeComponent,
     ],
     imports: [
@@ -58,6 +61,7 @@ import {ViewCubeComponent} from '../components/view-cube/view-cube.component';
         WorkerManager,
         SettingsBus,
         SelectBus,
+        SubtreeBus,
         {provide: APP_BASE_HREF, useValue : '/' }
     ],
     bootstrap: [AppComponent]

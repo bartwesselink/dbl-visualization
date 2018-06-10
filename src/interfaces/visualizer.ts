@@ -11,5 +11,7 @@ export interface Visualizer {
     getThumbnailImage(): string;
     getForm(formFactory: FormFactory): Form|null;
     draw(input: VisualizerInput): Draw[];
+    enableShaders?(gl: OpenGL): void;
+    optimizeShaders?(gl: OpenGL): void;
 }
 /** @end-author Bart Wesselink */

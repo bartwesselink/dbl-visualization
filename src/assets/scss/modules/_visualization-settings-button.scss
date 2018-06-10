@@ -28,5 +28,10 @@
     border-width: 8px 12.5px 0 12.5px;
     border-color: rgba(0, 0, 0, .2) transparent transparent transparent;
   }
+
+  // fix for firefox range input offset
+  input {
+    margin: 0 2px;
+  }
 }
 /** @end-author Bart Wesselink */

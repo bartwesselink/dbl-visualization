@@ -10,6 +10,8 @@ import {Settings} from '../interfaces/settings';
 import {OpenglDemoTree} from "../visualizations/opengl-demo-tree";
 import {SimpleTreeMap} from "../visualizations/simple-tree-map";
 import {WorkerManager} from '../utils/worker-manager';
+import {SubtreeBus} from "../providers/subtree-bus";
+import {SelectBus} from "../providers/select-bus";
 
 declare var dialogPolyfill;
 
@@ -20,6 +22,7 @@ declare var dialogPolyfill;
 export class AppComponent implements OnInit {
     public tabs: Tab[] = [];
     public tree: Node;
+    private originalTree: Node;
     public visualizers: Visualizer[];
     public showFullScreenLoader: boolean = false;
 
@@ -32,11 +35,21 @@ export class AppComponent implements OnInit {
 
     private parser: NewickParser;
     public darkMode = false;
-    constructor(private settingsBus: SettingsBus) {
+    constructor(private settingsBus: SettingsBus, private selectBus: SelectBus, private subtreeBus: SubtreeBus) {
         this.createVisualizers();
 
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
             this.darkMode = settings.darkMode;
+            for (const tab of this.tabs) {
+                if (tab.window) {
+                    tab.window.setDarkmode(this.darkMode);
+                }
+            }
+            this.selectBus.interactionOptions = settings.interactionSettings;
+        });
+
+        this.subtreeBus.subtreeSelected.subscribe((node: Node) => {
+            this.openTree(node);
         });
 
         window.addEventListener('resize', () => this.resizeActiveTab());
@@ -53,12 +66,14 @@ export class AppComponent implements OnInit {
         const line = this.parser.extractLines(data);
 
         if (line !== null) {
-            this.tree = this.parser.parseTree(line);
-
-            setTimeout(() => {
-                this.sidebar.reloadData();
-                this.redrawAllTabs();
-            }, 100);
+            const hadTree = this.tree != null;
+          
+            this.openTree(this.parser.parseTree(line));
+            this.originalTree = this.tree;
+          
+            if(!hadTree) {
+                this.resizeActiveTab();
+            }
         }
     }
     /** @end-author Jordy Verhoeven */
@@ -158,4 +173,33 @@ export class AppComponent implements OnInit {
         this.showFullScreenLoader = true;
     }
     /** @end-author Bart Wesselink */
+
+    /** @author Mathijs Boezer */
+
+    private openTree(node: Node): void {
+        // reset selection on old tree
+        if (this.tree && this.tree.selectedNode) {
+            this.tree.selectedNode.selected = false;
+            this.tree.selectedNode = null;
+        }
+
+        this.tree = node;
+
+        setTimeout(() => {
+            this.sidebar.reloadData();
+            this.redrawAllTabs();
+            this.resetAllTabTransformations();
+        }, 100);
+    }
+
+    private resetAllTabTransformations() {
+        for (let tab of this.tabs) {
+            tab.window.resetTransformation();
+        }
+    }
+
+    public restoreTree() {
+        this.openTree(this.originalTree);
+    }
+    /** @end-author Mathijs Boezer */
 }
