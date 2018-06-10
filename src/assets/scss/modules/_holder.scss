@@ -16,10 +16,11 @@
     height: calc(100vh - 64px);
     max-height: calc(100vh - 64px);
     overflow: hidden;
+    position: relative;
 
     section {
-      width: auto !important;
-      height: auto !important;
+      width: 100%;
+      height: auto;
       padding: 1rem;
     }
 
@@ -48,38 +49,23 @@
       display: flex;
     }
 
-    display: grid;
-    grid-gap: 1rem;
-    grid-auto-columns: 1fr;
-    grid-auto-rows: 1fr;
-    min-height: 0;
+    display: flex;
 
-    .holder-item-1 { grid-area: one; }
-    .holder-item-2 { grid-area: two; }
-    .holder-item-3 { grid-area: three; }
-    .holder-item-4 { grid-area: four; }
-
-    // differ layout based on the amount of items
-    &.holder-items-1 {
-      grid-template-areas:
-              'one';
+    .holder-divider {
+      background: rgba(0, 0, 0, .8);
+      cursor: col-resize;
+      height: 100%;
+      width: 0.2rem;
+      order: 2;
+      flex-grow: 0;
     }
 
-    &.holder-items-2 {
-      grid-template-areas:
-              'one two';
+    .holder-item-1 {
+      order: 1;
     }
 
-    &.holder-items-3 {
-      grid-template-areas:
-              'one two'
-              'one three';
-    }
-
-    &.holder-items-4 {
-      grid-template-areas:
-              'one two'
-              'three four';
+    .holder-item-2 {
+      order: 3;
     }
   }
 

@@ -31,12 +31,14 @@ export class AppComponent implements OnInit {
     private amountOfWindowsLoading: number = 0;
     private firstTabAdded: boolean = false;
 
-    public readonly MAX_SIDE_BY_SIDE = 4;
+    public readonly SIDE_BY_SIDE_MAX_WINDOWS = 2;
+    public readonly SIDE_BY_SIDE_MAX_WIDTH = 200;
 
     @ViewChild(SidebarComponent) private sidebar: SidebarComponent;
     @ViewChild("snackbar") public snackbar: ElementRef;
     @ViewChild('fullScreenLoader') private fullScreenLoader: ElementRef;
     @ViewChild('appHolder') private appHolder: ElementRef;
+    @ViewChild('resizer') private resizer: ElementRef;
 
     @ViewChildren('tabSection') private tabSections: QueryList<ElementRef>;
 
@@ -45,8 +47,6 @@ export class AppComponent implements OnInit {
     public viewMode = ViewMode.SIDE_BY_SIDE;
 
     // variables for dragging the column around
-    public windowResizeIndex: number;
-    public windowResizeLastX: number;
     public windowResizing: boolean = false;
 
     constructor(private settingsBus: SettingsBus, private selectBus: SelectBus, private subtreeBus: SubtreeBus) {
@@ -59,8 +59,8 @@ export class AppComponent implements OnInit {
                 this.resizeActiveTab(true);
 
                 if (settings.viewMode === ViewMode.SIDE_BY_SIDE) {
-                    if (this.tabs.length > this.MAX_SIDE_BY_SIDE) {
-                        this.snackbar.nativeElement.MaterialSnackbar.showSnackbar({message: 'Please close tabs, because for this view-mode there are only ' + this.MAX_SIDE_BY_SIDE + ' windows allowed.'});
+                    if (this.tabs.length > this.SIDE_BY_SIDE_MAX_WINDOWS) {
+                        this.snackbar.nativeElement.MaterialSnackbar.showSnackbar({message: 'Please close tabs, because for this view-mode there are only ' + this.SIDE_BY_SIDE_MAX_WINDOWS + ' windows allowed.'});
 
                         return;
                     }
@@ -134,6 +134,8 @@ export class AppComponent implements OnInit {
         if (this.viewMode === ViewMode.SIDE_BY_SIDE) {
             this.resizeActiveTab();
         }
+
+        this.resetTabWidths();
     }
 
     public switchTab(tab: Tab) {
@@ -236,6 +238,58 @@ export class AppComponent implements OnInit {
             setTimeout(() => {
                 this.resizeActiveTab();
             }, 200);
+        }
+    }
+    /** @end-author Bart Wesselink */
+
+    /** @author Bart Wesselink */
+    public startResize(): void {
+        this.windowResizing = true;
+    }
+
+    public stopResize(): void {
+        this.windowResizing = false;
+    }
+
+    public doResize($event: MouseEvent) {
+        if (this.isTabViewMode() || !this.windowResizing || this.tabSections.length < 2) {
+            return;
+        }
+
+        $event.preventDefault();
+        $event.stopPropagation();
+
+        let sections = this.tabSections.toArray();
+        let firstWindow = sections[0];
+        let secondWindow = sections[1];
+
+        let screenWidth = document.body.clientWidth;
+
+        let firstWindowSize = ($event.clientX - this.resizer.nativeElement.clientWidth / 2);
+        let secondWindowSize = (screenWidth - ($event.clientX - this.resizer.nativeElement.clientWidth / 2));
+
+        if (firstWindowSize < this.SIDE_BY_SIDE_MAX_WIDTH || secondWindowSize < this.SIDE_BY_SIDE_MAX_WIDTH) {
+            return;
+        }
+
+        // take divider into account in calculation
+        firstWindow.nativeElement.style.width = firstWindowSize + 'px';
+        secondWindow.nativeElement.style.width = secondWindowSize + 'px';
+
+        this.resizeActiveTab(true);
+    }
+
+    public isSideBySideViewMode(): boolean {
+        return this.viewMode === ViewMode.SIDE_BY_SIDE;
+    }
+
+    public isTabViewMode(): boolean {
+        return this.viewMode === ViewMode.TAB;
+    }
+
+    public resetTabWidths(): void {
+        for (const tabSection of this.tabSections.toArray()) {
+            tabSection.nativeElement.style.width = '100%';
         }
     }
     /** @end-author Bart Wesselink */
