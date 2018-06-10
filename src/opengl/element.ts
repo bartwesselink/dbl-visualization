@@ -1,11 +1,18 @@
 /** @author Roan Hofland */
+import { ShaderMode } from "./shaders/shaderMode";
+
 export interface Element{
     pos?: WebGLBuffer;
-    color?: WebGLBuffer;
+    color?: Float32Array;
     indices?: WebGLBuffer;
-    mode: number;
+    mode?: number;
     length: number;
+    span?: number;
+    rad?: number;
+    x?: number;
+    y?: number;
     offset?: number;
     overlay?: Element;
+    shader?: ShaderMode;
 }
 /** @end-author Roan Hofland */

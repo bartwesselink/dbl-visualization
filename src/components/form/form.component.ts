@@ -26,6 +26,12 @@ export class FormComponent implements OnInit {
                 this.valueChanges.next(value);
             }
         });
+
+        // fixes #85, weird issue where value is changed by DOM to half of the slider
+        setTimeout(() => {
+            const formGroup = this.form.getFormGroup();
+            formGroup.patchValue(formGroup.value, { emitEvent: false });
+        }, 100);
     }
 
     getChoiceOptions(field: FormField): ChoiceFormOptions {

@@ -2,6 +2,7 @@ import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {Node} from '../../models/node';
 import {TreeNavigatorComponent} from '../tree-navigator/tree-navigator.component';
 import {SelectBus} from '../../providers/select-bus';
+import {SubtreeBus} from "../../providers/subtree-bus";
 
 @Component({
     selector: 'app-tree-navigator-item',
@@ -12,7 +13,7 @@ export class TreeNavigatorItemComponent implements OnInit {
     @Input() node: Node;
     @ViewChild('component') recursiveChildTree?: TreeNavigatorComponent;
 
-    constructor(private selectBus: SelectBus) {
+    constructor(private selectBus: SelectBus, private subtreeBus: SubtreeBus) {
     }
 
     ngOnInit(): void {
@@ -48,6 +49,10 @@ export class TreeNavigatorItemComponent implements OnInit {
 
     public select(): void {
         this.selectBus.selectNode(this.node.original);
+    }
+
+    public openSubtree(): void {
+        this.subtreeBus.openSubtree(this.node.original);
     }
     /** @end-author Bart Wesselink */
 }

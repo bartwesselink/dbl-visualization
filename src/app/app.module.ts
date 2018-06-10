@@ -25,6 +25,9 @@ import { WebWorkerService } from 'angular2-web-worker';
 import {LoaderComponent} from '../components/loader/loader.component';
 import {SelectBus} from '../providers/select-bus';
 import {TooltipComponent} from '../components/tooltip/tooltip.component';
+import {ViewCubeComponent} from '../components/view-cube/view-cube.component';
+import {SubtreeBus} from "../providers/subtree-bus";
+import {SearchComponent} from '../components/search/search.component';
 
 @NgModule({
     declarations: [
@@ -44,6 +47,8 @@ import {TooltipComponent} from '../components/tooltip/tooltip.component';
         WelcomePageComponent,
         LoaderComponent,
         TooltipComponent,
+        SearchComponent,
+        ViewCubeComponent,
     ],
     imports: [
         BrowserModule,
@@ -56,6 +61,7 @@ import {TooltipComponent} from '../components/tooltip/tooltip.component';
         WorkerManager,
         SettingsBus,
         SelectBus,
+        SubtreeBus,
         {provide: APP_BASE_HREF, useValue : '/' }
     ],
     bootstrap: [AppComponent]
