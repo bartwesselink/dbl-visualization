@@ -49,9 +49,12 @@ export class OpenGL{
 
     //optimises the given shader mode
     public optimizeFor(mode: ShaderMode): void {
-        outer: for(this.index; this.index < this.arrays.length; this.index++){
+        while(this.index < this.arrays.length && this.arrays[this.index].shader == mode){
+            this.index++;
+        }
+        outer: for(var i = this.index + 1; this.index < this.arrays.length; this.index++){
             if(this.arrays[this.index].shader != mode){
-                for(let i = this.index + 1; i < this.arrays.length; i++){
+                for(i; i < this.arrays.length; i++){
                     if(this.arrays[i].shader == mode){
                         let tmp = this.arrays[this.index];
                         this.arrays[this.index] = this.arrays[i];
@@ -501,31 +504,31 @@ export class OpenGL{
     //fill a rotated quad
     public fillRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): void {
         this.renderRotatedQuad(x,             y,
-            x - width / 2, y + height / 2,
-            x + width / 2, y + height / 2,
-            x - width / 2, y - height / 2,
-            x + width / 2, y - height / 2,
-            Math.hypot(width, height) / 2, Math.min(width, height), rotation, true, false, color, null);
+                               x - width / 2, y + height / 2,
+                               x + width / 2, y + height / 2,
+                               x - width / 2, y - height / 2,
+                               x + width / 2, y - height / 2,
+                               Math.hypot(width, height) / 2, Math.min(width, height), rotation, true, false, color, null);
     }
-
+    
     //draw a rotated quad
     public drawRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): void {
         this.renderRotatedQuad(x,             y,
-            x - width / 2, y + height / 2,
-            x + width / 2, y + height / 2,
-            x + width / 2, y - height / 2,
-            x - width / 2, y - height / 2,
-            Math.hypot(width, height) / 2, Math.min(width, height), rotation, false, true, null, color);
+                               x - width / 2, y + height / 2,
+                               x + width / 2, y + height / 2,
+                               x + width / 2, y - height / 2,
+                               x - width / 2, y - height / 2,
+                               Math.hypot(width, height) / 2, Math.min(width, height), rotation, false, true, null, color);
     }
-
+    
     //render a rotated quad
     public fillLinedRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, fillColor: number[], lineColor: number[]): void {
         this.renderRotatedQuad(x,             y,
-            x - width / 2, y + height / 2,
-            x + width / 2, y + height / 2,
-            x - width / 2, y - height / 2,
-            x + width / 2, y - height / 2,
-            Math.hypot(width, height) / 2, Math.min(width, height), rotation, true, true, fillColor, lineColor);
+                               x - width / 2, y + height / 2,
+                               x + width / 2, y + height / 2,
+                               x - width / 2, y - height / 2,
+                               x + width / 2, y - height / 2,
+                               Math.hypot(width, height) / 2, Math.min(width, height), rotation, true, true, fillColor, lineColor);
     }
 
     //renders a rotated quad
@@ -540,37 +543,37 @@ export class OpenGL{
         var d = Matrix.rotateVector2D(center, [x4, y4], rotation);
 
         this.drawQuadImpl(b[0], b[1],
-            a[0], a[1],
-            d[0], d[1],
-            c[0], c[1],
-            x, y, size, span, fill, line, fillColor, lineColor);
+                          a[0], a[1],
+                          d[0], d[1],
+                          c[0], c[1],
+                          x, y, size, span, fill, line, fillColor, lineColor);
     }
 
     //fill an axis aligned quad
     public fillAAQuad(x: number, y: number, width: number, height: number, color: number[]): void {
         this.drawQuadImpl(x + width, y + height,
-            x,         y + height,
-            x + width, y,
-            x,         y,
-            x + width / 2, y + height / 2, Math.hypot(width, height) / 2, Math.min(width, height), true, false, color, null);
+                          x,         y + height,
+                          x + width, y,
+                          x,         y,
+                          x + width / 2, y + height / 2, Math.hypot(width, height) / 2, Math.min(width, height), true, false, color, null);
     }
 
     //draw an axis aligned quad
     public drawAAQuad(x: number, y: number, width: number, height: number, color: number[]): void {
         this.drawQuadImpl(x + width, y + height,
-            x,         y + height,
-            x,         y,
-            x + width, y,
-            x + width / 2, y + height / 2, Math.hypot(width, height) / 2, Math.min(width, height), false, true, null, color);
+                          x,         y + height,
+                          x,         y,
+                          x + width, y,
+                          x + width / 2, y + height / 2, Math.hypot(width, height) / 2, Math.min(width, height), false, true, null, color);
     }
 
     //render an axis aligned quad
     public fillLinedAAQuad(x: number, y: number, width: number, height: number, fillColor: number[], lineColor: number[]): void {
         this.drawQuadImpl(x + width, y + height,
-            x,         y + height,
-            x + width, y,
-            x,         y,
-            x + width / 2, y + height / 2, Math.hypot(width, height) / 2, Math.min(width, height), true, true, fillColor, lineColor);
+                          x,         y + height,
+                          x + width, y,
+                          x,         y,
+                          x + width / 2, y + height / 2, Math.hypot(width, height) / 2, Math.min(width, height), true, true, fillColor, lineColor);
     }
 
     //draw quad implementation
@@ -1297,11 +1300,11 @@ export class OpenGL{
         if(elem.pos != null){
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, elem.pos);
             this.gl.vertexAttribPointer(this.shader.defaultAttribPosition(),    //attribute
-                2,                                      //2D so two values per iteration: x, y
-                this.gl.FLOAT,                          //data type is float32
-                false,                                  //no normalisation
-                0,                                      //stride = automatic
-                elem.offset == null ? 0 : elem.offset); //skip
+                                        2,                                      //2D so two values per iteration: x, y
+                                        this.gl.FLOAT,                          //data type is float32
+                                        false,                                  //no normalisation
+                                        0,                                      //stride = automatic
+                                        elem.offset == null ? 0 : elem.offset); //skip
             this.gl.enableVertexAttribArray(this.shader.defaultAttribPosition());
         }
 
