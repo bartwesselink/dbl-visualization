@@ -70,8 +70,7 @@ export class WindowComponent implements OnInit {
     private readonly DEFAULT_DR = 1;
     private readonly DEFAULT_DT = 5;
     private readonly DEFAULT_DS = 0.1;
-    private static darkMode: boolean;
-    private previousDarkMode: boolean;
+    private darkMode: boolean;
 
     private currentDraws: Draw[];
     private interactionHandler: InteractionHandler;
@@ -102,7 +101,7 @@ export class WindowComponent implements OnInit {
 
         /** @author Nico Klaassen & Jules Cornelissen*/
         /** Color palette support */
-        this.previousDarkMode = settingsBus.getSettings().darkMode;
+        this.darkMode = settingsBus.getSettings().darkMode;
         this.palette = Palettes.default;
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
             if (!settings.colorMode) {
@@ -117,11 +116,12 @@ export class WindowComponent implements OnInit {
             if (this.reversePalette) {
                 this.palette = new Palette(this.palette.secondary, this.palette.primary, this.palette.accents);
             }
-
-            if (this.previousDarkMode === settings.darkMode) { // It wasn't the darkMode setting that changed
+            if (this.darkMode === settings.darkMode) { // It wasn't the darkMode setting that changed
                 this.redrawAllScenes();
+            } else {
+                this.darkMode = settings.darkMode;
+                this.setDarkmode(this.darkMode);
             }
-            this.previousDarkMode = settings.darkMode;
         });
         /** @end-author Nico Klaassen & Jules Cornelissen*/
     }
@@ -152,7 +152,6 @@ export class WindowComponent implements OnInit {
     }
 
     public setDarkmode(enabled: boolean): void {
-        WindowComponent.darkMode = enabled;
         if(enabled){
             this.gl.setBackgroundColor(50.0 / 255.0, 50.0 / 255.0, 50.0 / 255.0);
         }else{
@@ -408,7 +407,7 @@ export class WindowComponent implements OnInit {
             this.onError((<Error>error).message);
         }
 
-        this.setDarkmode(WindowComponent.darkMode);
+        this.setDarkmode(this.darkMode);
 
         if(this.visualizer.enableShaders){
             this.visualizer.enableShaders(this.gl);

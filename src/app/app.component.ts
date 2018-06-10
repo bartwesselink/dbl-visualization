@@ -41,11 +41,6 @@ export class AppComponent implements OnInit {
 
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
             this.darkMode = settings.darkMode;
-            for (const tab of this.tabs) {
-                if (tab.window) {
-                    tab.window.setDarkmode(this.darkMode);
-                }
-            }
             this.selectBus.interactionOptions = settings.interactionSettings;
         });
 
