@@ -71,6 +71,7 @@ export class WindowComponent implements OnInit {
     private readonly DEFAULT_DT = 5;
     private readonly DEFAULT_DS = 0.1;
     private static darkMode: boolean;
+    private previousDarkMode: boolean;
 
     private currentDraws: Draw[];
     private interactionHandler: InteractionHandler;
@@ -101,6 +102,7 @@ export class WindowComponent implements OnInit {
 
         /** @author Nico Klaassen & Jules Cornelissen*/
         /** Color palette support */
+        this.previousDarkMode = settingsBus.getSettings().darkMode;
         this.palette = Palettes.default;
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
             if (!settings.colorMode) {
@@ -115,7 +117,11 @@ export class WindowComponent implements OnInit {
             if (this.reversePalette) {
                 this.palette = new Palette(this.palette.secondary, this.palette.primary, this.palette.accents);
             }
-            this.redrawAllScenes();
+
+            if (this.previousDarkMode === settings.darkMode) { // It wasn't the darkMode setting that changed
+                this.redrawAllScenes();
+            }
+            this.previousDarkMode = settings.darkMode;
         });
         /** @end-author Nico Klaassen & Jules Cornelissen*/
     }
