@@ -115,7 +115,7 @@ export class AppComponent implements OnInit {
         tab.visualizer = visualizer;
 
         setTimeout(() => {
-            tab.window.computeScene();
+            tab.window.ngOnInit();
         }, 100);
     }
 
