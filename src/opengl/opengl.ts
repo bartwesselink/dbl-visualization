@@ -573,6 +573,21 @@ export class OpenGL{
                           x + width / 2, y + height / 2, Math.hypot(width, height) / 2, Math.min(width, height), true, true, fillColor, lineColor);
     }
         
+    //render a custom quad
+    public fillCustomQuad(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, color: number[]): void {
+        
+    }
+    
+    //render a custom quad
+    public drawCustomQuad(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, color: number[]): void {
+        
+    }
+    
+    //render a custom quad
+    public fillLinedCustomQuad(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, fillColor: number[], lineColor: number[]): void {
+        
+    }
+    
     //draw quad implementation
     private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, x: number, y: number, rad: number, span: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
         //position
