@@ -11,6 +11,8 @@ import {OpenglDemoTree} from "../visualizations/opengl-demo-tree";
 import {SimpleTreeMap} from "../visualizations/simple-tree-map";
 import {WorkerManager} from '../utils/worker-manager';
 import {ViewMode} from '../enums/view-mode';
+import {SubtreeBus} from "../providers/subtree-bus";
+import {SelectBus} from "../providers/select-bus";
 
 declare var dialogPolyfill;
 
@@ -21,6 +23,7 @@ declare var dialogPolyfill;
 export class AppComponent implements OnInit {
     public tabs: Tab[] = [];
     public tree: Node;
+    private originalTree: Node;
     public visualizers: Visualizer[];
     public showFullScreenLoader: boolean = false;
 
@@ -46,7 +49,7 @@ export class AppComponent implements OnInit {
     public windowResizeLastX: number;
     public windowResizing: boolean = false;
 
-    constructor(private settingsBus: SettingsBus) {
+    constructor(private settingsBus: SettingsBus, private selectBus: SelectBus, private subtreeBus: SubtreeBus) {
         this.createVisualizers();
 
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
@@ -65,6 +68,16 @@ export class AppComponent implements OnInit {
             }
 
             this.viewMode = settings.viewMode;
+            for (const tab of this.tabs) {
+                if (tab.window) {
+                    tab.window.setDarkmode(this.darkMode);
+                }
+            }
+            this.selectBus.interactionOptions = settings.interactionSettings;
+        });
+
+        this.subtreeBus.subtreeSelected.subscribe((node: Node) => {
+            this.openTree(node);
         });
 
         window.addEventListener('resize', () => this.resizeActiveTab());
@@ -81,12 +94,14 @@ export class AppComponent implements OnInit {
         const line = this.parser.extractLines(data);
 
         if (line !== null) {
-            this.tree = this.parser.parseTree(line);
+            const hadTree = this.tree != null;
 
-            setTimeout(() => {
-                this.sidebar.reloadData();
-                this.redrawAllTabs();
-            }, 100);
+            this.openTree(this.parser.parseTree(line));
+            this.originalTree = this.tree;
+
+            if(!hadTree) {
+                this.resizeActiveTab();
+            }
         }
     }
     /** @end-author Jordy Verhoeven */
@@ -195,59 +210,6 @@ export class AppComponent implements OnInit {
         }
     }
 
-    public isTabViewMode(): boolean {
-        return this.viewMode === ViewMode.TAB;
-    }
-
-    public isSideBySideViewMode(): boolean {
-        return this.viewMode === ViewMode.SIDE_BY_SIDE;
-    }
-
-    public startResize($event, index: number): void {
-        this.windowResizing = true;
-        this.windowResizeIndex = index;
-        this.windowResizeLastX = $event.screenX;
-    }
-
-    public doResize($event): void {
-        if (this.windowResizing) {
-            $event.stopImmediatePropagation();
-            $event.preventDefault();
-
-            const sections = this.tabSections.toArray();
-
-            const firstTab = sections[this.windowResizeIndex];
-            const secondTab = sections[this.windowResizeIndex + 1];
-            const currentX = $event.screenX;
-            const delta = this.windowResizeLastX - currentX;
-
-            if (firstTab != null && secondTab != null) {
-                const firstElement = firstTab.nativeElement;
-                const secondElement = secondTab.nativeElement;
-
-                const firstOldWidth = firstElement.clientWidth;
-                const secondOldWidth = secondElement.clientWidth;
-
-                const firstNewWidth = firstOldWidth - delta;
-                const secondNewWidth = secondOldWidth + delta;
-
-                firstElement.style.width = firstNewWidth + 'px';
-                secondElement.style.width = secondNewWidth + 'px';
-            }
-
-            this.windowResizeLastX = $event.screenX;
-        }
-    }
-
-    public stopResize(): void {
-        if (this.windowResizing) {
-            this.windowResizing = false;
-            this.windowResizeIndex = null;
-
-            this.resizeActiveTab();
-        }
-    }
-
     private addTab(visualizer: Visualizer) {
         const tab: Tab = {
             id: this.tabs.length + 1,
@@ -277,4 +239,33 @@ export class AppComponent implements OnInit {
         }
     }
     /** @end-author Bart Wesselink */
+
+    /** @author Mathijs Boezer */
+
+    private openTree(node: Node): void {
+        // reset selection on old tree
+        if (this.tree && this.tree.selectedNode) {
+            this.tree.selectedNode.selected = false;
+            this.tree.selectedNode = null;
+        }
+
+        this.tree = node;
+
+        setTimeout(() => {
+            this.sidebar.reloadData();
+            this.redrawAllTabs();
+            this.resetAllTabTransformations();
+        }, 100);
+    }
+
+    private resetAllTabTransformations() {
+        for (let tab of this.tabs) {
+            tab.window.resetTransformation();
+        }
+    }
+
+    public restoreTree() {
+        this.openTree(this.originalTree);
+    }
+    /** @end-author Mathijs Boezer */
 }

@@ -45,8 +45,8 @@
                     </section>
                 </ng-container>
             </div>
-            <div class="holder-sidebar">
-                <app-sidebar [tree]="tree"></app-sidebar>
+            <div class="holder-sidebar" [hidden]="!tree">
+                <app-sidebar [tree]="tree" (reset)="restoreTree()"></app-sidebar>
             </div>
         </div>
 
