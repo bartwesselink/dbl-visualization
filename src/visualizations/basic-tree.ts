@@ -36,11 +36,11 @@ export class BasicTree implements Visualizer {
             node = maxChild;
         }
         const scalarX: number = (900 / height) * 0.9; // number to multiply each coordinate by to fit the tree by height in the window with 10% spacing around it
-        const scalarY = scalarX * (growDown ? -1 : 1);
-        console.log(scalarX, scalarY);
+        const scalarY = scalarX * (growDown ? -1 : 1); // negate scalar if growing downwards
 
         const generate: (tree: Node, origin: number[], selectedAncestor: boolean) => void = (tree: Node, origin: number[], selectedAncestor: boolean): void => {
             selectedAncestor = selectedAncestor || tree.selected; // whether this node or an ancestor is selected determines its color
+
             if (tree.children.length > 0) {
                 let x: number = -(tree.subTreeSize - 1.0) * widthMultiplier; // relative x coordinate for leftmost child
                 let y: number = tree.subTreeSize * heightMultiplier; // relative y coordinate for children
@@ -52,10 +52,12 @@ export class BasicTree implements Visualizer {
                     let middleX = (origin[0] + childOrigin[0]) / 2; // middle point of edge from parent to child
                     let middleY = (origin[1] + childOrigin[1]) / 2; // middle point of edge from parent to child
                     let height = ((origin[0] - childOrigin[0])**2 + (origin[1] - childOrigin[1])**2)**0.5; // edge length
+
                     let angle = Math.acos((origin[1] - childOrigin[1]) / height); // angle between y axis and edge
                     angle = angle * radianToDegreeMultiplier; // convert to degrees
                     angle = childOrigin[0] < origin[0] ? -angle : angle; // negate if it should rotate counterclockwise
                     angle = growDown ? -angle : angle; // negate if growing downwards
+
                     // draw 'edge' to children, its actually a quad though
                     draws.push({
                         type: 1, // filled rotated quad
@@ -94,8 +96,8 @@ export class BasicTree implements Visualizer {
         return formFactory.createFormBuilder()
             .addSliderField('width', 5, { label: 'Width', min: 0.5, max: 10 })
             .addSliderField('height', 3, { label: 'Height', min: 0.5, max: 10 })
-            .addSliderField('nodeWidth', 75, { label: 'Node size', min: 50, max: 100 }) // sliders only work on integers afaik
-            .addToggleField('growDown', false, {label: 'Grown downwards'})
+            .addSliderField('nodeWidth', 75, { label: 'Node size', min: 50, max: 100 }) // sliders only work on integers afaik so multiply by 100
+            .addToggleField('growDown', false, {label: 'Grow downwards'})
             .getForm();
     }
 
