@@ -1,19 +1,19 @@
 <div class="view-cube">
     <div class="view-cube-pan-rotate">
-        <div class="view-cube-rotate view-cube-rotate-left" (click)="rotateLeft()"></div>
+        <div class="view-cube-rotate view-cube-rotate-left" (mousedown)="rotateLeft(true)" (mouseup)="rotateLeft(false)" (mouseleave)="rotateLeft(false)"></div>
 
         <div class="view-cube-help" (click)="openHelp()"></div>
 
         <div class="view-cube-pan">
-            <div class="view-cube-arrow view-cube-arrow-left" (click)="moveLeft()"></div>
-            <div class="view-cube-arrow view-cube-arrow-up" (click)="moveUp()"></div>
-            <div class="view-cube-arrow view-cube-arrow-right" (click)="moveRight()"></div>
-            <div class="view-cube-arrow view-cube-arrow-down" (click)="moveDown()"></div>
+            <div class="view-cube-arrow view-cube-arrow-left" (mousedown)="moveLeft(true)" (mouseup)="moveLeft(false)" (mouseleave)="moveLeft(false)"></div>
+            <div class="view-cube-arrow view-cube-arrow-up" (mousedown)="moveUp(true)" (mouseup)="moveUp(false)" (mouseleave)="moveUp(false)"></div>
+            <div class="view-cube-arrow view-cube-arrow-right" (mousedown)="moveRight(true)" (mouseup)="moveRight(false)" (mouseleave)="moveRight(false)"></div>
+            <div class="view-cube-arrow view-cube-arrow-down" (mousedown)="moveDown(true)" (mouseup)="moveDown(false)" (mouseleave)="moveDown(false)"></div>
 
             <div class="view-cube-home" (click)="reset()"></div>
         </div>
 
-        <div class="view-cube-rotate view-cube-rotate-right" (click)="rotateRight()"></div>
+        <div class="view-cube-rotate view-cube-rotate-right" (mousedown)="rotateRight(true)" (mouseup)="rotateRight(false)" (mouseleave)="rotateRight(false)"></div>
     </div>
 
     <div class="view-cube-zoom" #zoomSliderHolder>

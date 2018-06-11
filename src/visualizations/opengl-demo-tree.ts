@@ -69,7 +69,7 @@ export class OpenglDemoTree implements Visualizer {
             draws.push({ type: 3 /** FillLinedRotatedQuad **/, options: { x: x, y: startY, width: quadWidth, height: quadHeight, rotation: rotationDegrees, fillColor: randomColor, lineColor: outlineColor } });
             draws.push({ type: 9 /** FillLinedEllipsoid **/, options: { x: x, y: -startY, radx: radiusX, rady: radiusY, rotation: rotationDegrees, fillColor: randomColor, lineColor: outlineColor } });
         }
-        
+
         // Rotation sparse example
         startX = -720;
         startY = 225;
@@ -103,7 +103,7 @@ export class OpenglDemoTree implements Visualizer {
             let radius = 2;
             let fillColor = [1, 0, 0];
             outlineColor = [0, 0, 0];
-            
+
             for (let i = 0; i <= 360; i++) {
                 const x = i / Math.PI;
                 const y = amplitude * Math.sin(x) + startY; // Standard mathematical sine curve form; a + b*sin(c (x-d) )
@@ -152,11 +152,11 @@ export class OpenglDemoTree implements Visualizer {
     public getThumbnailImage(): string|null {
         return null;
     }
-    
+
     public enableShaders(gl: OpenGL): void {
         gl.enableShaders(ShaderMode.ALL);
     }
-    
+
     public optimizeShaders(gl: OpenGL): void {
         gl.optimizeDefault();
         gl.optimizeFor(ShaderMode.FILL_CIRCLE);
