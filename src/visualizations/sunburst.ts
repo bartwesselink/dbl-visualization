@@ -5,6 +5,8 @@ import {Draw} from '../interfaces/draw';
 import {VisualizerInput} from '../interfaces/visualizer-input';
 import {Node} from '../models/node';
 import {Palette} from '../models/palette';
+import {OpenGL} from '../opengl/opengl';
+import {ShaderMode} from '../opengl/shaders/shaderMode';
 
 export class Sunburst implements Visualizer {
     /** @author Bart Wesselink */
@@ -17,7 +19,7 @@ export class Sunburst implements Visualizer {
         let baseRadius = 60;
         let scaleRadius = 0.9;
         let radiusMargin = 4;
-        let sliceMargin = 0;
+        let sliceMargin = 2;
 
         const generate = (node: Node, startAngle: number, endAngle: number, near: number, innerRadius: number, depth: number = 1, isLastChild: boolean = true, isSelected: boolean = false) => {
             if (tree.selected === true || isSelected) {
@@ -31,15 +33,9 @@ export class Sunburst implements Visualizer {
             let drawnEndAngle = endAngle;
 
             near += radiusMargin; // add a small margin
+            drawnEndAngle -= sliceMargin;
 
-            if (!isLastChild) {
-                drawnEndAngle -= sliceMargin;
-            }
-
-            if (depth === 2) {
-                console.log(Math.round(startAngle), Math.round(drawnEndAngle), near, far);
-            }
-            draws.push({ type: 17 /** FillRingSlice **/, identifier: node.identifier, options: { x: 0, y: 0, near: near, far: far, start: Math.round(startAngle), end: Math.round(drawnEndAngle), color }});
+            draws.push({ type: 17 /** FillRingSlice **/, identifier: node.identifier, options: { x: 0, y: 0, near: near, far: far, start: startAngle, end: drawnEndAngle, color }});
 
             let newStartAngle = startAngle;
 
@@ -49,7 +45,6 @@ export class Sunburst implements Visualizer {
 
                 // calculate the fraction of the ring slice. Minus one is to extract the root of the current subtree
                 const factor = child.subTreeSize / (node.subTreeSize - 1);
-
 
                 // convert fraction to an angle, and increase the startAngle
                 const angle = (endAngle - startAngle) * factor + newStartAngle;
@@ -82,6 +77,15 @@ export class Sunburst implements Visualizer {
 
     public getThumbnailImage(): string | null {
         return null;
+    }
+
+    public enableShaders(gl: OpenGL): void {
+        gl.enableShaders(ShaderMode.FILL_RING_SLICE);
+    }
+
+    public optimizeShaders(gl: OpenGL): void {
+        gl.optimizeDefault();
+        gl.optimizeFor(ShaderMode.FILL_RING_SLICE);
     }
 
     /** @end-author Bart Wesselink */
