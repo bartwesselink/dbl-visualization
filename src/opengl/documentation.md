@@ -52,6 +52,12 @@ Optimises draw calls for the given shader mode.
 Optimises draw calls for shapes are were not drawn with a specialized shader.
 - `public enableShaders(shader: ShaderMode): void`    
 Enables the shader(s) specified by the given shader mode.
+- `public setHidden(id: number, hide: boolean): void`    
+Sets whether or not the shape indicated by the given ID should be renderer on a rerender.
+- `public setLineColor(id: number, color: number[]): void`   
+Sets the line color of the shape indicated by the given ID, only use this method for lined shapes for drawn shapes use the `setColor` method. Changes only take effect after a rerender.
+- `public setColor(id: number, color: number[]): void`    
+Sets the color of the shape indicated by the given ID. Changes only take effect after a rerender.
 
 ## Available but not intended to be used
 - `public getModelviewMatrix(): Float32Array`    
