@@ -13,6 +13,7 @@ import {WorkerManager} from '../utils/worker-manager';
 import {ViewMode} from '../enums/view-mode';
 import {SubtreeBus} from "../providers/subtree-bus";
 import {SelectBus} from "../providers/select-bus";
+import {BasicTree} from "../visualizations/basic-tree";
 
 declare var dialogPolyfill;
 
@@ -185,6 +186,7 @@ export class AppComponent implements OnInit {
             new OpenglDemoTree(),
             new GeneralizedPythagorasTree(),
             new SimpleTreeMap(),
+            new BasicTree(),
         ];
     }
 
