@@ -3,7 +3,7 @@
         <div class="mdl-layout__header-row header-row">
             <span class="mdl-layout-title">DBL 1D</span>
 
-            <app-visualization-picker [visualizers]="visualizers" (select)="addVisualization($event)"></app-visualization-picker>
+            <app-visualization-picker [hidden]="isSideBySideViewMode() && tabs.length >= SIDE_BY_SIDE_MAX_WINDOWS" [visualizers]="visualizers" (select)="addVisualization($event)"></app-visualization-picker>
 
             <div>
                 <app-loader [hidden]="!isLoading() || showFullScreenLoader"></app-loader>
@@ -13,7 +13,7 @@
             </div>
         </div>
 
-        <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+        <div class="mdl-layout__tab-bar tab-bar mdl-js-ripple-effect" *ngIf="isTabViewMode()" [mdl]>
             <a *ngFor="let tab of tabs;" (click)="switchTab(tab)" class="mdl-layout__tab-app" [class.is-active]="tab.active">
                 {{ tab.visualizer?.getName() }}
 
@@ -24,14 +24,28 @@
     <div class="mdl-layout__drawer">
         <span class="mdl-layout-title">Menu</span>
     </div>
-    <main class="mdl-layout__content">
+    <main class="mdl-layout__content" (mouseup)="stopResize()" (mousemove)="doResize($event)">
         <div class="holder">
-            <div class="holder-app">
-                <section *ngFor="let tab of tabs;" class="mdl-layout__tab-panel full-height" [class.is-active]="tab.active">
-                    <div class="page-content full-height">
-                        <app-window [tree]="tree" [visualizer]="tab.visualizer" [tab]="tab" (loading)="updateLoading($event)" (redrawAll)="redrawAllTabs()" [snackbar]="snackbar"></app-window>
-                    </div>
-                </section>
+            <div class="holder-app" [class.holder-app-side-by-side]="isSideBySideViewMode()" [class.holder-app-tabs]="isTabViewMode()" #appHolder>
+                <ng-container *ngFor="let tab of tabs; let i = index;">
+                    <section class="full-height holder-item holder-item-{{ i + 1}}" [class.mdl-layout__tab-panel]="isTabViewMode()" [class.is-active]="tab.active" #tabSection>
+                        <div class="page-content full-height holder-view">
+                            <div class="holder-header">
+                                <div class="holder-header-title">
+                                    {{ tab.visualizer.getName() }}
+                                    <app-visualization-picker icon="expand_more" [hidden]="!tree" [identifier]="'header-switch-' + i" [visualizers]="visualizers" (select)="updateVisualization($event, tab)"></app-visualization-picker>
+                                </div>
+
+                                <i class="material-icons holder-header-close" (click)="closeTab(tab)">close</i>
+                            </div>
+                            <div class="holder-content">
+                                <app-window [tree]="tree" [visualizer]="tab.visualizer" [tab]="tab" (loading)="updateLoading($event)" (redrawAll)="redrawAllTabs()" [snackbar]="snackbar"></app-window>
+                            </div>
+                        </div>
+                    </section>
+                </ng-container>
+
+                <div class="holder-divider" #resizer [hidden]="!isSideBySideViewMode() || tabs?.length < 2" (mousedown)="startResize()"></div>
             </div>
             <div class="holder-sidebar" [hidden]="!tree">
                 <app-sidebar [tree]="tree" (reset)="restoreTree()"></app-sidebar>

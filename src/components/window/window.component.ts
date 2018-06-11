@@ -25,6 +25,7 @@ import {Palette} from "../../models/palette";
 import {Palettes} from "../../utils/palettes";
 import {VisualizerInput} from "../../interfaces/visualizer-input";
 import {GradientType} from "../../enums/gradient-type";
+import {ViewCubeComponent} from '../view-cube/view-cube.component';
 
 @Component({
     selector: 'app-window',
@@ -32,6 +33,7 @@ import {GradientType} from "../../enums/gradient-type";
 })
 export class WindowComponent implements OnInit {
     @ViewChild('canvas') private canvas: ElementRef;
+    @ViewChild(ViewCubeComponent) private viewCube: ViewCubeComponent;
     @Input('tree') private tree: Node;
     @Input('snackbar') private snackbar: any;
     @Input('visualizer') public visualizer: Visualizer;
@@ -40,7 +42,10 @@ export class WindowComponent implements OnInit {
     @Output() private loading: EventEmitter<boolean> = new EventEmitter<boolean>();
     @Output() private redrawAll: EventEmitter<void> = new EventEmitter<void>();
 
-    public form: Form | null;
+    public passKeyStrokeFunction = (keyEvent: KeyboardEvent) => this.keyEvent(keyEvent);
+    public passZoomFunction = (value: number) => this.zoomValue(value);
+
+    public form: Form|null;
 
     private context: CanvasRenderingContext2D;
     public tooltipActive: boolean = false;
@@ -131,25 +136,35 @@ export class WindowComponent implements OnInit {
         this.form = this.visualizer.getForm(this.formFactory);
         this.lastSettings = this.form != null ? this.form.getFormGroup().value : {};
         this.palette = Palettes.default;
+
         this.setHeight();
         this.startScene();
+    }
 
-        if (!this.gl.isDedicatedGPU()) {
+    /** @author Mathijs Boezer */
+    // called from AppComponent to prevent multiple calls
+    public checkGpu(): void {
+        if(!this.gl.isDedicatedGPU()) {
             this.snackbar.MaterialSnackbar.showSnackbar({
                 message: "You are using integrated graphics, this could diminish your experience.",
                 timeout: 1e8, // practically infinite
-                actionHandler: () => {
-                    this.snackbar.MaterialSnackbar.cleanup_();
-                }, // close on click
+                actionHandler: () => { this.snackbar.MaterialSnackbar.cleanup_(); }, // close on click
                 actionText: "CLOSE"
             });
         }
     }
+    /** @author Mathijs Boezer */
 
     public change(value: object) {
         this.lastSettings = value;
         this.computeScene();
     }
+
+    public zoomValue(value: number) {
+        this.gl.resetZoom();
+        this.scaleView(value);
+    }
+
 
     public setDarkmode(enabled: boolean): void {
         if(enabled){
@@ -159,7 +174,7 @@ export class WindowComponent implements OnInit {
         }
         this.render();
     }
-
+    
     public keyEvent(event: KeyboardEvent): void {
         switch(event.key){
         case 'q':
@@ -194,13 +209,11 @@ export class WindowComponent implements OnInit {
             break;
         case 'r':
         case 'R':
-            this.gl.scale(1 + this.DEFAULT_DS);
-            this.render();
+            this.scaleView(1 + this.DEFAULT_DS);
             break;
         case 'f':
         case 'F':
-            this.gl.scale(1 - this.DEFAULT_DS);
-            this.render();
+            this.scaleView(1 - this.DEFAULT_DS);
             break;
         case 't':
         case 'T':
@@ -235,6 +248,13 @@ export class WindowComponent implements OnInit {
                 this.selectBus.selectNode(node);
             }
         }
+    }
+
+    private scaleView(value: number) {
+        this.gl.scale(value);
+        this.render();
+
+        this.viewCube.setZoomLevel(this.gl.getZoom());
     }
 
     private clearClickTimer(): void {
@@ -286,8 +306,8 @@ export class WindowComponent implements OnInit {
         event.preventDefault();
         if (this.down) {
             this.gl.rotate(event.deltaY / this.ROTATION_NORMALISATION);
-        } else {
-            this.gl.scale(Math.max(0.1, 1.0 - (event.deltaY / this.ZOOM_NORMALISATION)));
+        }else{
+            this.scaleView(Math.max(0.1, 1.0 - (event.deltaY / this.ZOOM_NORMALISATION)));
         }
         this.render();
     }
@@ -325,6 +345,7 @@ export class WindowComponent implements OnInit {
                 this.computeColors();
             }
             this.startLoading();
+
             /** @author Bart Wesselink */
             this.workerManager.startWorker(this.gl, this.visualizer.draw, {
                 tree: this.tree,
@@ -393,7 +414,6 @@ export class WindowComponent implements OnInit {
 
     //initialise OpenGL
     private init(): void {
-
         var gl: WebGLRenderingContext = this.canvas.nativeElement.getContext('webgl', {preserveDrawingBuffer: true, depth: false, alpha: false});
 
         if(!gl){
@@ -428,8 +448,8 @@ export class WindowComponent implements OnInit {
     public setHeight(): void {
         // fix to set correct canvas size
         setTimeout(() => {
-            this.canvas.nativeElement.width = this.canvas.nativeElement.scrollWidth;
-            this.canvas.nativeElement.height = this.canvas.nativeElement.scrollHeight;
+            this.canvas.nativeElement.width = this.canvas.nativeElement.clientWidth;
+            this.canvas.nativeElement.height = this.canvas.nativeElement.clientHeight;
 
             this.gl.resize(this.canvas.nativeElement.width, this.canvas.nativeElement.height);
             this.redraw();
