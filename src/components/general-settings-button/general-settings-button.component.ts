@@ -81,7 +81,11 @@ export class GeneralSettingsButtonComponent implements OnInit {
     }
 
     public resetDefault(): void {
-        this.form.restoreDefault();
+        this.createForm();
+        this.updateValue();
+        setTimeout(() => {
+            this.formComponent.ngOnInit(); // rerun init
+        });
     }
     /** @end-author Mathijs Boezer */
 }
