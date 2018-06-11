@@ -9,9 +9,10 @@
             Using this tool you can tweak general visualization settings.
         </p>
 
-        <app-form [form]="form" (valueChanges)="updateValue()"></app-form>
+        <app-form #formComponent [form]="form" (valueChanges)="updateValue()"></app-form>
     </div>
     <div class="mdl-dialog__actions">
         <button type="button" class="mdl-button close" (click)="close()">Close</button>
+        <button type="button" class="mdl-button general-settings-reset-button" (click)="resetDefault()">Reset</button>
     </div>
 </dialog>

@@ -1,9 +1,9 @@
-<button id="visualization-picker"
-        class="mdl-button mdl-js-button mdl-button--icon">
-    <i class="material-icons">add</i>
+<button [id]="identifier"
+        class="mdl-button mdl-js-button mdl-button--icon" [mdl]>
+    <i class="material-icons">{{ icon }}</i>
 </button>
 
 <ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect"
-    for="visualization-picker">
+    [attr.for]="identifier" [mdl]>
     <li class="mdl-menu__item" *ngFor="let visualizer of visualizers;" (click)="selectItem(visualizer)">{{ visualizer.getName() }}</li>
 </ul>
