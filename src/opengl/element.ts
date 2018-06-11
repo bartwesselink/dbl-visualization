@@ -14,5 +14,6 @@ export interface Element{
     offset?: number;
     overlay?: Element;
     shader?: ShaderMode;
+    hidden?: boolean;
 }
 /** @end-author Roan Hofland */

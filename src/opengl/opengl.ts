@@ -30,6 +30,7 @@ export class OpenGL{
     private height: number;
     private shader: Shader;
     private index: number = 0;
+    private indices: number[] = null;
 
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
@@ -49,6 +50,12 @@ export class OpenGL{
     
     //optimises the given shader mode
     public optimizeFor(mode: ShaderMode): void {
+        if(this.indices == null){
+            this.indices = [this.arrays.length];
+            for(let i = 0; this.indices.length; i++){
+                this.indices[i] = i;
+            } 
+        }
         outer: for(this.index; this.index < this.arrays.length; this.index++){
             if(this.arrays[this.index].shader != mode){
                 for(let i = this.index + 1; i < this.arrays.length; i++){
@@ -56,12 +63,35 @@ export class OpenGL{
                         let tmp = this.arrays[this.index];
                         this.arrays[this.index] = this.arrays[i];
                         this.arrays[i] = tmp;
+                        let ti = this.indices[this.index];
+                        this.indices[this.index] = this.indices[i];
+                        this.indices[i] = ti;
                         continue outer;
                     }
                 }
                 break;
             }
         }
+    }
+    
+    //hides the element
+    public setHidden(id: number, hide: boolean): void{
+        this.getElem(id).hidden = hide;
+    }
+    
+    //set element color
+    public setLineColor(id: number, color: number[]): void{
+        this.getElem(id).overlay.color = OpenGL.toColor(color);
+    }
+    
+    //set element color
+    public setColor(id: number, color: number[]): void{
+        this.getElem(id).color = OpenGL.toColor(color);
+    }
+    
+    //get the referenced element
+    private getElem(id: number): Element{
+        return this.indices == null ? this.arrays[id] : this.arrays[this.indices[id]];
     }
     
     //optimize default draw calls
@@ -367,7 +397,7 @@ export class OpenGL{
                 
                 this.arrays.push(<CircularArcElement>{
                     pos: positionBuffer,
-                    color: this.toColor(color),
+                    color: OpenGL.toColor(color),
                     x: x,
                     y: y,
                     rad: radius,
@@ -393,7 +423,7 @@ export class OpenGL{
                 
                 this.arrays.push(<CircularArcElement>{
                     pos: positionBuffer,
-                    color: this.toColor(color),
+                    color: OpenGL.toColor(color),
                     x: x + dcx,
                     y: y + dcy,
                     cx: x,
@@ -442,7 +472,7 @@ export class OpenGL{
 
         this.arrays.push({
             pos: positionBuffer,
-            color: this.toColor(color),
+            color: OpenGL.toColor(color),
             mode: this.gl.LINE_STRIP,
             rad: rad,
             x: x,
@@ -488,7 +518,7 @@ export class OpenGL{
 
         this.arrays.push({
             pos: positionBuffer,
-            color: this.toColor(color),
+            color: OpenGL.toColor(color),
             mode: this.gl.LINE_STRIP,
             x: (maxx + minx) / 2,
             y: (maxy + miny) / 2,
@@ -592,7 +622,7 @@ export class OpenGL{
         if(!line){
             this.arrays.push({
                 pos: positionBuffer,
-                color: this.toColor(fillColor),
+                color: OpenGL.toColor(fillColor),
                 mode: this.gl.TRIANGLE_STRIP,
                 rad: rad,
                 span: span,
@@ -613,7 +643,7 @@ export class OpenGL{
                 
                 this.arrays.push({
                     pos: positionBuffer,
-                    color: this.toColor(fillColor),
+                    color: OpenGL.toColor(fillColor),
                     mode: this.gl.TRIANGLE_STRIP,
                     rad: rad,
                     span: span,
@@ -623,7 +653,7 @@ export class OpenGL{
                     overlay: {
                         pos: positionBuffer,
                         indices: indicesBuffer,
-                        color: this.toColor(lineColor),
+                        color: OpenGL.toColor(lineColor),
                         mode: this.gl.LINE_LOOP,
                         length: 4
                     }
@@ -631,7 +661,7 @@ export class OpenGL{
             }else{
                 this.arrays.push({
                     pos: positionBuffer,
-                    color: this.toColor(lineColor),
+                    color: OpenGL.toColor(lineColor),
                     mode: this.gl.LINE_LOOP,
                     rad: rad,
                     span: span,
@@ -685,7 +715,7 @@ export class OpenGL{
     //draws a circle
     public fillCircle(x: number, y: number, radius: number, fillColor: number[], precision: number = this.PRECISION): void {
         if(this.shader.isShaderEnabled(ShaderMode.FILL_CIRCLE)){
-            this.shaderCircle(x, y, radius, ShaderMode.FILL_CIRCLE, this.toColor(fillColor), null);
+            this.shaderCircle(x, y, radius, ShaderMode.FILL_CIRCLE, OpenGL.toColor(fillColor), null);
         }else{
             this.drawCircleImpl(x, y, radius, true, false, fillColor, null, precision);
         }
@@ -694,7 +724,7 @@ export class OpenGL{
     //draws a circle
     public drawCircle(x: number, y: number, radius: number, lineColor: number[], precision: number = this.PRECISION): void {
         if(this.shader.isShaderEnabled(ShaderMode.DRAW_CIRCLE)){
-            this.shaderCircle(x, y, radius, ShaderMode.DRAW_CIRCLE, this.toColor(lineColor), null);
+            this.shaderCircle(x, y, radius, ShaderMode.DRAW_CIRCLE, OpenGL.toColor(lineColor), null);
         }else{
             this.drawCircleImpl(x, y, radius, false, true, null, lineColor, precision);
         }
@@ -703,7 +733,7 @@ export class OpenGL{
     //draws a circle
     public fillLinedCircle(x: number, y: number, radius: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
         if(this.shader.isShaderEnabled(ShaderMode.LINED_CIRCLE)){
-            this.shaderCircle(x, y, radius, ShaderMode.LINED_CIRCLE, this.toColor(fillColor), this.toColor(lineColor));
+            this.shaderCircle(x, y, radius, ShaderMode.LINED_CIRCLE, OpenGL.toColor(fillColor), OpenGL.toColor(lineColor));
         }else{
             this.drawCircleImpl(x, y, radius, true, true, fillColor, lineColor, precision);
         }
@@ -780,7 +810,7 @@ export class OpenGL{
     //draws a ring slice
     public drawRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
         if(this.shader.isShaderEnabled(ShaderMode.DRAW_RING_SLICE)){
-            this.shaderRingSlice(x, y, near, far, start, end, this.toColor(color), null, ShaderMode.DRAW_RING_SLICE);
+            this.shaderRingSlice(x, y, near, far, start, end, OpenGL.toColor(color), null, ShaderMode.DRAW_RING_SLICE);
         }else{
             const pos = new Float32Array(Math.floor((end - start) / precision) * 4 + 4);
             var c = 0;
@@ -805,7 +835,7 @@ export class OpenGL{
             if(end - start > 90){
                 this.arrays.push({
                     pos: posBuffer,
-                    color: this.toColor(color),
+                    color: OpenGL.toColor(color),
                     mode: this.gl.LINE_LOOP,
                     x: x,
                     y: y,
@@ -818,7 +848,7 @@ export class OpenGL{
                 var dcy = far * 0.71 * Math.sin(start + ((end - start) / 2));
                 this.arrays.push({
                     pos: posBuffer,
-                    color: this.toColor(color),
+                    color: OpenGL.toColor(color),
                     mode: this.gl.LINE_LOOP,
                     x: x + dcx,
                     y: y + dcy,
@@ -833,7 +863,7 @@ export class OpenGL{
     //draws a ring slice
     public fillRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
         if(this.shader.isShaderEnabled(ShaderMode.FILL_RING_SLICE)){
-            this.shaderRingSlice(x, y, near, far, start, end, this.toColor(color), null, ShaderMode.FILL_RING_SLICE);
+            this.shaderRingSlice(x, y, near, far, start, end, OpenGL.toColor(color), null, ShaderMode.FILL_RING_SLICE);
         }else{
             this.fillRingSliceImpl(x, y, near, far, start, end, false, color, null, precision);
         }
@@ -842,7 +872,7 @@ export class OpenGL{
     //draws a ring slice
     public fillLinedRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
         if(this.shader.isShaderEnabled(ShaderMode.LINED_RING_SLICE)){
-            this.shaderRingSlice(x, y, near, far, start, end, this.toColor(fillColor), this.toColor(lineColor), ShaderMode.LINED_RING_SLICE);
+            this.shaderRingSlice(x, y, near, far, start, end, OpenGL.toColor(fillColor), OpenGL.toColor(lineColor), ShaderMode.LINED_RING_SLICE);
         }else{
             this.fillRingSliceImpl(x, y, near, far, start, end, true, fillColor, lineColor, precision);
         }
@@ -986,7 +1016,7 @@ export class OpenGL{
             if(end - start > 90){
                 this.arrays.push({
                     pos: posBuffer,
-                    color: this.toColor(fillColor),
+                    color: OpenGL.toColor(fillColor),
                     mode: this.gl.TRIANGLE_STRIP,
                     x: x,
                     y: y,
@@ -996,7 +1026,7 @@ export class OpenGL{
                     overlay: {
                         pos: posBuffer,
                         indices: indicesBuffer,
-                        color: this.toColor(lineColor),
+                        color: OpenGL.toColor(lineColor),
                         mode: this.gl.LINE_LOOP,
                         length: pos.length / 2
                     }
@@ -1006,7 +1036,7 @@ export class OpenGL{
                 var dcy = far * 0.71 * Math.sin(start + ((end - start) / 2));
                 this.arrays.push({
                     pos: posBuffer,
-                    color: this.toColor(fillColor),
+                    color: OpenGL.toColor(fillColor),
                     mode: this.gl.TRIANGLE_STRIP,
                     x: x + dcx,
                     y: y + dcy,
@@ -1016,7 +1046,7 @@ export class OpenGL{
                     overlay: {
                         pos: posBuffer,
                         indices: indicesBuffer,
-                        color: this.toColor(lineColor),
+                        color: OpenGL.toColor(lineColor),
                         mode: this.gl.LINE_LOOP,
                         length: pos.length / 2
                     }
@@ -1026,7 +1056,7 @@ export class OpenGL{
             if(end - start > 90){
                 this.arrays.push({
                     pos: posBuffer,
-                    color: this.toColor(fillColor),
+                    color: OpenGL.toColor(fillColor),
                     mode: this.gl.TRIANGLE_STRIP,
                     x: x,
                     y: y,
@@ -1039,7 +1069,7 @@ export class OpenGL{
                 var dcy = far * 0.71 * Math.sin(start + ((end - start) / 2));
                 this.arrays.push({
                     pos: posBuffer,
-                    color: this.toColor(fillColor),
+                    color: OpenGL.toColor(fillColor),
                     mode: this.gl.TRIANGLE_STRIP,
                     x: x + dcx,
                     y: y + dcy,
@@ -1054,7 +1084,7 @@ export class OpenGL{
     //draws a circular slice  
     public drawCircleSlice(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
         if(this.shader.isShaderEnabled(ShaderMode.DRAW_CIRCLE_SLICE)){
-            this.shaderCircleSlice(x, y, radius, start, end, ShaderMode.DRAW_CIRCLE_SLICE, this.toColor(color), null);
+            this.shaderCircleSlice(x, y, radius, start, end, ShaderMode.DRAW_CIRCLE_SLICE, OpenGL.toColor(color), null);
         }else{
             this.drawCircleSliceImpl(x, y, radius, start, end, false, true, null, color, precision);
         }
@@ -1063,7 +1093,7 @@ export class OpenGL{
     //draws a circular slice
     public fillCircleSlice(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
         if(this.shader.isShaderEnabled(ShaderMode.FILL_CIRCLE_SLICE)){
-            this.shaderCircleSlice(x, y, radius, start, end, ShaderMode.FILL_CIRCLE_SLICE, this.toColor(color), null);
+            this.shaderCircleSlice(x, y, radius, start, end, ShaderMode.FILL_CIRCLE_SLICE, OpenGL.toColor(color), null);
         }else{
             this.drawCircleSliceImpl(x, y, radius, start, end, true, false, color, null, precision);
         }
@@ -1072,7 +1102,7 @@ export class OpenGL{
     //draws a circular slice
     public fillLinedCircleSlice(x: number, y: number, radius: number, start: number, end: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
         if(this.shader.isShaderEnabled(ShaderMode.LINED_CIRCLE_SLICE)){
-            this.shaderCircleSlice(x, y, radius, start, end, ShaderMode.LINED_CIRCLE_SLICE, this.toColor(fillColor), this.toColor(lineColor));
+            this.shaderCircleSlice(x, y, radius, start, end, ShaderMode.LINED_CIRCLE_SLICE, OpenGL.toColor(fillColor), OpenGL.toColor(lineColor));
         }else{
             this.drawCircleSliceImpl(x, y, radius, start, end, true, true, fillColor, lineColor, precision);
         }
@@ -1204,7 +1234,7 @@ export class OpenGL{
         if(!(fill && line)){
             this.arrays.push({
                 pos: posBuffer,
-                color: this.toColor(line ? lineColor : fillColor),
+                color: OpenGL.toColor(line ? lineColor : fillColor),
                 mode: fill ? this.gl.TRIANGLE_FAN : this.gl.LINE_LOOP,
                 x: x,
                 y: y,
@@ -1219,7 +1249,7 @@ export class OpenGL{
 
             this.arrays.push({
                 pos: posBuffer,
-                color: this.toColor(fillColor),
+                color: OpenGL.toColor(fillColor),
                 mode: this.gl.TRIANGLE_FAN,
                 x: x,
                 y: y,
@@ -1228,7 +1258,7 @@ export class OpenGL{
                 length: pos.length / 2,
                 overlay: {
                     pos: posBuffer,
-                    color: this.toColor(lineColor),
+                    color: OpenGL.toColor(lineColor),
                     mode: this.gl.LINE_LOOP,
                     length: pos.length / 2 - offset,
                     offset: offset * 4
@@ -1324,7 +1354,7 @@ export class OpenGL{
     }
 
     //creates a color from the given array
-    private toColor(array: number[]): Float32Array{
+    private static toColor(array: number[]): Float32Array{
         while(array.length > 3){
             array.pop();
         }
