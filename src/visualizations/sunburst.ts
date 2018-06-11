@@ -4,66 +4,64 @@ import {FormFactory} from '../form/form-factory';
 import {Draw} from '../interfaces/draw';
 import {VisualizerInput} from '../interfaces/visualizer-input';
 import {Node} from '../models/node';
+import {Palette} from '../models/palette';
 
 export class Sunburst implements Visualizer {
     /** @author Bart Wesselink */
     public draw(input: VisualizerInput): Draw[] {
         const tree = input.tree;
         const draws: Draw[] = [];
+        const palette: Palette = input.palette;
 
-        let startColor = [52 / 255, 99 / 255, 10 / 255, 1];
-        let endColor = [255 / 255, 255 / 255, 255 / 255, 1];
+        let color: number[];
         let baseRadius = 60;
         let scaleRadius = 0.9;
         let radiusMargin = 4;
-        let sliceMargin = 2;
+        let sliceMargin = 0;
 
-        const getColorAtPercentageOfTwoColors = (color1: number[], color2: number[], percentage: number) => {
-            const lowerPercentage = (100 - percentage) / 100;
-            const upperPercentage = percentage / 100;
+        const generate = (node: Node, startAngle: number, endAngle: number, near: number, innerRadius: number, depth: number = 1, isLastChild: boolean = true, isSelected: boolean = false) => {
+            if (tree.selected === true || isSelected) {
+                isSelected = true;
+                color = palette.gradientColorMapSelected[node.maxDepth][node.depth];
+            } else {
+                color = palette.gradientColorMap[node.maxDepth][node.depth];
+            }
 
-            return [
-                Math.min(1, color1[0] * lowerPercentage + color2[0] * upperPercentage),
-                Math.min(1, color1[1] * lowerPercentage + color2[1] * upperPercentage),
-                Math.min(1, color1[2] * lowerPercentage + color2[2] * upperPercentage),
-                1,
-            ];
-        };
-
-        const generate = (node: Node, startAngle: number, endAngle: number,near: number, innerRadius: number, color: number[], depth: number = 0) => {
             let far = near + innerRadius;
             let drawnEndAngle = endAngle;
 
-            if (depth !== 0) {
-                near += radiusMargin;
+            near += radiusMargin; // add a small margin
+
+            if (!isLastChild) {
                 drawnEndAngle -= sliceMargin;
             }
 
-            draws.push({ type: 17 /** FillRingSlice **/, identifier: node.identifier, options: { x: 0, y: 0, near: near, far: far, start: startAngle, end: drawnEndAngle, color }});
+            if (depth === 2) {
+                console.log(Math.round(startAngle), Math.round(drawnEndAngle), near, far);
+            }
+            draws.push({ type: 17 /** FillRingSlice **/, identifier: node.identifier, options: { x: 0, y: 0, near: near, far: far, start: Math.round(startAngle), end: Math.round(drawnEndAngle), color }});
 
             let newStartAngle = startAngle;
 
-            const nodeDepth = tree.subTreeDepth - node.subTreeDepth;
-            const depthFactor = nodeDepth / tree.subTreeDepth;
-
-            let newColor = getColorAtPercentageOfTwoColors(startColor, endColor, depthFactor);
-
+            let childCounter = 0;
             for (const child of node.children) {
+                childCounter++;
+
                 // calculate the fraction of the ring slice. Minus one is to extract the root of the current subtree
                 const factor = child.subTreeSize / (node.subTreeSize - 1);
+
 
                 // convert fraction to an angle, and increase the startAngle
                 const angle = (endAngle - startAngle) * factor + newStartAngle;
 
-                generate(child, newStartAngle, angle, far, innerRadius * scaleRadius, newColor, depth + 1);
+                generate(child, newStartAngle, angle, far, innerRadius * scaleRadius, depth + 1, childCounter === node.children.length, isSelected);
 
                 // iterate to the the next angle
                 newStartAngle = angle;
-
             }
         };
 
-        generate(tree, 0, 360, 0, baseRadius, startColor);
+        generate(tree, 0, 360, 0, baseRadius);
 
         return draws;
     }

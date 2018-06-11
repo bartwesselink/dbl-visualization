@@ -36,16 +36,12 @@ export class AppComponent implements OnInit {
 
     private parser: NewickParser;
     public darkMode = false;
+
     constructor(private settingsBus: SettingsBus, private selectBus: SelectBus, private subtreeBus: SubtreeBus) {
         this.createVisualizers();
 
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
             this.darkMode = settings.darkMode;
-            for (const tab of this.tabs) {
-                if (tab.window) {
-                    tab.window.setDarkmode(this.darkMode);
-                }
-            }
             this.selectBus.interactionOptions = settings.interactionSettings;
         });
 
@@ -107,7 +103,8 @@ export class AppComponent implements OnInit {
 
         if (tab.window) {
             setTimeout(() => {
-                tab.window.render();
+                tab.window.computeScene();
+                // tab.window.render();
             }, 100);
 
             this.resizeActiveTab();
@@ -156,12 +153,17 @@ export class AppComponent implements OnInit {
         });
     }
 
-    public async redrawAllTabs(): Promise<void> {
-        for (const tab of this.tabs.slice().sort((a, b) => a === this.activeTab ? 0 : 1)) {
-            if (tab.window) {
+    public async redrawAllTabs(): Promise<void> { // We generally only want to recompute the tab that is active.
+        for (const tab of this.tabs) {
+            if (tab.active && tab.window) {
                 await tab.window.computeScene();
             }
         }
+        // for (const tab of this.tabs.slice().sort((a, b) => a === this.activeTab ? 0 : 1)) {
+        //     if (tab.window) {
+        //         await tab.window.computeScene();
+        //     }
+        // }
     }
 
     private addTab(visualizer: Visualizer) {
