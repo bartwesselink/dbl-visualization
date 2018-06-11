@@ -91,7 +91,7 @@ export class OpenGL{
     
     //get the referenced element
     private getElem(id: number): Element{
-        return this.indices == null ? this.arrays[id] : this.arrays[this.indices[id]];
+        return this.indices == null ? this.arrays[id - 1] : this.arrays[this.indices[id - 1]];
     }
     
     //optimize default draw calls
@@ -359,7 +359,7 @@ export class OpenGL{
     }
     
     //draws a partial ellipsoid
-    public drawEllipsoidalArc(x: number, y: number, radx: number, rady: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
+    public drawEllipsoidalArc(x: number, y: number, radx: number, rady: number, start: number, end: number, color: number[], precision: number = this.PRECISION): number {
         const pos = new Float32Array(Math.floor((end - start) / precision) * 2 + 2);
         for(var i = 0; end > start + precision * i; i++){
             pos[i * 2] = (x + radx * Math.cos((start + precision * i) * Matrix.oneDeg)) / this.HALFWIDTH
@@ -369,17 +369,17 @@ export class OpenGL{
         pos[i * 2 + 1] = (y + rady * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT
         
         if(end - start > 90){
-            this.drawArcImpl(pos, color, x, y, Math.max(radx, rady), 2 * Math.max(radx, rady));
+            return this.drawArcImpl(pos, color, x, y, Math.max(radx, rady), 2 * Math.max(radx, rady));
         }else{
             var dcx = ((pos[0] + pos[pos.length - 2]) * this.HALFWIDTH) / 2;
             var dcy = ((pos[1] + pos[pos.length - 1]) * this.HALFHEIGHT) / 2;
             var dist = Math.hypot(pos[0] - dcx, pos[1] - dcy);
-            this.drawArcImpl(pos, color, dcx, dcy, dist, 2 * dist);
+            return this.drawArcImpl(pos, color, dcx, dcy, dist, 2 * dist);
         }
     }
     
     //draws a partial circle
-    public drawCircularArc(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
+    public drawCircularArc(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): number {
         if(this.shader.isShaderEnabled(ShaderMode.CIRCULAR_ARC)){
             var positionBuffer = this.gl.createBuffer();
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
@@ -395,7 +395,9 @@ export class OpenGL{
                 pos[6] = (x - radius * 1.001) / this.HALFWIDTH;
                 pos[7] = (y - radius * 1.001) / this.HALFHEIGHT;
                 
-                this.arrays.push(<CircularArcElement>{
+                this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
+                
+                return this.arrays.push(<CircularArcElement>{
                     pos: positionBuffer,
                     color: OpenGL.toColor(color),
                     x: x,
@@ -421,7 +423,9 @@ export class OpenGL{
                 pos[6] = (x + dcx - radius * 0.71 * 1.001) / this.HALFWIDTH;
                 pos[7] = (y + dcy - radius * 0.71 * 1.001) / this.HALFHEIGHT;
                 
-                this.arrays.push(<CircularArcElement>{
+                this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
+                
+                return this.arrays.push(<CircularArcElement>{
                     pos: positionBuffer,
                     color: OpenGL.toColor(color),
                     x: x + dcx,
@@ -436,9 +440,7 @@ export class OpenGL{
                     end: end * Matrix.oneDeg,
                     shader: ShaderMode.CIRCULAR_ARC
                 });
-            }   
-            
-            this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
+            }
         }else{
             const pos = new Float32Array(Math.floor((end - start) / precision) * 2 + 2);
             var loc = [x + radius, y];
@@ -455,22 +457,22 @@ export class OpenGL{
             pos[i * 2 + 1] = loc[1] / this.HALFHEIGHT;
             
             if(end - start > 90){
-                this.drawArcImpl(pos, color, x, y, radius, 2 * radius);
+                return this.drawArcImpl(pos, color, x, y, radius, 2 * radius);
             }else{
                 var dcx = radius * 0.71 * Math.cos(start + ((end - start) / 2));
                 var dcy = radius * 0.71 * Math.sin(start + ((end - start) / 2));
-                this.drawArcImpl(pos, color, x + dcx, y + dcy, radius * 0.71, radius * 1.42);
+                return this.drawArcImpl(pos, color, x + dcx, y + dcy, radius * 0.71, radius * 1.42);
             }
         }
     }
     
     //draws an arc
-    private drawArcImpl(pos: Float32Array, color: number[], x: number, y: number, rad: number, span: number): void {
+    private drawArcImpl(pos: Float32Array, color: number[], x: number, y: number, rad: number, span: number): number {
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
 
-        this.arrays.push({
+        return this.arrays.push({
             pos: positionBuffer,
             color: OpenGL.toColor(color),
             mode: this.gl.LINE_STRIP,
@@ -483,12 +485,12 @@ export class OpenGL{
     }
     
     //draws a straight line
-    public drawLine(x1: number, y1: number, x2: number, y2: number, color: number[]): void {
-        this.drawPolyLine([x1, x2], [y1, y2], color);    
+    public drawLine(x1: number, y1: number, x2: number, y2: number, color: number[]): number {
+        return this.drawPolyLine([x1, x2], [y1, y2], color);    
     }
     
     //draws multiple continues lines
-    public drawPolyLine(x: number[], y: number[], color: number[]): void {   
+    public drawPolyLine(x: number[], y: number[], color: number[]): number {   
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         const pos = new Float32Array(x.length + y.length);
@@ -516,7 +518,7 @@ export class OpenGL{
         }
         this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
 
-        this.arrays.push({
+        return this.arrays.push({
             pos: positionBuffer,
             color: OpenGL.toColor(color),
             mode: this.gl.LINE_STRIP,
@@ -529,37 +531,37 @@ export class OpenGL{
     }
     
     //fill a rotated quad
-    public fillRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): void {
-        this.renderRotatedQuad(x,             y,
-                               x - width / 2, y + height / 2,
-                               x + width / 2, y + height / 2,
-                               x - width / 2, y - height / 2,
-                               x + width / 2, y - height / 2,
-                               Math.hypot(width, height) / 2, Math.min(width, height), rotation, true, false, color, null);
+    public fillRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): number {
+        return this.renderRotatedQuad(x,             y,
+                                      x - width / 2, y + height / 2,
+                                      x + width / 2, y + height / 2,
+                                      x - width / 2, y - height / 2,
+                                      x + width / 2, y - height / 2,
+                                      Math.hypot(width, height) / 2, Math.min(width, height), rotation, true, false, color, null);
     }
     
      //draw a rotated quad
-    public drawRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): void {
-        this.renderRotatedQuad(x,             y,
-                               x - width / 2, y + height / 2,
-                               x + width / 2, y + height / 2,
-                               x + width / 2, y - height / 2,
-                               x - width / 2, y - height / 2,
-                               Math.hypot(width, height) / 2, Math.min(width, height), rotation, false, true, null, color);
+    public drawRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, color: number[]): number {
+        return this.renderRotatedQuad(x,             y,
+                                      x - width / 2, y + height / 2,
+                                      x + width / 2, y + height / 2,
+                                      x + width / 2, y - height / 2,
+                                      x - width / 2, y - height / 2,
+                                      Math.hypot(width, height) / 2, Math.min(width, height), rotation, false, true, null, color);
     }
     
      //render a rotated quad
-    public fillLinedRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, fillColor: number[], lineColor: number[]): void {
-        this.renderRotatedQuad(x,             y,
-                               x - width / 2, y + height / 2,
-                               x + width / 2, y + height / 2,
-                               x - width / 2, y - height / 2,
-                               x + width / 2, y - height / 2,
-                               Math.hypot(width, height) / 2, Math.min(width, height), rotation, true, true, fillColor, lineColor);
+    public fillLinedRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, fillColor: number[], lineColor: number[]): number {
+        return this.renderRotatedQuad(x,             y,
+                                      x - width / 2, y + height / 2,
+                                      x + width / 2, y + height / 2,
+                                      x - width / 2, y - height / 2,
+                                      x + width / 2, y - height / 2,
+                                      Math.hypot(width, height) / 2, Math.min(width, height), rotation, true, true, fillColor, lineColor);
     }
     
     //renders a rotated quad
-    private renderRotatedQuad(x: number, y: number, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, size: number, span: number, rotation: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
+    private renderRotatedQuad(x: number, y: number, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, size: number, span: number, rotation: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): number {
         //a---------b
         //|   x,y   |
         //c---------d
@@ -569,42 +571,42 @@ export class OpenGL{
         var c = Matrix.rotateVector2D(center, [x3, y3], rotation);
         var d = Matrix.rotateVector2D(center, [x4, y4], rotation);
         
-        this.drawQuadImpl(b[0], b[1],
-                          a[0], a[1],
-                          d[0], d[1],
-                          c[0], c[1],
-                          x, y, size, span, fill, line, fillColor, lineColor);
+        return this.drawQuadImpl(b[0], b[1],
+                                 a[0], a[1],
+                                 d[0], d[1],
+                                 c[0], c[1],
+                                 x, y, size, span, fill, line, fillColor, lineColor);
     }
     
     //fill an axis aligned quad
-    public fillAAQuad(x: number, y: number, width: number, height: number, color: number[]): void {
-        this.drawQuadImpl(x + width, y + height,
-                          x,         y + height,
-                          x + width, y,
-                          x,         y,
-                          x + width / 2, y + height / 2, Math.hypot(width, height) / 2, Math.min(width, height), true, false, color, null);
+    public fillAAQuad(x: number, y: number, width: number, height: number, color: number[]): number {
+        return this.drawQuadImpl(x + width, y + height,
+                                 x,         y + height,
+                                 x + width, y,
+                                 x,         y,
+                                 x + width / 2, y + height / 2, Math.hypot(width, height) / 2, Math.min(width, height), true, false, color, null);
     }
     
     //draw an axis aligned quad
-    public drawAAQuad(x: number, y: number, width: number, height: number, color: number[]): void {
-       this.drawQuadImpl(x + width, y + height,
-                         x,         y + height,
-                         x,         y,
-                         x + width, y,
-                         x + width / 2, y + height / 2, Math.hypot(width, height) / 2, Math.min(width, height), false, true, null, color);
+    public drawAAQuad(x: number, y: number, width: number, height: number, color: number[]): number {
+       return this.drawQuadImpl(x + width, y + height,
+                                x,         y + height,
+                                x,         y,
+                                x + width, y,
+                                x + width / 2, y + height / 2, Math.hypot(width, height) / 2, Math.min(width, height), false, true, null, color);
     }
     
     //render an axis aligned quad
-    public fillLinedAAQuad(x: number, y: number, width: number, height: number, fillColor: number[], lineColor: number[]): void {
-        this.drawQuadImpl(x + width, y + height,
-                          x,         y + height,
-                          x + width, y,
-                          x,         y,
-                          x + width / 2, y + height / 2, Math.hypot(width, height) / 2, Math.min(width, height), true, true, fillColor, lineColor);
+    public fillLinedAAQuad(x: number, y: number, width: number, height: number, fillColor: number[], lineColor: number[]): number {
+        return this.drawQuadImpl(x + width, y + height,
+                                 x,         y + height,
+                                 x + width, y,
+                                 x,         y,
+                                 x + width / 2, y + height / 2, Math.hypot(width, height) / 2, Math.min(width, height), true, true, fillColor, lineColor);
     }
         
     //draw quad implementation
-    private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, x: number, y: number, rad: number, span: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): void {
+    private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, x: number, y: number, rad: number, span: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): number {
         //position
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
@@ -620,7 +622,7 @@ export class OpenGL{
         this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
         
         if(!line){
-            this.arrays.push({
+            return this.arrays.push({
                 pos: positionBuffer,
                 color: OpenGL.toColor(fillColor),
                 mode: this.gl.TRIANGLE_STRIP,
@@ -641,7 +643,7 @@ export class OpenGL{
                 this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
                 this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint8Array([0, 2, 3, 1]), this.gl.STATIC_DRAW);
                 
-                this.arrays.push({
+                return this.arrays.push({
                     pos: positionBuffer,
                     color: OpenGL.toColor(fillColor),
                     mode: this.gl.TRIANGLE_STRIP,
@@ -659,7 +661,7 @@ export class OpenGL{
                     }
                 });
             }else{
-                this.arrays.push({
+                return this.arrays.push({
                     pos: positionBuffer,
                     color: OpenGL.toColor(lineColor),
                     mode: this.gl.LINE_LOOP,
@@ -674,22 +676,22 @@ export class OpenGL{
     }
     
     //draw an ellipsoid         
-    public fillEllipsoid(x: number, y: number, radx: number, rady: number, rotation: number, fillColor: number[], precision: number = this.PRECISION): void {
-        this.drawEllipsoidImpl(x, y, radx, rady, rotation, true, false, fillColor, null, precision);
+    public fillEllipsoid(x: number, y: number, radx: number, rady: number, rotation: number, fillColor: number[], precision: number = this.PRECISION): number {
+        return this.drawEllipsoidImpl(x, y, radx, rady, rotation, true, false, fillColor, null, precision);
     }
     
     //draw an ellipsoid         
-    public drawEllipsoid(x: number, y: number, radx: number, rady: number, rotation: number, lineColor: number[], precision: number = this.PRECISION): void {
-        this.drawEllipsoidImpl(x, y, radx, rady, rotation, false, true, null, lineColor, precision);
+    public drawEllipsoid(x: number, y: number, radx: number, rady: number, rotation: number, lineColor: number[], precision: number = this.PRECISION): number {
+        return this.drawEllipsoidImpl(x, y, radx, rady, rotation, false, true, null, lineColor, precision);
     }
           
     //draw an ellipsoid         
-    public fillLinedEllipsoid(x: number, y: number, radx: number, rady: number, rotation: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
-        this.drawEllipsoidImpl(x, y, radx, rady, rotation, true, true, fillColor, lineColor, precision);
+    public fillLinedEllipsoid(x: number, y: number, radx: number, rady: number, rotation: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): number {
+        return this.drawEllipsoidImpl(x, y, radx, rady, rotation, true, true, fillColor, lineColor, precision);
     }
     
     //renders an ellipsoid
-    private drawEllipsoidImpl(x: number, y: number, radx: number, rady: number, rotation: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
+    private drawEllipsoidImpl(x: number, y: number, radx: number, rady: number, rotation: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): number {
         var pos;
         var i = 0;
         if(fill){
@@ -709,38 +711,38 @@ export class OpenGL{
             pos[i * 2 + 1] = loc[1] / this.HALFHEIGHT;
         }
             
-        this.renderEllipsoidImpl(pos, x, y, Math.max(radx, rady), 2 * Math.max(radx, rady), fill, line, lineColor, fillColor, 2);
+        return this.renderEllipsoidImpl(pos, x, y, Math.max(radx, rady), 2 * Math.max(radx, rady), fill, line, lineColor, fillColor, 2);
     }
     
     //draws a circle
-    public fillCircle(x: number, y: number, radius: number, fillColor: number[], precision: number = this.PRECISION): void {
+    public fillCircle(x: number, y: number, radius: number, fillColor: number[], precision: number = this.PRECISION): number {
         if(this.shader.isShaderEnabled(ShaderMode.FILL_CIRCLE)){
-            this.shaderCircle(x, y, radius, ShaderMode.FILL_CIRCLE, OpenGL.toColor(fillColor), null);
+            return this.shaderCircle(x, y, radius, ShaderMode.FILL_CIRCLE, OpenGL.toColor(fillColor), null);
         }else{
-            this.drawCircleImpl(x, y, radius, true, false, fillColor, null, precision);
+            return this.drawCircleImpl(x, y, radius, true, false, fillColor, null, precision);
         }
     }
             
     //draws a circle
-    public drawCircle(x: number, y: number, radius: number, lineColor: number[], precision: number = this.PRECISION): void {
+    public drawCircle(x: number, y: number, radius: number, lineColor: number[], precision: number = this.PRECISION): number {
         if(this.shader.isShaderEnabled(ShaderMode.DRAW_CIRCLE)){
-            this.shaderCircle(x, y, radius, ShaderMode.DRAW_CIRCLE, OpenGL.toColor(lineColor), null);
+            return this.shaderCircle(x, y, radius, ShaderMode.DRAW_CIRCLE, OpenGL.toColor(lineColor), null);
         }else{
-            this.drawCircleImpl(x, y, radius, false, true, null, lineColor, precision);
+            return this.drawCircleImpl(x, y, radius, false, true, null, lineColor, precision);
         }
     }
                     
     //draws a circle
-    public fillLinedCircle(x: number, y: number, radius: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
+    public fillLinedCircle(x: number, y: number, radius: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): number {
         if(this.shader.isShaderEnabled(ShaderMode.LINED_CIRCLE)){
-            this.shaderCircle(x, y, radius, ShaderMode.LINED_CIRCLE, OpenGL.toColor(fillColor), OpenGL.toColor(lineColor));
+            return this.shaderCircle(x, y, radius, ShaderMode.LINED_CIRCLE, OpenGL.toColor(fillColor), OpenGL.toColor(lineColor));
         }else{
-            this.drawCircleImpl(x, y, radius, true, true, fillColor, lineColor, precision);
+            return this.drawCircleImpl(x, y, radius, true, true, fillColor, lineColor, precision);
         }
     }
     
     //renders a circle
-    private drawCircleImpl(x: number, y: number, radius: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
+    private drawCircleImpl(x: number, y: number, radius: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): number {
         var pos;
         var i = 0;
         if(fill){
@@ -761,11 +763,11 @@ export class OpenGL{
             pos[i * 2 + 1] = loc[1] / this.HALFHEIGHT;
         }
             
-        this.renderEllipsoidImpl(pos, x, y, radius, 2 * radius, fill, line, lineColor, fillColor, 2);
+        return this.renderEllipsoidImpl(pos, x, y, radius, 2 * radius, fill, line, lineColor, fillColor, 2);
     }
     
     //shader circle buffer subroutine
-    private shaderCircle(x: number, y: number, radius: number, mode: ShaderMode, mainColor: Float32Array, extraColor: Float32Array): void{
+    private shaderCircle(x: number, y: number, radius: number, mode: ShaderMode, mainColor: Float32Array, extraColor: Float32Array): number {
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         const pos = new Float32Array(8);
@@ -780,7 +782,7 @@ export class OpenGL{
         this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
 
         if(mode != ShaderMode.LINED_CIRCLE){
-            this.arrays.push(<CircleElement>{
+            return this.arrays.push(<CircleElement>{
                 pos: positionBuffer,
                 color: mainColor,
                 x: x,
@@ -792,7 +794,7 @@ export class OpenGL{
                 shader: mode
             });
         }else{
-            this.arrays.push(<CircleElement>{
+            return this.arrays.push(<CircleElement>{
                 pos: positionBuffer,
                 color: mainColor,
                 lineColor: extraColor,
@@ -808,9 +810,9 @@ export class OpenGL{
     }
     
     //draws a ring slice
-    public drawRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
+    public drawRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, color: number[], precision: number = this.PRECISION): number {
         if(this.shader.isShaderEnabled(ShaderMode.DRAW_RING_SLICE)){
-            this.shaderRingSlice(x, y, near, far, start, end, OpenGL.toColor(color), null, ShaderMode.DRAW_RING_SLICE);
+            return this.shaderRingSlice(x, y, near, far, start, end, OpenGL.toColor(color), null, ShaderMode.DRAW_RING_SLICE);
         }else{
             const pos = new Float32Array(Math.floor((end - start) / precision) * 4 + 4);
             var c = 0;
@@ -827,13 +829,12 @@ export class OpenGL{
             pos[c * 2] = (x + near * Math.cos(start * Matrix.oneDeg)) / this.HALFWIDTH;
             pos[c++ * 2 + 1] = (y + near * Math.sin(start * Matrix.oneDeg)) / this.HALFHEIGHT;
                 
-            console.log(pos)
             var posBuffer = this.gl.createBuffer();
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
             this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
             
             if(end - start > 90){
-                this.arrays.push({
+                return this.arrays.push({
                     pos: posBuffer,
                     color: OpenGL.toColor(color),
                     mode: this.gl.LINE_LOOP,
@@ -846,7 +847,7 @@ export class OpenGL{
             }else{
                 var dcx = far * 0.71 * Math.cos(start + ((end - start) / 2));
                 var dcy = far * 0.71 * Math.sin(start + ((end - start) / 2));
-                this.arrays.push({
+                return this.arrays.push({
                     pos: posBuffer,
                     color: OpenGL.toColor(color),
                     mode: this.gl.LINE_LOOP,
@@ -861,25 +862,25 @@ export class OpenGL{
     }
     
     //draws a ring slice
-    public fillRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
+    public fillRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, color: number[], precision: number = this.PRECISION): number {
         if(this.shader.isShaderEnabled(ShaderMode.FILL_RING_SLICE)){
-            this.shaderRingSlice(x, y, near, far, start, end, OpenGL.toColor(color), null, ShaderMode.FILL_RING_SLICE);
+            return this.shaderRingSlice(x, y, near, far, start, end, OpenGL.toColor(color), null, ShaderMode.FILL_RING_SLICE);
         }else{
-            this.fillRingSliceImpl(x, y, near, far, start, end, false, color, null, precision);
+            return this.fillRingSliceImpl(x, y, near, far, start, end, false, color, null, precision);
         }
     }
     
     //draws a ring slice
-    public fillLinedRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
+    public fillLinedRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): number {
         if(this.shader.isShaderEnabled(ShaderMode.LINED_RING_SLICE)){
-            this.shaderRingSlice(x, y, near, far, start, end, OpenGL.toColor(fillColor), OpenGL.toColor(lineColor), ShaderMode.LINED_RING_SLICE);
+            return this.shaderRingSlice(x, y, near, far, start, end, OpenGL.toColor(fillColor), OpenGL.toColor(lineColor), ShaderMode.LINED_RING_SLICE);
         }else{
-            this.fillRingSliceImpl(x, y, near, far, start, end, true, fillColor, lineColor, precision);
+            return this.fillRingSliceImpl(x, y, near, far, start, end, true, fillColor, lineColor, precision);
         }
     }
     
     //shader ring slice buffer subroutine
-    private shaderRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, mainColor: Float32Array, extraColor: Float32Array, mode: ShaderMode): void{
+    private shaderRingSlice(x: number, y: number, near: number, far: number, start: number, end: number, mainColor: Float32Array, extraColor: Float32Array, mode: ShaderMode): number{
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         const pos = new Float32Array(8);
@@ -894,8 +895,10 @@ export class OpenGL{
             pos[6] = (x - far * 1.001) / this.HALFWIDTH;
             pos[7] = (y - far * 1.001) / this.HALFHEIGHT;
             
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
+            
             if(mode != ShaderMode.LINED_RING_SLICE){
-                this.arrays.push(<RingSliceElement>{
+                return this.arrays.push(<RingSliceElement>{
                     pos: positionBuffer,
                     color: mainColor,
                     x: x,
@@ -910,7 +913,7 @@ export class OpenGL{
                     shader: mode
                 });
             }else{
-                this.arrays.push(<RingSliceElement>{
+                return this.arrays.push(<RingSliceElement>{
                     pos: positionBuffer,
                     color: mainColor,
                     lineColor: extraColor,
@@ -939,8 +942,10 @@ export class OpenGL{
             pos[6] = (x + dcx - far * 0.71 * 1.001) / this.HALFWIDTH;
             pos[7] = (y + dcy - far * 0.71 * 1.001) / this.HALFHEIGHT;
             
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
+            
             if(mode != ShaderMode.LINED_CIRCLE_SLICE){
-                this.arrays.push(<RingSliceElement>{
+                return this.arrays.push(<RingSliceElement>{
                     pos: positionBuffer,
                     color: mainColor,
                     x: x + dcx,
@@ -957,7 +962,7 @@ export class OpenGL{
                     shader: mode
                 });
             }else{
-                this.arrays.push(<RingSliceElement>{
+                return this.arrays.push(<RingSliceElement>{
                     pos: positionBuffer,
                     color: mainColor,
                     lineColor: extraColor,
@@ -976,12 +981,10 @@ export class OpenGL{
                 });
             }
         }    
-        
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
     }
     
     //draws a ring slice
-    private fillRingSliceImpl(x: number, y: number, near: number, far: number, start: number, end: number, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
+    private fillRingSliceImpl(x: number, y: number, near: number, far: number, start: number, end: number, line: boolean, fillColor: number[], lineColor: number[], precision: number): number {
         const pos = new Float32Array(Math.floor((end - start) / precision) * 4 + 4);
         for(var i = 0; end > start + i * precision; i++){
             pos[i * 4] = (x + far * Math.cos((start + i * precision) * Matrix.oneDeg)) / this.HALFWIDTH;
@@ -1014,7 +1017,7 @@ export class OpenGL{
             this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, indices, this.gl.STATIC_DRAW);
         
             if(end - start > 90){
-                this.arrays.push({
+                return this.arrays.push({
                     pos: posBuffer,
                     color: OpenGL.toColor(fillColor),
                     mode: this.gl.TRIANGLE_STRIP,
@@ -1034,7 +1037,7 @@ export class OpenGL{
             }else{
                 var dcx = far * 0.71 * Math.cos(start + ((end - start) / 2));
                 var dcy = far * 0.71 * Math.sin(start + ((end - start) / 2));
-                this.arrays.push({
+                return this.arrays.push({
                     pos: posBuffer,
                     color: OpenGL.toColor(fillColor),
                     mode: this.gl.TRIANGLE_STRIP,
@@ -1054,7 +1057,7 @@ export class OpenGL{
             }
         }else{
             if(end - start > 90){
-                this.arrays.push({
+                return this.arrays.push({
                     pos: posBuffer,
                     color: OpenGL.toColor(fillColor),
                     mode: this.gl.TRIANGLE_STRIP,
@@ -1067,7 +1070,7 @@ export class OpenGL{
             }else{
                 var dcx = far * 0.71 * Math.cos(start + ((end - start) / 2));
                 var dcy = far * 0.71 * Math.sin(start + ((end - start) / 2));
-                this.arrays.push({
+                return this.arrays.push({
                     pos: posBuffer,
                     color: OpenGL.toColor(fillColor),
                     mode: this.gl.TRIANGLE_STRIP,
@@ -1082,34 +1085,34 @@ export class OpenGL{
     }
     
     //draws a circular slice  
-    public drawCircleSlice(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
+    public drawCircleSlice(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): number {
         if(this.shader.isShaderEnabled(ShaderMode.DRAW_CIRCLE_SLICE)){
-            this.shaderCircleSlice(x, y, radius, start, end, ShaderMode.DRAW_CIRCLE_SLICE, OpenGL.toColor(color), null);
+            return this.shaderCircleSlice(x, y, radius, start, end, ShaderMode.DRAW_CIRCLE_SLICE, OpenGL.toColor(color), null);
         }else{
-            this.drawCircleSliceImpl(x, y, radius, start, end, false, true, null, color, precision);
+            return this.drawCircleSliceImpl(x, y, radius, start, end, false, true, null, color, precision);
         }
     }
     
     //draws a circular slice
-    public fillCircleSlice(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): void {
+    public fillCircleSlice(x: number, y: number, radius: number, start: number, end: number, color: number[], precision: number = this.PRECISION): number {
         if(this.shader.isShaderEnabled(ShaderMode.FILL_CIRCLE_SLICE)){
-            this.shaderCircleSlice(x, y, radius, start, end, ShaderMode.FILL_CIRCLE_SLICE, OpenGL.toColor(color), null);
+            return this.shaderCircleSlice(x, y, radius, start, end, ShaderMode.FILL_CIRCLE_SLICE, OpenGL.toColor(color), null);
         }else{
-            this.drawCircleSliceImpl(x, y, radius, start, end, true, false, color, null, precision);
+            return this.drawCircleSliceImpl(x, y, radius, start, end, true, false, color, null, precision);
         }
     }
     
     //draws a circular slice
-    public fillLinedCircleSlice(x: number, y: number, radius: number, start: number, end: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): void {
+    public fillLinedCircleSlice(x: number, y: number, radius: number, start: number, end: number, fillColor: number[], lineColor: number[], precision: number = this.PRECISION): number {
         if(this.shader.isShaderEnabled(ShaderMode.LINED_CIRCLE_SLICE)){
-            this.shaderCircleSlice(x, y, radius, start, end, ShaderMode.LINED_CIRCLE_SLICE, OpenGL.toColor(fillColor), OpenGL.toColor(lineColor));
+            return this.shaderCircleSlice(x, y, radius, start, end, ShaderMode.LINED_CIRCLE_SLICE, OpenGL.toColor(fillColor), OpenGL.toColor(lineColor));
         }else{
-            this.drawCircleSliceImpl(x, y, radius, start, end, true, true, fillColor, lineColor, precision);
+            return this.drawCircleSliceImpl(x, y, radius, start, end, true, true, fillColor, lineColor, precision);
         }
     }
     
     //shader circle slice buffer subroutine
-    private shaderCircleSlice(x: number, y: number, radius: number, start: number, end: number, mode: ShaderMode, mainColor: Float32Array, extraColor: Float32Array): void {
+    private shaderCircleSlice(x: number, y: number, radius: number, start: number, end: number, mode: ShaderMode, mainColor: Float32Array, extraColor: Float32Array): number {
         var positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         const pos = new Float32Array(8);
@@ -1124,8 +1127,10 @@ export class OpenGL{
             pos[6] = (x - radius * 1.001) / this.HALFWIDTH;
             pos[7] = (y - radius * 1.001) / this.HALFHEIGHT;
             
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
+            
             if(mode != ShaderMode.LINED_CIRCLE_SLICE){
-                this.arrays.push(<CircleSliceElement>{
+                return this.arrays.push(<CircleSliceElement>{
                     pos: positionBuffer,
                     color: mainColor,
                     x: x,
@@ -1139,7 +1144,7 @@ export class OpenGL{
                     shader: mode
                 });
             }else{
-                this.arrays.push(<CircleSliceElement>{
+                return this.arrays.push(<CircleSliceElement>{
                     pos: positionBuffer,
                     color: mainColor,
                     lineColor: extraColor,
@@ -1167,8 +1172,10 @@ export class OpenGL{
             pos[6] = (x + dcx - radius * 0.71 * 1.001) / this.HALFWIDTH;
             pos[7] = (y + dcy - radius * 0.71 * 1.001) / this.HALFHEIGHT;
             
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
+            
             if(mode != ShaderMode.LINED_CIRCLE_SLICE){
-                this.arrays.push(<CircleSliceElement>{
+                return this.arrays.push(<CircleSliceElement>{
                     pos: positionBuffer,
                     color: mainColor,
                     x: x + dcx,
@@ -1184,7 +1191,7 @@ export class OpenGL{
                     shader: mode
                 });
             }else{
-                this.arrays.push(<CircleSliceElement>{
+                return this.arrays.push(<CircleSliceElement>{
                     pos: positionBuffer,
                     color: mainColor,
                     lineColor: extraColor,
@@ -1200,12 +1207,10 @@ export class OpenGL{
                 });
             }
         }
-        
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
     }
     
     //draws a circular slice
-    private drawCircleSliceImpl(x: number, y: number, radius: number, start: number, end: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): void {
+    private drawCircleSliceImpl(x: number, y: number, radius: number, start: number, end: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[], precision: number): number {
         const pos = new Float32Array(Math.floor((end - start) / precision) * 2 + 4);
         pos[0] = x / this.HALFWIDTH;
         pos[1] = y / this.HALFHEIGHT;
@@ -1217,22 +1222,22 @@ export class OpenGL{
         pos[i * 2 + 3] = (y + radius * Math.sin(end * Matrix.oneDeg)) / this.HALFHEIGHT;
                 
         if(end - start > 90){
-            this.renderEllipsoidImpl(pos, x, y, radius, radius * 2, fill, line, lineColor, fillColor, 0);
+            return this.renderEllipsoidImpl(pos, x, y, radius, radius * 2, fill, line, lineColor, fillColor, 0);
         }else{
             var dcx = radius * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
             var dcy = radius * 0.71 * Math.sin((start + ((end - start) / 2)) * Matrix.oneDeg);
-            this.renderEllipsoidImpl(pos, x + dcx, y + dcy, radius * 0.71, radius * 1.42, fill, line, lineColor, fillColor, 0);
+            return this.renderEllipsoidImpl(pos, x + dcx, y + dcy, radius * 0.71, radius * 1.42, fill, line, lineColor, fillColor, 0);
         }
     }
     
     //draws an ellipsoid
-    private renderEllipsoidImpl(pos: Float32Array, x: number, y: number, rad: number, span: number, fill: boolean, line: boolean, lineColor: number[], fillColor: number[], offset: number): void {     
+    private renderEllipsoidImpl(pos: Float32Array, x: number, y: number, rad: number, span: number, fill: boolean, line: boolean, lineColor: number[], fillColor: number[], offset: number): number {     
         var posBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, posBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
         
         if(!(fill && line)){
-            this.arrays.push({
+            return this.arrays.push({
                 pos: posBuffer,
                 color: OpenGL.toColor(line ? lineColor : fillColor),
                 mode: fill ? this.gl.TRIANGLE_FAN : this.gl.LINE_LOOP,
@@ -1247,7 +1252,7 @@ export class OpenGL{
                 lineColor = fillColor;
             }
 
-            this.arrays.push({
+            return this.arrays.push({
                 pos: posBuffer,
                 color: OpenGL.toColor(fillColor),
                 mode: this.gl.TRIANGLE_FAN,
