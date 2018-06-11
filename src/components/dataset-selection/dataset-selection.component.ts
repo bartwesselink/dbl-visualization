@@ -29,7 +29,7 @@ export class DatasetSelectionComponent {
     public loadUserDataset(key: string) {
         let content = this.datasetStorageService.getDataset(key);
 
-        if(content !== null) {
+        if(content) {
             this.newContent.emit(content);
         }
     }

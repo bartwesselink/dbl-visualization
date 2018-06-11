@@ -35,7 +35,9 @@ export class DatasetStorageService {
     }
 
     public getDataset(key: string): string|null {
-        return pako.inflate(localStorage.getItem(key), {to: 'string'});
+        if (key) {
+            return pako.inflate(localStorage.getItem(key), {to: 'string'});
+        }
     }
 
     public saveDataset(title: string, dataset: string): void {
