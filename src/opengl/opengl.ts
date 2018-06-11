@@ -51,10 +51,10 @@ export class OpenGL{
     //optimises the given shader mode
     public optimizeFor(mode: ShaderMode): void {
         if(this.indices == null){
-            this.indices = [this.arrays.length];
-            for(let i = 0; this.indices.length; i++){
+            this.indices = new Array(this.arrays.length);
+            for(let i = 0; i < this.indices.length; i++){
                 this.indices[i] = i;
-            } 
+            }
         }
         outer: for(this.index; this.index < this.arrays.length; this.index++){
             if(this.arrays[this.index].shader != mode){
@@ -319,7 +319,7 @@ export class OpenGL{
         loc[1] = (loc[1] / this.HALFHEIGHT) - this.dy;
         return loc;
     }
-    
+
     //resizes the viewport to the optimal size for the new canvas size
     public resize(width: number, height: number): void {
         //maintain the viewport aspect ratio at 16:9 and center the viewport as a 16:9 rectangle in the center of the actual canvas making sure to
@@ -442,7 +442,7 @@ export class OpenGL{
         }else{
             const pos = new Float32Array(Math.floor((end - start) / precision) * 2 + 2);
             var loc = [x + radius, y];
-            var rotation = [9];
+            var rotation = new Array(9);
             Matrix.multiply(rotation, Matrix.create2DTranslationMatrix([-x, -y]), Matrix.create2DRotationMatrix(precision));
             Matrix.multiply(rotation, rotation, Matrix.create2DTranslationMatrix([x, y]));
             Matrix.rotateVector2D([x, y], loc, start);
@@ -700,7 +700,7 @@ export class OpenGL{
         }else{
             pos = new Float32Array((360 / precision) * 2 + 2);
         }
-        var loc = [2];
+        var loc = new Array(2);
         for(i; i <= 360 / precision + 1; i++){
             loc[0] = x + radx * Math.cos(i * precision * Matrix.oneDeg);
             loc[1] = y + rady * Math.sin(i * precision * Matrix.oneDeg);
@@ -752,7 +752,7 @@ export class OpenGL{
             pos = new Float32Array((360 / precision) * 2 + 2);
         }
         var loc = [x + radius, y];
-        var rotation = [9];
+        var rotation = new Array(9);
         Matrix.multiply(rotation, Matrix.create2DTranslationMatrix([-x, -y]), Matrix.create2DRotationMatrix(precision));
         Matrix.multiply(rotation, rotation, Matrix.create2DTranslationMatrix([x, y]));
         for(i; i <= 360 / precision + 1; i++){
@@ -1003,7 +1003,7 @@ export class OpenGL{
                 lineColor = fillColor;
             }
             
-            const indices = [pos.length / 2];
+            const indices = new Uint8Array(pos.length / 2);
             for(var i = 0; i < pos.length / 4; i++){
                 indices[i] = i * 2;
                 indices[pos.length / 2 - 1 - i] = i * 2 + 1;
@@ -1011,7 +1011,7 @@ export class OpenGL{
         
             var indicesBuffer = this.gl.createBuffer();
             this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
-            this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices), this.gl.STATIC_DRAW);
+            this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, indices, this.gl.STATIC_DRAW);
         
             if(end - start > 90){
                 this.arrays.push({
@@ -1310,7 +1310,7 @@ export class OpenGL{
 
     //renders the given element
     private drawElement(elem: Element): number {
-        if(this.isVisible(elem)){
+        if(!elem.hidden && this.isVisible(elem)){
             if(elem.mode != null){
                 return this.drawElementImpl(elem);
             }else{
