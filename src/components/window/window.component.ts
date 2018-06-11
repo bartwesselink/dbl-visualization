@@ -285,6 +285,8 @@ export class WindowComponent implements OnInit {
                         if(this.visualizer.optimizeShaders){
                             this.visualizer.optimizeShaders(this.gl);
                         }
+                        
+                        this.gl.fillLinedCustomQuad(100,100, 200,300, -400,0, 200,-100, [1,0,0], [0,0,0])
                                               
                         this.redraw();
 
