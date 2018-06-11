@@ -575,11 +575,24 @@ export class OpenGL{
         
     //render a custom quad
     public fillCustomQuad(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, color: number[]): void {
+        var arr = [{x: x1, y: y1}, {x: x2, y: y2}, {x: x3, y: y3}, {x: x4, y: y4}].sort((a, b) => a.x > b.x ? 1 : -1);
+        
         
     }
     
     //render a custom quad
     public drawCustomQuad(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, color: number[]): void {
+        var arr = [{x: x1, y: y1}, {x: x2, y: y2}, {x: x3, y: y3}, {x: x4, y: y4}].sort((a, b) => a.x > b.x ? 1 : -1);
+
+        var cx = (x1 + x2 + x3 + x4) / 4;
+        var cy = (y1 + y2 + y3 + y4) / 4;
+        var maxy = Math.max(y1, y2, y3, y4);
+        var miny = Math.min(y1, y2, y3, y4);
+//        this.drawQuadImpl(arr[0].x, arr[0].y,
+//                          ,
+//                          ,
+//                          arr[3].x, arr[3].y,
+//                          cx, cy, Math.max(arr[0] - cx, cx - arr[3], maxy - cy, cy - miny), Math.max(arr[0].x - arr[3].x, maxy - miny, false, true, null, color));
         
     }
     
