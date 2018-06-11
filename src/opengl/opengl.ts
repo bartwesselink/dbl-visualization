@@ -561,6 +561,7 @@ export class OpenGL{
                                       x - width / 2, y - height / 2,
                                       x + width / 2, y - height / 2,
                                       Math.hypot(width, height) / 2, Math.min(width, height), rotation, true, true, fillColor, lineColor);
+    }
     
     //renders a rotated quad
     private renderRotatedQuad(x: number, y: number, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, size: number, span: number, rotation: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): number {
