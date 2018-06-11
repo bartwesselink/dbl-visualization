@@ -131,6 +131,12 @@ Draws a filled quad with a given center coordinate, width, height, rotation and 
 Outlines a quad with a given center coordinate, width, height, rotation and color. The rotation is consistent with the unit circle meaning that the quad will rotate anticlockwise.
 - `public fillLinedRotatedQuad(x: number, y: number, width: number, height: number, rotation: number, fillColor: number[], lineColor: number[]): void`    
 Draws a filled quad with a line around it with a given center coordinate, width, height, rotation, a color to fill the quad with and a color for the line around it. If the line color is set to `null` then the fill color is also used as the line color. The rotation is consistent with the unit circle meaning that the quad will rotate anticlockwise.
+- `public fillCustomQuad(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, color: number[]): void`    
+Draws a filled quad with the given `color` and with the given corner points.
+- `public drawCustomQuad(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, color: number[]): void`    
+Outlines a quad with the given `color` and with the given corner points.
+- `public fillLinedCustomQuad(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, fillColor: number[], lineColor: number[]): void`    
+Draws a filled quad with a line around it with the given `lineColor` and `fillColor` and with the given corner points.
 
 ## Ellipsoids
 - `public fillEllipsoid(x: number, y: number, radx: number, rady: number, rotation: number, fillColor: number[], precision: number): void`    
