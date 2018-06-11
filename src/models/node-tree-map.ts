@@ -10,5 +10,7 @@ export interface NodeTreeMap extends Node {
     children: NodeTreeMap[];
     parent?: NodeTreeMap;
     orientation?: number; // actually it is Orientation, but this cannot be imported.
+    width?: number;
+    height?: number;
 }
 /** @end-author Nico Klaassen */

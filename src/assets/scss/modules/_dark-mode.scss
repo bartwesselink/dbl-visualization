@@ -25,12 +25,20 @@ $dark-dialogs_hover: rgb(80, 80, 80);
         }
     }
 
+    .holder {
+        background-color: $dark-dialogs_hover;
+    }
+
     .mdl-dialog {
         color: white;
         background-color: $dark-dialogs;
 
         .mdl-dialog__content, .mdl-dialog__title, .mdl-button {
             color: white;
+            background-color: $dark-dialogs;
+        }
+
+        select {
             background-color: $dark-dialogs;
         }
     }
@@ -86,6 +94,13 @@ $dark-dialogs_hover: rgb(80, 80, 80);
             background-color: $dark-dialogs_hover;
         }
     }
+
+    .holder-header {
+        background: $dark-primary;
+        border-color: $dark-canvas;
+    }
+
+
 }
 
 /** @end-author Mathijs Boezer */
