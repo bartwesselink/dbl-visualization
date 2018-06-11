@@ -37,6 +37,10 @@ $dark-dialogs_hover: rgb(80, 80, 80);
             color: white;
             background-color: $dark-dialogs;
         }
+
+        select {
+            background-color: $dark-dialogs;
+        }
     }
 
     .mdl-layout__drawer {
