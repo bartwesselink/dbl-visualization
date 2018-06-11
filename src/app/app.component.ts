@@ -12,6 +12,7 @@ import {SimpleTreeMap} from "../visualizations/simple-tree-map";
 import {WorkerManager} from '../utils/worker-manager';
 import {SubtreeBus} from "../providers/subtree-bus";
 import {SelectBus} from "../providers/select-bus";
+import {BasicTree} from "../visualizations/basic-tree";
 
 declare var dialogPolyfill;
 
@@ -67,10 +68,10 @@ export class AppComponent implements OnInit {
 
         if (line !== null) {
             const hadTree = this.tree != null;
-          
+
             this.openTree(this.parser.parseTree(line));
             this.originalTree = this.tree;
-          
+
             if(!hadTree) {
                 this.resizeActiveTab();
             }
@@ -141,6 +142,7 @@ export class AppComponent implements OnInit {
             new OpenglDemoTree(),
             new GeneralizedPythagorasTree(),
             new SimpleTreeMap(),
+            new BasicTree(),
         ];
     }
 
