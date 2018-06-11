@@ -30,6 +30,7 @@
     "mdl-selectfield": "^1.0.4",
     "newick": "^2.0.0",
     "ngx-pipes": "^2.1.2",
+    "pako": "^1.0.6",
     "rxjs": "^5.5.6",
     "zone.js": "^0.8.19",
     "raw-loader": "^0.5.1"
