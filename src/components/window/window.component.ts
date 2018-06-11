@@ -19,6 +19,12 @@ import {RotatedQuadOptions} from '../../interfaces/rotated-quad-options';
 import {CircleOptions} from '../../interfaces/circle-options';
 import {EllipsoidOptions} from '../../interfaces/ellipsoid-options';
 import {RingSliceOptions} from '../../interfaces/ring-slice-options';
+import {Settings} from "../../interfaces/settings";
+import {SettingsBus} from "../../providers/settings-bus";
+import {Palette} from "../../models/palette";
+import {Palettes} from "../../utils/palettes";
+import {VisualizerInput} from "../../interfaces/visualizer-input";
+import {GradientType} from "../../enums/gradient-type";
 import {ViewCubeComponent} from '../view-cube/view-cube.component';
 
 @Component({
@@ -48,6 +54,11 @@ export class WindowComponent implements OnInit {
     public tooltipY: number;
     private lastTooltipNode: Node;
 
+    /** @author Nico Klaassen */
+    private palette: Palette;
+    private reversePalette: boolean;
+    /** @end-author */
+
     /** @author Roan Hofland */
     private errored: boolean = false;
     private lastError: string;
@@ -64,7 +75,7 @@ export class WindowComponent implements OnInit {
     private readonly DEFAULT_DR = 1;
     private readonly DEFAULT_DT = 5;
     private readonly DEFAULT_DS = 0.1;
-    private static darkMode: boolean;
+    private darkMode: boolean;
 
     private currentDraws: Draw[];
     private interactionHandler: InteractionHandler;
@@ -73,7 +84,11 @@ export class WindowComponent implements OnInit {
     private dragging: boolean = false;
     private readonly clickTimerThreshold: number = 150;
 
-    constructor(private formFactory: FormFactory, private workerManager: WorkerManager, private selectBus: SelectBus) {
+    private gradientMapType: boolean = true;
+    private gradientType: GradientType = GradientType.RGBLinear;
+    private invertHSV: boolean = false;
+
+    constructor(private formFactory: FormFactory, private workerManager: WorkerManager, private selectBus: SelectBus, private settingsBus: SettingsBus) {
         this.interactionHandler = new InteractionHandler();
 
         this.selectBus.nodeSelected.subscribe((node: Node) => {
@@ -88,12 +103,39 @@ export class WindowComponent implements OnInit {
             this.redrawAllScenes();
             this.interactionHandler.scaleToNode(this.gl, this.canvas, this.currentDraws, node, this.selectBus.interactionOptions);
         });
+
+        /** @author Nico Klaassen & Jules Cornelissen*/
+        /** Color palette support */
+        this.darkMode = settingsBus.getSettings().darkMode;
+        this.palette = Palettes.default;
+        this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
+            if (!settings.colorMode) {
+                this.palette = Palettes.greyScale;
+            } else {
+                this.palette = this.getPalette(settings.palette);
+            }
+            this.gradientMapType = settings.gradientMapType;
+            this.gradientType = settings.gradientType;
+            this.invertHSV = settings.invertHSV;
+            this.reversePalette = settings.reversePalette;
+            if (this.reversePalette) {
+                this.palette = new Palette(this.palette.secondary, this.palette.primary, this.palette.accents);
+            }
+            if (this.darkMode === settings.darkMode) { // It wasn't the darkMode setting that changed
+                this.redrawAllScenes();
+            } else {
+                this.darkMode = settings.darkMode;
+                this.setDarkmode(this.darkMode);
+            }
+        });
+        /** @end-author Nico Klaassen & Jules Cornelissen*/
     }
 
     ngOnInit() {
         this.tab.window = this; // create reference in order to enable tab-manager to communicate with component
         this.form = this.visualizer.getForm(this.formFactory);
         this.lastSettings = this.form != null ? this.form.getFormGroup().value : {};
+        this.palette = Palettes.default;
 
         this.setHeight();
         this.startScene();
@@ -125,7 +167,6 @@ export class WindowComponent implements OnInit {
 
 
     public setDarkmode(enabled: boolean): void {
-        WindowComponent.darkMode = enabled;
         if(enabled){
             this.gl.setBackgroundColor(50.0 / 255.0, 50.0 / 255.0, 50.0 / 255.0);
         }else{
@@ -133,7 +174,7 @@ export class WindowComponent implements OnInit {
         }
         this.render();
     }
-
+    
     public keyEvent(event: KeyboardEvent): void {
         switch(event.key){
         case 'q':
@@ -225,7 +266,7 @@ export class WindowComponent implements OnInit {
 
     //called when the mouse moves
     public onDrag(event: MouseEvent): void {
-        if(this.down){
+        if (this.down) {
             this.dragging = true;
             this.clearClickTimer();
 
@@ -263,7 +304,7 @@ export class WindowComponent implements OnInit {
     //called when the scroll wheel is scrolled
     public onScroll(event: WheelEvent): void {
         event.preventDefault();
-        if(this.down){
+        if (this.down) {
             this.gl.rotate(event.deltaY / this.ROTATION_NORMALISATION);
         }else{
             this.scaleView(Math.max(0.1, 1.0 - (event.deltaY / this.ZOOM_NORMALISATION)));
@@ -281,7 +322,10 @@ export class WindowComponent implements OnInit {
     }
 
     public redrawAllScenes(): void { // redraws all canvases through the AppComponent
-        this.redrawAll.next();
+        // this.redrawAll.next();
+        if (this.tab.active) {
+            this.computeScene();
+        }
     }
 
     //compute the visualisation
@@ -297,10 +341,17 @@ export class WindowComponent implements OnInit {
                 return; // there is no tree yet
             }
 
+            if (this.tree) {
+                this.computeColors();
+            }
             this.startLoading();
 
             /** @author Bart Wesselink */
-            this.workerManager.startWorker(this.gl, this.visualizer.draw,{ tree: this.tree, settings: this.lastSettings })
+            this.workerManager.startWorker(this.gl, this.visualizer.draw, {
+                tree: this.tree,
+                settings: this.lastSettings,
+                palette: this.palette
+            })
                 .then((draws: Draw[]) => {
                     setTimeout(() => {
                         if(this.visualizer.optimizeShaders){
@@ -319,6 +370,29 @@ export class WindowComponent implements OnInit {
             /** @end-author Bart Wesselink */
         });
     }
+
+    /** @author Jules Cornelissen */
+    private computeColors() {
+        let selectedDepth: number = this.findSelectedDepth(this.tree);
+        this.palette.calcGradientColorMap(selectedDepth, this.tree.maxDepth, this.gradientMapType, this.gradientType, this.invertHSV);
+        // console.log(this.palette.primary.rgba)
+        // console.log(this.palette.secondary.rgba)
+        // console.log(this.palette.gradientColorMap)
+    }
+
+    private findSelectedDepth(subTree: Node): number {
+        let newDepth = 0;
+        for (let child of subTree.children) {
+            if (child.selected) {
+                return child.depth;
+            } else {
+                newDepth = Math.max(newDepth, this.findSelectedDepth(child));
+            }
+        }
+        return newDepth;
+    }
+
+    /** @end-author Jules Cornelissen */
 
     //fallback rendering for when some OpenGL error occurs
     private onError(error): void {
@@ -353,7 +427,7 @@ export class WindowComponent implements OnInit {
             this.onError((<Error>error).message);
         }
 
-        this.setDarkmode(WindowComponent.darkMode);
+        this.setDarkmode(this.darkMode);
 
         if(this.visualizer.enableShaders){
             this.visualizer.enableShaders(this.gl);
@@ -362,12 +436,13 @@ export class WindowComponent implements OnInit {
 
     //redraw the canvas
     private redraw(): void {
-        if(this.errored){
+        if (this.errored) {
             this.onError(this.lastError);
-        }else{
+        } else {
             this.render();
         }
     }
+
     /** @end-author Roan Hofland */
     /** @author Bart Wesselink */
     public setHeight(): void {
@@ -389,6 +464,20 @@ export class WindowComponent implements OnInit {
         this.loading.emit(false);
     }
     /** @end-author Bart Wesselink */
+
+    /** @author Nico Klaassen */
+    private getPalette(paletteString: string): Palette {
+        switch (paletteString) {
+            case 'default':
+                return Palettes.default;
+            case 'alt':
+                return Palettes.alt;
+            case 'greyScale':
+                return Palettes.greyScale;
+        }
+        return Palettes.default; // Fallback
+    }
+
     /** @author Mathijs Boezer */
     public resetTransformation() {
         this.gl.resetTransformations();

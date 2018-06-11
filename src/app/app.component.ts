@@ -45,6 +45,7 @@ export class AppComponent implements OnInit {
 
     private parser: NewickParser;
     public darkMode = false;
+
     public viewMode = ViewMode.SIDE_BY_SIDE;
 
     // variables for dragging the column around
@@ -149,7 +150,8 @@ export class AppComponent implements OnInit {
 
         if (tab.window) {
             setTimeout(() => {
-                tab.window.render();
+                tab.window.computeScene();
+                // tab.window.render();
             }, 100);
 
             this.resizeActiveTab();
@@ -206,12 +208,17 @@ export class AppComponent implements OnInit {
         }
     }
 
-    public async redrawAllTabs(): Promise<void> {
-        for (const tab of this.tabs.slice().sort((a, b) => a === this.activeTab ? 0 : 1)) {
-            if (tab.window) {
+    public async redrawAllTabs(): Promise<void> { // We generally only want to recompute the tab that is active.
+        for (const tab of this.tabs) {
+            if (this.isSideBySideViewMode() || tab.active && tab.window) {
                 await tab.window.computeScene();
             }
         }
+        // for (const tab of this.tabs.slice().sort((a, b) => a === this.activeTab ? 0 : 1)) {
+        //     if (tab.window) {
+        //         await tab.window.computeScene();
+        //     }
+        // }
     }
 
     private addTab(visualizer: Visualizer) {

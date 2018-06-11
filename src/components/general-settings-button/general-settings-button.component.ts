@@ -21,7 +21,7 @@ export class GeneralSettingsButtonComponent implements OnInit {
     @ViewChild('dialog') private dialog: ElementRef;
     @ViewChild('formComponent') private formComponent: FormComponent;
 
-    constructor (private formFactory: FormFactory, private settingsBus: SettingsBus) {
+    constructor(private formFactory: FormFactory, private settingsBus: SettingsBus) {
     }
 
     public ngOnInit(): void {
@@ -63,6 +63,17 @@ export class GeneralSettingsButtonComponent implements OnInit {
                 },
                 expanded: false
             })
+            /** @author Nico Klaassen */
+            .addToggleField('colorMode', true, {label: 'Color mode'})
+            .addChoiceField('palette', 'default', {label: 'Color palette', expanded: false, choices: {default: 'default', alt: 'alt', greyScale: 'greyScale'}})
+            .addToggleField('reversePalette', false, {label: 'Reverse palette colors'})
+            /** @end-author Nico Klaassen */
+            /** @author Jules Cornelissen */
+            .addToggleField('gradientMapType', true, {label: 'Gradient per subtree'})
+            .addChoiceField('gradientType', '1', {label: 'Gradient type', expanded: false, choices: {'1': 'RGB linear', '2': 'HSV'}})
+            .addToggleField('invertHSV', false, {label: 'Invert HSV gradient'})
+            /** @end-author Jules Cornelissen */
+
             .getForm();
     }
     /** @end-author Bart Wesselink */
