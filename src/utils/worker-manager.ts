@@ -11,8 +11,8 @@ import {ArcOptions} from '../interfaces/arc-options';
 import {LineOptions} from '../interfaces/line-options';
 import {RingSliceOptions} from '../interfaces/ring-slice-options';
 import {CircleSliceOptions} from '../interfaces/circle-slice-options';
-import {DrawType} from '../enums/draw-type';
 import {CustomQuadOptions} from "../interfaces/custom-quad-options";
+import {DrawType} from '../enums/draw-type';
 
 @Injectable()
 export class WorkerManager {

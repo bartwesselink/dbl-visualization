@@ -7,9 +7,10 @@ import {ArcOptions} from './arc-options';
 import {CircleSliceOptions} from './circle-slice-options';
 import {RingSliceOptions} from './ring-slice-options';
 import {LineOptions} from './line-options';
+import {CustomQuadOptions} from "./custom-quad-options";
 
 export interface Draw {
     type: DrawType;
-    options: AaQuadOptions|CircleOptions|EllipsoidOptions|RotatedQuadOptions|ArcOptions|CircleSliceOptions|RingSliceOptions|LineOptions;
+    options: AaQuadOptions|CircleOptions|EllipsoidOptions|RotatedQuadOptions|ArcOptions|CircleSliceOptions|RingSliceOptions|LineOptions|CustomQuadOptions;
     identifier?: number;
 }
