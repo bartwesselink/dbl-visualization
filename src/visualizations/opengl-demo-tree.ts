@@ -150,8 +150,7 @@ export class OpenglDemoTree implements Visualizer {
     }
 
     public getThumbnailImage(): string|null {
-        return null;
-    }
+        return '/assets/images/opengl-demo-tree.png';    }
 
     public enableShaders(gl: OpenGL): void {
         gl.enableShaders(ShaderMode.ALL);
