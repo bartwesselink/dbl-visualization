@@ -28,6 +28,8 @@ import {TooltipComponent} from '../components/tooltip/tooltip.component';
 import {ViewCubeComponent} from '../components/view-cube/view-cube.component';
 import {SubtreeBus} from "../providers/subtree-bus";
 import {SearchComponent} from '../components/search/search.component';
+import {DatasetSelectionComponent} from "../components/dataset-selection/dataset-selection.component";
+import {DatasetStorageService} from "../providers/dataset-storage-service";
 
 @NgModule({
     declarations: [
@@ -48,6 +50,7 @@ import {SearchComponent} from '../components/search/search.component';
         LoaderComponent,
         TooltipComponent,
         SearchComponent,
+        DatasetSelectionComponent,
         ViewCubeComponent,
     ],
     imports: [
@@ -61,6 +64,7 @@ import {SearchComponent} from '../components/search/search.component';
         WorkerManager,
         SettingsBus,
         SelectBus,
+        DatasetStorageService,
         SubtreeBus,
         {provide: APP_BASE_HREF, useValue : '/' }
     ],

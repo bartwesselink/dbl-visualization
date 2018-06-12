@@ -1,4 +1,5 @@
 import {Component, EventEmitter, Output} from '@angular/core';
+import {DatasetStorageService} from "../../providers/dataset-storage-service";
 
 @Component({
     selector: 'app-upload-tool',
@@ -11,6 +12,8 @@ export class UploadToolComponent {
     private fileTypeWhitelist = ['', 'text/plain',]; //Allowed types of files
     private errorMsg : string = "Wrong file type, please upload a Newick tree file.";
 
+    constructor(private datasetStorageService: DatasetStorageService) {}
+
     public uploadFile(files: File[]) :void {
         var file: File = files[0];
 
@@ -20,6 +23,7 @@ export class UploadToolComponent {
         fileReader.onload = function(e){
             var content: string = fileReader.result;
             self.newContent.emit(content);
+            self.datasetStorageService.saveDataset(file.name, content);
         };
 
         if(this.fileTypeWhitelist.includes(file.type))
