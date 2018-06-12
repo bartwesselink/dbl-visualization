@@ -56,48 +56,6 @@ export class SimpleTreeMap implements Visualizer {
             }
         };
 
-        /** setBounds calculates the new and nested bounding-box (bounds) for a particular child-node and stores it on the
-         * node itself.
-         *
-         * @param {Node} tree The (sub)tree for which to calculate bounds
-         * @param {Bounds} parentBounds The bounding-box of the parent node
-         * @param {number} doneSize How many descendants of the parent node are already accounted for by other siblings.
-         * @param {boolean} last Whether this is the last of the children
-         * @param {number} index The index of the child within the array containing its siblings (on the parent node)
-         * @returns {Bounds} New bounding-box with the correct position and offset such that it is nested within parentBounds
-         */
-        const setBounds = (tree: NodeTreeMap, parentBounds: Bounds, doneSize: number, last: boolean, index: number): Bounds => {
-            // Compute the new bounds which are nested within the bounds of the parent
-            if (tree.parent.orientation === Orientation.HORIZONTAL) {
-                const relativeOffset = Math.min(tree.parent.width / 100 * offset / (tree.parent.children.length + 1), tree.parent.height / 100 * offset / (tree.parent.children.length + 1));
-                const freeSpace = tree.parent.width - (tree.parent.children.length + 1) * relativeOffset;
-                return {
-                    left: (index == 0) ?
-                        parentBounds.left + relativeOffset :
-                        parentBounds.left + relativeOffset * (index + 1) + (freeSpace * doneSize / (tree.parent.subTreeSize - 1)),
-                    right: (last) ?
-                        parentBounds.left + relativeOffset * (index + 1) + freeSpace :
-                        parentBounds.left + relativeOffset * (index + 1) + (freeSpace * (doneSize + tree.subTreeSize) / (tree.parent.subTreeSize - 1)),
-                    bottom: parentBounds.bottom + relativeOffset,
-                    top: parentBounds.top - relativeOffset
-                };
-            } else {
-                const relativeOffset = Math.min(tree.parent.width / 100 * offset / (tree.parent.children.length + 1), tree.parent.height / 100 * offset / (tree.parent.children.length + 1));
-                const freeSpace = tree.parent.height - (tree.parent.children.length + 1) * relativeOffset;
-                return {
-                    left: parentBounds.left + relativeOffset,
-                    right: parentBounds.right - relativeOffset,
-                    bottom: (last) ?
-                        parentBounds.top - relativeOffset * (index + 1) - freeSpace :
-                        parentBounds.top - relativeOffset * (index + 1) - (freeSpace * (doneSize + tree.subTreeSize) / (tree.parent.subTreeSize - 1)),
-                    top: (index == 0) ?
-                        parentBounds.top - relativeOffset :
-                        parentBounds.top - relativeOffset * (index + 1) - (freeSpace * doneSize / (tree.parent.subTreeSize - 1))
-                };
-            }
-        };
-
-
         /** drawTree draw the tree-map recursively.
          *
          * @param {NodeTreeMap} tree The root of the subtree upon which we recurse
@@ -124,6 +82,17 @@ export class SimpleTreeMap implements Visualizer {
             let width = Math.abs(bounds.right - bounds.left);
             let height = Math.abs(bounds.top - bounds.bottom);
 
+            let relativeOffset;
+            let freeSpace;
+
+            if (tree.orientation === Orientation.HORIZONTAL) {
+                relativeOffset = Math.min(tree.width / 100 * offset / (tree.children.length + 1), tree.height / 100 * offset / (tree.children.length + 1));
+                freeSpace = tree.width - (tree.children.length + 1) * relativeOffset;
+            } else {
+                relativeOffset = Math.min(width / 100 * offset / (tree.children.length + 1), tree.height / 100 * offset / (tree.children.length + 1));
+                freeSpace = tree.height - (tree.children.length + 1) * relativeOffset;
+            }
+
             // Draw the bounds of the current node
             if (drawOutlines) {
                 draws.push({
@@ -147,9 +116,32 @@ export class SimpleTreeMap implements Visualizer {
             }
 
             // Compute color and size per child, recurse on each child with the new - and nested - bounds.
-            for (let i = 0; i < tree.children.length; i++) {
+            for (let i = 0; i< tree.children.length; i++) {
                 const childNode = tree.children[i];
-                const childBounds = setBounds(childNode, bounds, doneSize, (i == tree.children.length - 1), i);
+                let childBounds;
+                if (tree.orientation === Orientation.HORIZONTAL) {
+                    childBounds = {
+                        left: (i == 0) ?
+                            bounds.left + relativeOffset :
+                            bounds.left + relativeOffset * (i + 1) + (freeSpace * doneSize / (tree.subTreeSize - 1)),
+                        right: (i == tree.children.length - 1) ?
+                            bounds.left + relativeOffset * (i + 1) + freeSpace :
+                            bounds.left + relativeOffset * (i + 1) + (freeSpace * (doneSize + childNode.subTreeSize) / (tree.subTreeSize - 1)),
+                        bottom: bounds.bottom + relativeOffset,
+                        top: bounds.top - relativeOffset
+                    };
+                } else {
+                    childBounds = {
+                        left: bounds.left + relativeOffset,
+                        right: bounds.right - relativeOffset,
+                        bottom: (i == tree.children.length - 1) ?
+                            bounds.top - relativeOffset * (i + 1) - freeSpace :
+                            bounds.top - relativeOffset * (i + 1) - (freeSpace * (doneSize + childNode.subTreeSize) / (tree.subTreeSize - 1)),
+                        top: (i == 0) ?
+                            bounds.top - relativeOffset :
+                            bounds.top - relativeOffset * (i + 1) - (freeSpace * doneSize / (tree.subTreeSize - 1))
+                    };
+                }
                 childNode.width = Math.abs(childBounds.right - childBounds.left);
                 childNode.height = Math.abs(childBounds.top - childBounds.bottom);
                 doneSize = doneSize + childNode.subTreeSize; // Add the # of nodes in the subtree rooted at the childnode to doneSize.
