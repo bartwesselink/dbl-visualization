@@ -3,7 +3,6 @@ import * as FileSaver from "file-saver";
 
 /** @author Nico Klaassen */
 export class NewickExporter {
-    private readonly defaultNodeLength: number = 1.0;
     errorMsg = "Invalid Newick file.";
     successMsg = "Succefully parsed Newick file.";
 
@@ -30,18 +29,19 @@ export class NewickExporter {
 
     private parseTree(tree: Node): string {
         let newickString = "";
-        newickString += tree.label; //+ ":" + tree.length;
- 
-        if (tree.children != null) {
-            newickString = ")" + newickString;
+
+        if (tree.children.length > 0) { // There is always an array, but it might be empty
+            newickString = newickString + "(" ;
             for (let i = 0; i < tree.children.length; i++) {
-                newickString = this.parseTree(tree.children[i]) + newickString;
-                if (i > 0) {
-                    newickString = "," + newickString;
+                newickString = newickString + this.parseTree(tree.children[i]);
+                if (i < tree.children.length) {
+                    newickString = newickString + ",";
                 }
             }
-            newickString = "(" + newickString;
+            newickString = newickString.substring(0, newickString.length - 1) + ")";
         }
+
+        newickString += tree.label; //+ ":" + tree.length;
         return newickString;
     }
 
