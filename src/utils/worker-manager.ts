@@ -12,6 +12,7 @@ import {LineOptions} from '../interfaces/line-options';
 import {RingSliceOptions} from '../interfaces/ring-slice-options';
 import {CircleSliceOptions} from '../interfaces/circle-slice-options';
 import {DrawType} from '../enums/draw-type';
+import {CustomQuadOptions} from "../interfaces/custom-quad-options";
 
 @Injectable()
 export class WorkerManager {
@@ -151,6 +152,21 @@ export class WorkerManager {
                     options = draw.options as CircleSliceOptions;
 
                     this.gl.fillLinedCircleSlice(options.x, options.y, options.radius, options.start, options.end, options.fillColor, options.lineColor);
+                    break;
+                case DrawType.FILL_CUSTOM_QUAD:
+                    options = draw.options as CustomQuadOptions;
+
+                    this.gl.fillCustomQuad(options.x1, options.y1, options.x2, options.y2, options.x3, options.y3, options.x4, options.y4, options.fillColor);
+                    break;
+                case DrawType.DRAW_CUSTOM_QUAD:
+                    options = draw.options as CustomQuadOptions;
+
+                    this.gl.drawCustomQuad(options.x1, options.y1, options.x2, options.y2, options.x3, options.y3, options.x4, options.y4, options.color);
+                    break;
+                case DrawType.FILL_LINED_CUSTOM_QUAD:
+                    options = draw.options as CustomQuadOptions;
+
+                    this.gl.fillLinedCustomQuad(options.x1, options.y1, options.x2, options.y2, options.x3, options.y3, options.x4, options.y4, options.fillColor, options.lineColor);
                     break;
             }
         }
