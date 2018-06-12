@@ -12,28 +12,37 @@ export class Sunburst implements Visualizer {
     /** @author Bart Wesselink */
     public draw(input: VisualizerInput): Draw[] {
         const tree = input.tree;
+        const settings = input.settings;
         const draws: Draw[] = [];
         const palette: Palette = input.palette;
 
         let color: number[];
-        let baseRadius = 60;
-        let scaleRadius = 0.9;
-        let radiusMargin = 4;
-        let sliceMargin = 2;
+        let baseRadius = settings.baseRadius;
+        let scaleRadius = settings.scaleRadius;
+        let radiusMargin = settings.radiusMargin;
+        let scaleSliceMargin = settings.scaleSliceMargin;
+        let defaultSliceMargin = settings.sliceMargin;
 
-        const generate = (node: Node, startAngle: number, endAngle: number, near: number, innerRadius: number, depth: number = 1, isLastChild: boolean = true, isSelected: boolean = false) => {
-            if (tree.selected === true || isSelected) {
+        const generate = (node: Node, startAngle: number, endAngle: number, near: number, innerRadius: number, sliceMargin: number = defaultSliceMargin, isLastChild: boolean = true, isSelected: boolean = false) => {
+            if (node.selected === true || isSelected) {
                 isSelected = true;
                 color = palette.gradientColorMapSelected[node.maxDepth][node.depth];
             } else {
                 color = palette.gradientColorMap[node.maxDepth][node.depth];
             }
 
+            sliceMargin = sliceMargin * scaleSliceMargin;
+
             let far = near + innerRadius;
             let drawnEndAngle = endAngle;
 
             near += radiusMargin; // add a small margin
             drawnEndAngle -= sliceMargin;
+
+            if (drawnEndAngle < 0) {
+                // TODO: find out whether this mathematically possible, I have'nt encountered such a case
+                console.error('Visualization error');
+            }
 
             draws.push({ type: 17 /** FillRingSlice **/, identifier: node.identifier, options: { x: 0, y: 0, near: near, far: far, start: startAngle, end: drawnEndAngle, color }});
 
@@ -49,7 +58,7 @@ export class Sunburst implements Visualizer {
                 // convert fraction to an angle, and increase the startAngle
                 const angle = (endAngle - startAngle) * factor + newStartAngle;
 
-                generate(child, newStartAngle, angle, far, innerRadius * scaleRadius, depth + 1, childCounter === node.children.length, isSelected);
+                generate(child, newStartAngle, angle, far, innerRadius * scaleRadius, sliceMargin, childCounter === node.children.length, isSelected);
 
                 // iterate to the the next angle
                 newStartAngle = angle;
@@ -63,11 +72,11 @@ export class Sunburst implements Visualizer {
 
     public getForm(formFactory: FormFactory): Form | null {
         return formFactory.createFormBuilder()
-            .addTextField('test1', 'TestValue', {label: 'Test label'})
-            .addNumberField('test2', 8, {label: 'Test label'})
-            .addToggleField('test3', false, {label: 'Test label'})
-            .addChoiceField('test4', 'test', {label: 'Test label', expanded: false, choices: {test: 'test'}})
-            .addChoiceField('test5', 'test', {label: 'Test label', expanded: true, choices: {test: 'test'}})
+            .addSliderField('baseRadius', 60, {label: 'Base radius', min: 30, max: 100})
+            .addSliderField('scaleRadius', 0.9, {label: 'Reduce radius per level factor', step: 0.1, min: 0.1, max: 1})
+            .addSliderField('radiusMargin', 4, {label: 'Margin between levels', min: 0, max: 8})
+            .addSliderField('sliceMargin', 2, {label: 'Margin between slices', min: 0, max: 8})
+            .addSliderField('scaleSliceMargin', 0.9, {label: 'Reduce slice margin per level factor', step: 0.1, min: 0.1, max: 1})
             .getForm();
     }
 
@@ -76,7 +85,7 @@ export class Sunburst implements Visualizer {
     }
 
     public getThumbnailImage(): string | null {
-        return null;
+        return '/assets/images/visualization-sunburst.png';
     }
 
     public enableShaders(gl: OpenGL): void {
