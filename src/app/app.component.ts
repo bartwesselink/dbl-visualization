@@ -14,6 +14,7 @@ import {ViewMode} from '../enums/view-mode';
 import {SubtreeBus} from "../providers/subtree-bus";
 import {SelectBus} from "../providers/select-bus";
 import {BasicTree} from "../visualizations/basic-tree";
+import * as FileSaver from "file-saver";
 
 declare var dialogPolyfill;
 
@@ -334,6 +335,8 @@ export class AppComponent implements OnInit {
 
     public exportTree() {
         console.log("exporting!");
+        const file = new File(["Hello world!"], "hello world.txt", {type: "text/plain;charset=utf-8"});
+        FileSaver.saveAs(file);
         console.log(this.tree);
         console.log("done exporting!");
     }
