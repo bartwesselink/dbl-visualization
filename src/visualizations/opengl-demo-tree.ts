@@ -1,12 +1,9 @@
 import {Visualizer} from '../interfaces/visualizer';
-import {Node} from '../models/node';
 import {OpenGL} from '../opengl/opengl';
 import {FormFactory} from '../form/form-factory';
-import {Form} from "../form/form";
 import {ShaderMode} from "../opengl/shaders/shaderMode";
 import {Draw} from '../interfaces/draw';
 import {VisualizerInput} from '../interfaces/visualizer-input';
-import {DrawType} from '../enums/draw-type';
 
 /** @author Nico Klaassen */
 export class OpenglDemoTree implements Visualizer {
@@ -147,8 +144,9 @@ export class OpenglDemoTree implements Visualizer {
         return 'OpenGL Demo Tree';
     }
 
-    public getThumbnailImage(): string|null {
-        return '/assets/images/opengl-demo-tree.png';    }
+    public getThumbnailImage(): string | null {
+        return '/assets/images/opengl-demo-tree.png';
+    }
 
     public enableShaders(gl: OpenGL): void {
         gl.enableShaders(ShaderMode.ALL);
