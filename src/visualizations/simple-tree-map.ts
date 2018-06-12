@@ -19,8 +19,8 @@ export class SimpleTreeMap implements Visualizer {
 
         // define variables
         const defaultSize = 600;
-        const lineColorSelected: number[] = [0, 0, 0, 1];
-        const lineColorUnselected: number[] = [0.3, 0.3, 0.3, 1];
+        const lineColorSelected: number[] = [0, 0, 0];
+        const lineColorUnselected: number[] = [0.3, 0.3, 0.3];
         let offset: number = settings.offset;
         let tree: NodeTreeMap = originalTree as NodeTreeMap;
         let rootBounds: Bounds = {
@@ -79,19 +79,32 @@ export class SimpleTreeMap implements Visualizer {
                 lineColor = lineColorUnselected;
             }
 
-            let width = Math.abs(bounds.right - bounds.left);
-            let height = Math.abs(bounds.top - bounds.bottom);
+            // let width;
+            // let height;
 
-            let relativeOffset;
-            let freeSpace;
+            // console.log(tree.parent == null);
+            // if (tree.parent == null) {
+            //     width = defaultSize;
+            //     height = defaultSize;
+            // } else {
+            //     width = Math.abs(bounds.right - bounds.left);
+            //     height = Math.abs(bounds.top - bounds.bottom);
+            // }
 
-            if (tree.orientation === Orientation.HORIZONTAL) {
-                relativeOffset = Math.min(tree.width / 100 * offset / (tree.children.length + 1), tree.height / 100 * offset / (tree.children.length + 1));
-                freeSpace = tree.width - (tree.children.length + 1) * relativeOffset;
-            } else {
-                relativeOffset = Math.min(width / 100 * offset / (tree.children.length + 1), tree.height / 100 * offset / (tree.children.length + 1));
-                freeSpace = tree.height - (tree.children.length + 1) * relativeOffset;
-            }
+            const relativeOffset = tree.orientation === Orientation.HORIZONTAL ?
+                Math.min(tree.width / 100 * offset / (tree.children.length + 1), tree.height / 100 * offset / (tree.children.length + 1)) :
+                Math.min(tree.width / 100 * offset / (tree.children.length + 1), tree.height / 100 * offset / (tree.children.length + 1));
+            const freeSpace = tree.orientation === Orientation.HORIZONTAL ?
+                tree.width - (tree.children.length + 1) * relativeOffset :
+                tree.height - (tree.children.length + 1) * relativeOffset;
+
+            // if (tree.orientation === Orientation.HORIZONTAL) {
+            //     relativeOffset = Math.min(tree.width / 100 * offset / (tree.children.length + 1), tree.height / 100 * offset / (tree.children.length + 1));
+            //     freeSpace = tree.width - (tree.children.length + 1) * relativeOffset;
+            // } else {
+            //     relativeOffset = Math.min(tree.width / 100 * offset / (tree.children.length + 1), tree.height / 100 * offset / (tree.children.length + 1));
+            //     freeSpace = tree.height - (tree.children.length + 1) * relativeOffset;
+            // }
 
             // Draw the bounds of the current node
             if (drawOutlines) {
@@ -101,8 +114,8 @@ export class SimpleTreeMap implements Visualizer {
                     options: {
                         x: bounds.left,
                         y: bounds.bottom,
-                        width: width,
-                        height: height,
+                        width: tree.width,
+                        height: tree.height,
                         fillColor: color,
                         lineColor: lineColor
                     }
@@ -111,7 +124,7 @@ export class SimpleTreeMap implements Visualizer {
                 draws.push({
                     type: 4 /** FillAAQuad **/,
                     identifier: tree.identifier,
-                    options: {x: bounds.left, y: bounds.bottom, width: width, height: height, color: color}
+                    options: {x: bounds.left, y: bounds.bottom, width: tree.width, height: tree.height, color: color}
                 });
             }
 
@@ -155,11 +168,11 @@ export class SimpleTreeMap implements Visualizer {
             tree.orientation = Orientation.HORIZONTAL;
             orientTreeNodes(tree);
         }
-        // Give the default width and height
+
         tree.width = defaultSize;
         tree.height = defaultSize;
 
-        drawTree(tree, rootBounds, false);
+        drawTree(tree, rootBounds, tree.selected);
 
         return draws;
     }
