@@ -60,8 +60,7 @@ export class OpenglDemoTree implements Visualizer {
             const randomColor = [
                                  Math.random(),
                                  Math.random(),
-                                 Math.random(),
-                                 1
+                                 Math.random()
                                  ];
             const x = startX + offsetX * i;
             const rotationDegrees = rotationOffset * i;
@@ -85,8 +84,7 @@ export class OpenglDemoTree implements Visualizer {
             const randomColor = [
                                  Math.random(),
                                  Math.random(),
-                                 Math.random(),
-                                 1
+                                 Math.random()
                                  ];
             const x = startX + offsetX * i;
             const rotationDegrees = rotationOffset * i;
