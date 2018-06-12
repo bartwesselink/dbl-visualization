@@ -607,7 +607,52 @@ export class OpenGL{
                                  x,         y,
                                  x + width / 2, y + height / 2, Math.hypot(width, height) / 2, Math.min(width, height), true, true, fillColor, lineColor);
     }
-
+        
+    //render a custom quad
+    public fillCustomQuad(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, color: number[]): number {
+        var cx = (x1 + x2 + x3 + x4) / 4;
+        var cy = (y1 + y2 + y3 + y4) / 4;
+        var maxy = Math.max(y1, y2, y3, y4);
+        var miny = Math.min(y1, y2, y3, y4);
+        var maxx = Math.max(x1, x2, x3, x4);
+        var minx = Math.min(x1, x2, x3, x4);
+        return this.drawQuadImpl(x2, y2,
+                                 x1, y1,
+                                 x3, y3,
+                                 x4, y4,
+                                 cx, cy, Math.max(maxx - cx, cx - minx, maxy - cy, cy - miny), Math.max(maxx - minx, maxy - miny), true, false, color, null);
+    }
+    
+    //render a custom quad
+    public drawCustomQuad(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, color: number[]): number {
+        var cx = (x1 + x2 + x3 + x4) / 4;
+        var cy = (y1 + y2 + y3 + y4) / 4;
+        var maxy = Math.max(y1, y2, y3, y4);
+        var miny = Math.min(y1, y2, y3, y4);
+        var maxx = Math.max(x1, x2, x3, x4);
+        var minx = Math.min(x1, x2, x3, x4);
+        return this.drawQuadImpl(x2, y2,
+                                 x1, y1,
+                                 x4, y4,
+                                 x3, y3,
+                                 cx, cy, Math.max(maxx - cx, cx - minx, maxy - cy, cy - miny), Math.max(maxx - minx, maxy - miny), false, true, null, color);
+    }
+    
+    //render a custom quad
+    public fillLinedCustomQuad(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, fillColor: number[], lineColor: number[]): number {
+        var cx = (x1 + x2 + x3 + x4) / 4;
+        var cy = (y1 + y2 + y3 + y4) / 4;
+        var maxy = Math.max(y1, y2, y3, y4);
+        var miny = Math.min(y1, y2, y3, y4);
+        var maxx = Math.max(x1, x2, x3, x4);
+        var minx = Math.min(x1, x2, x3, x4);
+        return this.drawQuadImpl(x2, y2,
+                                 x1, y1,
+                                 x3, y3,
+                                 x4, y4,
+                                 cx, cy, Math.max(maxx - cx, cx - minx, maxy - cy, cy - miny), Math.max(maxx - minx, maxy - miny), true, true, fillColor, lineColor);
+    }
+    
     //draw quad implementation
     private drawQuadImpl(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number, x: number, y: number, rad: number, span: number, fill: boolean, line: boolean, fillColor: number[], lineColor: number[]): number {
         //position
