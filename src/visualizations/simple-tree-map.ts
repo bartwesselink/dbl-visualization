@@ -98,42 +98,57 @@ export class SimpleTreeMap implements Visualizer {
                 tree.width - (tree.children.length + 1) * relativeOffset :
                 tree.height - (tree.children.length + 1) * relativeOffset;
 
-            // if (tree.orientation === Orientation.HORIZONTAL) {
-            //     relativeOffset = Math.min(tree.width / 100 * offset / (tree.children.length + 1), tree.height / 100 * offset / (tree.children.length + 1));
-            //     freeSpace = tree.width - (tree.children.length + 1) * relativeOffset;
-            // } else {
-            //     relativeOffset = Math.min(tree.width / 100 * offset / (tree.children.length + 1), tree.height / 100 * offset / (tree.children.length + 1));
-            //     freeSpace = tree.height - (tree.children.length + 1) * relativeOffset;
-            // }
 
             // Draw the bounds of the current node
-            if (drawOutlines) {
-                draws.push({
-                    type: 6 /** FillLinedAAQuad **/,
-                    identifier: tree.identifier,
-                    options: {
-                        x: bounds.left,
-                        y: bounds.bottom,
-                        width: tree.width,
-                        height: tree.height,
-                        fillColor: color,
-                        lineColor: lineColor
-                    }
-                });
-            } else {
-                draws.push({
-                    type: 4 /** FillAAQuad **/,
-                    identifier: tree.identifier,
-                    options: {x: bounds.left, y: bounds.bottom, width: tree.width, height: tree.height, color: color}
-                });
+            if (tree.orientation === Orientation.HORIZONTAL) {
+                if (drawOutlines) {
+                    draws.push({
+                        type: 6 /** FillLinedAAQuad **/,
+                        identifier: tree.identifier,
+                        options: {
+                            x: bounds.left,
+                            y: bounds.bottom,
+                            width: tree.width,
+                            height: tree.height,
+                            fillColor: color,
+                            lineColor: lineColor
+                        }
+                    });
+                } else {
+                    draws.push({
+                        type: 4 /** FillAAQuad **/,
+                        identifier: tree.identifier,
+                        options: {x: bounds.left, y: bounds.bottom, width: tree.width, height: tree.height, color: color}
+                    });
+                }
+            } else { // (tree.orientation === Orientation.VERTICAL)
+                if (drawOutlines) {
+                    draws.push({
+                        type: 6 /** FillLinedAAQuad **/,
+                        identifier: tree.identifier,
+                        options: {
+                            x: bounds.left,
+                            y: bounds.bottom,
+                            width: tree.width,
+                            height: tree.height,
+                            fillColor: color,
+                            lineColor: lineColor
+                        }
+                    });
+                } else {
+                    draws.push({
+                        type: 4 /** FillAAQuad **/,
+                        identifier: tree.identifier,
+                        options: {x: bounds.left, y: bounds.bottom, width: tree.width, height: tree.height, color: color}
+                    });
+                }
             }
 
             // Compute color and size per child, recurse on each child with the new - and nested - bounds.
             for (let i = 0; i< tree.children.length; i++) {
                 const childNode = tree.children[i];
-                let childBounds;
-                if (tree.orientation === Orientation.HORIZONTAL) {
-                    childBounds = {
+                const childBounds = tree.orientation === Orientation.HORIZONTAL ?
+                    {
                         left: (i == 0) ?
                             bounds.left + relativeOffset :
                             bounds.left + relativeOffset * (i + 1) + (freeSpace * doneSize / (tree.subTreeSize - 1)),
@@ -142,9 +157,8 @@ export class SimpleTreeMap implements Visualizer {
                             bounds.left + relativeOffset * (i + 1) + (freeSpace * (doneSize + childNode.subTreeSize) / (tree.subTreeSize - 1)),
                         bottom: bounds.bottom + relativeOffset,
                         top: bounds.top - relativeOffset
-                    };
-                } else {
-                    childBounds = {
+                    } :
+                    {
                         left: bounds.left + relativeOffset,
                         right: bounds.right - relativeOffset,
                         bottom: (i == tree.children.length - 1) ?
@@ -154,7 +168,7 @@ export class SimpleTreeMap implements Visualizer {
                             bounds.top - relativeOffset :
                             bounds.top - relativeOffset * (i + 1) - (freeSpace * doneSize / (tree.subTreeSize - 1))
                     };
-                }
+
                 childNode.width = Math.abs(childBounds.right - childBounds.left);
                 childNode.height = Math.abs(childBounds.top - childBounds.bottom);
                 doneSize = doneSize + childNode.subTreeSize; // Add the # of nodes in the subtree rooted at the childnode to doneSize.
