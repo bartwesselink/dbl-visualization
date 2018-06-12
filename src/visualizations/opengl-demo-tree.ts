@@ -132,6 +132,16 @@ export class OpenglDemoTree implements Visualizer {
         draws.push({ type: 14 /** DrawCircularArc **/, options: { x: 150, y: 100, radius: 50, start: 0, end: 180, color: [0, 0, 0, 1] } });
         draws.push({ type: 13 /** DrawEllipsoidalArc **/, options: { x: 0, y: -100, radx: 100, rady: 30, start: 0, end: 180, color: [0, 0, 0, 1] } });
 
+        // custom quad test
+        const posX: number[] = [0, 45, 100, 55];
+        const posY: number[] = [30, 120, 30, 0];
+        const offsetPosX: number = 0; // Change me!
+        const offsetPosY: number = 0; // Change me!
+        draws.push({ type: 23 /** FillCustomQuad **/, options: {x1: posX[(0 + offsetPosX) % 4], y1: posY[(0 + offsetPosY) % 4],
+                                                                x2: posX[(1 + offsetPosX) % 4], y2: posY[(1 + offsetPosY) % 4],
+                                                                x3: posX[(2 + offsetPosX) % 4], y3: posY[(2 + offsetPosY) % 4],
+                                                                x4: posX[(3 + offsetPosX) % 4], y4: posY[(3 + offsetPosY) % 4],
+                                                                fillColor: [1, 1, 0]}});
         return draws;
     }
 
