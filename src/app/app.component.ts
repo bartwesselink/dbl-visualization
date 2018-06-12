@@ -331,4 +331,8 @@ export class AppComponent implements OnInit {
         this.openTree(this.originalTree);
     }
     /** @end-author Mathijs Boezer */
+
+    public exportTree() {
+
+    }
 }
