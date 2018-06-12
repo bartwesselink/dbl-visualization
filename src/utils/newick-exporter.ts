@@ -19,24 +19,22 @@ export class NewickExporter {
                                      now.getHours() +
                                      now.getMinutes() + ".ngl";
 
-        const file = new File([newickString], fileName, {type: "text/plain;charset=utf-8"});
+        const file = new File([newickString], fileName, {type: "text/plain"});
         FileSaver.saveAs(file);
     }
 
 
     private parseTree(tree: Node): string {
         let newickString = "";
-        newickString += tree.label + ":" + tree.length;
+        newickString += tree.label; //+ ":" + tree.length;
         if (tree.children) {
             newickString = ")" + newickString;
-        }
-        for (let i = 0; i < tree.children.length; i++) {
-            if (i > 0) {
-                newickString = "," + newickString;
+            for (let i = 0; i < tree.children.length; i++) {
+                newickString = this.parseTree(tree.children[i]) + newickString;
+                if (i > 0) {
+                    newickString = "," + newickString;
+                }
             }
-            newickString = this.parseTree(tree.children[i]) + newickString;
-        }
-        if (tree.children) {
             newickString = "(" + newickString;
         }
         return newickString;
