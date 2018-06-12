@@ -17,7 +17,7 @@ export class NewickExporter {
             const day = now.getDate() > 9 ? now.getDate() : (0).toString() + now.getDate();
             const hours = now.getHours() > 9 ? now.getHours() : (0).toString() + now.getHours();
             const minutes = now.getMinutes() > 9 ? now.getMinutes() : (0).toString() + now.getMinutes();
-            const fileName = "export_" + now.getFullYear() + "-" +
+            const fileName = "export-" + now.getFullYear() + "-" +
                 month + "-" +
                 day + "_" +
                 hours +
