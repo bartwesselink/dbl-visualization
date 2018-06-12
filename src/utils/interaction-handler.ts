@@ -171,6 +171,10 @@ export class InteractionHandler {
                 const angle = Math.atan2(normalizedCursorVectorY, normalizedCursorVectorX) * 180 / Math.PI + 180;
 
                 return angle >= start && angle <= end;
+            case DrawType.DRAW_CUSTOM_QUAD:
+            case DrawType.FILL_CUSTOM_QUAD:
+            case DrawType.FILL_LINED_CUSTOM_QUAD:
+                return false;
         }
 
         return false;
@@ -208,6 +212,9 @@ export class InteractionHandler {
                 // x,y are not centered, but in bottom-left corner
                 x = options.x + options.width / 2;
                 y = options.y + options.height / 2;
+            } else if (draw.type === DrawType.DRAW_CUSTOM_QUAD || draw.type === DrawType.FILL_CUSTOM_QUAD || draw.type === DrawType.FILL_LINED_CUSTOM_QUAD) {
+                x = draw.options.x1;
+                y = draw.options.y1;
             } else {
                 x = draw.options.x;
                 y = draw.options.y;
