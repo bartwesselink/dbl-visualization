@@ -13,11 +13,14 @@ export class NewickExporter {
     public exportTree(tree: Node): void {
         const newickString = this.parseTree(tree) + ";";
         const now = new Date();
+        const month = now.getMonth() > 9 ? now.getMonth() : (0).toString() + now.getMonth();
+        const day = now.getDate() > 9 ? now.getDate() : (0).toString() + now.getDate();
+        const hours = now.getHours() > 9 ? now.getHours() : (0).toString() + now.getHours();
         const minutes = now.getMinutes() > 9 ? now.getMinutes() : (0).toString() + now.getMinutes();
         const fileName = "export_" + now.getFullYear() + "-" +
-                                     now.getMonth() + "-" +
-                                     now.getDate() + "_" +
-                                     now.getHours() +
+                                     month + "-" +
+                                     day + "_" +
+                                     hours +
                                      minutes + ".ngl";
 
         const file = new File([newickString], fileName, {type: "text/plain"});
@@ -28,6 +31,7 @@ export class NewickExporter {
     private parseTree(tree: Node): string {
         let newickString = "";
         newickString += tree.label; //+ ":" + tree.length;
+ 
         if (tree.children != null) {
             newickString = ")" + newickString;
             for (let i = 0; i < tree.children.length; i++) {
