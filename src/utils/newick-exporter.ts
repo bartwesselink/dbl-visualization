@@ -12,7 +12,14 @@ export class NewickExporter {
 
     public exportTree(tree: Node): void {
         const newickString = this.parseTree(tree) + ";";
-        const file = new File([newickString], "hello world.txt", {type: "text/plain;charset=utf-8"});
+        const now = new Date();
+        const fileName = "export_" + now.getFullYear() + "-" +
+                                     now.getMonth() + "-" +
+                                     now.getDate() + "_" +
+                                     now.getHours() +
+                                     now.getMinutes() + ".ngl";
+
+        const file = new File([newickString], fileName, {type: "text/plain;charset=utf-8"});
         FileSaver.saveAs(file);
     }
 
