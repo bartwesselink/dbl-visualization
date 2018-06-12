@@ -2,6 +2,7 @@ import {Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren} from 
 import {Tab} from '../models/tab';
 import { Node } from '../models/node';
 import {NewickParser} from '../utils/newick-parser';
+import {NewickExporter} from '../utils/newick-exporter';
 import {SidebarComponent} from '../components/sidebar/sidebar.component';
 import {Visualizer} from '../interfaces/visualizer';
 import {GeneralizedPythagorasTree} from '../visualizations/generalized-pythagoras-tree';
@@ -45,6 +46,8 @@ export class AppComponent implements OnInit {
     @ViewChildren('tabSection') private tabSections: QueryList<ElementRef>;
 
     private parser: NewickParser;
+    private exporter: NewickExporter;
+
     public darkMode = false;
 
     public viewMode = ViewMode.SIDE_BY_SIDE;
@@ -90,6 +93,7 @@ export class AppComponent implements OnInit {
         dialogPolyfill.registerDialog(this.fullScreenLoader.nativeElement);
 
         this.parser = new NewickParser(this.snackbar);
+        this.exporter = new NewickExporter(this.snackbar);
     }
 
     /** @author Jordy Verhoeven */
@@ -332,12 +336,12 @@ export class AppComponent implements OnInit {
         this.openTree(this.originalTree);
     }
     /** @end-author Mathijs Boezer */
-
+    /** @author Nico Klaassen */
     public exportTree() {
         console.log("exporting!");
-        const file = new File(["Hello world!"], "hello world.txt", {type: "text/plain;charset=utf-8"});
-        FileSaver.saveAs(file);
+        this.exporter.exportTree(this.tree);
         console.log(this.tree);
         console.log("done exporting!");
     }
+    /** @end-author Nico Klaassen */
 }
