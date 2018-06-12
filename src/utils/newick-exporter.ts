@@ -10,15 +10,29 @@ export class NewickExporter {
     constructor(private snackbar: any) {
     }
 
-    public exportTree(tree: Node): string {
-        const file = new File(["Hello world!"], "hello world.txt", {type: "text/plain;charset=utf-8"});
+    public exportTree(tree: Node): void {
+        const newickString = this.parseTree(tree) + ";";
+        const file = new File([newickString], "hello world.txt", {type: "text/plain;charset=utf-8"});
         FileSaver.saveAs(file);
-        return "Hello World";
     }
 
 
-    private parseTree(data: string): Node | null {
-       return null;
+    private parseTree(tree: Node): string {
+        let newickString = "";
+        newickString += tree.label + ":" + tree.length;
+        if (tree.children) {
+            newickString = ")" + newickString;
+        }
+        for (let i = 0; i < tree.children.length; i++) {
+            if (i > 0) {
+                newickString = "," + newickString;
+            }
+            newickString = this.parseTree(tree.children[i]) + newickString;
+        }
+        if (tree.children) {
+            newickString = "(" + newickString;
+        }
+        return newickString;
     }
 
 
