@@ -333,6 +333,8 @@ export class AppComponent implements OnInit {
     /** @end-author Mathijs Boezer */
 
     public exportTree() {
-
+        console.log("exporting!");
+        console.log(this.tree);
+        console.log("done exporting!");
     }
 }
