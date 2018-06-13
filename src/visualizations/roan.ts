@@ -16,6 +16,7 @@ export class Roan implements Visualizer {
             const compute = (parent: Node, cx: number, cy: number, rad: number): void => {
                 draws.push({ 
                     type: 10 /** FillCircle **/, 
+                    identifier: parent.identifier,
                     options: { 
                         x: cx, 
                         y: cy, 
