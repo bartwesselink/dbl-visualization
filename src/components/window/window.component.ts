@@ -45,7 +45,7 @@ export class WindowComponent implements OnInit {
     public passKeyStrokeFunction = (keyEvent: KeyboardEvent) => this.keyEvent(keyEvent);
     public passZoomFunction = (value: number) => this.zoomValue(value);
 
-    public form: Form|null;
+    public form: Form | null;
 
     private context: CanvasRenderingContext2D;
     public tooltipActive: boolean = false;
@@ -108,6 +108,13 @@ export class WindowComponent implements OnInit {
         /** Color palette support */
         this.darkMode = settingsBus.getSettings().darkMode;
         this.palette = Palettes.default;
+
+        // Initialize settings
+        this.gradientMapType = this.settingsBus.getSettings().gradientMapType;
+        this.gradientType = this.settingsBus.getSettings().gradientType;
+        this.invertHSV = this.settingsBus.getSettings().invertHSV;
+        this.reversePalette = this.settingsBus.getSettings().reversePalette;
+
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
             if (!settings.colorMode) {
                 this.palette = Palettes.greyScale;
@@ -144,15 +151,18 @@ export class WindowComponent implements OnInit {
     /** @author Mathijs Boezer */
     // called from AppComponent to prevent multiple calls
     public checkGpu(): void {
-        if(!this.gl.isDedicatedGPU()) {
+        if (!this.gl.isDedicatedGPU()) {
             this.snackbar.MaterialSnackbar.showSnackbar({
                 message: "You are using integrated graphics, this could diminish your experience.",
                 timeout: 1e8, // practically infinite
-                actionHandler: () => { this.snackbar.MaterialSnackbar.cleanup_(); }, // close on click
+                actionHandler: () => {
+                    this.snackbar.MaterialSnackbar.cleanup_();
+                }, // close on click
                 actionText: "CLOSE"
             });
         }
     }
+
     /** @author Mathijs Boezer */
 
     public change(value: object) {
@@ -167,59 +177,59 @@ export class WindowComponent implements OnInit {
 
 
     public setDarkmode(enabled: boolean): void {
-        if(enabled){
+        if (enabled) {
             this.gl.setBackgroundColor(50.0 / 255.0, 50.0 / 255.0, 50.0 / 255.0);
-        }else{
+        } else {
             this.gl.setBackgroundColor(1.0, 1.0, 1.0);
         }
         this.render();
     }
-    
+
     public keyEvent(event: KeyboardEvent): void {
-        switch(event.key){
-        case 'q':
-        case 'Q':
-            this.gl.rotate(-this.DEFAULT_DR);
-            this.render();
-            break;
-        case 'e':
-        case 'E':
-            this.gl.rotate(this.DEFAULT_DR);
-            this.render();
-            break;
-        case 'w':
-        case 'W':
-            this.gl.translate(0, this.DEFAULT_DT);
-            this.render();
-            break;
-        case 's':
-        case 'S':
-            this.gl.translate(0, -this.DEFAULT_DT);
-            this.render();
-            break;
-        case 'a':
-        case 'A':
-            this.gl.translate(this.DEFAULT_DT, 0);
-            this.render();
-            break;
-        case 'd':
-        case 'D':
-            this.gl.translate(-this.DEFAULT_DT, 0);
-            this.render();
-            break;
-        case 'r':
-        case 'R':
-            this.scaleView(1 + this.DEFAULT_DS);
-            break;
-        case 'f':
-        case 'F':
-            this.scaleView(1 - this.DEFAULT_DS);
-            break;
-        case 't':
-        case 'T':
-            this.gl.resetTransformations();
-            this.render();
-            break;
+        switch (event.key) {
+            case 'q':
+            case 'Q':
+                this.gl.rotate(-this.DEFAULT_DR);
+                this.render();
+                break;
+            case 'e':
+            case 'E':
+                this.gl.rotate(this.DEFAULT_DR);
+                this.render();
+                break;
+            case 'w':
+            case 'W':
+                this.gl.translate(0, this.DEFAULT_DT);
+                this.render();
+                break;
+            case 's':
+            case 'S':
+                this.gl.translate(0, -this.DEFAULT_DT);
+                this.render();
+                break;
+            case 'a':
+            case 'A':
+                this.gl.translate(this.DEFAULT_DT, 0);
+                this.render();
+                break;
+            case 'd':
+            case 'D':
+                this.gl.translate(-this.DEFAULT_DT, 0);
+                this.render();
+                break;
+            case 'r':
+            case 'R':
+                this.scaleView(1 + this.DEFAULT_DS);
+                break;
+            case 'f':
+            case 'F':
+                this.scaleView(1 - this.DEFAULT_DS);
+                break;
+            case 't':
+            case 'T':
+                this.gl.resetTransformations();
+                this.render();
+                break;
         }
     }
 
@@ -306,7 +316,7 @@ export class WindowComponent implements OnInit {
         event.preventDefault();
         if (this.down) {
             this.gl.rotate(event.deltaY / this.ROTATION_NORMALISATION);
-        }else{
+        } else {
             this.scaleView(Math.max(0.1, 1.0 - (event.deltaY / this.ZOOM_NORMALISATION)));
         }
         this.render();
@@ -354,7 +364,7 @@ export class WindowComponent implements OnInit {
             })
                 .then((draws: Draw[]) => {
                     setTimeout(() => {
-                        if(this.visualizer.optimizeShaders){
+                        if (this.visualizer.optimizeShaders) {
                             this.visualizer.optimizeShaders(this.gl);
                         }
 
@@ -414,22 +424,26 @@ export class WindowComponent implements OnInit {
 
     //initialise OpenGL
     private init(): void {
-        var gl: WebGLRenderingContext = this.canvas.nativeElement.getContext('webgl', {preserveDrawingBuffer: true, depth: false, alpha: false});
+        var gl: WebGLRenderingContext = this.canvas.nativeElement.getContext('webgl', {
+            preserveDrawingBuffer: true,
+            depth: false,
+            alpha: false
+        });
 
-        if(!gl){
+        if (!gl) {
             this.onError("No WebGL present");
             return;
         }
 
-        try{
+        try {
             this.gl = new OpenGL(gl);
-        }catch(error){
+        } catch (error) {
             this.onError((<Error>error).message);
         }
 
         this.setDarkmode(this.darkMode);
 
-        if(this.visualizer.enableShaders){
+        if (this.visualizer.enableShaders) {
             this.visualizer.enableShaders(this.gl);
         }
     }
@@ -463,6 +477,7 @@ export class WindowComponent implements OnInit {
     private stopLoading() {
         this.loading.emit(false);
     }
+
     /** @end-author Bart Wesselink */
 
     /** @author Nico Klaassen */
@@ -483,5 +498,6 @@ export class WindowComponent implements OnInit {
         this.gl.resetTransformations();
         this.render();
     }
+
     /** @end-author Mathijs Boezer */
 }
