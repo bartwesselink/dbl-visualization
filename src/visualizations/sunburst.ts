@@ -20,10 +20,9 @@ export class Sunburst implements Visualizer {
         let baseRadius = settings.baseRadius;
         let scaleRadius = settings.scaleRadius;
         let radiusMargin = settings.radiusMargin;
-        let scaleSliceMargin = settings.scaleSliceMargin;
-        let defaultSliceMargin = settings.sliceMargin;
+        let relativeSliceMargin = settings.sliceMargin;
 
-        const generate = (node: Node, startAngle: number, endAngle: number, near: number, innerRadius: number, sliceMargin: number = defaultSliceMargin, isLastChild: boolean = true, isSelected: boolean = false) => {
+        const generate = (node: Node, startAngle: number, endAngle: number, near: number, innerRadius: number, depth: number = 0, isLastChild: boolean = true, isSelected: boolean = false) => {
             if (node.selected === true || isSelected) {
                 isSelected = true;
                 color = palette.gradientColorMapSelected[node.maxDepth][node.depth];
@@ -31,37 +30,47 @@ export class Sunburst implements Visualizer {
                 color = palette.gradientColorMap[node.maxDepth][node.depth];
             }
 
-            sliceMargin = sliceMargin * scaleSliceMargin;
-
             let far = near + innerRadius;
-            let drawnEndAngle = endAngle;
 
             near += radiusMargin; // add a small margin
-            drawnEndAngle -= sliceMargin;
 
-            if (drawnEndAngle < 0) {
-                // TODO: find out whether this mathematically possible, I have'nt encountered such a case
-                console.error('Visualization error');
-            }
-
-            draws.push({ type: 17 /** FillRingSlice **/, identifier: node.identifier, options: { x: 0, y: 0, near: near, far: far, start: startAngle, end: drawnEndAngle, color }});
+            draws.push({ type: 17 /** FillRingSlice **/, identifier: node.identifier, options: { x: 0, y: 0, near: near, far: far, start: startAngle, end: endAngle, color }});
 
             let newStartAngle = startAngle;
+
+            const size = (endAngle - startAngle);
+
+            // calculate slice margin
+            let sliceMargin = size * (relativeSliceMargin / 1000);
+
+            // calculate how much space will be used for margin
+            const margins = (node.children.length - 1) * sliceMargin;
+
+            if (depth === 0) {
+                console.log((size - margins));
+            }
 
             let childCounter = 0;
             for (const child of node.children) {
                 childCounter++;
 
+                const last = childCounter === node.children.length;
+                const first = childCounter === 1;
+
                 // calculate the fraction of the ring slice. Minus one is to extract the root of the current subtree
                 const factor = child.subTreeSize / (node.subTreeSize - 1);
 
                 // convert fraction to an angle, and increase the startAngle
-                const angle = (endAngle - startAngle) * factor + newStartAngle;
+                let angle = (size - margins) * factor + newStartAngle;
 
-                generate(child, newStartAngle, angle, far, innerRadius * scaleRadius, sliceMargin, childCounter === node.children.length, isSelected);
+                if (depth === 0) {
+                    console.log(newStartAngle, angle);
+                }
+
+                generate(child, newStartAngle, angle, far, innerRadius * scaleRadius, depth + 1, last, isSelected);
 
                 // iterate to the the next angle
-                newStartAngle = angle;
+                newStartAngle = angle + sliceMargin;
             }
         };
 
@@ -75,8 +84,7 @@ export class Sunburst implements Visualizer {
             .addSliderField('baseRadius', 60, {label: 'Base radius', min: 30, max: 100})
             .addSliderField('scaleRadius', 0.9, {label: 'Reduce radius per level factor', step: 0.1, min: 0.1, max: 1})
             .addSliderField('radiusMargin', 4, {label: 'Margin between levels', min: 0, max: 8})
-            .addSliderField('sliceMargin', 2, {label: 'Margin between slices', min: 0, max: 8})
-            .addSliderField('scaleSliceMargin', 0.9, {label: 'Reduce slice margin per level factor', step: 0.1, min: 0.1, max: 1})
+            .addSliderField('sliceMargin', 5, {label: 'Relative margin between slices (‰)', min: 0, max: 20})
             .getForm();
     }
 
