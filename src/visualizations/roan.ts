@@ -6,14 +6,22 @@ import {ShaderMode} from "../opengl/shaders/shaderMode";
 import {Draw} from '../interfaces/draw';
 import {VisualizerInput} from '../interfaces/visualizer-input';
 import {Node} from "../models/node";
+import {Palette} from "../models/palette";
 
 export class Roan implements Visualizer {
     
     public draw(input: VisualizerInput): Draw[] {
             const tree = input.tree;
             const draws = new Array();
+            const palette: Palette = input.palette;
+            var color: number[];
             
             const compute = (parent: Node, cx: number, cy: number, rad: number): void => {
+                if (parent.selected === true) {
+                    color = palette.gradientColorMapSelected[parent.maxDepth][parent.depth];
+                } else {
+                    color = palette.gradientColorMap[parent.maxDepth][parent.depth];
+                }
                 draws.push({ 
                     type: 10 /** FillCircle **/, 
                     identifier: parent.identifier,
@@ -21,7 +29,7 @@ export class Roan implements Visualizer {
                         x: cx, 
                         y: cy, 
                         radius: rad, 
-                        color: [1,0,0] 
+                        color: color 
                     } 
                 });
                 if(parent.subTreeSize > 0){
