@@ -19,6 +19,7 @@ export class OpenGL{
     public readonly HALFHEIGHT = this.HEIGHT / 2;
     private readonly PRECISION = 10;
     private readonly SIZETHRESHOLD = 0.5;
+    private readonly VERBOSE = true;
     private mode: Mode;
     private factor: number = 1;
     private dx: number = 0;
@@ -34,7 +35,7 @@ export class OpenGL{
 
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
-        this.shader = new Shader(gl, this);//TODO
+        this.shader = new Shader(gl, this);
 
         //set the canvas background color to white
         this.setBackgroundColor(1.0, 1.0, 1.0);
@@ -44,8 +45,10 @@ export class OpenGL{
         this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
         this.gl.enable(this.gl.BLEND);
 
-        console.log("[OpenGL] OpenGL version: " + this.gl.getParameter(gl.VERSION));
-        console.log("[OpenGL] GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
+        if(this.VERBOSE){
+            console.log("[OpenGL] OpenGL version: " + this.gl.getParameter(gl.VERSION));
+            console.log("[OpenGL] GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
+        }
     }
 
     //optimises the given shader mode
@@ -149,7 +152,9 @@ export class OpenGL{
     public isDedicatedGPU(): boolean {
         var info = this.gl.getExtension("WEBGL_debug_renderer_info");
         var name = this.gl.getParameter(info.UNMASKED_RENDERER_WEBGL);
-        console.log("[OpenGL] Detected renderer: " + name);
+        if(this.VERBOSE){
+            console.log("[OpenGL] Detected renderer: " + name);
+        }
         if(name.indexOf("NVIDIA") != -1){
             return true;
         }else if(name.indexOf("GeForce") != -1){
@@ -331,7 +336,9 @@ export class OpenGL{
         //the visualisation does not distort. Theoretically we could also recompute all the buffers and map to a new coordinate space.
         this.width = width;
         this.height = height;
-        console.log("[OpenGL] Viewport resolution: " + width + "x" + height);
+        if(this.VERBOSE){
+            console.log("[OpenGL] Viewport resolution: " + width + "x" + height);
+        }
         if((width / this.WIDTH) * this.HEIGHT > height){
             this.mode = Mode.WIDTH_FIRST;
             this.gl.viewport(0, (height - ((width / this.WIDTH) * this.HEIGHT)) / 2, width, (width / this.WIDTH) * this.HEIGHT);
@@ -1290,7 +1297,9 @@ export class OpenGL{
             vertices += this.drawElement(elem);
             total += elem.overlay == null ? elem.length : (elem.length + elem.overlay.length);
         }
-        console.log("[OpenGL] Rendered " + vertices + " out of " + total + " vertices in", (performance.now() - start), "ms");
+        if(this.VERBOSE){
+            console.log("[OpenGL] Rendered " + vertices + " out of " + total + " vertices in", (performance.now() - start), "ms");
+        }
     }
 
     //checks if an element is visible
