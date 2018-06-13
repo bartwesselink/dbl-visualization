@@ -14,6 +14,7 @@ import {ViewMode} from '../enums/view-mode';
 import {SubtreeBus} from "../providers/subtree-bus";
 import {SelectBus} from "../providers/select-bus";
 import {BasicTree} from "../visualizations/basic-tree";
+import {Roan} from "../visualizations/roan";
 
 declare var dialogPolyfill;
 
@@ -187,6 +188,7 @@ export class AppComponent implements OnInit {
             new GeneralizedPythagorasTree(),
             new SimpleTreeMap(),
             new BasicTree(),
+            new Roan()
         ];
     }
 
