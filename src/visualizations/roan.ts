@@ -28,8 +28,9 @@ export class Roan implements Visualizer {
                     var dr = (2 * Math.PI) / parent.children.length;
                     var r = 0;
                     rad /= 4;
+                    var size = Math.min(rad, ((2 * Math.PI * rad * 6) / parent.children.length) / 4);
                     for(let child of parent.children){
-                        compute(child, cx + rad * 6 * Math.cos(r), cy + rad * 6 * Math.sin(r), rad);
+                        compute(child, cx + rad * 6 * Math.cos(r), cy + rad * 6 * Math.sin(r), size);
                         r += dr;
                     }
                 }
