@@ -19,7 +19,7 @@ export class OpenGL{
     public readonly HALFHEIGHT = this.HEIGHT / 2;
     private readonly PRECISION = 10;
     private readonly SIZETHRESHOLD = 0.5;
-    private readonly VERBOSE = true;
+    private static verbose = true;
     private mode: Mode;
     private factor: number = 1;
     private dx: number = 0;
@@ -45,10 +45,15 @@ export class OpenGL{
         this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
         this.gl.enable(this.gl.BLEND);
 
-        if(this.VERBOSE){
+        if(OpenGL.verbose){
             console.log("[OpenGL] OpenGL version: " + this.gl.getParameter(gl.VERSION));
             console.log("[OpenGL] GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
         }
+    }
+    
+    //toggles verbose mode
+    public static setVerbose(verbose: boolean): void {
+        OpenGL.verbose = verbose;
     }
 
     //optimises the given shader mode
@@ -152,7 +157,7 @@ export class OpenGL{
     public isDedicatedGPU(): boolean {
         var info = this.gl.getExtension("WEBGL_debug_renderer_info");
         var name = this.gl.getParameter(info.UNMASKED_RENDERER_WEBGL);
-        if(this.VERBOSE){
+        if(OpenGL.verbose){
             console.log("[OpenGL] Detected renderer: " + name);
         }
         if(name.indexOf("NVIDIA") != -1){
@@ -336,7 +341,7 @@ export class OpenGL{
         //the visualisation does not distort. Theoretically we could also recompute all the buffers and map to a new coordinate space.
         this.width = width;
         this.height = height;
-        if(this.VERBOSE){
+        if(OpenGL.verbose){
             console.log("[OpenGL] Viewport resolution: " + width + "x" + height);
         }
         if((width / this.WIDTH) * this.HEIGHT > height){
@@ -1297,7 +1302,7 @@ export class OpenGL{
             vertices += this.drawElement(elem);
             total += elem.overlay == null ? elem.length : (elem.length + elem.overlay.length);
         }
-        if(this.VERBOSE){
+        if(OpenGL.verbose){
             console.log("[OpenGL] Rendered " + vertices + " out of " + total + " vertices in", (performance.now() - start), "ms");
         }
     }
