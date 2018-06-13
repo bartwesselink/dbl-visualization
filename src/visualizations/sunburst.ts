@@ -46,10 +46,6 @@ export class Sunburst implements Visualizer {
             // calculate how much space will be used for margin
             const margins = (node.children.length - 1) * sliceMargin;
 
-            if (depth === 0) {
-                console.log((size - margins));
-            }
-
             let childCounter = 0;
             for (const child of node.children) {
                 childCounter++;
@@ -74,7 +70,7 @@ export class Sunburst implements Visualizer {
             }
         };
 
-        generate(tree, 0, 360, 0, baseRadius);
+        generate(tree, 0, 360 - (relativeSliceMargin/1000) * 360, 0, baseRadius);
 
         return draws;
     }
