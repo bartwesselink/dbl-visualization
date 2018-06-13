@@ -8,6 +8,7 @@ import {CircleElement} from "./shaders/elem/circleElement";
 import {CircleSliceElement} from "./shaders/elem/circleSliceElement";
 import {RingSliceElement} from "./shaders/elem/ringSliceElement";
 import {CircularArcElement} from "./shaders/elem/circularArcElement";
+import {environment} from "../environments/environment";
 
 export class OpenGL{
     private gl: WebGLRenderingContext;
@@ -19,7 +20,7 @@ export class OpenGL{
     public readonly HALFHEIGHT = this.HEIGHT / 2;
     private readonly PRECISION = 10;
     private readonly SIZETHRESHOLD = 0.5;
-    private static verbose = true;
+    private static verbose = environment.openglVerbose;
     private mode: Mode;
     private factor: number = 1;
     private dx: number = 0;
