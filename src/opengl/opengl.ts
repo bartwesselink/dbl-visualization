@@ -292,7 +292,6 @@ export class OpenGL{
         Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DScalingMatrix(factor));
         Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]);
         this.factor *= factor;
-        console.log(this.factor)
     }
 
     //enables the given shader
