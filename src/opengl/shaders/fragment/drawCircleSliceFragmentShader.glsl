@@ -17,7 +17,7 @@ void main() {
 	lowp float val = sqrt(pow(dx, 2.0) + pow(dy, 2.0));
 	lowp float angle = atan(-dy, -dx) + PI;
 	lowp vec4 clr;
-	if(val <= radius + 0.0025 && val >= radius - 0.0025 && angle >= start && angle <= end){
+	if(val <= radius + 0.0025 && val >= radius - 0.0025 && angle >){
 		clr = clr = vec4(color, 1.0 - 400.0 * abs(radius - val));
 	}else{
 		clr = vec4(0.0, 0.0, 0.0, 0.0);
