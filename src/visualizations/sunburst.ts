@@ -83,8 +83,8 @@ export class Sunburst implements Visualizer {
             .addSliderField('scaleRadius', 0.9, {label: 'Reduce radius per level factor', step: 0.1, min: 0.1, max: 1})
             .addSliderField('radiusMargin', 4, {label: 'Margin between levels', min: 0, max: 8})
             .addSliderField('sliceMargin', 5, {label: 'Relative margin between slices (‰)', min: 0, max: 20})
-            .addNumberField('maxDegrees', 360, {label: 'Total number of degrees to draw across'})
-            .addNumberField('rotationOffset', 0, {label: 'Degrees to rotate the visual counter-clockwise'})
+            .addSliderField('maxDegrees', 360, {label: 'Total number of degrees to draw across', min: 0, max: 360})
+            .addSliderField('rotationOffset', 0, {label: 'Degrees to rotate the visual counter-clockwise', min: 0, max: 360})
             .getForm();
     }
 
@@ -98,11 +98,6 @@ export class Sunburst implements Visualizer {
 
     public enableShaders(gl: OpenGL): void {
         gl.enableShaders(ShaderMode.FILL_RING_SLICE);
-    }
-
-    public optimizeShaders(gl: OpenGL): void {
-        gl.optimizeDefault();
-        gl.optimizeFor(ShaderMode.FILL_RING_SLICE);
     }
 
     /** @end-author Bart Wesselink */
