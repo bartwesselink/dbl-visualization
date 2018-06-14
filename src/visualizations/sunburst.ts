@@ -21,6 +21,8 @@ export class Sunburst implements Visualizer {
         let scaleRadius = settings.scaleRadius;
         let radiusMargin = settings.radiusMargin;
         let relativeSliceMargin = settings.sliceMargin;
+        let maxDegrees = settings.maxDegrees;
+        let rotationOffset = settings.rotationOffset;
 
         const generate = (node: Node, startAngle: number, endAngle: number, near: number, innerRadius: number, depth: number = 0, isLastChild: boolean = true, isSelected: boolean = false) => {
             if (node.selected === true || isSelected) {
@@ -57,7 +59,7 @@ export class Sunburst implements Visualizer {
                 const factor = child.subTreeSize / (node.subTreeSize - 1);
 
                 // convert fraction to an angle, and increase the startAngle
-                let angle = (size - margins) * factor + newStartAngle;
+                let angle = ((size - margins) * factor + newStartAngle );
 
                 if (depth === 0) {
                     console.log(newStartAngle, angle);
@@ -70,7 +72,7 @@ export class Sunburst implements Visualizer {
             }
         };
 
-        generate(tree, 0, 360 - (relativeSliceMargin/1000) * 360, 0, baseRadius);
+        generate(tree, (0 + rotationOffset) % 361, (maxDegrees + rotationOffset) % 361, 0, baseRadius);
 
         return draws;
     }
@@ -81,6 +83,8 @@ export class Sunburst implements Visualizer {
             .addSliderField('scaleRadius', 0.9, {label: 'Reduce radius per level factor', step: 0.1, min: 0.1, max: 1})
             .addSliderField('radiusMargin', 4, {label: 'Margin between levels', min: 0, max: 8})
             .addSliderField('sliceMargin', 5, {label: 'Relative margin between slices (‰)', min: 0, max: 20})
+            .addNumberField('maxDegrees', 360, {label: 'Total number of degrees to draw across'})
+            .addNumberField('rotationOffset', 0, {label: 'Degrees to rotate the visual counter-clockwise'})
             .getForm();
     }
 
