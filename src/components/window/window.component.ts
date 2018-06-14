@@ -106,34 +106,11 @@ export class WindowComponent implements OnInit {
 
         /** @author Nico Klaassen & Jules Cornelissen*/
         /** Color palette support */
-        this.darkMode = settingsBus.getSettings().darkMode;
-        this.palette = Palettes.default;
-
-        // Initialize settings
-        this.gradientMapType = this.settingsBus.getSettings().gradientMapType;
-        this.gradientType = this.settingsBus.getSettings().gradientType;
-        this.invertHSV = this.settingsBus.getSettings().invertHSV;
-        this.reversePalette = this.settingsBus.getSettings().reversePalette;
+        // initialize settings
+        this.readSettings(this.settingsBus.getSettings(), true);
 
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
-            if (!settings.colorMode) {
-                this.palette = Palettes.greyScale;
-            } else {
-                this.palette = this.getPalette(settings.palette);
-            }
-            this.gradientMapType = settings.gradientMapType;
-            this.gradientType = settings.gradientType;
-            this.invertHSV = settings.invertHSV;
-            this.reversePalette = settings.reversePalette;
-            if (this.reversePalette) {
-                this.palette = new Palette(this.palette.secondary, this.palette.primary, this.palette.accents);
-            }
-            if (this.darkMode === settings.darkMode) { // It wasn't the darkMode setting that changed
-                this.redrawAllScenes();
-            } else {
-                this.darkMode = settings.darkMode;
-                this.setDarkmode(this.darkMode);
-            }
+            this.readSettings(settings, false);
         });
         /** @end-author Nico Klaassen & Jules Cornelissen*/
     }
@@ -142,7 +119,6 @@ export class WindowComponent implements OnInit {
         this.tab.window = this; // create reference in order to enable tab-manager to communicate with component
         this.form = this.visualizer.getForm(this.formFactory);
         this.lastSettings = this.form != null ? this.form.getFormGroup().value : {};
-        this.palette = Palettes.default;
 
         this.setHeight();
         this.startScene();
@@ -491,6 +467,32 @@ export class WindowComponent implements OnInit {
                 return Palettes.greyScale;
         }
         return Palettes.default; // Fallback
+    }
+
+    private readSettings(settings: Settings, initialize: boolean): void {
+        if (!settings.colorMode) {
+            this.palette = Palettes.greyScale;
+        } else {
+            this.palette = this.getPalette(settings.palette);
+        }
+        this.gradientMapType = settings.gradientMapType;
+        this.gradientType = settings.gradientType;
+        this.invertHSV = settings.invertHSV;
+        this.reversePalette = settings.reversePalette;
+        if (this.reversePalette) {
+            this.palette = new Palette(this.palette.secondary, this.palette.primary, this.palette.accents);
+        }
+
+        if (initialize) {
+            this.darkMode = settings.darkMode;
+        } else {
+            if (this.darkMode === settings.darkMode) { // It wasn't the darkMode setting that changed
+                this.redrawAllScenes();
+            } else {
+                this.darkMode = settings.darkMode;
+                this.setDarkmode(this.darkMode);
+            }
+        }
     }
 
     /** @author Mathijs Boezer */
