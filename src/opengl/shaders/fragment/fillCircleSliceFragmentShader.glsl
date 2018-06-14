@@ -16,8 +16,8 @@ void main() {
 	lowp float dy = vpos.y - cy;
 	lowp float val = sqrt(pow(dx, 2.0) + pow(dy, 2.0));
 	lowp float angle = atan(-dy, -dx) + PI;
-	if(angle >= start && angle <= end && val <= radius){
-		gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+	if(angle >= start && angle <= end && val <= radius + 0.0025){
+		gl_FragColor = vec4(color, 400.0 * (min(min(end - angle, 0.0025 / val), angle - start) * val + min(radius - val, 0.0)));
 	}
 }
 /** @end-author Roan Hofland */     
