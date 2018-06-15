@@ -22,9 +22,8 @@ export class Sunburst implements Visualizer {
         let radiusMargin = settings.radiusMargin;
         let relativeSliceMargin = settings.sliceMargin;
         let maxDegrees = settings.maxDegrees;
-        let rotationOffset = settings.rotationOffset;
 
-        const generate = (node: Node, startAngle: number, endAngle: number, near: number, innerRadius: number, depth: number = 0, isLastChild: boolean = true, isSelected: boolean = false) => {
+        const generate = (node: Node, startAngle: number, endAngle: number, near: number, innerRadius: number, isLastChild: boolean = true, isSelected: boolean = false) => {
             if (node.selected === true || isSelected) {
                 isSelected = true;
                 color = palette.gradientColorMapSelected[node.maxDepth][node.depth];
@@ -53,7 +52,6 @@ export class Sunburst implements Visualizer {
                 childCounter++;
 
                 const last = childCounter === node.children.length;
-                const first = childCounter === 1;
 
                 // calculate the fraction of the ring slice. Minus one is to extract the root of the current subtree
                 const factor = child.subTreeSize / (node.subTreeSize - 1);
@@ -61,18 +59,14 @@ export class Sunburst implements Visualizer {
                 // convert fraction to an angle, and increase the startAngle
                 let angle = ((size - margins) * factor + newStartAngle );
 
-                if (depth === 0) {
-                    console.log(newStartAngle, angle);
-                }
-
-                generate(child, newStartAngle, angle, far, innerRadius * scaleRadius, depth + 1, last, isSelected);
+                generate(child, newStartAngle, angle, far, innerRadius * scaleRadius, last, isSelected);
 
                 // iterate to the the next angle
                 newStartAngle = angle + sliceMargin;
             }
         };
 
-        generate(tree, (0 + rotationOffset) % 361, (maxDegrees + rotationOffset) % 361, 0, baseRadius);
+        generate(tree, 0, maxDegrees, 0, baseRadius);
 
         return draws;
     }
@@ -84,7 +78,6 @@ export class Sunburst implements Visualizer {
             .addSliderField('radiusMargin', 4, {label: 'Margin between levels', min: 0, max: 8})
             .addSliderField('sliceMargin', 5, {label: 'Relative margin between slices (‰)', min: 0, max: 20})
             .addSliderField('maxDegrees', 360, {label: 'Total number of degrees to draw across', min: 0, max: 360})
-            .addSliderField('rotationOffset', 0, {label: 'Degrees to rotate the visual counter-clockwise', min: 0, max: 360})
             .getForm();
     }
 
