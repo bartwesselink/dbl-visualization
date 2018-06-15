@@ -82,7 +82,7 @@ export class WindowComponent implements OnInit {
 
     private clickTimer: any;
     private dragging: boolean = false;
-    private readonly clickTimerThreshold: number = 150;
+    private readonly clickTimerThreshold: number = 200;
 
     private gradientMapType: boolean = true;
     private gradientType: GradientType = GradientType.RGBLinear;
@@ -150,7 +150,6 @@ export class WindowComponent implements OnInit {
         this.gl.resetZoom();
         this.scaleView(value);
     }
-
 
     public setDarkmode(enabled: boolean): void {
         if (enabled) {
