@@ -100,7 +100,7 @@ export class WindowComponent implements OnInit {
             this.tree.selectedNode = node;
             node.selected = true;
 
-            this.redrawAllScenes();
+            this.stateRedraw();
             this.interactionHandler.scaleToNode(this.gl, this.canvas, this.currentDraws, node, this.selectBus.interactionOptions);
         });
 
@@ -122,17 +122,7 @@ export class WindowComponent implements OnInit {
                 this.palette = new Palette(this.palette.secondary, this.palette.primary, this.palette.accents);
             }
             if (this.darkMode === settings.darkMode) { // It wasn't the darkMode setting that changed
-                if(this.visualizer.updateColors){
-                    this.computeColors();
-                    this.visualizer.updateColors(this.gl, {
-                        tree: this.tree,
-                        settings: this.lastSettings,
-                        palette: this.palette
-                    }, this.currentDraws);
-                    this.render();
-                }else{
-                    this.redrawAllScenes();
-                }
+                this.stateRedraw();
             } else {
                 this.darkMode = settings.darkMode;
                 this.setDarkmode(this.darkMode);
@@ -468,6 +458,20 @@ export class WindowComponent implements OnInit {
             arr[draw.identifier] = draw;
         }
         return arr; 
+    }
+    
+    private stateRedraw(): void {
+        if(this.visualizer.updateColors){
+            this.computeColors();
+            this.visualizer.updateColors(this.gl, {
+                tree: this.tree,
+                settings: this.lastSettings,
+                palette: this.palette
+            }, this.currentDraws);
+            this.render();
+        }else{
+            this.redrawAllScenes();
+        }
     }
 
     /** @end-author Roan Hofland */

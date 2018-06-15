@@ -143,7 +143,7 @@ export class GeneralizedPythagorasTree implements Visualizer {
     }
     
     private recolor(tree: Node, palette: Palette, gl: OpenGL, draws: Draw[], selected: boolean){
-        if (selected) {
+        if (selected || tree.selected) {
             selected = true;
             gl.setColor(draws[tree.identifier].glid, palette.gradientColorMapSelected[tree.maxDepth][tree.depth])
         } else {
