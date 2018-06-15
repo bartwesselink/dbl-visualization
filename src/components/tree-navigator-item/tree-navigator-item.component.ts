@@ -4,6 +4,8 @@ import {TreeNavigatorComponent} from '../tree-navigator/tree-navigator.component
 import {SelectBus} from '../../providers/select-bus';
 import {SubtreeBus} from "../../providers/subtree-bus";
 
+declare var componentHandler: any;
+
 @Component({
     selector: 'app-tree-navigator-item',
     templateUrl: './tree-navigator-item.component.html',
@@ -18,6 +20,9 @@ export class TreeNavigatorItemComponent implements OnInit {
 
     ngOnInit(): void {
         this.checkExpand();
+        setTimeout(() => {
+            componentHandler.upgradeDom(); // we change the ids of the elements dynamically, this makes mdl recognize that
+        });
     }
 
     public checkExpand(): void {
