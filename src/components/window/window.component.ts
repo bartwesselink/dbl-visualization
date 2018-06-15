@@ -130,6 +130,8 @@ export class WindowComponent implements OnInit {
                         palette: this.palette
                     }, this.currentDraws);
                     this.render();
+                }else{
+                    this.redrawAllScenes();
                 }
             } else {
                 this.darkMode = settings.darkMode;
@@ -372,11 +374,10 @@ export class WindowComponent implements OnInit {
                         this.visualizer.optimizeShaders(this.gl);
                     }
                     
-                    if(!(this.visualizer instanceof OpenglDemoTree)){
-                        draws = this.sort(draws);
-                    }
-                    
                     if(this.visualizer.updateColors){
+                        if(!(this.visualizer instanceof OpenglDemoTree)){
+                            draws = this.sort(draws);
+                        }
                         this.visualizer.updateColors(this.gl, input, draws);
                     }
 
