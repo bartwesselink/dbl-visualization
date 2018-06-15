@@ -76,9 +76,9 @@ export class OpenGL{
                         let tmp = this.arrays[this.index];
                         this.arrays[this.index] = this.arrays[i];
                         this.arrays[i] = tmp;
-                        let ti = this.indices[this.index];
-                        this.indices[this.index] = this.indices[i];
-                        this.indices[i] = ti;
+                        let ti = this.indices[i];
+                        this.indices[i] = this.indices[this.index];
+                        this.indices[this.index] = ti;
                         continue outer;
                     }
                 }
@@ -90,9 +90,13 @@ export class OpenGL{
         for(var c = 0; c < this.arrays.length; c++){
             str += this.arrays[c].x + "(" + this.arrays[c].test + ") ";   
         }
+        var id = new Array(this.arrays.length);
+
         for(var i = 0; i < this.arrays.length; i++){
-            this.indices[this.arrays[i].test] = i;
+            //this.indices[this.arrays[i].test] = i;
+            id[this.indices[i]] = i;
         }
+        this.indices = id;
         
         console.log(str);
         console.log(this.indices);
