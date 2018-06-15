@@ -475,8 +475,8 @@ export class OpenGL{
             if(end - start > 90){
                 return this.drawArcImpl(pos, color, x, y, radius, 2 * radius);
             }else{
-                var dcx = radius * 0.71 * Math.cos(start + ((end - start) / 2));
-                var dcy = radius * 0.71 * Math.sin(start + ((end - start) / 2));
+                var dcx = radius * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
+                var dcy = radius * 0.71 * Math.sin((start + ((end - start) / 2)) * Matrix.oneDeg);
                 return this.drawArcImpl(pos, color, x + dcx, y + dcy, radius * 0.71, radius * 1.42);
             }
         }
@@ -906,8 +906,8 @@ export class OpenGL{
                     length: pos.length / 2
                 });
             }else{
-                var dcx = far * 0.71 * Math.cos(start + ((end - start) / 2));
-                var dcy = far * 0.71 * Math.sin(start + ((end - start) / 2));
+                var dcx = far * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
+                var dcy = far * 0.71 * Math.sin((start + ((end - start) / 2)) * Matrix.oneDeg);
                 return this.arrays.push({
                     pos: posBuffer,
                     color: OpenGL.toColor(color),
@@ -915,7 +915,7 @@ export class OpenGL{
                     x: x + dcx,
                     y: y + dcy,
                     rad: far * 0.71,
-                    span: far * 1.42,
+                    span: Math.min(far - near, Math.hypot(far * (Math.cos(start * Matrix.oneDeg) - Math.cos(end * Matrix.oneDeg)), far * (Math.sin(start * Matrix.oneDeg) - Math.sin(end * Matrix.oneDeg)))),
                     length: pos.length / 2
                 });
             }
@@ -1014,7 +1014,7 @@ export class OpenGL{
                     cx: x,
                     cy: y,
                     rad: far * 0.71,
-                    span: far * 1.42,
+                    span: Math.min(far - near, Math.hypot(far * (Math.cos(start * Matrix.oneDeg) - Math.cos(end * Matrix.oneDeg)), far * (Math.sin(start * Matrix.oneDeg) - Math.sin(end * Matrix.oneDeg)))),
                     length: 4,
                     near: near / this.HALFHEIGHT,
                     radius: far / this.HALFHEIGHT,
@@ -1032,7 +1032,7 @@ export class OpenGL{
                     cx: x,
                     cy: y,
                     rad: far * 0.71,
-                    span: far * 1.42,
+                    span: Math.min(far - near, Math.hypot(far * (Math.cos(start * Matrix.oneDeg) - Math.cos(end * Matrix.oneDeg)), far * (Math.sin(start * Matrix.oneDeg) - Math.sin(end * Matrix.oneDeg)))),
                     length: 4,
                     near: near / this.HALFHEIGHT,
                     radius: far / this.HALFHEIGHT,
@@ -1096,8 +1096,8 @@ export class OpenGL{
                     }
                 });
             }else{
-                var dcx = far * 0.71 * Math.cos(start + ((end - start) / 2));
-                var dcy = far * 0.71 * Math.sin(start + ((end - start) / 2));
+                var dcx = far * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
+                var dcy = far * 0.71 * Math.sin((start + ((end - start) / 2)) * Matrix.oneDeg);
                 return this.arrays.push({
                     pos: posBuffer,
                     color: OpenGL.toColor(fillColor),
@@ -1105,7 +1105,7 @@ export class OpenGL{
                     x: x + dcx,
                     y: y + dcy,
                     rad: far * 0.71,
-                    span: far * 1.42,
+                    span: Math.min(far - near, Math.hypot(far * (Math.cos(start * Matrix.oneDeg) - Math.cos(end * Matrix.oneDeg)), far * (Math.sin(start * Matrix.oneDeg) - Math.sin(end * Matrix.oneDeg)))),
                     length: pos.length / 2,
                     overlay: {
                         pos: posBuffer,
@@ -1129,8 +1129,8 @@ export class OpenGL{
                     length: pos.length / 2
                 });
             }else{
-                var dcx = far * 0.71 * Math.cos(start + ((end - start) / 2));
-                var dcy = far * 0.71 * Math.sin(start + ((end - start) / 2));
+                var dcx = far * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
+                var dcy = far * 0.71 * Math.sin((start + ((end - start) / 2)) * Matrix.oneDeg);
                 return this.arrays.push({
                     pos: posBuffer,
                     color: OpenGL.toColor(fillColor),
@@ -1138,7 +1138,7 @@ export class OpenGL{
                     x: x + dcx,
                     y: y + dcy,
                     rad: far * 0.71,
-                    span: far * 1.42,
+                    span: Math.min(far - near, Math.hypot(far * (Math.cos(start * Matrix.oneDeg) - Math.cos(end * Matrix.oneDeg)), far * (Math.sin(start * Matrix.oneDeg) - Math.sin(end * Matrix.oneDeg)))),
                     length: pos.length / 2
                 });
             }
@@ -1244,7 +1244,7 @@ export class OpenGL{
                     cx: x,
                     cy: y,
                     rad: radius * 0.71,
-                    span: radius * 1.42,
+                    span: Math.min(radius, Math.hypot(radius * (Math.cos(start * Matrix.oneDeg) - Math.cos(end * Matrix.oneDeg)), radius * (Math.sin(start * Matrix.oneDeg) - Math.sin(end * Matrix.oneDeg)))),
                     length: 4,
                     radius: radius / this.HALFHEIGHT,
                     start: start * Matrix.oneDeg,
@@ -1261,7 +1261,7 @@ export class OpenGL{
                     cx: x,
                     cy: y,
                     rad: radius * 0.71,
-                    span: radius * 1.42,
+                    span: Math.min(radius, Math.hypot(radius * (Math.cos(start * Matrix.oneDeg) - Math.cos(end * Matrix.oneDeg)), radius * (Math.sin(start * Matrix.oneDeg) - Math.sin(end * Matrix.oneDeg)))),
                     length: 4,
                     radius: radius / this.HALFHEIGHT,
                     shader: ShaderMode.LINED_CIRCLE_SLICE
@@ -1287,7 +1287,7 @@ export class OpenGL{
         }else{
             var dcx = radius * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
             var dcy = radius * 0.71 * Math.sin((start + ((end - start) / 2)) * Matrix.oneDeg);
-            return this.renderEllipsoidImpl(pos, x + dcx, y + dcy, radius * 0.71, radius * 1.42, fill, line, lineColor, fillColor, 0);
+            return this.renderEllipsoidImpl(pos, x + dcx, y + dcy, radius * 0.71, Math.min(radius, Math.hypot(radius * (Math.cos(start * Matrix.oneDeg) - Math.cos(end * Matrix.oneDeg)), radius * (Math.sin(start * Matrix.oneDeg) - Math.sin(end * Matrix.oneDeg)))), fill, line, lineColor, fillColor, 0);
         }
     }
 

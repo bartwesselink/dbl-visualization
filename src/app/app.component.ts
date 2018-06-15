@@ -16,6 +16,7 @@ import {ViewMode} from '../enums/view-mode';
 import {SubtreeBus} from "../providers/subtree-bus";
 import {SelectBus} from "../providers/select-bus";
 import {BasicTree} from "../visualizations/basic-tree";
+import {IciclePlot} from "../visualizations/icicle-plot";
 import * as FileSaver from "file-saver";
 
 declare var dialogPolyfill;
@@ -194,6 +195,7 @@ export class AppComponent implements OnInit {
             new SimpleTreeMap(),
             new BasicTree(),
             new Sunburst(),
+            new IciclePlot(),
         ];
     }
 
