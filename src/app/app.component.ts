@@ -2,6 +2,7 @@ import {Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren} from 
 import {Tab} from '../models/tab';
 import { Node } from '../models/node';
 import {NewickParser} from '../utils/newick-parser';
+import {NewickExporter} from '../utils/newick-exporter';
 import {SidebarComponent} from '../components/sidebar/sidebar.component';
 import {Visualizer} from '../interfaces/visualizer';
 import {GeneralizedPythagorasTree} from '../visualizations/generalized-pythagoras-tree';
@@ -15,6 +16,7 @@ import {SubtreeBus} from "../providers/subtree-bus";
 import {SelectBus} from "../providers/select-bus";
 import {BasicTree} from "../visualizations/basic-tree";
 import {IciclePlot} from "../visualizations/icicle-plot";
+import * as FileSaver from "file-saver";
 
 declare var dialogPolyfill;
 
@@ -45,6 +47,8 @@ export class AppComponent implements OnInit {
     @ViewChildren('tabSection') private tabSections: QueryList<ElementRef>;
 
     private parser: NewickParser;
+    private exporter: NewickExporter;
+
     public darkMode = false;
 
     public viewMode = ViewMode.SIDE_BY_SIDE;
@@ -90,6 +94,7 @@ export class AppComponent implements OnInit {
         dialogPolyfill.registerDialog(this.fullScreenLoader.nativeElement);
 
         this.parser = new NewickParser(this.snackbar);
+        this.exporter = new NewickExporter(this.snackbar);
     }
 
     /** @author Jordy Verhoeven */
@@ -333,4 +338,10 @@ export class AppComponent implements OnInit {
         this.openTree(this.originalTree);
     }
     /** @end-author Mathijs Boezer */
+
+    /** @author Nico Klaassen */
+    public exportTree() {
+        this.exporter.exportTree(this.tree);
+    }
+    /** @end-author Nico Klaassen */
 }
