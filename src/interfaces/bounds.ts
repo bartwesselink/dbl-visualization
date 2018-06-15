@@ -3,8 +3,8 @@
 export interface Bounds {
     left: number,
     right: number,
-    bottom: number,
-    top: number
+    bottom?: number,
+    top?: number
 }
 
 /** @end-author Nico Klaassen */
