@@ -4,6 +4,6 @@
 varying lowp vec2 vpos;
 
 void main() {
-	gl_FragColor = vec4(color, color, color, 1.0 - 10.0 * mod(vpos.x, 0.1));
+	gl_FragColor = vec4(color, color, color, 1.0 - 500.0 * abs(mod(vpos.x, 0.1) - 0.05));
 }
 /** @end-author Roan Hofland */
