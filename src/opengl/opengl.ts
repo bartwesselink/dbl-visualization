@@ -56,13 +56,23 @@ export class OpenGL{
                 this.indices[i] = i;
             }
         }
+        var str = "";
+        for(var c = 0; c < this.arrays.length; c++){
+            str += this.arrays[c].x + "(" + c + ") ";
+            this.arrays[c].test = c;
+        }
+        console.log(str);
         while(this.index < this.arrays.length && this.arrays[this.index].shader == mode){
+            console.log('no run');
             this.index++;
         }
         outer: for(var i = this.index + 1; this.index < this.arrays.length; this.index++){
             if(this.arrays[this.index].shader != mode){
+                console.log("at " + this.index + " is not valid");
                 for(i; i < this.arrays.length; i++){
+                    console.log("inner for " + i + " " + mode + " vs " + this.arrays[i].shader);
                     if(this.arrays[i].shader == mode){
+                        console.log("found valid at: " + i);
                         let tmp = this.arrays[this.index];
                         this.arrays[this.index] = this.arrays[i];
                         this.arrays[i] = tmp;
@@ -75,6 +85,17 @@ export class OpenGL{
                 break;
             }
         }
+        console.log(this.arrays);
+        var str = "";
+        for(var c = 0; c < this.arrays.length; c++){
+            str += this.arrays[c].x + "(" + this.arrays[c].test + ") ";   
+        }
+        for(var i = 0; i < this.arrays.length; i++){
+            this.indices[this.arrays[i].test] = i;
+        }
+        
+        console.log(str);
+        console.log(this.indices);
     }
     
     //hides the element
