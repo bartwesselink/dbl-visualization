@@ -412,6 +412,9 @@ export class WindowComponent implements OnInit {
 
         try {
             this.gl = new OpenGL(gl);
+            if (this.visualizer.getName() === "Simple Tree Map") {
+                this.gl.setSizeThresHold(4);
+            }
         } catch (error) {
             this.onError((<Error>error).message);
         }
