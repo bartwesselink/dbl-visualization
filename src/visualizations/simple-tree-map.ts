@@ -6,6 +6,7 @@ import {FormFactory} from '../form/form-factory';
 import {VisualizerInput} from '../interfaces/visualizer-input';
 import {Draw} from '../interfaces/draw';
 import {Palette} from "../models/palette";
+import {OpenGL} from "../opengl/opengl";
 
 /** @author Nico Klaassen */
 
@@ -101,18 +102,6 @@ export class SimpleTreeMap implements Visualizer {
                 color = palette.gradientColorMap[tree.maxDepth][tree.depth];
                 lineColor = lineColorUnselected;
             }
-
-            // let width;
-            // let height;
-
-            // console.log(tree.parent == null);
-            // if (tree.parent == null) {
-            //     width = defaultSize;
-            //     height = defaultSize;
-            // } else {
-            //     width = Math.abs(bounds.right - bounds.left);
-            //     height = Math.abs(bounds.top - bounds.bottom);
-            // }
 
             const relativeOffset = tree.orientation === Orientation.HORIZONTAL ?
                 Math.min(tree.width / 100 * offset / (tree.children.length + 1), tree.height / 100 * offset / (tree.children.length + 1)) :
@@ -232,6 +221,11 @@ export class SimpleTreeMap implements Visualizer {
     public getThumbnailImage(): string | null {
         return '/assets/images/visualization-simple-tree-map.png';
     }
+
+    public enableShaders(gl: OpenGL): void {
+        gl.setSizeThresHold(5);
+    }
+
 }
 
 /** @end-author Nico Klaassen */
