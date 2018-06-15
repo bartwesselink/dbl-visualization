@@ -122,7 +122,15 @@ export class WindowComponent implements OnInit {
                 this.palette = new Palette(this.palette.secondary, this.palette.primary, this.palette.accents);
             }
             if (this.darkMode === settings.darkMode) { // It wasn't the darkMode setting that changed
-                this.redrawAllScenes();
+                if(this.visualizer.updateColors){
+                    this.computeColors();
+                    this.visualizer.updateColors(this.gl, {
+                        tree: this.tree,
+                        settings: this.lastSettings,
+                        palette: this.palette
+                    }, this.currentDraws);
+                    this.render();
+                }
             } else {
                 this.darkMode = settings.darkMode;
                 this.setDarkmode(this.darkMode);
@@ -402,6 +410,7 @@ export class WindowComponent implements OnInit {
     }
 
     /** @end-author Jules Cornelissen */
+    /** @author Roan Hofland */
 
     //fallback rendering for when some OpenGL error occurs
     private onError(error): void {
@@ -494,6 +503,7 @@ export class WindowComponent implements OnInit {
         }
         return Palettes.default; // Fallback
     }
+    /** @end-author Nico Klaassen */
 
     /** @author Mathijs Boezer */
     public resetTransformation() {
