@@ -1,7 +1,10 @@
 /** @author Roan Hofland */
+attribute vec4 pos;
+
 varying lowp vec2 vpos;
 
 void main() {
-	gl_FragColor = vec4(1.0, 0.0, 0.0, 0.1);
+	gl_Position = pos;
+	vpos = pos.xy;
 }
 /** @end-author Roan Hofland */
