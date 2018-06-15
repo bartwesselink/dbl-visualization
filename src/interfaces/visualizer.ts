@@ -14,5 +14,6 @@ export interface Visualizer {
     enableShaders?(gl: OpenGL): void;
     optimizeShaders?(gl: OpenGL): void;
     updateColors?(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void;
+    shapesPerNode: number;
 }
 /** @end-author Bart Wesselink */

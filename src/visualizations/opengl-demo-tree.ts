@@ -7,6 +7,8 @@ import {VisualizerInput} from '../interfaces/visualizer-input';
 
 /** @author Nico Klaassen */
 export class OpenglDemoTree implements Visualizer {
+    shapesPerNode: number = 0;
+
     public draw(input: VisualizerInput): Draw[] {
         const tree = input.tree;
         let settings = input.settings;

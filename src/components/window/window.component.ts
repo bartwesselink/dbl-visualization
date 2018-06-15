@@ -454,8 +454,13 @@ export class WindowComponent implements OnInit {
     
     private sort(draws: Draw[]): Draw[]{
         const arr = new Array(draws.length);
+        var offset = this.tree.subTreeSize;
         for(let draw of draws){
-            arr[draw.identifier] = draw;
+            if(draw.identifier == undefined){
+                arr[offset++] = draw;
+            }else{
+                arr[draw.identifier] = draw;
+            }
         }
         return arr; 
     }

@@ -92,6 +92,16 @@ export class OpenGL{
         this.getElem(id).color = OpenGL.toColor(color);
     }
     
+    //copy element color
+    public copyColor(original: number, target: number): void{
+        this.getElem(target).color = this.getElem(original).color;
+    }
+    
+    //copy element color
+    public copyLineColor(original: number, target: number): void{
+        this.getElem(target).color = this.getElem(original).color;
+    }
+    
     //get the referenced element
     private getElem(id: number): Element{
         return this.indices == null ? this.arrays[id - 1] : this.arrays[this.indices[id - 1]];
