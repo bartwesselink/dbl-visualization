@@ -10,7 +10,6 @@ import {OpenGL} from "../opengl/opengl";
 export class GeneralizedPythagorasTree implements Visualizer {
     /** @author Jules Cornelissen */
     public draw(input: VisualizerInput): Draw[] {
-        console.log("GPT draw");
         const tree = input.tree;
         const draws: Draw[] = [];
         const palette: Palette = input.palette;
