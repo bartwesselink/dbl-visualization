@@ -103,9 +103,11 @@ export class NewickParser {
     };
 
     /**
-     * TODO: COMMENT
-     * @param {Node} tree
-     * @param {number} depth
+     * Function which recurses upon a given node and with a given basis-depth (usually 0). It finds the currentDepth and
+     * maximumDepth and augments it on the Node.
+     *
+     * @param {Node} tree tree-root upon which to recurse
+     * @param {number} depth initial depth to start counting from
      */
     private recursiveDepth(tree: Node, depth: number): void {
         tree.maxDepth = this.calculateTreeMaxDepth(tree, depth);
