@@ -61,7 +61,6 @@ export class GeneralizedPythagorasTree implements Visualizer {
         };
 
         const generate = (tree: Node, rectangle: number[], isSelected: boolean = false): void => {
-            color = [1,0,0];
             // Draw the previously calculated rectangle
             draws.push({
                 type: 1 /** FillRotatedQuad **/,
@@ -71,8 +70,7 @@ export class GeneralizedPythagorasTree implements Visualizer {
                     y: rectangle[1],
                     width: rectangle[2],
                     height: rectangle[3],
-                    rotation: rectangle[4] * radianToDegreeMultiplier,
-                    color: color
+                    rotation: rectangle[4] * radianToDegreeMultiplier
                 }
             });
 

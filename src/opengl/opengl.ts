@@ -1408,10 +1408,14 @@ export class OpenGL{
 
     //creates a color from the given array
     private static toColor(array: number[]): Float32Array{
-        while(array.length > 3){
-            array.pop();
+        if(array == null){
+            return null;
+        }else{
+            while(array.length > 3){
+                array.pop();
+            }
+            return new Float32Array(array);
         }
-        return new Float32Array(array);
     }
 }
 /** @end-author Roan Hofland */
