@@ -198,9 +198,9 @@ export class SimpleTreeMap implements Visualizer {
     public getForm(formFactory: FormFactory) {
         return formFactory.createFormBuilder()
             .addSliderField('minDepth', 0, {label: 'Minimum depth to draw', min: 0, max: 100})
-            .addSliderField('maxDepth', 50, {label: 'Maximum depth to draw', min: 0, max: 100})
-            .addToggleField('outline', true, {label: 'Draw outlines'})
-            .addSliderField('offset', 0, {label: 'Offset', min: 0, max: 25})
+            .addSliderField('maxDepth', 100, {label: 'Maximum depth to draw', min: 0, max: 100})
+            .addToggleField('outline', true, {label: 'Draw outline for each node'})
+            .addSliderField('offset', 0, {label: 'Padding for each node', min: 0, max: 25})
             .getForm();
     }
 
