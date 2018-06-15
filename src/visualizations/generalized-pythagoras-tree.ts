@@ -142,7 +142,6 @@ export class GeneralizedPythagorasTree implements Visualizer {
     /** @end-author Jules Cornelissen */
     /** @author Roan Hofland */
     public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void{
-        console.log("recolor");
         this.recolor(input.tree, input.palette, gl, draws, input.tree.selected);
     }
     
