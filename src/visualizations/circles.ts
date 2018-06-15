@@ -18,8 +18,6 @@ export class Circles implements Visualizer {
         let height = 0;
         let newX;
         let newY;
-        let p = 0;
-        let test;
 
         const generate = (subTree: Node, radius: number, x: number, y: number): void => {
 
@@ -27,12 +25,13 @@ export class Circles implements Visualizer {
             let h = 1;
             let xPos = 0;
 
-            p++;
-            console.log(p);
+            //recurse over every node
 
             if (subTree.subTreeSize > 1) {
 
                 for (let child of subTree.children) {
+
+                    //center node
 
                     if (pos == 0) {
 
@@ -40,6 +39,8 @@ export class Circles implements Visualizer {
                         newY = y;
 
                     }
+
+                    //linear functions that calculate the position of the circles
 
                     if (pos == 1) { //top to right
 
@@ -54,7 +55,6 @@ export class Circles implements Visualizer {
                         newY = y + xPos * 2 * radius - h * 2 * radius;
                         newX = x + xPos * 2 * radius;
                         xPos++;
-                        console.log('test');
 
                     }
 
@@ -74,23 +74,26 @@ export class Circles implements Visualizer {
 
                     }
 
-                        draws.push({
-                            type: 11 /** Cirlce **/,
-                            identifier: child.identifier,
-                            options: {
-                                x: newX,
-                                y: newY,
-                                radius: radius,
-                                color: color
-                            }
-                        });
-                    console.log(-2*radius);
-                    console.log(y);
-                    console.log(newY);
-                    console.log(-y + newY);
-                    console.log((-y + newY) == (-2*radius));
+                    //draw node after position is calculated
 
-                    if (((newY-y).toExponential(12) == (0).toExponential(12) && (pos == 0 || pos == 1 || pos == 3)) || (( newY-y).toExponential(12) == ((-2 * radius).toExponential(12)) && (pos == 2 || pos == 4))) {
+                    draws.push({
+                        type: 11 /** Cirlce **/,
+                        identifier: child.identifier,
+                        options: {
+                            x: newX,
+                            y: newY,
+                            radius: radius,
+                            color: color
+                        }
+                    });
+
+
+                    //checks whether the next linear function should be used and adjusts h at the appropriate
+                    //the displacement over the y axis means y should be subtracted from the position because the if statement
+                    //checks if y is 0 or -2*radius of the current node, this calculation causes floating point errors on larger
+                    //datasets 
+
+                    if (((newY - y).toFixed(12) == (0).toFixed(12) && (pos == 0 || pos == 1 || pos == 3)) || ((newY - y).toFixed(12) == ((-2 * radius).toFixed(12)) && (pos == 2 || pos == 4))) {
 
                         if (pos == 4) {
 
@@ -102,7 +105,7 @@ export class Circles implements Visualizer {
 
                             pos++;
 
-                            if(pos == 4 && h == 1){
+                            if (pos == 4 && h == 1) {
 
                                 pos = 1;
                                 h++
@@ -125,12 +128,14 @@ export class Circles implements Visualizer {
                     }
 
 
+                    //calculates the height, to calculate the radius
 
                     while (child.children.length > space) {
 
+                        //The patern created adds x*4 spaces for every border
+
                         space = space + 4 * height;
                         height++;
-                        console.log('p3');
 
                     }
 
@@ -143,9 +148,10 @@ export class Circles implements Visualizer {
                 }
 
             }
-            console.log('p2');
 
         }
+
+        //draws the root
 
         draws.push({
             type: 11 /** Cirlce **/,
@@ -158,6 +164,8 @@ export class Circles implements Visualizer {
             }
         });
 
+        //calculates the radius of the cildren of the root in the same manner as before
+
         while (tree.children.length > space) {
 
             space = space + 4 * height;
@@ -165,17 +173,12 @@ export class Circles implements Visualizer {
 
         }
 
-        console.log('space: ' + space);
-        console.log('height: ' + height);
-
         let newRadius = 400 / (2 * (height - 0.5));
-        console.log('radius: ' + newRadius);
         space = 1;
         height = 0;
 
         generate(tree, newRadius, 0, 0);
 
-        console.log('p1');
         return draws;
     }
 
