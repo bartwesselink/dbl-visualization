@@ -44,6 +44,7 @@ export class AppComponent implements OnInit {
     @ViewChild('fullScreenLoader') private fullScreenLoader: ElementRef;
     @ViewChild('appHolder') private appHolder: ElementRef;
     @ViewChild('resizer') private resizer: ElementRef;
+    @ViewChild('holderSidebar') private holderSidebar: ElementRef;
 
     @ViewChildren('tabSection') private tabSections: QueryList<ElementRef>;
 
@@ -281,10 +282,11 @@ export class AppComponent implements OnInit {
         let firstWindow = sections[0];
         let secondWindow = sections[1];
 
-        let screenWidth = document.body.clientWidth;
+        let holderWidth = document.body.clientWidth;
+        if (this.tree) holderWidth -= this.holderSidebar.nativeElement.offsetWidth;
 
         let firstWindowSize = ($event.clientX - this.resizer.nativeElement.clientWidth / 2);
-        let secondWindowSize = (screenWidth - ($event.clientX - this.resizer.nativeElement.clientWidth / 2));
+        let secondWindowSize = (holderWidth - ($event.clientX - this.resizer.nativeElement.clientWidth / 2));
 
         if (firstWindowSize < this.SIDE_BY_SIDE_MAX_WIDTH || secondWindowSize < this.SIDE_BY_SIDE_MAX_WIDTH) {
             return;
