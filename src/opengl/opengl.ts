@@ -8,6 +8,7 @@ import {CircleElement} from "./shaders/elem/circleElement";
 import {CircleSliceElement} from "./shaders/elem/circleSliceElement";
 import {RingSliceElement} from "./shaders/elem/ringSliceElement";
 import {CircularArcElement} from "./shaders/elem/circularArcElement";
+import {environment} from "../environments/environment";
 
 export class OpenGL{
     private gl: WebGLRenderingContext;
@@ -19,6 +20,7 @@ export class OpenGL{
     public readonly HALFHEIGHT = this.HEIGHT / 2;
     private readonly PRECISION = 10;
     private sizethreshold = 0.5;
+    private static verbose = environment.openglVerbose;
     private mode: Mode;
     private factor: number = 1;
     private dx: number = 0;
@@ -34,7 +36,7 @@ export class OpenGL{
 
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
-        this.shader = new Shader(gl, this);//TODO
+        this.shader = new Shader(gl, this);
 
         //set the canvas background color to white
         this.setBackgroundColor(1.0, 1.0, 1.0);
@@ -44,8 +46,15 @@ export class OpenGL{
         this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
         this.gl.enable(this.gl.BLEND);
 
-        console.log("[OpenGL] OpenGL version: " + this.gl.getParameter(gl.VERSION));
-        console.log("[OpenGL] GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
+        if(OpenGL.verbose){
+            console.log("[OpenGL] OpenGL version: " + this.gl.getParameter(gl.VERSION));
+            console.log("[OpenGL] GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
+        }
+    }
+    
+    //toggles verbose mode
+    public static setVerbose(verbose: boolean): void {
+        OpenGL.verbose = verbose;
     }
     
     //set the size thres hold
@@ -154,7 +163,9 @@ export class OpenGL{
     public isDedicatedGPU(): boolean {
         var info = this.gl.getExtension("WEBGL_debug_renderer_info");
         var name = this.gl.getParameter(info.UNMASKED_RENDERER_WEBGL);
-        console.log("[OpenGL] Detected renderer: " + name);
+        if(OpenGL.verbose){
+            console.log("[OpenGL] Detected renderer: " + name);
+        }
         if(name.indexOf("NVIDIA") != -1){
             return true;
         }else if(name.indexOf("GeForce") != -1){
@@ -336,7 +347,9 @@ export class OpenGL{
         //the visualisation does not distort. Theoretically we could also recompute all the buffers and map to a new coordinate space.
         this.width = width;
         this.height = height;
-        console.log("[OpenGL] Viewport resolution: " + width + "x" + height);
+        if(OpenGL.verbose){
+            console.log("[OpenGL] Viewport resolution: " + width + "x" + height);
+        }
         if((width / this.WIDTH) * this.HEIGHT > height){
             this.mode = Mode.WIDTH_FIRST;
             this.gl.viewport(0, (height - ((width / this.WIDTH) * this.HEIGHT)) / 2, width, (width / this.WIDTH) * this.HEIGHT);
@@ -467,8 +480,8 @@ export class OpenGL{
             if(end - start > 90){
                 return this.drawArcImpl(pos, color, x, y, radius, 2 * radius);
             }else{
-                var dcx = radius * 0.71 * Math.cos(start + ((end - start) / 2));
-                var dcy = radius * 0.71 * Math.sin(start + ((end - start) / 2));
+                var dcx = radius * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
+                var dcy = radius * 0.71 * Math.sin((start + ((end - start) / 2)) * Matrix.oneDeg);
                 return this.drawArcImpl(pos, color, x + dcx, y + dcy, radius * 0.71, radius * 1.42);
             }
         }
@@ -898,8 +911,8 @@ export class OpenGL{
                     length: pos.length / 2
                 });
             }else{
-                var dcx = far * 0.71 * Math.cos(start + ((end - start) / 2));
-                var dcy = far * 0.71 * Math.sin(start + ((end - start) / 2));
+                var dcx = far * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
+                var dcy = far * 0.71 * Math.sin((start + ((end - start) / 2)) * Matrix.oneDeg);
                 return this.arrays.push({
                     pos: posBuffer,
                     color: OpenGL.toColor(color),
@@ -907,7 +920,7 @@ export class OpenGL{
                     x: x + dcx,
                     y: y + dcy,
                     rad: far * 0.71,
-                    span: far * 1.42,
+                    span: Math.min(far - near, Math.hypot(far * (Math.cos(start * Matrix.oneDeg) - Math.cos(end * Matrix.oneDeg)), far * (Math.sin(start * Matrix.oneDeg) - Math.sin(end * Matrix.oneDeg)))),
                     length: pos.length / 2
                 });
             }
@@ -1006,7 +1019,7 @@ export class OpenGL{
                     cx: x,
                     cy: y,
                     rad: far * 0.71,
-                    span: far * 1.42,
+                    span: Math.min(far - near, Math.hypot(far * (Math.cos(start * Matrix.oneDeg) - Math.cos(end * Matrix.oneDeg)), far * (Math.sin(start * Matrix.oneDeg) - Math.sin(end * Matrix.oneDeg)))),
                     length: 4,
                     near: near / this.HALFHEIGHT,
                     radius: far / this.HALFHEIGHT,
@@ -1024,7 +1037,7 @@ export class OpenGL{
                     cx: x,
                     cy: y,
                     rad: far * 0.71,
-                    span: far * 1.42,
+                    span: Math.min(far - near, Math.hypot(far * (Math.cos(start * Matrix.oneDeg) - Math.cos(end * Matrix.oneDeg)), far * (Math.sin(start * Matrix.oneDeg) - Math.sin(end * Matrix.oneDeg)))),
                     length: 4,
                     near: near / this.HALFHEIGHT,
                     radius: far / this.HALFHEIGHT,
@@ -1088,8 +1101,8 @@ export class OpenGL{
                     }
                 });
             }else{
-                var dcx = far * 0.71 * Math.cos(start + ((end - start) / 2));
-                var dcy = far * 0.71 * Math.sin(start + ((end - start) / 2));
+                var dcx = far * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
+                var dcy = far * 0.71 * Math.sin((start + ((end - start) / 2)) * Matrix.oneDeg);
                 return this.arrays.push({
                     pos: posBuffer,
                     color: OpenGL.toColor(fillColor),
@@ -1097,7 +1110,7 @@ export class OpenGL{
                     x: x + dcx,
                     y: y + dcy,
                     rad: far * 0.71,
-                    span: far * 1.42,
+                    span: Math.min(far - near, Math.hypot(far * (Math.cos(start * Matrix.oneDeg) - Math.cos(end * Matrix.oneDeg)), far * (Math.sin(start * Matrix.oneDeg) - Math.sin(end * Matrix.oneDeg)))),
                     length: pos.length / 2,
                     overlay: {
                         pos: posBuffer,
@@ -1121,8 +1134,8 @@ export class OpenGL{
                     length: pos.length / 2
                 });
             }else{
-                var dcx = far * 0.71 * Math.cos(start + ((end - start) / 2));
-                var dcy = far * 0.71 * Math.sin(start + ((end - start) / 2));
+                var dcx = far * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
+                var dcy = far * 0.71 * Math.sin((start + ((end - start) / 2)) * Matrix.oneDeg);
                 return this.arrays.push({
                     pos: posBuffer,
                     color: OpenGL.toColor(fillColor),
@@ -1130,7 +1143,7 @@ export class OpenGL{
                     x: x + dcx,
                     y: y + dcy,
                     rad: far * 0.71,
-                    span: far * 1.42,
+                    span: Math.min(far - near, Math.hypot(far * (Math.cos(start * Matrix.oneDeg) - Math.cos(end * Matrix.oneDeg)), far * (Math.sin(start * Matrix.oneDeg) - Math.sin(end * Matrix.oneDeg)))),
                     length: pos.length / 2
                 });
             }
@@ -1236,7 +1249,7 @@ export class OpenGL{
                     cx: x,
                     cy: y,
                     rad: radius * 0.71,
-                    span: radius * 1.42,
+                    span: Math.min(radius, Math.hypot(radius * (Math.cos(start * Matrix.oneDeg) - Math.cos(end * Matrix.oneDeg)), radius * (Math.sin(start * Matrix.oneDeg) - Math.sin(end * Matrix.oneDeg)))),
                     length: 4,
                     radius: radius / this.HALFHEIGHT,
                     start: start * Matrix.oneDeg,
@@ -1253,7 +1266,7 @@ export class OpenGL{
                     cx: x,
                     cy: y,
                     rad: radius * 0.71,
-                    span: radius * 1.42,
+                    span: Math.min(radius, Math.hypot(radius * (Math.cos(start * Matrix.oneDeg) - Math.cos(end * Matrix.oneDeg)), radius * (Math.sin(start * Matrix.oneDeg) - Math.sin(end * Matrix.oneDeg)))),
                     length: 4,
                     radius: radius / this.HALFHEIGHT,
                     shader: ShaderMode.LINED_CIRCLE_SLICE
@@ -1279,7 +1292,7 @@ export class OpenGL{
         }else{
             var dcx = radius * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
             var dcy = radius * 0.71 * Math.sin((start + ((end - start) / 2)) * Matrix.oneDeg);
-            return this.renderEllipsoidImpl(pos, x + dcx, y + dcy, radius * 0.71, radius * 1.42, fill, line, lineColor, fillColor, 0);
+            return this.renderEllipsoidImpl(pos, x + dcx, y + dcy, radius * 0.71, Math.min(radius, Math.hypot(radius * (Math.cos(start * Matrix.oneDeg) - Math.cos(end * Matrix.oneDeg)), radius * (Math.sin(start * Matrix.oneDeg) - Math.sin(end * Matrix.oneDeg)))), fill, line, lineColor, fillColor, 0);
         }
     }
 
@@ -1340,7 +1353,9 @@ export class OpenGL{
             vertices += this.drawElement(elem);
             total += elem.overlay == null ? elem.length : (elem.length + elem.overlay.length);
         }
-        console.log("[OpenGL] Rendered " + vertices + " out of " + total + " vertices in", (performance.now() - start), "ms");
+        if(OpenGL.verbose){
+            console.log("[OpenGL] Rendered " + vertices + " out of " + total + " vertices in", (performance.now() - start), "ms");
+        }
     }
 
     //checks if an element is visible

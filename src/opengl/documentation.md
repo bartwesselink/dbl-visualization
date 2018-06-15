@@ -60,6 +60,8 @@ Sets the line color of the shape indicated by the given ID, only use this method
 Sets the color of the shape indicated by the given ID. Changes only take effect after a rerender.
 - `public setSizeThresHold(pixels: number): void`    
 Sets the point at which objects are considered to be too small to render, measured in pixels. The default value is half a pixel.
+- `public static setVerbose(verbose: boolean): void`    
+Toggles verbose mode on all OpenGL instances.
 
 ## Available but not intended to be used
 - `public getModelviewMatrix(): Float32Array`    
