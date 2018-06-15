@@ -54,12 +54,12 @@ export class OpenGL{
             this.indices = new Array(this.arrays.length);
             for(let i = 0; i < this.indices.length; i++){
                 this.indices[i] = i;
+                this.arrays[i].test = i;
             }
         }
         var str = "";
         for(var c = 0; c < this.arrays.length; c++){
             str += this.arrays[c].x + "(" + c + ") ";
-            this.arrays[c].test = c;
         }
         console.log(str);
         while(this.index < this.arrays.length && this.arrays[this.index].shader == mode){
@@ -93,10 +93,10 @@ export class OpenGL{
         var id = new Array(this.arrays.length);
 
         for(var i = 0; i < this.arrays.length; i++){
-            //this.indices[this.arrays[i].test] = i;
-            id[this.indices[i]] = i;
+            this.indices[this.arrays[i].test] = i;
+           // id[this.indices[i]] = i;
         }
-        this.indices = id;
+        //this.indices = id;
         
         console.log(str);
         console.log(this.indices);
@@ -394,6 +394,7 @@ export class OpenGL{
             this.gl.deleteBuffer(elem.indices);
         }
         this.index = 0;
+        this.indices = null;
     }
 
     //draws a partial ellipsoid
