@@ -53,53 +53,28 @@ export class OpenGL{
         if(this.indices == null){
             this.indices = new Array(this.arrays.length);
             for(let i = 0; i < this.indices.length; i++){
-                this.indices[i] = i;
-                this.arrays[i].test = i;
+                this.arrays[i].id = i;
             }
         }
-        var str = "";
-        for(var c = 0; c < this.arrays.length; c++){
-            str += this.arrays[c].x + "(" + c + ") ";
-        }
-        console.log(str);
         while(this.index < this.arrays.length && this.arrays[this.index].shader == mode){
-            console.log('no run');
             this.index++;
         }
         outer: for(var i = this.index + 1; this.index < this.arrays.length; this.index++){
             if(this.arrays[this.index].shader != mode){
-                console.log("at " + this.index + " is not valid");
                 for(i; i < this.arrays.length; i++){
-                    console.log("inner for " + i + " " + mode + " vs " + this.arrays[i].shader);
                     if(this.arrays[i].shader == mode){
-                        console.log("found valid at: " + i);
                         let tmp = this.arrays[this.index];
                         this.arrays[this.index] = this.arrays[i];
                         this.arrays[i] = tmp;
-                        let ti = this.indices[i];
-                        this.indices[i] = this.indices[this.index];
-                        this.indices[this.index] = ti;
                         continue outer;
                     }
                 }
                 break;
             }
         }
-        console.log(this.arrays);
-        var str = "";
-        for(var c = 0; c < this.arrays.length; c++){
-            str += this.arrays[c].x + "(" + this.arrays[c].test + ") ";   
-        }
-        var id = new Array(this.arrays.length);
-
         for(var i = 0; i < this.arrays.length; i++){
-            this.indices[this.arrays[i].test] = i;
-           // id[this.indices[i]] = i;
+            this.indices[this.arrays[i].id] = i;
         }
-        //this.indices = id;
-        
-        console.log(str);
-        console.log(this.indices);
     }
     
     //hides the element
