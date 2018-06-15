@@ -30,6 +30,8 @@ export class SimpleTreeMap implements Visualizer {
             top: (defaultSize / 2)
         };
         let drawOutlines: boolean = settings.outline;
+        let minDepth: number = Math.floor(settings.minDepth * originalTree.maxDepth / 100);
+        let maxDepth: number = Math.ceil(settings.maxDepth * originalTree.maxDepth / 100);
 
         // define used enums
         enum Orientation {
@@ -98,49 +100,51 @@ export class SimpleTreeMap implements Visualizer {
                 tree.width - (tree.children.length + 1) * relativeOffset :
                 tree.height - (tree.children.length + 1) * relativeOffset;
 
-
-            // Draw the bounds of the current node
-            if (tree.orientation === Orientation.HORIZONTAL) {
-                if (drawOutlines) {
-                    draws.push({
-                        type: 6 /** FillLinedAAQuad **/,
-                        identifier: tree.identifier,
-                        options: {
-                            x: bounds.left,
-                            y: bounds.bottom,
-                            width: tree.width,
-                            height: tree.height,
-                            fillColor: color,
-                            lineColor: lineColor
-                        }
-                    });
-                } else {
-                    draws.push({
-                        type: 4 /** FillAAQuad **/,
-                        identifier: tree.identifier,
-                        options: {x: bounds.left, y: bounds.bottom, width: tree.width, height: tree.height, color: color}
-                    });
-                }
-            } else { // (tree.orientation === Orientation.VERTICAL)
-                if (drawOutlines) {
-                    draws.push({
-                        type: 6 /** FillLinedAAQuad **/,
-                        identifier: tree.identifier,
-                        options: {
-                            x: bounds.left,
-                            y: bounds.bottom,
-                            width: tree.width,
-                            height: tree.height,
-                            fillColor: color,
-                            lineColor: lineColor
-                        }
-                    });
-                } else {
-                    draws.push({
-                        type: 4 /** FillAAQuad **/,
-                        identifier: tree.identifier,
-                        options: {x: bounds.left, y: bounds.bottom, width: tree.width, height: tree.height, color: color}
-                    });
+            // Only draw if the depth should be drawn based on the settings
+            if ((minDepth <= tree.depth && tree.depth <= maxDepth) || (minDepth >= maxDepth && tree.depth == minDepth)){
+                // Draw the bounds of the current node
+                if (tree.orientation === Orientation.HORIZONTAL) {
+                    if (drawOutlines) {
+                        draws.push({
+                            type: 6 /** FillLinedAAQuad **/,
+                            identifier: tree.identifier,
+                            options: {
+                                x: bounds.left,
+                                y: bounds.bottom,
+                                width: tree.width,
+                                height: tree.height,
+                                fillColor: color,
+                                lineColor: lineColor
+                            }
+                        });
+                    } else {
+                        draws.push({
+                            type: 4 /** FillAAQuad **/,
+                            identifier: tree.identifier,
+                            options: {x: bounds.left, y: bounds.bottom, width: tree.width, height: tree.height, color: color}
+                        });
+                    }
+                } else { // (tree.orientation === Orientation.VERTICAL)
+                    if (drawOutlines) {
+                        draws.push({
+                            type: 6 /** FillLinedAAQuad **/,
+                            identifier: tree.identifier,
+                            options: {
+                                x: bounds.left,
+                                y: bounds.bottom,
+                                width: tree.width,
+                                height: tree.height,
+                                fillColor: color,
+                                lineColor: lineColor
+                            }
+                        });
+                    } else {
+                        draws.push({
+                            type: 4 /** FillAAQuad **/,
+                            identifier: tree.identifier,
+                            options: {x: bounds.left, y: bounds.bottom, width: tree.width, height: tree.height, color: color}
+                        });
+                    }
                 }
             }
 
@@ -193,6 +197,8 @@ export class SimpleTreeMap implements Visualizer {
 
     public getForm(formFactory: FormFactory) {
         return formFactory.createFormBuilder()
+            .addSliderField('minDepth', 0, {label: 'Minimum depth to draw', min: 0, max: 100})
+            .addSliderField('maxDepth', 50, {label: 'Maximum depth to draw', min: 0, max: 100})
             .addToggleField('outline', true, {label: 'Draw outlines'})
             .addSliderField('offset', 0, {label: 'Offset', min: 0, max: 25})
             .getForm();
