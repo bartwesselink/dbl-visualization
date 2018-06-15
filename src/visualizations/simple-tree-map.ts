@@ -6,6 +6,7 @@ import {FormFactory} from '../form/form-factory';
 import {VisualizerInput} from '../interfaces/visualizer-input';
 import {Draw} from '../interfaces/draw';
 import {Palette} from "../models/palette";
+import { OpenGL } from "../opengl/opengl";
 
 /** @author Nico Klaassen */
 
@@ -14,13 +15,10 @@ export class SimpleTreeMap implements Visualizer {
         const originalTree = input.tree;
         const draws: Draw[] = [];
         const settings: any = input.settings;
-        const palette: Palette = input.palette;
 
 
         // define variables
         const defaultSize = 600;
-        const lineColorSelected: number[] = [0, 0, 0, 1];
-        const lineColorUnselected: number[] = [0.3, 0.3, 0.3, 1];
         let offset: number = settings.offset;
         let tree: NodeTreeMap = originalTree as NodeTreeMap;
         let rootBounds: Bounds = {
@@ -109,18 +107,6 @@ export class SimpleTreeMap implements Visualizer {
         const drawTree = (tree: NodeTreeMap, bounds: Bounds, internalNode: boolean, selected: boolean = false): void => {
             let doneSize = 0; // How many subtree-nodes are already taking up space within the bounds.
 
-            let color;
-            let lineColor;
-
-            if (tree.selected === true || selected) {
-                selected = true;
-                color = palette.gradientColorMapSelected[tree.maxDepth][tree.depth];
-                lineColor = lineColorSelected;
-            } else {
-                color = palette.gradientColorMap[tree.maxDepth][tree.depth];
-                lineColor = lineColorUnselected;
-            }
-
             let width = Math.abs(bounds.right - bounds.left);
             let height = Math.abs(bounds.top - bounds.bottom);
 
@@ -134,15 +120,13 @@ export class SimpleTreeMap implements Visualizer {
                         y: bounds.bottom,
                         width: width,
                         height: height,
-                        fillColor: color,
-                        lineColor: lineColor
                     }
                 });
             } else {
                 draws.push({
                     type: 4 /** FillAAQuad **/,
                     identifier: tree.identifier,
-                    options: {x: bounds.left, y: bounds.bottom, width: width, height: height, color: color}
+                    options: {x: bounds.left, y: bounds.bottom, width: width, height: height}
                 });
             }
 
@@ -186,6 +170,28 @@ export class SimpleTreeMap implements Visualizer {
     public getThumbnailImage(): string | null {
         return '/assets/images/visualization-simple-tree-map.png';
     }
+    /** @end-author Nico Klaassen */
+    /** @author Roan Hofland */
+    public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void{
+        this.recolor(input.tree, input.palette, input.settings.outline, gl, draws, input.tree.selected);
+    }
+    
+    private recolor(tree: Node, palette: Palette, outline: boolean, gl: OpenGL, draws: Draw[], selected: boolean){
+        if (selected || tree.selected) {
+            selected = true;
+            gl.setColor(draws[tree.identifier].glid, palette.gradientColorMapSelected[tree.maxDepth][tree.depth]);
+            if(outline){
+                gl.setLineColor(draws[tree.identifier].glid, [0, 0, 0, 1]);
+            }
+        } else {
+            gl.setColor(draws[tree.identifier].glid, palette.gradientColorMap[tree.maxDepth][tree.depth]);
+            if(outline){
+                gl.setLineColor(draws[tree.identifier].glid, [0.3, 0.3, 0.3, 1]);
+            }
+        }
+        for(let child of tree.children){
+            this.recolor(child, palette, outline, gl, draws, selected);
+        }
+    }
+    /** @end-author Roan Hofland */
 }
-
-/** @end-author Nico Klaassen */

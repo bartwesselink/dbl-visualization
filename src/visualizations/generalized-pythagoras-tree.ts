@@ -12,7 +12,6 @@ export class GeneralizedPythagorasTree implements Visualizer {
     public draw(input: VisualizerInput): Draw[] {
         const tree = input.tree;
         const draws: Draw[] = [];
-        const palette: Palette = input.palette;
 
         const weightHeight: number = input.settings.heightScale / 10; // Scaling factor for the height of every rectangle that is not the root
         const drawNodeSize: boolean = input.settings.nodeSize;
@@ -145,7 +144,7 @@ export class GeneralizedPythagorasTree implements Visualizer {
     private recolor(tree: Node, palette: Palette, gl: OpenGL, draws: Draw[], selected: boolean){
         if (selected || tree.selected) {
             selected = true;
-            gl.setColor(draws[tree.identifier].glid, palette.gradientColorMapSelected[tree.maxDepth][tree.depth])
+            gl.setColor(draws[tree.identifier].glid, palette.gradientColorMapSelected[tree.maxDepth][tree.depth]);
         } else {
             gl.setColor(draws[tree.identifier].glid, palette.gradientColorMap[tree.maxDepth][tree.depth]);
         }
