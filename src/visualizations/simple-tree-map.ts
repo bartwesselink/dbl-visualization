@@ -42,6 +42,27 @@ export class SimpleTreeMap implements Visualizer {
         // define functions
 
         /**
+         * Function which checks if no node is selected within the given tree.
+         *
+         * @param {Node} tree Tree to recurse upon
+         */
+        const hasSelected = (tree: NodeTreeMap): boolean => {
+            let hasSomeSelectedNode = tree.selected;
+            if (hasSomeSelectedNode) {
+                return true;
+            }
+
+            for (let child of tree.children) {
+               hasSomeSelectedNode = hasSelected(child);
+               if (hasSomeSelectedNode) {
+                   return true;
+               }
+            }
+
+            return false;
+        };
+
+        /**
          * Function which augments the tree data structure and adds in an orientation.
          *
          * @param {Node} tree Tree for which to calculate the orientation of the nodes for
@@ -190,7 +211,7 @@ export class SimpleTreeMap implements Visualizer {
         tree.width = defaultSize;
         tree.height = defaultSize;
 
-        drawTree(tree, rootBounds, tree.selected);
+        drawTree(tree, rootBounds, false, (tree.selected || !hasSelected(tree)));
 
         return draws;
     }
