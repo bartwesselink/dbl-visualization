@@ -82,7 +82,7 @@ export class WindowComponent implements OnInit {
 
     private clickTimer: any;
     private dragging: boolean = false;
-    private readonly clickTimerThreshold: number = 150;
+    private readonly clickTimerThreshold: number = 200;
 
     private gradientMapType: boolean = true;
     private gradientType: GradientType = GradientType.RGBLinear;
@@ -165,8 +165,8 @@ export class WindowComponent implements OnInit {
         this.scaleView(value);
     }
 
-
     public setDarkmode(enabled: boolean): void {
+        this.darkMode = enabled;
         if(enabled){
             this.gl.setBackgroundColor(50.0 / 255.0, 50.0 / 255.0, 50.0 / 255.0);
         }else{
@@ -174,7 +174,7 @@ export class WindowComponent implements OnInit {
         }
         this.render();
     }
-    
+
     public keyEvent(event: KeyboardEvent): void {
         switch(event.key){
         case 'q':
