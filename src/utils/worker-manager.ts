@@ -45,112 +45,112 @@ export class WorkerManager {
                 case DrawType.FILL_ROTATED_QUAD:
                     options = draw.options as RotatedQuadOptions;
 
-                    this.gl.fillRotatedQuad(options.x, options.y, options.width, options.height, options.rotation, options.color);
+                    draw.glid = this.gl.fillRotatedQuad(options.x, options.y, options.width, options.height, options.rotation, options.color);
                     break;
                 case DrawType.DRAW_ROTATED_QUAD:
                     options = draw.options as RotatedQuadOptions;
 
-                    this.gl.drawRotatedQuad(options.x, options.y, options.width, options.height, options.rotation, options.color);
+                    draw.glid = this.gl.drawRotatedQuad(options.x, options.y, options.width, options.height, options.rotation, options.color);
                     break;
                 case DrawType.FILL_LINED_ROTATED_QUAD:
                     options = draw.options as RotatedQuadOptions;
 
-                    this.gl.fillLinedRotatedQuad(options.x, options.y, options.width, options.height, options.rotation, options.fillColor, options.lineColor);
+                    draw.glid = this.gl.fillLinedRotatedQuad(options.x, options.y, options.width, options.height, options.rotation, options.fillColor, options.lineColor);
                     break;
                 case DrawType.FILL_AA_QUAD:
                     options = draw.options as AaQuadOptions;
 
-                    this.gl.fillAAQuad(options.x, options.y, options.width, options.height, options.color);
+                    draw.glid = this.gl.fillAAQuad(options.x, options.y, options.width, options.height, options.color);
                     break;
                 case DrawType.DRAW_AA_QUAD:
                     options = draw.options as AaQuadOptions;
 
-                    this.gl.drawAAQuad(options.x, options.y, options.width, options.height, options.color);
+                    draw.glid = this.gl.drawAAQuad(options.x, options.y, options.width, options.height, options.color);
                     break;
                 case DrawType.FILL_LINED_AA_QUAD:
                     options = draw.options as AaQuadOptions;
 
-                    this.gl.fillLinedAAQuad(options.x, options.y, options.width, options.height, options.fillColor, options.lineColor);
+                    draw.glid = this.gl.fillLinedAAQuad(options.x, options.y, options.width, options.height, options.fillColor, options.lineColor);
                     break;
                 case DrawType.FILL_ELLIPSOID:
                     options = draw.options as EllipsoidOptions;
 
-                    this.gl.fillEllipsoid(options.x, options.y, options.radx, options.rady, options.rotation, options.color);
+                    draw.glid = this.gl.fillEllipsoid(options.x, options.y, options.radx, options.rady, options.rotation, options.color);
                     break;
                 case DrawType.DRAW_ELLIPSOID:
                     options = draw.options as EllipsoidOptions;
 
-                    this.gl.drawEllipsoid(options.x, options.y, options.radx, options.rady, options.rotation, options.color);
+                    draw.glid = this.gl.drawEllipsoid(options.x, options.y, options.radx, options.rady, options.rotation, options.color);
                     break;
                 case DrawType.FILL_LINED_ELLIPSOID:
                     options = draw.options as EllipsoidOptions;
 
-                    this.gl.fillLinedEllipsoid(options.x, options.y, options.radx, options.rady, options.rotation, options.fillColor, options.lineColor);
+                    draw.glid = this.gl.fillLinedEllipsoid(options.x, options.y, options.radx, options.rady, options.rotation, options.fillColor, options.lineColor);
                     break;
                 case DrawType.FILL_CIRCLE:
                     options = draw.options as CircleOptions;
 
-                    this.gl.fillCircle(options.x, options.y, options.radius, options.color);
+                    draw.glid = this.gl.fillCircle(options.x, options.y, options.radius, options.color);
                     break;
                 case DrawType.DRAW_CIRCLE:
                     options = draw.options as CircleOptions;
 
-                    this.gl.drawCircle(options.x, options.y, options.radius, options.color);
+                    draw.glid = this.gl.drawCircle(options.x, options.y, options.radius, options.color);
                     break;
                 case DrawType.FILL_LINED_CIRCLE:
                     options = draw.options as CircleOptions;
 
-                    this.gl.fillLinedCircle(options.x, options.y, options.radius, options.fillColor, options.lineColor);
+                    draw.glid = this.gl.fillLinedCircle(options.x, options.y, options.radius, options.fillColor, options.lineColor);
                     break;
                 case DrawType.DRAW_ELLIPSOIDAL_ARC:
                     options = draw.options as ArcOptions;
 
-                    this.gl.drawEllipsoidalArc(options.x, options.y, options.radx, options.rady, options.start, options.end, options.color);
+                    draw.glid = this.gl.drawEllipsoidalArc(options.x, options.y, options.radx, options.rady, options.start, options.end, options.color);
                     break;
                 case DrawType.DRAW_CIRCULAR_ARC:
                     options = draw.options as ArcOptions;
 
-                    this.gl.drawCircularArc(options.x, options.y, options.radius, options.start, options.end, options.color);
+                    draw.glid = this.gl.drawCircularArc(options.x, options.y, options.radius, options.start, options.end, options.color);
                     break;
                 case DrawType.DRAW_LINE:
                     options = draw.options as LineOptions;
 
-                    this.gl.drawLine(options.x1, options.y1, options.x2, options.y2, options.color);
+                    draw.glid = this.gl.drawLine(options.x1, options.y1, options.x2, options.y2, options.color);
                     break;
                 case DrawType.DRAW_POLY_LINE:
                     options = draw.options as LineOptions;
 
-                    this.gl.drawPolyLine(options.x, options.y, options.color);
+                    draw.glid = this.gl.drawPolyLine(options.x, options.y, options.color);
                     break;
                 case DrawType.FILL_RING_SLICE:
                     options = draw.options as RingSliceOptions;
 
-                    this.gl.fillRingSlice(options.x, options.y, options.near, options.far, options.start, options.end, options.color);
+                    draw.glid = this.gl.fillRingSlice(options.x, options.y, options.near, options.far, options.start, options.end, options.color);
                     break;
                 case DrawType.DRAW_RING_SLICE:
                     options = draw.options as RingSliceOptions;
 
-                    this.gl.drawRingSlice(options.x, options.y, options.near, options.far, options.start, options.end, options.color);
+                    draw.glid = this.gl.drawRingSlice(options.x, options.y, options.near, options.far, options.start, options.end, options.color);
                     break;
                 case DrawType.FILL_LINED_RING_SLICE:
                     options = draw.options as RingSliceOptions;
 
-                    this.gl.fillLinedRingSlice(options.x, options.y, options.near, options.far, options.start, options.end, options.fillColor, options.lineColor);
+                    draw.glid = this.gl.fillLinedRingSlice(options.x, options.y, options.near, options.far, options.start, options.end, options.fillColor, options.lineColor);
                     break;
                 case DrawType.FILL_CIRCLE_SLICE:
                     options = draw.options as CircleSliceOptions;
 
-                    this.gl.fillCircleSlice(options.x, options.y, options.radius, options.start, options.end, options.color);
+                    draw.glid = this.gl.fillCircleSlice(options.x, options.y, options.radius, options.start, options.end, options.color);
                     break;
                 case DrawType.DRAW_CIRCLE_SLICE:
                     options = draw.options as CircleSliceOptions;
 
-                    this.gl.drawCircleSlice(options.x, options.y, options.radius, options.start, options.end, options.color);
+                    draw.glid = this.gl.drawCircleSlice(options.x, options.y, options.radius, options.start, options.end, options.color);
                     break;
                 case DrawType.FILL_LINED_CIRCLE_SLICE:
                     options = draw.options as CircleSliceOptions;
 
-                    this.gl.fillLinedCircleSlice(options.x, options.y, options.radius, options.start, options.end, options.fillColor, options.lineColor);
+                    draw.glid = this.gl.fillLinedCircleSlice(options.x, options.y, options.radius, options.start, options.end, options.fillColor, options.lineColor);
                     break;
             }
         }

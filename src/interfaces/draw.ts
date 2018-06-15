@@ -12,4 +12,5 @@ export interface Draw {
     type: DrawType;
     options: AaQuadOptions|CircleOptions|EllipsoidOptions|RotatedQuadOptions|ArcOptions|CircleSliceOptions|RingSliceOptions|LineOptions;
     identifier?: number;
+    glid?: number;
 }

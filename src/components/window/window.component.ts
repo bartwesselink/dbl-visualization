@@ -347,21 +347,30 @@ export class WindowComponent implements OnInit {
             this.startLoading();
 
             /** @author Bart Wesselink */
-            this.workerManager.startWorker(this.gl, this.visualizer.draw, {
-                tree: this.tree,
-                settings: this.lastSettings,
-                palette: this.palette
-            })
+            const input = {
+                    tree: this.tree,
+                    settings: this.lastSettings,
+                    palette: this.palette
+            };
+            this.workerManager.startWorker(this.gl, this.visualizer.draw, input)
                 .then((draws: Draw[]) => {
                     setTimeout(() => {
-                        if(this.visualizer.optimizeShaders){
-                            this.visualizer.optimizeShaders(this.gl);
-                        }
-
                         this.redraw();
 
                         this.stopLoading();
                     }, 100);
+                    
+                    if(this.visualizer.optimizeShaders){
+                        this.visualizer.optimizeShaders(this.gl);
+                    }
+                    
+                    if(!(this.visualizer instanceof OpenglDemoTree)){
+                        draws = this.sort(draws);
+                    }
+                    
+                    if(this.visualizer.updateColors){
+                        this.visualizer.updateColors(this.gl, input, draws);
+                    }
 
                     this.currentDraws = draws;
 
@@ -441,6 +450,14 @@ export class WindowComponent implements OnInit {
         } else {
             this.render();
         }
+    }
+    
+    private sort(draws: Draw[]): Draw[]{
+        const arr = new Array(draws.length);
+        for(let draw of draws){
+            arr[draw.identifier] = draw;
+        }
+        return arr; 
     }
 
     /** @end-author Roan Hofland */
