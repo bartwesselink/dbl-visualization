@@ -19,7 +19,7 @@ export class OpenGL{
     public readonly HALFWIDTH = this.WIDTH / 2;
     public readonly HALFHEIGHT = this.HEIGHT / 2;
     private readonly PRECISION = 10;
-    private readonly SIZETHRESHOLD = 0.5;
+    private sizethreshold = 0.5;
     private static verbose = environment.openglVerbose;
     private mode: Mode;
     private factor: number = 1;
@@ -55,6 +55,11 @@ export class OpenGL{
     //toggles verbose mode
     public static setVerbose(verbose: boolean): void {
         OpenGL.verbose = verbose;
+    }
+    
+    //set the size thres hold
+    public setSizeThresHold(pixels: number): void{
+        this.sizethreshold = pixels;
     }
 
     //optimises the given shader mode
@@ -1355,7 +1360,7 @@ export class OpenGL{
 
     //checks if an element is visible
     private isVisible(elem: Element): boolean {
-        if((this.mode == Mode.WIDTH_FIRST && elem.span < ((this.WIDTH / this.factor) / this.width) * this.SIZETHRESHOLD) || (this.mode == Mode.HEIGHT_FIRST && elem.span < ((this.HEIGHT / this.factor) / this.height) * this.SIZETHRESHOLD)){
+        if((this.mode == Mode.WIDTH_FIRST && elem.span < ((this.WIDTH / this.factor) / this.width) * this.sizethreshold) || (this.mode == Mode.HEIGHT_FIRST && elem.span < ((this.HEIGHT / this.factor) / this.height) * this.sizethreshold)){
             return false;
         }else{
             if(this.mode == Mode.WIDTH_FIRST){
