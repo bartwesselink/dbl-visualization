@@ -67,7 +67,7 @@ export class OpenGL{
         if(this.indices == null){
             this.indices = new Array(this.arrays.length);
             for(let i = 0; i < this.indices.length; i++){
-                this.indices[i] = i;
+                this.arrays[i].id = i;
             }
         }
         while(this.index < this.arrays.length && this.arrays[this.index].shader == mode){
@@ -80,14 +80,14 @@ export class OpenGL{
                         let tmp = this.arrays[this.index];
                         this.arrays[this.index] = this.arrays[i];
                         this.arrays[i] = tmp;
-                        let ti = this.indices[this.index];
-                        this.indices[this.index] = this.indices[i];
-                        this.indices[i] = ti;
                         continue outer;
                     }
                 }
                 break;
             }
+        }
+        for(var i = 0; i < this.arrays.length; i++){
+            this.indices[this.arrays[i].id] = i;
         }
     }
     
@@ -104,6 +104,16 @@ export class OpenGL{
     //set element color
     public setColor(id: number, color: number[]): void{
         this.getElem(id).color = OpenGL.toColor(color);
+    }
+    
+    //copy element color
+    public copyColor(original: number, target: number): void{
+        this.getElem(target).color = this.getElem(original).color;
+    }
+    
+    //copy element color
+    public copyLineColor(original: number, target: number): void{
+        this.getElem(target).color = this.getElem(original).color;
     }
     
     //get the referenced element
@@ -377,6 +387,7 @@ export class OpenGL{
             this.gl.deleteBuffer(elem.indices);
         }
         this.index = 0;
+        this.indices = null;
     }
 
     //draws a partial ellipsoid
@@ -1428,10 +1439,14 @@ export class OpenGL{
 
     //creates a color from the given array
     private static toColor(array: number[]): Float32Array{
-        while(array.length > 3){
-            array.pop();
+        if(array == null){
+            return null;
+        }else{
+            while(array.length > 3){
+                array.pop();
+            }
+            return new Float32Array(array);
         }
-        return new Float32Array(array);
     }
 }
 /** @end-author Roan Hofland */
