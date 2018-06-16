@@ -6,6 +6,10 @@
   right: 0;
   top: 0;
   bottom: 0;
+
+  &[hidden] {
+    display: none;
+  }
 }
 
 .holder-app {
@@ -13,47 +17,40 @@
   position: relative;
 
   &.holder-app-side-by-side {
-    height: calc(100vh - 64px);
-    max-height: calc(100vh - 64px);
+    background: $color-dark;
+    padding: 0.5rem 1rem;
+    height: 100%;
     overflow: hidden;
     position: relative;
 
     section {
       width: 100%;
       height: auto;
-      padding: 1rem;
     }
 
     .page-content {
       display: flex;
       flex-direction: column;
-    }
-
-    .holder-content {
-      height: 100%;
-      border-width: 0 1px 1px 1px;
-      border-style: solid;
-      box-sizing: border-box;
-      //border-color: unquote("rgb(#{$palette-indigo-500})");
+      border-radius: 0.3rem;
       overflow: hidden;
-      position: relative;
     }
 
     app-window {
       flex-grow: 1;
+      height: 100%;
     }
 
     .holder-header {
       display: flex;
+      position: absolute;
     }
 
     display: flex;
 
     .holder-divider {
-      background: rgba(0, 0, 0, .8);
       cursor: col-resize;
       height: 100%;
-      width: 0.6rem;
+      width: 2rem !important;
       order: 2;
       flex-grow: 0;
     }
@@ -94,21 +91,6 @@
 
 .holder-header {
   display: none;
-  height: 2rem;
-  flex-grow: 0;
-  justify-content: space-between;
-  align-items: center;
-  border-top-left-radius: 1rem;
-  border-top-right-radius: 1rem;
-  padding: 0.8rem 2rem;
-  color: white;
-  //background-color: unquote("rgb(#{$palette-indigo-500})");
-  //border: 1px solid unquote("rgb(#{$palette-indigo-500})");
-}
-
-.holder-header-close {
-  color: white;
-  cursor: pointer;
 }
 
 .holder-view {
