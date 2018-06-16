@@ -43,8 +43,8 @@
 
                 <div class="holder-divider" #resizer [hidden]="!isSideBySideViewMode() || tabs?.length < 2" (mousedown)="startResize()"></div>
             </div>
-            <div class="holder-sidebar" [hidden]="!tree">
-                <app-sidebar [tree]="tree" (reset)="restoreTree()"></app-sidebar>
+            <div #holderSidebar class="holder-sidebar" [hidden]="!tree">
+                <app-sidebar [tree]="tree" (reset)="restoreTree()" (export)="exportTree()"></app-sidebar>
             </div>
         </div>
 
