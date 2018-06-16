@@ -11,6 +11,7 @@ import {Settings} from '../interfaces/settings';
 import {OpenglDemoTree} from "../visualizations/opengl-demo-tree";
 import {SimpleTreeMap} from "../visualizations/simple-tree-map";
 import {WorkerManager} from '../utils/worker-manager';
+import {Sunburst} from '../visualizations/sunburst';
 import {ViewMode} from '../enums/view-mode';
 import {SubtreeBus} from "../providers/subtree-bus";
 import {SelectBus} from "../providers/select-bus";
@@ -43,6 +44,7 @@ export class AppComponent implements OnInit {
     @ViewChild('fullScreenLoader') private fullScreenLoader: ElementRef;
     @ViewChild('appHolder') private appHolder: ElementRef;
     @ViewChild('resizer') private resizer: ElementRef;
+    @ViewChild('holderSidebar') private holderSidebar: ElementRef;
 
     @ViewChildren('tabSection') private tabSections: QueryList<ElementRef>;
 
@@ -193,6 +195,7 @@ export class AppComponent implements OnInit {
             new GeneralizedPythagorasTree(),
             new SimpleTreeMap(),
             new BasicTree(),
+            new Sunburst(),
             new IciclePlot(),
         ];
     }
@@ -279,10 +282,11 @@ export class AppComponent implements OnInit {
         let firstWindow = sections[0];
         let secondWindow = sections[1];
 
-        let screenWidth = document.body.clientWidth;
+        let holderWidth = document.body.clientWidth;
+        if (this.tree) holderWidth -= this.holderSidebar.nativeElement.offsetWidth;
 
         let firstWindowSize = ($event.clientX - this.resizer.nativeElement.clientWidth / 2);
-        let secondWindowSize = (screenWidth - ($event.clientX - this.resizer.nativeElement.clientWidth / 2));
+        let secondWindowSize = (holderWidth - ($event.clientX - this.resizer.nativeElement.clientWidth / 2));
 
         if (firstWindowSize < this.SIDE_BY_SIDE_MAX_WIDTH || secondWindowSize < this.SIDE_BY_SIDE_MAX_WIDTH) {
             return;
