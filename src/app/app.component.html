@@ -1,31 +1,27 @@
-<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header" #layoutContainer [class.dark-mode]="darkMode">
-    <header class="mdl-layout__header">
-        <div class="mdl-layout__header-row header-row">
-            <span class="mdl-layout-title">DBL 1D</span>
+<div #layoutContainer [class.dark-mode]="darkMode">
+    <header [hidden]="!showApp">
+        <img class="header-logo" src="assets/images/logo-white.png">
 
+        <div class="header-center">
             <app-visualization-picker [hidden]="isSideBySideViewMode() && tabs.length >= SIDE_BY_SIDE_MAX_WINDOWS" [visualizers]="visualizers" (select)="addVisualization($event)"></app-visualization-picker>
-
-            <div>
-                <app-loader [hidden]="!isLoading() || showFullScreenLoader"></app-loader>
-                <app-general-settings-button></app-general-settings-button>
-                <app-help-button [container]="layoutContainer"></app-help-button>
-                <app-upload-tool (newContent)="parseTree($event)"></app-upload-tool>
-            </div>
         </div>
 
-        <div class="mdl-layout__tab-bar tab-bar mdl-js-ripple-effect" *ngIf="isTabViewMode()" [mdl]>
-            <a *ngFor="let tab of tabs;" (click)="switchTab(tab)" class="mdl-layout__tab-app" [class.is-active]="tab.active">
-                {{ tab.visualizer?.getName() }}
-
-                <i class="material-icons close-tab" (click)="closeTab(tab)">close</i>
-            </a>
+        <div class="header-buttons">
+            <!--<app-loader [hidden]="!isLoading() || showFullScreenLoader"></app-loader>-->
+            <app-general-settings-button></app-general-settings-button>
+            <app-upload-tool (newContent)="parseTree($event)"></app-upload-tool>
+            <app-help-button [container]="layoutContainer"></app-help-button>
         </div>
+
+        <!--<div class="mdl-layout__tab-bar tab-bar mdl-js-ripple-effect" *ngIf="isTabViewMode()" [mdl]>-->
+            <!--<a *ngFor="let tab of tabs;" (click)="switchTab(tab)" class="mdl-layout__tab-app" [class.is-active]="tab.active">-->
+                <!--{{ tab.visualizer?.getName() }}-->
+
+                <!--<i class="material-icons close-tab" (click)="closeTab(tab)">close</i>-->
+            <!--</a>-->
+        <!--</div>-->
     </header>
-    <div class="mdl-layout__drawer">
-        <span class="mdl-layout-title">Menu</span>
-        <app-dataset-selection (newContent)="parseTree($event)"></app-dataset-selection>
-    </div>
-    <main class="mdl-layout__content" (mouseup)="stopResize()" (mousemove)="doResize($event)">
+    <main class="content" (mouseup)="stopResize()" (mousemove)="doResize($event)">
         <div class="holder">
             <div class="holder-app" [class.holder-app-side-by-side]="isSideBySideViewMode()" [class.holder-app-tabs]="isTabViewMode()" #appHolder>
                 <ng-container *ngFor="let tab of tabs; let i = index;">
@@ -53,7 +49,7 @@
             </div>
         </div>
 
-        <app-welcome-page [visualizers]="visualizers" [hidden]="tabs.length > 0"></app-welcome-page>
+        <app-welcome-page [visualizers]="visualizers" [hidden]="tabs.length > 0" [showApp]="showApp" (newContent)="parseTree($event)" (goToApp)="goToApp()"></app-welcome-page>
     </main>
 
     <dialog class="mdl-dialog full-screen-loader" #fullScreenLoader tabindex="-1">

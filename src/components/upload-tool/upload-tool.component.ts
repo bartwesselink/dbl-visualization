@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {DatasetStorageService} from "../../providers/dataset-storage-service";
 
 @Component({
@@ -8,6 +8,7 @@ import {DatasetStorageService} from "../../providers/dataset-storage-service";
 export class UploadToolComponent {
     /** @author Mathijs Boezer */
     @Output() newContent: EventEmitter<string> = new EventEmitter();
+    @Input() type: 'menu'|'home' = 'menu';
 
     private fileTypeWhitelist = ['', 'text/plain',]; //Allowed types of files
     private errorMsg : string = "Wrong file type, please upload a Newick tree file.";

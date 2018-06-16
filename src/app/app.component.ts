@@ -27,6 +27,7 @@ export class AppComponent implements OnInit {
     private originalTree: Node;
     public visualizers: Visualizer[];
     public showFullScreenLoader: boolean = false;
+    public showApp: boolean = false;
 
     private activeTab: Tab;
     private amountOfWindowsLoading: number = 0;
@@ -100,6 +101,7 @@ export class AppComponent implements OnInit {
 
             this.openTree(this.parser.parseTree(line));
             this.originalTree = this.tree;
+            this.showApp = true;
 
             if(!hadTree) {
                 this.resizeActiveTab();
@@ -109,6 +111,10 @@ export class AppComponent implements OnInit {
     /** @end-author Jordy Verhoeven */
 
     /** @author Bart Wesselink */
+    public goToApp(): void {
+        this.showApp = true;
+    }
+
     public addVisualization(visualizer: Visualizer): void {
         this.addTab(visualizer);
     }

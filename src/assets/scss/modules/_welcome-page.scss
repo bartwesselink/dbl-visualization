@@ -1,32 +1,49 @@
 /** @author Bart Wesselink */
 .welcome-page {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  justify-content: stretch;
+  flex-direction: column;
   position: absolute;
   left: 0;
   right: 0;
   top: 0;
   bottom: 0;
   z-index: 1;
-  color: white;
-  background-color: unquote("rgb(#{$palette-indigo-900})");
+  height: 100vh;
+}
+
+.welcome-page-top {
+  display: flex;
   flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  flex-grow: 0;
+}
+
+.welcome-page-logo {
+  margin-bottom: 1rem;
+}
+
+.welcome-page-title {
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 3rem;
+}
+
+.welcome-page-authors {
+  font-weight: bold;
+  font-size: 1rem;
+  margin-bottom: 0.4rem;
 }
 
 .welcome-thumbnail {
-  filter: brightness(0) invert(1);
+  filter: brightness(0);
+  opacity: 0.5;
+  margin-bottom: 3rem;
 
   &:not(:last-of-type) {
     margin-right: 0.5rem;
   }
-}
-
-.welcome-examples {
-  margin-top: 4rem;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
 }
 
 .welcome-thumbnails {
@@ -34,11 +51,95 @@
   justify-content: center;
   flex-direction: row;
   align-items: center;
+  flex-wrap: wrap;
 }
 
-.welcome-content {
+.welcome-page-bottom {
   width: 100%;
-  max-width: 40rem;
-  text-align: center;
+  flex-grow: 1;
+  background-color: $color-primary;
+  position: relative;
+  margin-top: 6rem;
+  display: flex;
+  justify-content: center;
+
+  &:before {
+    position: absolute;
+    left: -5rem;
+    right: -5rem;
+    height: 100%;
+    z-index: -1;
+    margin-top: -6.5rem;
+    content: ' ';
+    transform: rotate(-5deg);
+    background-color: $color-primary;
+    box-shadow: inset 0 5px 20px -8px #000000;
+  }
+}
+
+.welcome-page-animation-canvas {
+  position: absolute;
+  transform: rotate(-5deg);
+  top: -8rem;
+  left: -3rem;
+  right: -3rem;
+  bottom: -3rem;
+  width: 200%;
+  height: 200%;
+}
+
+.welcome-page-buttons {
+  width: 100%;
+  max-width: 20rem;
+  position: relative;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: -3rem;
+
+  > * {
+    width: 100%;
+  }
+
+  button {
+    margin: 1rem 0;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+}
+
+.welcome-page-full-screen-animation {
+  .welcome-page-top {
+    display: none;
+  }
+
+  .welcome-page-bottom {
+    margin-top: 0;
+    background-color: $color-dark;
+
+    &:before {
+      display: none;
+    }
+  }
+
+  .welcome-page-animation-canvas {
+    transform: none;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .welcome-page-buttons {
+    display: none;
+  }
 }
 /** @end-author Bart Wesselink */

@@ -1,0 +1,21 @@
+.button {
+  text-transform: uppercase;
+  background: white;
+  outline: none !important;
+  width: 100%;
+  padding: 0.85rem 2rem;
+  color: $color-primary;
+  font-family: inherit;
+  font-weight: bold;
+  border-radius: 0.4rem;
+  font-size: 1rem;
+  box-shadow: 0 0 10px 0 rgba(0,0,0,0.75);
+  margin: 0.4rem 0;
+  cursor: pointer;
+  display: block;
+  text-align: center;
+
+  &:hover {
+    background: $color-white-hover;
+  }
+}
