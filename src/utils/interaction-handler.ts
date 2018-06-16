@@ -319,6 +319,8 @@ export class InteractionHandler {
                 gl.scale(zoomFactor);
             }
         }
+
+        gl.render();
     }
 
     private normalizeAngle(angle: number) {
