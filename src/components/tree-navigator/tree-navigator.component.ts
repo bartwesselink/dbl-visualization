@@ -80,14 +80,17 @@ export class TreeNavigatorComponent implements OnInit {
 
     private expandNode(needle: Node, haystack: Node[]): boolean {
         this.reload();
-        
+
         for (const node of haystack) {
             if (node === needle) {
+                node.forceExpand = false;
                 return true;
             } else if (this.expandNode(needle, node.children)) {
                 node.forceExpand = true;
-
+                
                 return true;
+            } else {
+                node.forceExpand = false;
             }
         }
 
