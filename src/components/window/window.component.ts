@@ -100,7 +100,7 @@ export class WindowComponent implements OnInit {
             this.tree.selectedNode = node;
             node.selected = true;
 
-            this.redrawAllScenes();
+            this.stateRedraw();
             this.interactionHandler.scaleToNode(this.gl, this.canvas, this.currentDraws, node, this.selectBus.interactionOptions);
         });
 
@@ -332,21 +332,29 @@ export class WindowComponent implements OnInit {
             this.startLoading();
 
             /** @author Bart Wesselink */
-            this.workerManager.startWorker(this.gl, this.visualizer.draw, {
-                tree: this.tree,
-                settings: this.lastSettings,
-                palette: this.palette
-            })
+            const input = {
+                    tree: this.tree,
+                    settings: this.lastSettings,
+                    palette: this.palette
+            };
+            this.workerManager.startWorker(this.gl, this.visualizer.draw, input)
                 .then((draws: Draw[]) => {
                     setTimeout(() => {
-                        if (this.visualizer.optimizeShaders) {
-                            this.visualizer.optimizeShaders(this.gl);
-                        }
-
                         this.redraw();
 
                         this.stopLoading();
                     }, 100);
+                    
+                    if(this.visualizer.optimizeShaders){
+                        this.visualizer.optimizeShaders(this.gl);
+                    }
+                    
+                    if(this.visualizer.updateColors){
+                        if(!(this.visualizer instanceof OpenglDemoTree)){
+                            draws = this.sort(draws);
+                        }
+                        this.visualizer.updateColors(this.gl, input, draws);
+                    }
 
                     this.currentDraws = draws;
 
@@ -378,6 +386,7 @@ export class WindowComponent implements OnInit {
     }
 
     /** @end-author Jules Cornelissen */
+    /** @author Roan Hofland */
 
     //fallback rendering for when some OpenGL error occurs
     private onError(error): void {
@@ -431,6 +440,33 @@ export class WindowComponent implements OnInit {
             this.render();
         }
     }
+    
+    private sort(draws: Draw[]): Draw[]{
+        const arr = new Array(draws.length);
+        var offset = this.tree.subTreeSize;
+        for(let draw of draws){
+            if(draw.identifier == undefined){
+                arr[offset++] = draw;
+            }else{
+                arr[draw.identifier] = draw;
+            }
+        }
+        return arr; 
+    }
+    
+    private stateRedraw(): void {
+        if(this.visualizer.updateColors){
+            this.computeColors();
+            this.visualizer.updateColors(this.gl, {
+                tree: this.tree,
+                settings: this.lastSettings,
+                palette: this.palette
+            }, this.currentDraws);
+            this.render();
+        }else{
+            this.redrawAllScenes();
+        }
+    }
 
     /** @end-author Roan Hofland */
     /** @author Bart Wesselink */
@@ -467,6 +503,7 @@ export class WindowComponent implements OnInit {
         }
         return Palettes.default; // Fallback
     }
+    /** @end-author Nico Klaassen */
 
     private readSettings(settings: Settings, initialize: boolean): void {
         if (!settings.colorMode) {
@@ -486,7 +523,7 @@ export class WindowComponent implements OnInit {
             this.darkMode = settings.darkMode;
         } else {
             if (this.darkMode === settings.darkMode) { // It wasn't the darkMode setting that changed
-                this.redrawAllScenes();
+                this.stateRedraw();
             } else {
                 this.darkMode = settings.darkMode;
                 this.setDarkmode(this.darkMode);

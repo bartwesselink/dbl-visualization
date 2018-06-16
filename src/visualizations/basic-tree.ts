@@ -9,6 +9,8 @@ import {OpenGL} from "../opengl/opengl";
 
 /** @author Mathijs Boezer */
 export class BasicTree implements Visualizer {
+    shapesPerNode: number = 2;
+
     public draw(input: VisualizerInput): Draw[] {
         const widthMultiplier = input.settings.width; // distance between nodes horizontally
         const heightMultiplier = input.settings.height; // the vertical distance between nodes in terms of subtree size
@@ -17,8 +19,6 @@ export class BasicTree implements Visualizer {
 
         const tree: Node = input.tree;
         const draws: Draw[] = [];
-        const selectedColor = [0, 0, 0]; // black
-        const color = [0.4, 0.4, 0.4]; // grey
         const yOffset = -400 * (growDown ? -1 : 1); // move the origin to the bottom (or top if grow down) instead of middle with 50px of spacing
         const radianToDegreeMultiplier = 180 / Math.PI;
 
@@ -39,8 +39,6 @@ export class BasicTree implements Visualizer {
         const scalarY = scalarX * (growDown ? -1 : 1); // negate scalar if growing downwards
 
         const generate: (tree: Node, origin: number[], selectedAncestor: boolean) => void = (tree: Node, origin: number[], selectedAncestor: boolean): void => {
-            selectedAncestor = selectedAncestor || tree.selected; // whether this node or an ancestor is selected determines its color
-
             if (tree.children.length > 0) {
                 let x: number = -(tree.subTreeSize - 1.0) * widthMultiplier; // relative x coordinate for leftmost child
                 let y: number = tree.subTreeSize * heightMultiplier; // relative y coordinate for children
@@ -67,8 +65,8 @@ export class BasicTree implements Visualizer {
                             width: child.subTreeSize * scalarX, // subtree size as width
                             height: height * scalarX,
                             rotation: angle,
-                            color: selectedAncestor ? selectedColor : color,
-                        }
+                        },
+                        linked: tree.identifier
                     });
 
                     generate(child, childOrigin, selectedAncestor); // draw child node and subtree
@@ -83,7 +81,6 @@ export class BasicTree implements Visualizer {
                     x: origin[0] * scalarX,
                     y: origin[1] * scalarY + yOffset,
                     radius: tree.subTreeSize * scalarX * nodeWidth, // subtree size as diameter or radius depending on the settings
-                    color: selectedAncestor ? selectedColor : color,
                 },
                 identifier: tree.identifier, // selecting on the nodes
             });
@@ -117,5 +114,27 @@ export class BasicTree implements Visualizer {
         gl.optimizeDefault();
         gl.optimizeFor(ShaderMode.FILL_CIRCLE);
     }
+    /** @end-author Mathijs Boezer */
+    /** @author Roan Hofland */
+    public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void{
+        this.recolor(input.tree, gl, draws, input.tree.selected);
+        for(var i = input.tree.subTreeSize; i < draws.length; i++){
+            gl.copyColor(draws[draws[i].linked].glid, draws[i].glid);
+        }
+    }
+    
+    private recolor(tree: Node, gl: OpenGL, draws: Draw[], selected: boolean){
+        if(draws[tree.identifier].type == 10){
+            if (selected || tree.selected) {
+                selected = true;
+                gl.setColor(draws[tree.identifier].glid, [0, 0, 0]);
+            } else {
+                gl.setColor(draws[tree.identifier].glid, [0.4, 0.4, 0.4]);
+            }
+        }
+        for(let child of tree.children){
+            this.recolor(child, gl, draws, selected);
+        }
+    }
+    /** @end-author Roan Hofland */
 }
-/** @end-author Mathijs Boezer */

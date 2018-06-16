@@ -11,17 +11,15 @@ import {OpenGL} from "../opengl/opengl";
 /** @author Nico Klaassen */
 
 export class SimpleTreeMap implements Visualizer {
+    shapesPerNode: number = 1;
+
     public draw(input: VisualizerInput): Draw[] {
         const originalTree = input.tree;
         const draws: Draw[] = [];
         const settings: any = input.settings;
-        const palette: Palette = input.palette;
-
 
         // define variables
         const defaultSize = 600;
-        const lineColorSelected: number[] = [0, 0, 0];
-        const lineColorUnselected: number[] = [0.3, 0.3, 0.3];
         let offset: number = settings.offset;
         let tree: NodeTreeMap = originalTree as NodeTreeMap;
         let rootBounds: Bounds = {
@@ -85,23 +83,10 @@ export class SimpleTreeMap implements Visualizer {
          * @param {NodeTreeMap} tree The root of the subtree upon which we recurse
          * @param {Bounds} bounds The bounding-box indicating where we should draw the current root
          * @param {boolean} internalNode Whether we are recursing on internal nodes, or on the root of the initial input tree
-         * @param {number[]} color The color with which we should draw our current bounding-box based rectangle
          * @param {boolean} selected Whether one of its parent was selected
          */
         const drawTree = (tree: NodeTreeMap, bounds: Bounds, internalNode: boolean, selected: boolean = false): void => {
             let doneSize = 0; // How many subtree-nodes are already taking up space within the bounds.
-
-            let color;
-            let lineColor;
-
-            if (tree.selected === true || selected) {
-                selected = true;
-                color = palette.gradientColorMapSelected[tree.maxDepth][tree.depth];
-                lineColor = lineColorSelected;
-            } else {
-                color = palette.gradientColorMap[tree.maxDepth][tree.depth];
-                lineColor = lineColorUnselected;
-            }
 
             const relativeOffset = tree.orientation === Orientation.HORIZONTAL ?
                 Math.min(tree.width / 100 * offset / (tree.children.length + 1), tree.height / 100 * offset / (tree.children.length + 1)) :
@@ -122,16 +107,14 @@ export class SimpleTreeMap implements Visualizer {
                                 x: bounds.left,
                                 y: bounds.bottom,
                                 width: tree.width,
-                                height: tree.height,
-                                fillColor: color,
-                                lineColor: lineColor
+                                height: tree.height
                             }
                         });
                     } else {
                         draws.push({
                             type: 4 /** FillAAQuad **/,
                             identifier: tree.identifier,
-                            options: {x: bounds.left, y: bounds.bottom, width: tree.width, height: tree.height, color: color}
+                            options: {x: bounds.left, y: bounds.bottom, width: tree.width, height: tree.height}
                         });
                     }
                 } else { // (tree.orientation === Orientation.VERTICAL)
@@ -143,23 +126,21 @@ export class SimpleTreeMap implements Visualizer {
                                 x: bounds.left,
                                 y: bounds.bottom,
                                 width: tree.width,
-                                height: tree.height,
-                                fillColor: color,
-                                lineColor: lineColor
+                                height: tree.height
                             }
                         });
                     } else {
                         draws.push({
                             type: 4 /** FillAAQuad **/,
                             identifier: tree.identifier,
-                            options: {x: bounds.left, y: bounds.bottom, width: tree.width, height: tree.height, color: color}
+                            options: {x: bounds.left, y: bounds.bottom, width: tree.width, height: tree.height}
                         });
                     }
                 }
             }
 
             // Compute color and size per child, recurse on each child with the new - and nested - bounds.
-            for (let i = 0; i< tree.children.length; i++) {
+            for (let i = 0; i < tree.children.length; i++) {
                 const childNode = tree.children[i];
                 const childBounds = tree.orientation === Orientation.HORIZONTAL ?
                     {
@@ -225,7 +206,28 @@ export class SimpleTreeMap implements Visualizer {
     public enableShaders(gl: OpenGL): void {
         gl.setSizeThresHold(5);
     }
-
+    /** @end-author Nico Klaassen */
+    /** @author Roan Hofland */
+    public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void{
+        this.recolor(input.tree, input.palette, input.settings.outline, gl, draws, input.tree.selected);
+    }
+    
+    private recolor(tree: Node, palette: Palette, outline: boolean, gl: OpenGL, draws: Draw[], selected: boolean){
+        if (selected || tree.selected) {
+            selected = true;
+            gl.setColor(draws[tree.identifier].glid, palette.gradientColorMapSelected[tree.maxDepth][tree.depth]);
+            if(outline){
+                gl.setLineColor(draws[tree.identifier].glid, [0, 0, 0]);
+            }
+        } else {
+            gl.setColor(draws[tree.identifier].glid, palette.gradientColorMap[tree.maxDepth][tree.depth]);
+            if(outline){
+                gl.setLineColor(draws[tree.identifier].glid, [0.3, 0.3, 0.3]);
+            }
+        }
+        for(let child of tree.children){
+            this.recolor(child, palette, outline, gl, draws, selected);
+        }
+    }
+    /** @end-author Roan Hofland */
 }
-
-/** @end-author Nico Klaassen */
