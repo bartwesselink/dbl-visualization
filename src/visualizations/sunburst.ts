@@ -9,14 +9,14 @@ import {OpenGL} from '../opengl/opengl';
 import {ShaderMode} from '../opengl/shaders/shaderMode';
 
 export class Sunburst implements Visualizer {
+    shapesPerNode: number = 1;
+
     /** @author Bart Wesselink */
     public draw(input: VisualizerInput): Draw[] {
         const tree = input.tree;
         const settings = input.settings;
         const draws: Draw[] = [];
-        const palette: Palette = input.palette;
 
-        let color: number[];
         let baseRadius = settings.baseRadius;
         let scaleRadius = settings.scaleRadius;
         let radiusMargin = settings.radiusMargin;
@@ -24,18 +24,11 @@ export class Sunburst implements Visualizer {
         let maxDegrees = settings.maxDegrees;
 
         const generate = (node: Node, startAngle: number, endAngle: number, near: number, innerRadius: number, isLastChild: boolean = true, isSelected: boolean = false) => {
-            if (node.selected === true || isSelected) {
-                isSelected = true;
-                color = palette.gradientColorMapSelected[node.maxDepth][node.depth];
-            } else {
-                color = palette.gradientColorMap[node.maxDepth][node.depth];
-            }
-
             let far = near + innerRadius;
 
             near += radiusMargin; // add a small margin
 
-            draws.push({ type: 17 /** FillRingSlice **/, identifier: node.identifier, options: { x: 0, y: 0, near: near, far: far, start: startAngle, end: endAngle, color }});
+            draws.push({ type: 17 /** FillRingSlice **/, identifier: node.identifier, options: { x: 0, y: 0, near: near, far: far, start: startAngle, end: endAngle}});
 
             let newStartAngle = startAngle;
 
@@ -92,6 +85,22 @@ export class Sunburst implements Visualizer {
     public enableShaders(gl: OpenGL): void {
         gl.enableShaders(ShaderMode.FILL_RING_SLICE);
     }
-
     /** @end-author Bart Wesselink */
+    /** @author Roan Hofland */
+    public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void{
+        this.recolor(input.tree, input.palette, gl, draws, input.tree.selected);
+    }
+    
+    private recolor(tree: Node, palette: Palette, gl: OpenGL, draws: Draw[], selected: boolean){
+        if (selected || tree.selected) {
+            selected = true;
+            gl.setColor(draws[tree.identifier].glid, palette.gradientColorMapSelected[tree.maxDepth][tree.depth]);
+        } else {
+            gl.setColor(draws[tree.identifier].glid, palette.gradientColorMap[tree.maxDepth][tree.depth]);
+        }
+        for(let child of tree.children){
+            this.recolor(child, palette, gl, draws, selected);
+        }
+    }
+    /** @end-author Roan Hofland */
 }

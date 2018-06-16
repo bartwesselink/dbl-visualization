@@ -447,8 +447,13 @@ export class WindowComponent implements OnInit {
 
     private sort(draws: Draw[]): Draw[]{
         const arr = new Array(draws.length);
+        var offset = this.tree.subTreeSize;
         for(let draw of draws){
-            arr[draw.identifier] = draw;
+            if(draw.identifier == undefined){
+                arr[offset++] = draw;
+            }else{
+                arr[draw.identifier] = draw;
+            }
         }
         return arr;
     }
@@ -522,7 +527,7 @@ export class WindowComponent implements OnInit {
             this.darkMode = settings.darkMode;
         } else {
             if (this.darkMode === settings.darkMode) { // It wasn't the darkMode setting that changed
-                this.redrawAllScenes();
+                this.stateRedraw();
             } else {
                 this.darkMode = settings.darkMode;
                 this.setDarkmode(this.darkMode);
