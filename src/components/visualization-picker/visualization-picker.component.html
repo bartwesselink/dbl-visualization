@@ -1,7 +1,9 @@
 <div class="visualization-picker">
-    <button class="header-button-icon" (click)="open()">
-        <i class="mdi mdi-{{icon}}"></i>
+    <button class="header-button-icon" (click)="open()" *ngIf="type == 'menu'">
+        <i class="mdi mdi-plus"></i>
     </button>
+
+    <i class="mdi mdi-chevron-down visualization-picker-icon-only" (click)="open()" *ngIf="type == 'tab'"></i>
 
     <div class="visualization-picker-overlay" (click)="close()" [hidden]="!opened"></div>
 

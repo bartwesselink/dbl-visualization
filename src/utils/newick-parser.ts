@@ -59,6 +59,7 @@ export class NewickParser {
             subTreeSize: 1,
             identifier: identifier.id,
             length: length,
+            specifiedLength: node.length != null && node.length !== '',
             parent,
         };
 

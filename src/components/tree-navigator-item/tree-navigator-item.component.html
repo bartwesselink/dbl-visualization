@@ -1,12 +1,19 @@
-<div class="tree-navigator-item" [class.leaf]="!node.expandable" id="node-{{ node.identifier }}">
-    <i id="expand-button_{{node.identifier}}" class="material-icons tree-navigator-item-button" (click)="toggle()" [hidden]="!node.expandable || node.children.length > 0">add_circle_outline</i>
-    <i id="collapse-button_{{node.identifier}}" class="material-icons tree-navigator-item-button" (click)="toggle()" [hidden]="!node.expandable || node.children.length === 0">remove_circle_outline</i>
+<div class="tree-navigator-item" [class.leaf]="!node.expandable" id="node-{{ node.identifier }}" [class.tree-navigator-selected]="node.original.selected">
+    <div class="tree-navigator-holder">
+        <div class="tree-navigator-expand-holder">
+            <i id="expand-button_{{node.identifier}}" class="mdi mdi-arrow-right-drop-circle tree-navigator-item-button" (click)="toggle()" [hidden]="!node.expandable || node.children.length > 0"></i>
+            <i id="collapse-button_{{node.identifier}}" class="mdi mdi-arrow-down-drop-circle tree-navigator-item-button" (click)="toggle()" [hidden]="!node.expandable || node.children.length === 0"></i>
+        </div>
 
-    <span (click)="select()" class="tree-navigator-label" [class.tree-navigator-unnamed]="node.label === ''" [class.tree-navigator-selected]="node.original.selected">{{ node.label === '' ? '(unnamed)' : node.label }}</span>
-    <i id="subtree-button_{{node.identifier}}" class="material-icons tree-navigator-item-button" (click)="openSubtree()">open_in_new</i>
+        <div class="tree-navigator-label-holder" (click)="select()">
+            <span class="tree-navigator-label" [class.tree-navigator-unnamed]="node.label === ''">{{ node.label === '' ? '(unnamed)' : node.label }}{{ node.specifiedLength ? ' : ' + node.length : '' }}</span>
+            <i id="subtree-button_{{node.identifier}}" class="mdi mdi-checkbox-multiple-blank-circle tree-navigator-open" (click)="openSubtree()"></i>
+        </div>
+    </div>
+
     <app-tree-navigator [tree]="node.children" #component></app-tree-navigator>
 
-    <div class="mdl-tooltip" [attr.data-mdl-for]="'expand-button_' + node.identifier">Expand</div>
-    <div class="mdl-tooltip" [attr.data-mdl-for]="'collapse-button_' + node.identifier">Collapse</div>
-    <div class="mdl-tooltip" [attr.data-mdl-for]="'subtree-button_' + node.identifier">Open subtree</div>
+    <!--<div class="mdl-tooltip" [attr.data-mdl-for]="'expand-button_' + node.identifier">Expand</div>-->
+    <!--<div class="mdl-tooltip" [attr.data-mdl-for]="'collapse-button_' + node.identifier">Collapse</div>-->
+    <!--<div class="mdl-tooltip" [attr.data-mdl-for]="'subtree-button_' + node.identifier">Open subtree</div>-->
 </div>

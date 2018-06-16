@@ -288,11 +288,15 @@ export class AppComponent implements OnInit {
         let firstWindow = sections[0];
         let secondWindow = sections[1];
 
-        let holderWidth = document.body.clientWidth;
-        if (this.tree) holderWidth -= this.holderSidebar.nativeElement.offsetWidth;
+        // calculate with of content box without padding
+        const cs = getComputedStyle(this.appHolder.nativeElement);
 
-        let firstWindowSize = ($event.clientX - this.resizer.nativeElement.clientWidth / 2);
-        let secondWindowSize = (holderWidth - ($event.clientX - this.resizer.nativeElement.clientWidth / 2));
+        const paddingLeft = parseFloat(cs.paddingLeft)
+        const paddingX = paddingLeft + parseFloat(cs.paddingRight);
+        let holderWidth = this.appHolder.nativeElement.offsetWidth - paddingX;
+
+        let firstWindowSize = ($event.clientX - paddingLeft - this.resizer.nativeElement.clientWidth / 2);
+        let secondWindowSize = (holderWidth - firstWindowSize - this.resizer.nativeElement.clientWidth);
 
         if (firstWindowSize < this.SIDE_BY_SIDE_MAX_WIDTH || secondWindowSize < this.SIDE_BY_SIDE_MAX_WIDTH) {
             return;

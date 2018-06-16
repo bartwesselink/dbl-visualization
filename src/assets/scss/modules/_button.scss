@@ -19,3 +19,22 @@
     background: $color-white-hover;
   }
 }
+
+.button-no-shadow {
+  box-shadow: none;
+}
+
+.button-primary {
+  color: white;
+  background: $color-primary;
+
+  &:hover {
+    background: darken($color-primary, 6%);
+  }
+}
+
+.button-small {
+  border-radius: 0.2rem;
+  padding: 0.5rem 0.1rem;
+  font-size: 0.8rem;
+}

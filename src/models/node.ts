@@ -1,6 +1,7 @@
 export interface Node {
     label: string;
     length?: number;
+    specifiedLength?: boolean;
     children: Node[];
     identifier: number;
     parent?: Node;

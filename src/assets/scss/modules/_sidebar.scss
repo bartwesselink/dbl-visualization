@@ -4,11 +4,51 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  padding: 0.5rem 1rem 0.5rem 0;
+}
+
+.sidebar-search {
+  background: $color-light;
+  border-radius: 0.3rem;
+  border: 0.1rem solid $color-border;
+}
+
+.sidebar-navigator {
+  border: 0.1rem solid $color-border;
+  margin-top: 1rem;
+  flex-grow: 1;
+  overflow: auto;
+  height: 100%;
+  background: $color-light;
+  border-radius: 0.3rem;
+  display: flex;
+  flex-direction: column;
+  color: $text-light;
 }
 
 .sidebar-content {
   flex-grow: 1;
   overflow: auto;
-  height: 100%;
+  padding: 1rem 0.2rem;
+}
+
+.sidebar-buttons {
+  padding: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .button {
+    margin: 0 0.5rem;
+  }
+
+  .sidebar-button {
+    font-size: 1.7rem;
+    cursor: pointer;
+
+    &:hover {
+      color: darken($text-light, 6%);
+    }
+  }
 }
 /** @end-author Bart Wesselink */

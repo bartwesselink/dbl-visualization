@@ -1,8 +1,8 @@
-<div class="search">
-    <div class="mdl-textfield mdl-js-textfield search-field">
-        <i class="material-icons">search</i>
+<div class="search" [class.search-active]="searching">
+    <div class="search-field">
+        <i class="mdi mdi-magnify search-icon"></i>
 
-        <input class="mdl-textfield__input" type="search" placeholder="Search..." id="search" [formControl]="searchControl">
+        <input class="input" type="search" placeholder="Search..." id="search" [formControl]="searchControl">
     </div>
 
     <div class="search-results" [hidden]="!searching">

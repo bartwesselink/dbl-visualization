@@ -8,7 +8,7 @@ import {Visualizer} from '../../interfaces/visualizer';
 export class VisualizationPickerComponent {
     /** @author Bart Wesselink */
     @Input() identifier: string = 'select';
-    @Input() icon: string = 'plus';
+    @Input() type: 'menu'|'tab' = 'menu';
     @Input() visualizers: Visualizer[];
     @Output() select: EventEmitter<Visualizer> = new EventEmitter<Visualizer>();
     public opened: boolean = false;

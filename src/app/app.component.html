@@ -8,32 +8,32 @@
 
         <div class="header-buttons">
             <!--<app-loader [hidden]="!isLoading() || showFullScreenLoader"></app-loader>-->
-            <app-general-settings-button></app-general-settings-button>
             <app-upload-tool (newContent)="parseTree($event)"></app-upload-tool>
+            <app-general-settings-button></app-general-settings-button>
             <app-help-button [container]="layoutContainer"></app-help-button>
         </div>
-
-        <!--<div class="mdl-layout__tab-bar tab-bar mdl-js-ripple-effect" *ngIf="isTabViewMode()" [mdl]>-->
-            <!--<a *ngFor="let tab of tabs;" (click)="switchTab(tab)" class="mdl-layout__tab-app" [class.is-active]="tab.active">-->
-                <!--{{ tab.visualizer?.getName() }}-->
-
-                <!--<i class="material-icons close-tab" (click)="closeTab(tab)">close</i>-->
-            <!--</a>-->
-        <!--</div>-->
     </header>
     <main class="content" (mouseup)="stopResize()" (mousemove)="doResize($event)">
         <div class="holder" [hidden]="!showApp || tabs.length == 0">
+            <div class="holder-tabs" [hidden]="!isTabViewMode()">
+                <div *ngFor="let tab of tabs;" (click)="switchTab(tab)" class="holder-tab holder-header" [class.is-active]="tab.active">
+                    <div class="holder-header-title">
+                        {{ tab.visualizer?.getName() }}
+                        <i class="mdi mdi-close-circle holder-header-close" (click)="closeTab(tab)"></i>
+                    </div>
+                </div>
+            </div>
+
             <div class="holder-app" [class.holder-app-side-by-side]="isSideBySideViewMode()" [class.holder-app-tabs]="isTabViewMode()" #appHolder>
                 <ng-container *ngFor="let tab of tabs; let i = index;">
-                    <section class="full-height holder-item holder-item-{{ i + 1}}" [class.mdl-layout__tab-panel]="isTabViewMode()" [class.is-active]="tab.active" #tabSection>
+                    <section class="full-height holder-item holder-item-{{ i + 1}}" [class.holder-tab-panel]="isTabViewMode()" [class.is-active]="tab.active" #tabSection>
                         <div class="page-content full-height holder-view">
                             <div class="holder-header">
                                 <div class="holder-header-title">
                                     {{ tab.visualizer.getName() }}
-                                    <app-visualization-picker icon="expand_more" [hidden]="!tree" [identifier]="'header-switch-' + i" [visualizers]="visualizers" (select)="updateVisualization($event, tab)"></app-visualization-picker>
+                                    <app-visualization-picker class="holder-header-pick-visualization" type="tab" [hidden]="!tree" [identifier]="'header-switch-' + i" [visualizers]="visualizers" (select)="updateVisualization($event, tab)"></app-visualization-picker>
+                                    <i class="mdi mdi-close-circle holder-header-close" (click)="closeTab(tab)"></i>
                                 </div>
-
-                                <i class="material-icons holder-header-close" (click)="closeTab(tab)">close</i>
                             </div>
 
                             <app-window [tree]="tree" [visualizer]="tab.visualizer" [tab]="tab" (loading)="updateLoading($event)" (redrawAll)="redrawAllTabs()" [snackbar]="snackbar"></app-window>
@@ -43,7 +43,7 @@
 
                 <div class="holder-divider" #resizer [hidden]="!isSideBySideViewMode() || tabs?.length < 2" (mousedown)="startResize()"></div>
             </div>
-            <div #holderSidebar class="holder-sidebar" [hidden]="!tree">
+            <div #holderSidebar class="holder-sidebar" [class.holder-sidebar-tabs]="isTabViewMode()" [hidden]="!tree ">
                 <app-sidebar [tree]="tree" (reset)="restoreTree()" (export)="exportTree()"></app-sidebar>
             </div>
         </div>

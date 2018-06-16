@@ -5,9 +5,9 @@
   padding: 0;
 
   .tree-navigator-item-button {
-    vertical-align: middle;
-    margin-right: 0.5rem;
     cursor: pointer;
+    color: $text-light;
+    font-size: 1.1rem;
   }
 
   .tree-navigator {
@@ -15,26 +15,63 @@
   }
 }
 
+.tree-navigator-expand-holder {
+  width: 1.2rem;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.tree-navigator-item {
+  margin: 0.3rem 0;
+}
+
+.tree-navigator-label-holder {
+  vertical-align: middle;
+  background: white;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.1rem;
+  box-shadow: 0 0 3px 0 rgba(0,0,0,0.75);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 14rem;
+}
+
+.tree-navigator-open {
+  flex-grow: 0;
+}
+
 .tree-navigator-item {
   white-space: nowrap;
 }
 
-.tree-navigator-item.leaf {
-  padding-left: 2rem;
+.tree-navigator-open {
+  font-size: 1.3rem;
+  padding-left: 0.3rem;
+  border-left: 1px solid $text-light;
+  margin-left: 0.3rem;
 }
 
 .tree-navigator-label {
-  cursor: pointer;
-  padding: 0.3rem 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.8rem;
 }
 
 .tree-navigator-unnamed {
-  color: #CCC;
   font-style: italic;
 }
 
 .tree-navigator-selected {
-  background: rgba(0, 0, 0, .1);
-  border: 0.0675rem solid rgba(0, 0, 0, .4);
+  > .tree-navigator-holder > .tree-navigator-label-holder {
+    color: white;
+    background-color: $color-primary;
+  }
+
+  > .tree-navigator-holder > .tree-navigator-expand-holder .tree-navigator-item-button {
+    color: $color-primary;
+  }
 }
 /** @end-author Bart Wesselink */

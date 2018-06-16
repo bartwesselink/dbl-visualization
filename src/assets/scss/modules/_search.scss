@@ -2,28 +2,44 @@
 .search {
   padding: 0 1rem;
   position: relative;
+  z-index: 500;
+  background: $color-light;
+  border-radius: 0.3rem;
 }
 
 .search-field {
   padding: 0;
   display: flex;
+  align-items: center;
+  background: $color-light;
 
-  .material-icons {
+  .input {
+    background: $color-light;
+  }
+
+  .search-icon {
+    font-size: 2rem;
     margin-right: 0.5rem;
   }
 }
 
 .search-results {
-  width: calc(100% - 2rem);
-  background: white;
-  border: 1px solid #333;
-  border-top-width: 0;
+  width: 100%;
+  background: $color-light;
   position: absolute;
-  top: 2rem;
-  z-index: 400;
+  border: 0.1rem solid $color-border;
+  border-top-width: 0;
+  left: 0;
   max-height: 20rem;
   overflow-y: scroll;
   overflow-x: hidden;
+  box-shadow: 0 7px 12px -1px rgba(0, 0, 0, 0.75);
+  z-index: 400;
+  border-bottom-left-radius: 0.3rem;
+  border-bottom-right-radius: 0.3rem;
+  margin-top: -0.3rem;
+  box-sizing: content-box;
+  margin-left: -0.1rem;
 }
 
 .search-result {
@@ -39,6 +55,7 @@
 .search-no-result {
   font-weight: 600;
   cursor: default;
+  pointer-events: none;
 }
 
 .search-results-overlay {
