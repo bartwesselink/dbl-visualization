@@ -428,7 +428,7 @@ export class OpenGL{
                 pos[6] = (x - radius * 1.001) / this.HALFWIDTH;
                 pos[7] = (y - radius * 1.001) / this.HALFHEIGHT;
                                 
-                this.arrays.push(<CircularArcElement>{
+                this.arrays[this.id] = <CircularArcElement>{
                     pos: positionBuffer,
                     color: OpenGL.toColor(color),
                     x: x,
@@ -440,7 +440,7 @@ export class OpenGL{
                     start: start * Matrix.oneDeg,
                     end: end * Matrix.oneDeg,
                     shader: ShaderMode.CIRCULAR_ARC
-                });
+                };
             }else{
                 var dcx = radius * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
                 var dcy = radius * 0.71 * Math.sin((start + ((end - start) / 2)) * Matrix.oneDeg);
@@ -454,7 +454,7 @@ export class OpenGL{
                 pos[6] = (x + dcx - radius * 0.71 * 1.001) / this.HALFWIDTH;
                 pos[7] = (y + dcy - radius * 0.71 * 1.001) / this.HALFHEIGHT;
                                 
-                this.arrays.push(<CircularArcElement>{
+                this.arrays[this.id] = <CircularArcElement>{
                     pos: positionBuffer,
                     color: OpenGL.toColor(color),
                     x: x + dcx,
@@ -468,7 +468,7 @@ export class OpenGL{
                     start: start * Matrix.oneDeg,
                     end: end * Matrix.oneDeg,
                     shader: ShaderMode.CIRCULAR_ARC
-                });
+                };
             }
             
             this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
@@ -505,7 +505,7 @@ export class OpenGL{
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
 
-        this.arrays.push({
+        this.arrays[this.id] = {
             pos: positionBuffer,
             color: OpenGL.toColor(color),
             mode: this.gl.LINE_STRIP,
@@ -514,7 +514,7 @@ export class OpenGL{
             y: y,
             span: span,
             length: pos.length / 2
-        });
+        };
         return this.id++;
     }
 
@@ -552,7 +552,7 @@ export class OpenGL{
         }
         this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
 
-        this.arrays.push({
+        this.arrays[this.id] = {
             pos: positionBuffer,
             color: OpenGL.toColor(color),
             mode: this.gl.LINE_STRIP,
@@ -561,7 +561,7 @@ export class OpenGL{
             rad: Math.hypot(maxx - minx, maxy - miny) / 2,
             span: Math.hypot(maxx - minx, maxy - miny),
             length: x.length
-        });
+        };
         return this.id++;
     }
 
@@ -702,7 +702,7 @@ export class OpenGL{
         this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
 
         if(!line){
-            this.arrays.push({
+            this.arrays[this.id] = {
                 pos: positionBuffer,
                 color: OpenGL.toColor(fillColor),
                 mode: this.gl.TRIANGLE_STRIP,
@@ -711,7 +711,7 @@ export class OpenGL{
                 x: x,
                 y: y,
                 length: 4
-            });
+            };
         }else{
             if(lineColor == null){
                 lineColor = fillColor;
@@ -723,7 +723,7 @@ export class OpenGL{
                 this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
                 this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint8Array([0, 2, 3, 1]), this.gl.STATIC_DRAW);
                 
-                this.arrays.push({
+                this.arrays[this.id] = {
                     pos: positionBuffer,
                     color: OpenGL.toColor(fillColor),
                     mode: this.gl.TRIANGLE_STRIP,
@@ -739,9 +739,9 @@ export class OpenGL{
                         mode: this.gl.LINE_LOOP,
                         length: 4
                     }
-                });
+                };
             }else{
-                this.arrays.push({
+                this.arrays[this.id] = {
                     pos: positionBuffer,
                     color: OpenGL.toColor(lineColor),
                     mode: this.gl.LINE_LOOP,
@@ -750,7 +750,7 @@ export class OpenGL{
                     x: x,
                     y: y,
                     length: 4
-                });
+                };
             }
         }
         
@@ -864,7 +864,7 @@ export class OpenGL{
         this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
 
         if(mode != ShaderMode.LINED_CIRCLE){
-            this.arrays.push(<CircleElement>{
+            this.arrays[this.id] = <CircleElement>{
                 pos: positionBuffer,
                 color: mainColor,
                 x: x,
@@ -874,9 +874,9 @@ export class OpenGL{
                 length: 4,
                 radius: radius / this.HALFHEIGHT,
                 shader: mode
-            });
+            };
         }else{
-            this.arrays.push(<CircleElement>{
+            this.arrays[this.id] = <CircleElement>{
                 pos: positionBuffer,
                 color: mainColor,
                 lineColor: extraColor,
@@ -887,7 +887,7 @@ export class OpenGL{
                 length: 4,
                 radius: radius / this.HALFHEIGHT,
                 shader: ShaderMode.LINED_CIRCLE
-            });
+            };
         }
         
         return this.id++;
@@ -918,7 +918,7 @@ export class OpenGL{
             this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
 
             if(end - start > 90){
-                this.arrays.push({
+                this.arrays[this.id] = {
                     pos: posBuffer,
                     color: OpenGL.toColor(color),
                     mode: this.gl.LINE_LOOP,
@@ -927,11 +927,11 @@ export class OpenGL{
                     rad: far,
                     span: far * 2,
                     length: pos.length / 2
-                });
+                };
             }else{
                 var dcx = far * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
                 var dcy = far * 0.71 * Math.sin((start + ((end - start) / 2)) * Matrix.oneDeg);
-                this.arrays.push({
+                this.arrays[this.id] = {
                     pos: posBuffer,
                     color: OpenGL.toColor(color),
                     mode: this.gl.LINE_LOOP,
@@ -940,7 +940,7 @@ export class OpenGL{
                     rad: far * 0.71,
                     span: Math.min(far - near, Math.hypot(far * (Math.cos(start * Matrix.oneDeg) - Math.cos(end * Matrix.oneDeg)), far * (Math.sin(start * Matrix.oneDeg) - Math.sin(end * Matrix.oneDeg)))),
                     length: pos.length / 2
-                });
+                };
             }
             
             return this.id++;
@@ -984,7 +984,7 @@ export class OpenGL{
             this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
 
             if(mode != ShaderMode.LINED_RING_SLICE){
-                this.arrays.push(<RingSliceElement>{
+                this.arrays[this.id] = <RingSliceElement>{
                     pos: positionBuffer,
                     color: mainColor,
                     x: x,
@@ -997,9 +997,9 @@ export class OpenGL{
                     start: start * Matrix.oneDeg,
                     end: end * Matrix.oneDeg,
                     shader: mode
-                });
+                };
             }else{
-                this.arrays.push(<RingSliceElement>{
+                this.arrays[this.id] = <RingSliceElement>{
                     pos: positionBuffer,
                     color: mainColor,
                     lineColor: extraColor,
@@ -1013,7 +1013,7 @@ export class OpenGL{
                     start: start * Matrix.oneDeg,
                     end: end * Matrix.oneDeg,
                     shader: ShaderMode.LINED_RING_SLICE
-                });
+                };
             }
         }else{
             var dcx = far * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
@@ -1031,7 +1031,7 @@ export class OpenGL{
             this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
             
             if(mode != ShaderMode.LINED_CIRCLE_SLICE){
-                this.arrays.push(<RingSliceElement>{
+                this.arrays[this.id] = <RingSliceElement>{
                     pos: positionBuffer,
                     color: mainColor,
                     x: x + dcx,
@@ -1046,9 +1046,9 @@ export class OpenGL{
                     start: start * Matrix.oneDeg,
                     end: end * Matrix.oneDeg,
                     shader: mode
-                });
+                };
             }else{
-                this.arrays.push(<RingSliceElement>{
+                this.arrays[this.id] = <RingSliceElement>{
                     pos: positionBuffer,
                     color: mainColor,
                     lineColor: extraColor,
@@ -1064,7 +1064,7 @@ export class OpenGL{
                     start: start * Matrix.oneDeg,
                     end: end * Matrix.oneDeg,
                     shader: ShaderMode.LINED_RING_SLICE
-                });
+                };
             }
         }    
         
@@ -1105,7 +1105,7 @@ export class OpenGL{
             this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, indices, this.gl.STATIC_DRAW);
         
             if(end - start > 90){
-                this.arrays.push({
+                this.arrays[this.id] = {
                     pos: posBuffer,
                     color: OpenGL.toColor(fillColor),
                     mode: this.gl.TRIANGLE_STRIP,
@@ -1121,11 +1121,11 @@ export class OpenGL{
                         mode: this.gl.LINE_LOOP,
                         length: pos.length / 2
                     }
-                });
+                };
             }else{
                 var dcx = far * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
                 var dcy = far * 0.71 * Math.sin((start + ((end - start) / 2)) * Matrix.oneDeg);
-                this.arrays.push({
+                this.arrays[this.id] = {
                     pos: posBuffer,
                     color: OpenGL.toColor(fillColor),
                     mode: this.gl.TRIANGLE_STRIP,
@@ -1141,11 +1141,11 @@ export class OpenGL{
                         mode: this.gl.LINE_LOOP,
                         length: pos.length / 2
                     }
-                });
+                };
             }
         }else{
             if(end - start > 90){
-                this.arrays.push({
+                this.arrays[this.id] = {
                     pos: posBuffer,
                     color: OpenGL.toColor(fillColor),
                     mode: this.gl.TRIANGLE_STRIP,
@@ -1154,11 +1154,11 @@ export class OpenGL{
                     rad: far,
                     span: far * 2,
                     length: pos.length / 2
-                });
+                };
             }else{
                 var dcx = far * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
                 var dcy = far * 0.71 * Math.sin((start + ((end - start) / 2)) * Matrix.oneDeg);
-                this.arrays.push({
+                this.arrays[this.id] = {
                     pos: posBuffer,
                     color: OpenGL.toColor(fillColor),
                     mode: this.gl.TRIANGLE_STRIP,
@@ -1167,7 +1167,7 @@ export class OpenGL{
                     rad: far * 0.71,
                     span: Math.min(far - near, Math.hypot(far * (Math.cos(start * Matrix.oneDeg) - Math.cos(end * Matrix.oneDeg)), far * (Math.sin(start * Matrix.oneDeg) - Math.sin(end * Matrix.oneDeg)))),
                     length: pos.length / 2
-                });
+                };
             }
         }
         
@@ -1220,7 +1220,7 @@ export class OpenGL{
             this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
             
             if(mode != ShaderMode.LINED_CIRCLE_SLICE){
-                this.arrays.push(<CircleSliceElement>{
+                this.arrays[this.id] = <CircleSliceElement>{
                     pos: positionBuffer,
                     color: mainColor,
                     x: x,
@@ -1232,9 +1232,9 @@ export class OpenGL{
                     start: start * Matrix.oneDeg,
                     end: end * Matrix.oneDeg,
                     shader: mode
-                });
+                };
             }else{
-                this.arrays.push(<CircleSliceElement>{
+                this.arrays[this.id] = <CircleSliceElement>{
                     pos: positionBuffer,
                     color: mainColor,
                     lineColor: extraColor,
@@ -1247,7 +1247,7 @@ export class OpenGL{
                     start: start * Matrix.oneDeg,
                     end: end * Matrix.oneDeg,
                     shader: ShaderMode.LINED_CIRCLE_SLICE
-                });
+                };
             }
         }else{
             var dcx = radius * 0.71 * Math.cos((start + ((end - start) / 2)) * Matrix.oneDeg);
@@ -1265,7 +1265,7 @@ export class OpenGL{
             this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
             
             if(mode != ShaderMode.LINED_CIRCLE_SLICE){
-                this.arrays.push(<CircleSliceElement>{
+                this.arrays[this.id] = <CircleSliceElement>{
                     pos: positionBuffer,
                     color: mainColor,
                     x: x + dcx,
@@ -1279,9 +1279,9 @@ export class OpenGL{
                     start: start * Matrix.oneDeg,
                     end: end * Matrix.oneDeg,
                     shader: mode
-                });
+                };
             }else{
-                this.arrays.push(<CircleSliceElement>{
+                this.arrays[this.id] = <CircleSliceElement>{
                     pos: positionBuffer,
                     color: mainColor,
                     lineColor: extraColor,
@@ -1294,7 +1294,7 @@ export class OpenGL{
                     length: 4,
                     radius: radius / this.HALFHEIGHT,
                     shader: ShaderMode.LINED_CIRCLE_SLICE
-                });
+                };
             }
         }
         
@@ -1329,7 +1329,7 @@ export class OpenGL{
         this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
 
         if(!(fill && line)){
-            this.arrays.push({
+            this.arrays[this.id] = {
                 pos: posBuffer,
                 color: OpenGL.toColor(line ? lineColor : fillColor),
                 mode: fill ? this.gl.TRIANGLE_FAN : this.gl.LINE_LOOP,
@@ -1338,13 +1338,13 @@ export class OpenGL{
                 rad: rad,
                 span: span,
                 length: pos.length / 2
-            });
+            };
         }else{
             if(lineColor == null){
                 lineColor = fillColor;
             }
 
-            this.arrays.push({
+            this.arrays[this.id] = {
                 pos: posBuffer,
                 color: OpenGL.toColor(fillColor),
                 mode: this.gl.TRIANGLE_FAN,
@@ -1360,7 +1360,7 @@ export class OpenGL{
                     length: pos.length / 2 - offset,
                     offset: offset * 4
                 }
-            });
+            };
         }
         
         return this.id++;
