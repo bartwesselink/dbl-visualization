@@ -8,6 +8,7 @@ uniform lowp float cy;
 uniform lowp vec3 color;
 uniform lowp float start;
 uniform lowp float end;
+uniform lowp float rotation;
 
 varying lowp vec2 vpos;
 
@@ -15,22 +16,10 @@ void main() {
 	lowp float dx = (vpos.x - cx) * ratio;
 	lowp float dy = vpos.y - cy;
 	lowp float val = sqrt(pow(dx, 2.0) + pow(dy, 2.0));
-	lowp float angle = atan(dy, dx);
+	lowp float angle = mod(atan(-dy, -dx) + PI + rotation, 2.0 * PI);
 	lowp vec4 clr;
-	if(val <= radius + 0.0025 && val >= radius - 0.0025){
-		if(start < PI){
-			if(end < PI){
-				if(angle >= start && angle <= end){
-					clr = vec4(color, 1.0 - 400.0 * abs(radius - val));
-				}
-			}else if(angle <= end - 2.0 * PI){
-				clr = vec4(color, 1.0 - 400.0 * abs(radius - val));
-			}else if(angle >= start){
-				clr = vec4(color, 1.0 - 400.0 * abs(radius - val));
-			}
-		}else if(angle >= start - 2.0 * PI && angle <= end - 2.0 * PI){
-			clr = vec4(color, 1.0 - 400.0 * abs(radius - val));
-		}
+	if(val <= radius + 0.0025 && val >= radius - 0.0025 && angle >= start && angle <= end){
+		clr = clr = vec4(color, 1.0 - 400.0 * abs(radius - val));
 	}else{
 		clr = vec4(0.0, 0.0, 0.0, 0.0);
 	}
@@ -39,10 +28,6 @@ void main() {
 			clr = max(clr, vec4(color, 1.0 - 400.0 * abs(start - angle) * val));
 		}else if(abs(angle - end) * val <= 0.0025){
 			clr = max(clr, vec4(color, 1.0 - 400.0 * abs(end - angle) * val));
-		}else if(abs(angle - end + 2.0 * PI) * val <= 0.0025){
-			clr = max(clr, vec4(color, 1.0 - 400.0 * abs(angle - end + 2.0 * PI) * val));
-		}else if(abs(start - 2.0 * PI - angle) * val <= 0.0025){
-			clr = max(clr, vec4(color, 1.0 - 400.0 * abs(start - 2.0 * PI - angle) * val));
 		}
 	}
 	gl_FragColor = clr;
