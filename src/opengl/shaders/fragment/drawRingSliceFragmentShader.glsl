@@ -16,7 +16,7 @@ void main() {
 	lowp float dx = (vpos.x - cx) * ratio;
 	lowp float dy = vpos.y - cy;
 	lowp float val = sqrt(pow(dx, 2.0) + pow(dy, 2.0));
-	lowp float angle = atan(-dy, -dx) + PI;
+	lowp float angle = mod(atan(-dy, -dx) + PI + rotation, 2.0 * PI);
 	lowp vec4 clr;
 	if(val <= radius + 0.0025 && val >= radius - 0.0025 && angle >= start && angle <= end){
 		clr = vec4(color, 1.0 - 400.0 * abs(radius - val));
