@@ -119,7 +119,7 @@ export class OpenGL{
     
     //get the referenced element
     private getElem(id: number): Element{
-        return this.indices == null ? this.arrays[id - 1] : this.arrays[this.indices[id - 1]];
+        return this.indices == null ? this.arrays[id] : this.arrays[this.indices[id]];
     }
 
     //optimize default draw calls
