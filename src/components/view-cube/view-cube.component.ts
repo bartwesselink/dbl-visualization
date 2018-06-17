@@ -86,6 +86,7 @@ export class ViewCubeComponent implements OnInit {
 
     public reset(): void {
         this.sendFakeKey('T');
+        this.setZoomLevel(1);
     }
 
     public moveUp(start: boolean): void {
