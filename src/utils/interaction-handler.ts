@@ -27,10 +27,8 @@ export class InteractionHandler {
         for (let i = draws.length - 1; i >= 0; i--) {
             const draw: Draw = draws[i];
 
-            if (draw != undefined && draw.identifier >= 0 && this.withinDraw(draw, x, y)) {
-                const node = this.findNodeByIdentifier(tree, draw.identifier);
-
-                return node;
+            if (draw.identifier != undefined && this.withinDraw(draw, x, y)) {
+                return this.findNodeByIdentifier(tree, draw.identifier);
             }
         }
 
