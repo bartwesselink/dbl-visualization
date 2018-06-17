@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {DatasetStorageService} from "../../providers/dataset-storage-service";
+import {TreeInput} from '../../interfaces/tree-input';
 
 @Component({
     selector: 'app-upload-tool',
@@ -7,7 +8,7 @@ import {DatasetStorageService} from "../../providers/dataset-storage-service";
 })
 export class UploadToolComponent {
     /** @author Mathijs Boezer */
-    @Output() newContent: EventEmitter<string> = new EventEmitter();
+    @Output() newContent: EventEmitter<TreeInput> = new EventEmitter();
     @Input() type: 'menu'|'home' = 'menu';
 
     private fileTypeWhitelist = ['', 'text/plain',]; //Allowed types of files
@@ -23,7 +24,10 @@ export class UploadToolComponent {
         // Create callback for the file reader
         fileReader.onload = function(e){
             var content: string = fileReader.result;
-            self.newContent.emit(content);
+            self.newContent.emit({
+                content,
+                name: file.name,
+            });
             self.datasetStorageService.saveDataset(file.name, content);
         };
 

@@ -9,6 +9,8 @@ export class WelcomePageComponent implements OnInit {
     /** @author Bart Wesselink */
     @Output() private newContent: EventEmitter<string> = new EventEmitter<string>();
     @Output() private goToApp: EventEmitter<void> = new EventEmitter<void>();
+    @Output() private goToDatasets: EventEmitter<void> = new EventEmitter<void>();
+    @Output() private goToHelp: EventEmitter<void> = new EventEmitter<void>();
     @Input() private visualizers: Visualizer[];
     @ViewChild('animationCanvas') private animationCanvas: ElementRef;
 
@@ -36,6 +38,14 @@ export class WelcomePageComponent implements OnInit {
 
     public navigateToApp(): void {
         this.goToApp.emit();
+    }
+
+    public navigateToDatasets(): void {
+        this.goToDatasets.emit();
+    }
+
+    public navigateToHelp(): void {
+        this.goToHelp.emit();
     }
 
     public animate(): void {

@@ -18,6 +18,9 @@ import {SelectBus} from "../providers/select-bus";
 import {BasicTree} from "../visualizations/basic-tree";
 import {IciclePlot} from "../visualizations/icicle-plot";
 import * as FileSaver from "file-saver";
+import {DatasetSelectionComponent} from '../components/dataset-selection/dataset-selection.component';
+import {TreeInput} from '../interfaces/tree-input';
+import {HelpButtonComponent} from '../components/help-button/help-button.component';
 
 @Component({
     selector: 'app-root',
@@ -39,7 +42,11 @@ export class AppComponent implements OnInit {
     public readonly SIDE_BY_SIDE_MAX_WINDOWS = 2;
     public readonly SIDE_BY_SIDE_MAX_WIDTH = 200;
 
+    public showPointer: boolean = false;
+
     @ViewChild(SidebarComponent) private sidebar: SidebarComponent;
+    @ViewChild(DatasetSelectionComponent) private datasetSelection: DatasetSelectionComponent;
+    @ViewChild(HelpButtonComponent) private help: HelpButtonComponent;
     @ViewChild("snackbar") public snackbar: ElementRef;
     @ViewChild('appHolder') private appHolder: ElementRef;
     @ViewChild('resizer') private resizer: ElementRef;
@@ -97,7 +104,8 @@ export class AppComponent implements OnInit {
     }
 
     /** @author Jordy Verhoeven */
-    parseTree(data: string) {
+    parseTree(treeInput: TreeInput) {
+        const data = treeInput.content;
         const line = this.parser.extractLines(data);
 
         if (line !== null) {
@@ -106,6 +114,12 @@ export class AppComponent implements OnInit {
             this.openTree(this.parser.parseTree(line));
             this.originalTree = this.tree;
             this.showApp = true;
+
+            if (treeInput.name != null) {
+                this.datasetSelection.setCurrentFile(treeInput.name);
+            }
+
+            this.showPointer = true;
 
             if(!hadTree) {
                 this.resizeActiveTab();
@@ -228,6 +242,16 @@ export class AppComponent implements OnInit {
         //         await tab.window.computeScene();
         //     }
         // }
+    }
+
+    public startHelp(): void {
+        this.showApp = true;
+        this.help.startTour();
+    }
+
+    public selectDataset(): void {
+        this.showApp = true;
+        this.datasetSelection.open();
     }
 
     private addTab(visualizer: Visualizer) {

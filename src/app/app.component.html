@@ -8,12 +8,18 @@
 
         <div class="header-buttons">
             <app-loader [white]="true" [hidden]="!isLoading() || showFullScreenLoader"></app-loader>
+            <app-dataset-selection #datasetSelection (newContent)="parseTree($event)"></app-dataset-selection>
             <app-upload-tool (newContent)="parseTree($event)"></app-upload-tool>
             <app-general-settings-button></app-general-settings-button>
-            <app-help-button [container]="layoutContainer"></app-help-button>
+            <app-help-button #help [container]="layoutContainer"></app-help-button>
         </div>
     </header>
     <main class="content" (mouseup)="stopResize()" (mousemove)="doResize($event)">
+        <div class="pointer" [hidden]="tabs.length > 0 || !showApp || !showPointer">
+            <div class="pointer-image"></div>
+            <div class="pointer-text">Add a visualization</div>
+        </div>
+
         <div class="holder" [hidden]="!showApp || tabs.length == 0">
             <div class="holder-tabs" [hidden]="!isTabViewMode()">
                 <div *ngFor="let tab of tabs;" (click)="switchTab(tab)" class="holder-tab holder-header" [class.is-active]="tab.active">
@@ -48,7 +54,7 @@
             </div>
         </div>
 
-        <app-welcome-page [visualizers]="visualizers" [hidden]="tabs.length > 0" [showApp]="showApp" (newContent)="parseTree($event)" (goToApp)="goToApp()"></app-welcome-page>
+        <app-welcome-page [visualizers]="visualizers" [hidden]="tabs.length > 0" [showApp]="showApp" (newContent)="parseTree($event)" (goToApp)="goToApp()" (goToHelp)="startHelp()" (goToDatasets)="selectDataset()"></app-welcome-page>
     </main>
 
     <div class="dialog full-screen-loader" #fullScreenLoader [hidden]="!loaderVisible">
