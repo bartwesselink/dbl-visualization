@@ -34,7 +34,7 @@ export class OpenGL{
 
     constructor(gl: WebGLRenderingContext){
         this.gl = gl;
-        this.shader = new Shader(gl, this);//TODO
+        this.shader = new Shader(gl, this);
 
         //set the canvas background color to white
         this.setBackgroundColor(1.0, 1.0, 1.0);
@@ -44,10 +44,12 @@ export class OpenGL{
         this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
         this.gl.enable(this.gl.BLEND);
         
-        this.shader.enableGrid(true);//TODO
-
         console.log("[OpenGL] OpenGL version: " + this.gl.getParameter(gl.VERSION));
         console.log("[OpenGL] GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
+    }
+    
+    public setGrid(enabled: boolean): void{
+        this.shader.enableGrid(enabled);
     }
 
     //optimises the given shader mode
