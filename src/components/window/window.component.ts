@@ -411,7 +411,8 @@ export class WindowComponent implements OnInit {
         var gl: WebGLRenderingContext = this.canvas.nativeElement.getContext('webgl', {
             preserveDrawingBuffer: true,
             depth: false,
-            alpha: false
+            alpha: false,
+            antialias: this.visualizer.requireAntiAliasing
         });
 
         if (!gl) {
