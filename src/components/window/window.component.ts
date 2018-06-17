@@ -330,6 +330,12 @@ export class WindowComponent implements OnInit {
                 this.computeColors();
             }
             this.startLoading();
+            
+            if(this.visualizer instanceof OpenglDemoTree){
+                this.gl.bufferSizeHint(1742);//as of commit c54979fe57a111f7812c2f4c3da03b9ddce527b2 on 17/6/2018
+            }else{
+                this.gl.bufferSizeHint(this.tree.subTreeSize * this.visualizer.shapesPerNode);
+            }
 
             /** @author Bart Wesselink */
             const input = {

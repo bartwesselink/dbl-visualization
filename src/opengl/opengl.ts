@@ -13,7 +13,7 @@ import {environment} from "../environments/environment";
 export class OpenGL{
     private gl: WebGLRenderingContext;
     private modelviewMatrix: Float32Array;
-    private arrays: Element[] = [];
+    private arrays: Element[] = new Array(0);
     public readonly WIDTH = 1600;
     public readonly HEIGHT = 900;
     public readonly HALFWIDTH = this.WIDTH / 2;
@@ -51,6 +51,11 @@ export class OpenGL{
             console.log("[OpenGL] OpenGL version: " + this.gl.getParameter(gl.VERSION));
             console.log("[OpenGL] GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
         }
+    }
+    
+    //hints to correct OpenGL buffer size
+    public bufferSizeHint(size: number): void{
+        this.arrays.length = size;
     }
     
     //toggles verbose mode
