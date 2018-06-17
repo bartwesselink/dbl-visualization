@@ -73,7 +73,9 @@ export class OpenGL{
         if(this.indices == null){
             this.indices = new Array(this.arrays.length);
             for(let i = 0; i < this.indices.length; i++){
-                this.arrays[i].id = i;
+                if(this.arrays[i] != undefined){
+                    this.arrays[i].id = i;
+                }
             }
         }
         while(this.index < this.arrays.length && this.arrays[this.index].shader == mode){
@@ -93,7 +95,9 @@ export class OpenGL{
             }
         }
         for(var i = 0; i < this.arrays.length; i++){
-            this.indices[this.arrays[i].id] = i;
+            if(this.arrays[i] != undefined){
+                this.indices[this.arrays[i].id] = i;
+            }
         }
     }
     
