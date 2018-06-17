@@ -38,13 +38,7 @@ export class InteractionHandler {
     }
 
     public fetchDrawByNode(draws: Draw[], node: Node): Draw|null {
-        for (let i = draws.length - 1; i >= 0; i--) {
-            if (draws[i].identifier === node.identifier) {
-                return draws[i];
-            }
-        }
-
-        return null;
+        return draws[node.identifier];
     }
 
     public withinDraw(draw: Draw, x: number, y: number): boolean {
