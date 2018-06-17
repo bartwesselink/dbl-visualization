@@ -1,9 +1,11 @@
-<button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect settings-button" (click)="toggle()">
-    <i class="material-icons">settings</i>
-</button>
+<div class="dropdown-holder">
+    <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect settings-button" (click)="toggle()">
+        <i class="material-icons">settings</i>
+    </button>
 
-<div [hidden]="!viewSettings" class="settings-button-form mdl-card mdl-shadow--2dp">
-    <div class="mdl-card__supporting-text">
-        <app-form *ngIf="form" [form]="form" (valueChanges)="change($event)"></app-form>
+    <div [hidden]="!viewSettings" class="dropdown dropdown-down">
+        <div class="dropdown-content">
+            <app-form *ngIf="form" [form]="form" (valueChanges)="change($event)"></app-form>
+        </div>
     </div>
 </div>

@@ -95,6 +95,7 @@
 
     input + label {
         position: relative;
+        color: $color-dark;
 
         &:before {
             display: inline-block;
@@ -116,8 +117,9 @@
             height: 0.5rem;
             background-color: white;
             border-radius: 50%;
-            top: 0.45rem;
+            top: 50%;
             left: 0.3rem;
+            margin-top: -0.2rem;
         }
     }
 

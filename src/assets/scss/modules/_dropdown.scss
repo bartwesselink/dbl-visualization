@@ -1,0 +1,78 @@
+/** @author Bart Wesselink */
+.dropdown {
+    width: 20rem;
+    position: absolute;
+    overflow: visible;
+    min-height: 0;
+    background: white;
+    font-size: 0.8rem;
+    padding: 1rem;
+    border-radius: 0.3rem;
+    box-shadow: 0 0 0.8rem 0 rgba(50, 50, 50, 0.75);
+
+    &::after, &::before {
+        display: none;
+        position: absolute;
+        content: ' ';
+        z-index: 100;
+
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 8px 12.5px 0 12.5px;
+        border-color: white transparent transparent transparent;
+    }
+
+    // small triangle
+    &.dropdown-down {
+        right: 2rem;
+        bottom: 7rem;
+
+        &::after {
+            display: block;
+            bottom: -8px;
+            right: 1.1rem;
+        }
+    }
+
+    &.dropdown-up {
+        top: 3rem;
+        right: 0;
+
+        &::before {
+            display: block;
+            top: -7px;
+            right: 0.2rem;
+            transform: rotate(180deg);
+        }
+    }
+
+    p:first-child {
+        margin-top: 0;
+    }
+}
+
+.dropdown-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+
+    .button {
+        margin: 0;
+        margin-right: 0.2rem;
+
+        &:last-of-type {
+            margin-right: 0;
+        }
+    }
+}
+
+.dropdown-content {
+    max-height: calc(100vh - 7rem);
+    overflow-y: auto;
+}
+
+.dropdown-holder {
+    position: relative;
+}
+/** @end-author Bart Wesselink */
