@@ -382,8 +382,7 @@ export class OpenGL{
 
     //releases all the OpenGL buffers
     public releaseBuffers(): void {
-        while(this.arrays.length > 0){
-            var elem = this.arrays.pop();
+        for(var elem of this.arrays){
             this.gl.deleteBuffer(elem.pos);
             this.gl.deleteBuffer(elem.indices);
         }
