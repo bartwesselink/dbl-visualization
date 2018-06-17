@@ -8,7 +8,7 @@ uniform lowp float cy;
 uniform lowp vec3 color;
 uniform lowp float start;
 uniform lowp float end;
-uniform lowp float rotatation;
+uniform lowp float rotation;
 
 varying lowp vec2 vpos;
 
