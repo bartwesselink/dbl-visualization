@@ -66,6 +66,8 @@ Toggles verbose mode on all OpenGL instances.
 Copies the color given to the original node to the target node.
 - `public copyLineColor(original: number, target: number): void`    
 Copies the line color given to the original node to the target node.
+- `public isShapeVisible(id: number): boolean`    
+Checks to see if the shape with the given will be rendered.
 
 ## Available but not intended to be used
 - `public getModelviewMatrix(): Float32Array`    
