@@ -19,8 +19,6 @@ import {BasicTree} from "../visualizations/basic-tree";
 import {IciclePlot} from "../visualizations/icicle-plot";
 import * as FileSaver from "file-saver";
 
-declare var dialogPolyfill;
-
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -31,6 +29,7 @@ export class AppComponent implements OnInit {
     private originalTree: Node;
     public visualizers: Visualizer[];
     public showFullScreenLoader: boolean = false;
+    public loaderVisible: boolean = false;
     public showApp: boolean = false;
 
     private activeTab: Tab;
@@ -42,7 +41,6 @@ export class AppComponent implements OnInit {
 
     @ViewChild(SidebarComponent) private sidebar: SidebarComponent;
     @ViewChild("snackbar") public snackbar: ElementRef;
-    @ViewChild('fullScreenLoader') private fullScreenLoader: ElementRef;
     @ViewChild('appHolder') private appHolder: ElementRef;
     @ViewChild('resizer') private resizer: ElementRef;
     @ViewChild('holderSidebar') private holderSidebar: ElementRef;
@@ -94,8 +92,6 @@ export class AppComponent implements OnInit {
     }
 
     public ngOnInit(): void {
-        dialogPolyfill.registerDialog(this.fullScreenLoader.nativeElement);
-
         this.parser = new NewickParser(this.snackbar);
         this.exporter = new NewickExporter(this.snackbar);
     }
@@ -181,13 +177,10 @@ export class AppComponent implements OnInit {
 
         // check if we need to show the full screen modal, in case there is no visualization yet
         if (this.amountOfWindowsLoading > 0 && this.showFullScreenLoader) {
-            // check if modal is already open, to prevent any errors
-            if (!this.fullScreenLoader.nativeElement.open) {
-                this.fullScreenLoader.nativeElement.showModal();
-            }
+            this.loaderVisible = true;
         } else if (this.showFullScreenLoader) {
             this.showFullScreenLoader = false;
-            this.fullScreenLoader.nativeElement.close();
+            this.loaderVisible = false;
         }
     }
 

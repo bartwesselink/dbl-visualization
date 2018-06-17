@@ -38,3 +38,15 @@
   padding: 0.5rem 0.1rem;
   font-size: 0.8rem;
 }
+
+.button-round {
+  border-radius: 50%;
+  height: 3rem;
+  width: 3rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin: 0;
+}

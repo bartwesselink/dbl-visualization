@@ -1,3 +1,37 @@
-dialog {
-  outline: none !important;
+.dialog {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  top: 0;
+  background: rgba(0, 0, 0, .7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  font-size: 0.9rem;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.dialog-modal {
+  background: white;
+  width: 90%;
+  max-width: 30rem;
+  border-radius: 0.3rem;
+  padding: 1rem;
+}
+
+.dialog-title {
+  margin: 0;
+}
+
+.dialog-actions {
+  margin-top: 1rem;
+
+  .button {
+    margin: 0;
+  }
 }

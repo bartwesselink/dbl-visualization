@@ -51,11 +51,11 @@
         <app-welcome-page [visualizers]="visualizers" [hidden]="tabs.length > 0" [showApp]="showApp" (newContent)="parseTree($event)" (goToApp)="goToApp()"></app-welcome-page>
     </main>
 
-    <dialog class="mdl-dialog full-screen-loader" #fullScreenLoader tabindex="-1">
-        <div class="mdl-dialog__content">
+    <div class="dialog full-screen-loader" #fullScreenLoader [hidden]="!loaderVisible">
+        <div class="dialog-modal">
             <app-loader></app-loader>
         </div>
-    </dialog>
+    </div>
 
     <div #snackbar class="mdl-js-snackbar mdl-snackbar" style="display: none;">
         <div class="mdl-snackbar__text"></div>

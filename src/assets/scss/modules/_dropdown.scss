@@ -8,13 +8,14 @@
     font-size: 0.8rem;
     padding: 1rem;
     border-radius: 0.3rem;
-    box-shadow: 0 0 0.8rem 0 rgba(50, 50, 50, 0.75);
+    box-shadow: 0 0 12px -1px rgba(0,0,0,0.75);
+    z-index: 700;
 
     &::after, &::before {
         display: none;
         position: absolute;
         content: ' ';
-        z-index: 100;
+        z-index: 800;
 
         width: 0;
         height: 0;
@@ -26,12 +27,12 @@
     // small triangle
     &.dropdown-down {
         right: 2rem;
-        bottom: 7rem;
+        bottom: 6rem;
 
         &::after {
             display: block;
-            bottom: -8px;
-            right: 1.1rem;
+            bottom: -7px;
+            right: 0.8rem;
         }
     }
 
