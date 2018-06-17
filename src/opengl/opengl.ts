@@ -1368,6 +1368,11 @@ export class OpenGL{
             console.log("[OpenGL] Rendered " + vertices + " out of " + total + " vertices in", (performance.now() - start), "ms");
         }
     }
+    
+    //checks if the shape with the given id is visible
+    public isShapeVisible(id: number): boolean {
+        return this.isVisible(this.getElem(id));
+    }
 
     //checks if an element is visible
     private isVisible(elem: Element): boolean {
