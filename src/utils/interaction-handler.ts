@@ -35,10 +35,6 @@ export class InteractionHandler {
         return null;
     }
 
-    public fetchDrawByNode(draws: Draw[], node: Node): Draw|null {
-        return draws[node.identifier];
-    }
-
     public withinDraw(draw: Draw, x: number, y: number): boolean {
         let options, distance, x1, y1, x2, y2, contraRotation, transformed, transformedX, transformedY;
         const degreeToRadianMultiplier = Math.PI / 180;
@@ -187,7 +183,7 @@ export class InteractionHandler {
     public scaleToNode(gl: OpenGL, canvas: ElementRef, currentDraws: Draw[], node: Node, interactionOptions: InteractionOptions): void {
         if (interactionOptions === InteractionOptions.Nothing) return;
 
-        const draw: Draw = this.fetchDrawByNode(currentDraws, node);
+        const draw: Draw = currentDraws[node.identifier];
 
         if (draw != null) {
             gl.resetTranslation();
