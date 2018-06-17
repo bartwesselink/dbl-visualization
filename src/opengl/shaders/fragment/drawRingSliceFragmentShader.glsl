@@ -9,6 +9,7 @@ uniform lowp vec3 color;
 uniform lowp float start;
 uniform lowp float end;
 uniform lowp float near;
+uniform lowp float rotation;
 
 varying lowp vec2 vpos;
 
