@@ -389,6 +389,7 @@ export class OpenGL{
         }
         this.index = 0;
         this.indices = null;
+        this.id = 0;
     }
 
     //draws a partial ellipsoid
