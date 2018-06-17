@@ -55,7 +55,7 @@ export class OpenGL{
     
     //hints to the expected number of shapes that will be drawn
     public bufferSizeHint(size: number): void{
-        this.arrays.length = size;
+        this.arrays[size] = {hidden: true, length: 0};
         if(OpenGL.verbose){
             console.log("[OpenGL] Buffer size set to: " + size);
         }
