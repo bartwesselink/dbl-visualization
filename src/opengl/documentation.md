@@ -58,6 +58,8 @@ Sets whether or not the shape indicated by the given ID should be renderer on a 
 Sets the line color of the shape indicated by the given ID, only use this method for lined shapes for drawn shapes use the `setColor` method. Changes only take effect after a rerender.
 - `public setColor(id: number, color: number[]): void`    
 Sets the color of the shape indicated by the given ID. Changes only take effect after a rerender.
+- `public setGrid(enabled: boolean): void`    
+Enables or disables the background grid.
 
 ## Available but not intended to be used
 - `public getModelviewMatrix(): Float32Array`    

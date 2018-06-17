@@ -48,6 +48,7 @@ export class OpenGL{
         console.log("[OpenGL] GLSL version: " + this.gl.getParameter(gl.SHADING_LANGUAGE_VERSION));
     }
     
+    //enables or disables the background grid
     public setGrid(enabled: boolean): void{
         this.shader.enableGrid(enabled);
     }
