@@ -5,11 +5,12 @@ import {FormFactory} from '../form/form-factory';
 import {Draw} from '../interfaces/draw';
 import {VisualizerInput} from '../interfaces/visualizer-input';
 import {Palette} from "../models/palette";
+import {NodeSpaceReclaimingStack} from "../models/node-space-reclaiming-stack";
 
 /** @author Nico Klaassen */
 export class SpaceReclaimingStack implements Visualizer {
     public draw(input: VisualizerInput): Draw[] {
-        const originalTree = input.tree;
+        const originalTree = input.tree as NodeSpaceReclaimingStack;
         const draws: Draw[] = [];
         const settings: any = input.settings;
 
@@ -30,6 +31,8 @@ export class SpaceReclaimingStack implements Visualizer {
         let drawOutlines: boolean = settings.outline;
 
         let sortedNodes: any;
+        let startPoints: any;
+        let endPoints: any;
 
         drawOutlines = settings.outline;
 
@@ -40,7 +43,7 @@ export class SpaceReclaimingStack implements Visualizer {
          * @param {number} currentHeight Initially should be 0, variable to track current height.
          * @returns {number} The height of the tree
          */
-        const calculateTreeHeight = (tree: Node, currentHeight: number): number => {
+        const calculateTreeHeight = (tree: NodeSpaceReclaimingStack, currentHeight: number): number => {
             let treeHeight = currentHeight;
             for (let i = 0; i < tree.children.length; i++) {
                 if (treeHeight == 0) {
@@ -59,27 +62,70 @@ export class SpaceReclaimingStack implements Visualizer {
          *
          * @param tree Root of the tree we wish to recurse upon
          */
-        const recursiveDepthSort = (tree: Node): void => {
+        const recursiveDepthSort = (tree: NodeSpaceReclaimingStack): void => {
             sortedNodes[tree.depth].push(tree);
             for (let i = 0; i < tree.children.length; i++) {
-                recursiveDepthSort(tree.children[i], depth + 1);
+                recursiveDepthSort(tree.children[i]);
             }
         };
 
-        /** drawTree draw the tree-map recursively.
-         *
-         * @param {Node} tree The root of the subtree upon which we recurse
-         * @param {Bounds} bounds The bounding-box indicating where we should draw the current root
-         * @param {boolean} internalNode Whether we are recursing on internal nodes, or on the root of the initial input tree
-         * @param {number[]} color The color with which we should draw our current bounding-box based rectangle
-         * @param {boolean} selected Whether one of its parent was selected
-         */
-        const drawTree = (treeLeft: Node, treeCenter: Node, treeRight: Node, depth: number, depthIndex: number, depthTotal: number, selected: boolean = false): void => {
-            let tmpWidth = 600 / depthTotal;
-            const heightOffset = 30;
-            let currentX = tmpWidth * depthIndex - 300;
-            const currentY = 30 * depth + 2;
+        const simpleCompute = (tree:NodeSpaceReclaimingStack, index: number): void => {
+            if (tree.parent) {
+                if (tree.parent.children.length > 1) {
+                    if (index == 0) {
+                        tree.topleft = tree.parent.bottomleft;
+                        tree.topright = [tree.parent.bottomright[0] / tree.parent.children.length, tree.parent.bottomright[1]];
+                        tree.topleft = [tree.parent.bottomleft[0], 300 - 15 * tree.depth];
+                        tree.topright = [tree.parent.bottomright[0], 300 - 15 * tree.depth];
+                    } else if (index < tree.parent.children.length - 1) {
+                        tree.topleft = tree.parent.bottomleft;
+                        tree.topright = [tree.parent.bottomright[0] / tree.parent.children.length, tree.parent.bottomright[1]];
+                        tree.topleft = [tree.parent.bottomleft[0], 300 - 15 * tree.depth];
+                        tree.topright = [tree.parent.bottomright[0], 300 - 15 * tree.depth];
+                    } else {
+                        tree.topleft = tree.parent.bottomleft;
+                        tree.topright = [tree.parent.bottomright[0] / tree.parent.children.length, tree.parent.bottomright[1]];
+                        tree.topleft = [tree.parent.bottomleft[0], 300 - 15 * tree.depth];
+                        tree.topright = [tree.parent.bottomright[0], 300 - 15 * tree.depth];
+                    }
+                } else {
+                    tree.topleft = tree.parent.bottomleft;
+                    tree.topright = tree.parent.bottomright;
+                    tree.bottomleft = [tree.parent.bottomleft[0], 300 - 15 * tree.depth];
+                    tree.bottomright = [tree.parent.bottomright[0], 300 - 15 * tree.depth];
+                }
+            } else { // Root case
+                tree.topleft = [-300, 300];
+                tree.topright = [300, 300];
+                tree.bottomleft = [-300, 300 - 15 * tree.depth];
+                tree.bottomright = [300, 300 - 15 * tree.depth];
+            }
 
+            for (let i = 0; i < tree.children.length; i++) {
+                simpleCompute(tree.children[i], i);
+            }
+        };
+
+        const drawByDepth = (): void => {
+            // for (int i = 0; i < sortedNodes.length; i++) {
+            //     let depthTotal = sortedNodes[i].length;
+            //     for (let j = 0; j < depthTotal; j++) {
+            //         if (j == 0) {
+            //             if (depthTotal > 1) {
+            //                 draw(sortedNodes[i][j], sortedNodes[i][j], sortedNodes[i][j+1], depth, j, depthTotal);
+            //             } else {
+            //                 drawTree(sortedNodes[i][j], sortedNodes[i][j], sortedNodes[i][j], depth, j, depthTotal);
+            //             }
+            //         } else if (j == depthTotal - 1) {
+            //             drawTree(sortedNodes[i][j-1], sortedNodes[i][j], sortedNodes[i][j], depth, j, depthTotal);
+            //         } else {
+            //             drawTree(sortedNodes[i][j-1], sortedNodes[i][j], sortedNodes[i][j+1], depth, j, depthTotal);
+            //         }
+            //     }
+            // }
+        };
+
+        const recursiveDraw = (tree: NodeSpaceReclaimingStack, selected: boolean = false): void => {
             // if (tree.selected) {
             //     selected = true;
             //
@@ -92,70 +138,51 @@ export class SpaceReclaimingStack implements Visualizer {
             //     lineColor = defaultLineColor;
             // }
 
-            if (treeLeft.parent !== treeCenter.parent) {
-                currentX += 2;
-                tmpWidth -= 4;
-            } else if (treeCenter.parent !== treeRight.parent) {
-                currentX -= 2;
-                tmpWidth -= 4;
-            }
-
             // Draw the bounds of the current node
-            if (drawOutlines) {
-                draws.push({
-                    type: 6 /** FillLinedAAQuad **/,
-                    identifier: treeCenter.identifier,
-                    options: {
-                        x: currentX,
-                        y: currentY,
-                        width: tmpWidth,
-                        height: heightOffset,
-                        fillColor: [1, 0, 0, 1],
-                        lineColor: lineColor
-                    }
-                });
-            } else {
-                draws.push({
-                    type: 4 /** FillAAQuad **/,
-                    identifier: treeCenter.identifier,
-                    options: {
-                        x: currentX,
-                        y: currentY,
-                        width: tmpWidth,
-                        height: heightOffset,
-                        color: [1, 0, 0, 1]
-                    }
-                });
+            draws.push({ type: 23 /** FillCustomQuad **/,
+                         options: {x1: tree.bottomleft[0] , y1: tree.bottomleft[1],
+                                   x2: tree.bottomright[0], y2: tree.bottomright[1],
+                                   x3: tree.topright[0]   , y3: tree.topright[1],
+                                   x4: tree.topleft[0]    , y4: tree.topleft[1],
+                                   fillColor: [1, 1, 0]}});
+
+            for (let i = 0; i < tree.children.length; i++) {
+                recursiveDraw(tree.children[i], selected);
             }
         };
 
-        // Initialize the array to sort the nodes by depth
+        // Initialize the arrays to sort and draw the nodes by depth
         treeHeight = originalTree.maxDepth;
         sortedNodes = [];
+        startPoints = [];
+        endPoints = [];
         for (let i = 0; i <= treeHeight; i++) {
             sortedNodes.push([]);
+            startPoints.push([]);
+            endPoints.push([]);
         }
 
+        simpleCompute(originalTree, 0);
         recursiveDepthSort(originalTree);
-
-        let depth = 0;
-        for (let i = 0; i < sortedNodes.length; i++) {
-            let depthTotal = sortedNodes[i].length;
-            for (let j = 0; j < depthTotal; j++) {
-                if (j == 0) {
-                    if (depthTotal > 1) {
-                        drawTree(sortedNodes[i][j], sortedNodes[i][j], sortedNodes[i][j+1], depth, j, depthTotal);
-                    } else {
-                        drawTree(sortedNodes[i][j], sortedNodes[i][j], sortedNodes[i][j], depth, j, depthTotal);
-                    }
-                } else if (j == depthTotal - 1) {
-                    drawTree(sortedNodes[i][j-1], sortedNodes[i][j], sortedNodes[i][j], depth, j, depthTotal);
-                } else {
-                    drawTree(sortedNodes[i][j-1], sortedNodes[i][j], sortedNodes[i][j+1], depth, j, depthTotal);
-                }
-            }
-            depth += 1;
-        }
+        recursiveDraw(originalTree, false);
+        // let depth = 0;
+        // for (let i = 0; i < sortedNodes.length; i++) {
+        //     let depthTotal = sortedNodes[i].length;
+        //     for (let j = 0; j < depthTotal; j++) {
+        //         if (j == 0) {
+        //             if (depthTotal > 1) {
+        //                 drawTree(sortedNodes[i][j], sortedNodes[i][j], sortedNodes[i][j+1], depth, j, depthTotal);
+        //             } else {
+        //                 drawTree(sortedNodes[i][j], sortedNodes[i][j], sortedNodes[i][j], depth, j, depthTotal);
+        //             }
+        //         } else if (j == depthTotal - 1) {
+        //             drawTree(sortedNodes[i][j-1], sortedNodes[i][j], sortedNodes[i][j], depth, j, depthTotal);
+        //         } else {
+        //             drawTree(sortedNodes[i][j-1], sortedNodes[i][j], sortedNodes[i][j+1], depth, j, depthTotal);
+        //         }
+        //     }
+        //     depth += 1;
+        // }
 
         return draws;
     }
