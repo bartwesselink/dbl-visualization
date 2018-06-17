@@ -78,13 +78,13 @@ export class OpenGL{
                 }
             }
         }
-        while(this.index < this.arrays.length && this.arrays[this.index].shader == mode){
+        while(this.index < this.arrays.length && (this.arrays[this.index] == undefined || this.arrays[this.index].shader == mode)){
             this.index++;
         }
         outer: for(var i = this.index + 1; this.index < this.arrays.length; this.index++){
-            if(this.arrays[this.index].shader != mode){
+            if(this.arrays[this.index] != undefined && this.arrays[this.index].shader != mode){
                 for(i; i < this.arrays.length; i++){
-                    if(this.arrays[i].shader == mode){
+                    if(this.arrays[i] != undefined && this.arrays[i].shader == mode){
                         let tmp = this.arrays[this.index];
                         this.arrays[this.index] = this.arrays[i];
                         this.arrays[i] = tmp;
