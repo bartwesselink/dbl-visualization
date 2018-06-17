@@ -230,7 +230,7 @@ export class WindowComponent implements OnInit {
 
         // check if the current move was a drag, or if it was just a click
         if (!this.dragging) {
-            const node: Node = this.interactionHandler.determineElement(this.tree, this.currentDraws, coords);
+            const node: Node = this.interactionHandler.determineElement(this.gl, this.tree, this.currentDraws, coords);
             if (node !== null) {
                 this.selectBus.selectNode(node);
             }
@@ -281,7 +281,7 @@ export class WindowComponent implements OnInit {
         } else if (this.tree != null) {
             var coords = this.gl.transformPoint(event.layerX, event.layerY);
 
-            const node: Node = this.interactionHandler.determineElement(this.tree, this.currentDraws, coords);
+            const node: Node = this.interactionHandler.determineElement(this.gl, this.tree, this.currentDraws, coords);
             if (node != null) {
                 if (this.lastTooltipNode !== node) {
                     this.tooltipLabel = node.label;
