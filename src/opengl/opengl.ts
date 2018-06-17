@@ -1383,8 +1383,10 @@ export class OpenGL{
         var elem;
         for(var i = 0; i < this.arrays.length; i++){
             elem = this.arrays[i];
-            vertices += this.drawElement(elem);
-            total += elem.overlay == null ? elem.length : (elem.length + elem.overlay.length);
+            if(elem != undefined){
+                vertices += this.drawElement(elem);
+                total += elem.overlay == null ? elem.length : (elem.length + elem.overlay.length);
+            }
         }
         if(OpenGL.verbose){
             console.log("[OpenGL] Rendered " + vertices + " out of " + total + " vertices in", (performance.now() - start), "ms");
