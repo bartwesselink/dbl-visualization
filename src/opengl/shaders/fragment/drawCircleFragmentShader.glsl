@@ -5,6 +5,7 @@ uniform lowp float radius;
 uniform lowp float cx;
 uniform lowp float cy;
 uniform lowp vec3 color;
+uniform lowp float rotation;
 
 varying lowp vec2 vpos;
 
