@@ -6,6 +6,7 @@ import {Draw} from '../interfaces/draw';
 import {VisualizerInput} from '../interfaces/visualizer-input';
 import {ShaderMode} from "../opengl/shaders/shaderMode";
 import {OpenGL} from "../opengl/opengl";
+import {Palette} from "../models/palette";
 
 /** @author Mathijs Boezer */
 export class BasicTree implements Visualizer {
@@ -117,23 +118,23 @@ export class BasicTree implements Visualizer {
     /** @end-author Mathijs Boezer */
     /** @author Roan Hofland */
     public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void{
-        this.recolor(input.tree, gl, draws, input.tree.selected);
+        this.recolor(input.tree, input.palette, gl, draws, input.tree.selected);
         for(var i = input.tree.subTreeSize; i < draws.length; i++){
             gl.copyColor(draws[draws[i].linked].glid, draws[i].glid);
         }
     }
-    
-    private recolor(tree: Node, gl: OpenGL, draws: Draw[], selected: boolean){
+
+    private recolor(tree: Node, palette: Palette, gl: OpenGL, draws: Draw[], selected: boolean){
         if(draws[tree.identifier].type == 10){
             if (selected || tree.selected) {
                 selected = true;
-                gl.setColor(draws[tree.identifier].glid, [0, 0, 0]);
+                gl.setColor(draws[tree.identifier].glid, palette.gradientColorMapSelected[tree.maxDepth][tree.depth]);
             } else {
-                gl.setColor(draws[tree.identifier].glid, [0.4, 0.4, 0.4]);
+                gl.setColor(draws[tree.identifier].glid, palette.gradientColorMap[tree.maxDepth][tree.depth]);
             }
         }
         for(let child of tree.children){
-            this.recolor(child, gl, draws, selected);
+            this.recolor(child, palette, gl, draws, selected);
         }
     }
     /** @end-author Roan Hofland */

@@ -8,6 +8,7 @@ uniform lowp float cy;
 uniform lowp vec3 color;
 uniform lowp float start;
 uniform lowp float end;
+uniform lowp float rotation;
 
 varying lowp vec2 vpos;
 
@@ -15,7 +16,7 @@ void main() {
 	lowp float dx = (vpos.x - cx) * ratio;
 	lowp float dy = vpos.y - cy;
 	lowp float val = sqrt(pow(dx, 2.0) + pow(dy, 2.0));
-	lowp float angle = atan(-dy, -dx) + PI;
+	lowp float angle = mod(atan(-dy, -dx) + PI + rotation, 2.0 * PI);
 	if(angle >= start && angle <= end && val <= radius + 0.0025){
 		gl_FragColor = vec4(color, 400.0 * (min(min(end - angle, 0.0025 / val), angle - start) * val + min(radius - val, 0.0)));
 	}
