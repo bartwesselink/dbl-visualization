@@ -1,7 +1,7 @@
 /** @author Roan Hofland */
 import {RingSliceShader} from "./ringSliceShader";
 import {Shader} from "../shader";
-import * as vertexSource from "raw-loader!../vertex/interpolatingVertexShader.glsl";
+import * as vertexSource from "raw-loader!../vertex/postTransformVertexShader.glsl";
 import * as fragmentSource from "raw-loader!../fragment/fillRingSliceFragmentShader.glsl";
 import {Element} from "../../element";
 import {OpenGL} from "../../opengl";
