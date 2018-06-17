@@ -6,142 +6,174 @@ import {Draw} from '../interfaces/draw';
 import {VisualizerInput} from '../interfaces/visualizer-input';
 import {Palette} from "../models/palette";
 
+/** @author Nico Klaassen */
 export class SpaceReclaimingStack implements Visualizer {
-    /** @author Jules Cornelissen */
     public draw(input: VisualizerInput): Draw[] {
-        const tree = input.tree;
+        const originalTree = input.tree;
         const draws: Draw[] = [];
-        const palette: Palette = input.palette;
+        const settings: any = input.settings;
 
-        const weightHeight: number = input.settings.heightScale / 10; // Scaling factor for the height of every rectangle that is not the root
-        const drawNodeSize: boolean = input.settings.nodeSize;
-        let color: number[]; // Have to initialise it here otherwise typescript complains
+        // define variables
+        const defaultSize = 600;
+        let colorA: number[] = [255 / 255, 153 / 255, 0, 1];
+        let colorB: number[] = [51 / 255, 0, 255 / 255, 1];
+        let defaultLineColor: number[] = [0, 0, 0, 1];
+        let lineColor: number[] = defaultLineColor;
+        let selectedColor: number[] = [255 / 255, 100 / 255, 0, 1];
+        let colorDifference: number[] = [
+            colorB[0] - colorA[0],
+            colorB[1] - colorA[1],
+            colorB[2] - colorA[2],
+            colorB[3] - colorA[3]
+        ];
+        let treeHeight: number;
+        let drawOutlines: boolean = settings.outline;
 
-        const initialRectangleCenterX: number = 0;
-        const initialRectangleCenterY: number = -250;
-        const initialRectangleWidth: number = 50;
-        const initialRectangleHeight: number = 50;
-        const initialRectangleAngle: number = 0;
+        let sortedNodes: any;
 
-        const radianToDegreeMultiplier = 180 / Math.PI;
+        drawOutlines = settings.outline;
 
-        // Define the base rectangle of the visualized tree, these values can later be determined in settings
-        // Rectangle is an array of 5 numbers, in order: center x, center y, width (X), height (Y), angle
-        const rectangle = [initialRectangleCenterX, initialRectangleCenterY, initialRectangleWidth, initialRectangleHeight, initialRectangleAngle];
-
-        /** calculateCenter calculates the nX and Y coordinates of the new rectangle, relative to the X and Y of the old
-         * rectangle. The values calculated still need to be offset by center X and Y coordinates of the old rectangle
-         * for proper placement on the canvas.
-         * @param {number} widthPrevious The width of the old rectangle
-         * @param {number} heightPrevious The height of the old rectangle
-         * @param {number} width The width of the new rectangle
-         * @param {number} height The Height of the new rectangle
-         * @param (number) prevAngle The angle of rotation of the previous child
-         * @param {number} newAngle The angle of rotation of the current child
-         * @param {number} angleParent The angle of rotation of the parent rectangle
-         * @returns {number[]} Center X and Y coordinates of the new rectangle relative to the center X and Y coordinates of the old rectangle
+        /**
+         * Function which calculates the height of the given tree recursively
+         *
+         * @param {Node} tree Tree for which to calculate the height for
+         * @param {number} currentHeight Initially should be 0, variable to track current height.
+         * @returns {number} The height of the tree
          */
-        const calculateCenter = (widthPrevious: number, heightPrevious: number, width: number, height: number, prevAngle: number, newAngle: number, angleParent: number): number[] => {
-            // The center of the circle is located at the top middle of the parent rectangle
-            let centerCircle = [(heightPrevious / 2) * Math.cos(angleParent + Math.PI / 2), (heightPrevious / 2) * Math.sin(angleParent + Math.PI / 2)];
-            // The coordinates of the new rectangle, bottom right refers to the first corner of the rectangle on the circle going counter clockwise
-            let bottomRight = [(widthPrevious / 2) * Math.cos(prevAngle + angleParent), (widthPrevious / 2) * Math.sin(prevAngle + angleParent)];
-            let bottomLeft = [(widthPrevious / 2) * Math.cos(newAngle + angleParent), (widthPrevious / 2) * Math.sin(newAngle + angleParent)];
-            // The mid point between the two corners calculated previously, relative to the previous rectangle
-            let middle = [(bottomLeft[0] + bottomRight[0]) / 2, (bottomLeft[1] + bottomRight[1]) / 2];
-
-            // This is the angle between the two lines going to the corners of the new rectangle
-            let angleDifference = (newAngle + prevAngle) / 2;
-            // The center coordinates of the new rectangle
-            let centerX = (height / 2) * Math.cos(angleDifference + angleParent) + middle[0] + centerCircle[0];
-            let centerY = (height / 2) * Math.sin(angleDifference + angleParent) + middle[1] + centerCircle[1];
-            return [centerX, centerY];
+        const calculateTreeHeight = (tree: Node, currentHeight: number): number => {
+            let treeHeight = currentHeight;
+            for (let i = 0; i < tree.children.length; i++) {
+                if (treeHeight == 0) {
+                    treeHeight = calculateTreeHeight(tree.children[i], currentHeight + 1);
+                } else {
+                    const newHeight = calculateTreeHeight(tree.children[i], currentHeight + 1);
+                    if (newHeight > treeHeight) {
+                        treeHeight = newHeight;
+                    }
+                }
+            }
+            return treeHeight;
         };
 
-        const generate = (tree: Node, rectangle: number[], isSelected: boolean = false): void => {
-            if (tree.selected === true || isSelected) {
-                isSelected = true;
-                color = palette.gradientColorMapSelected[tree.maxDepth][tree.depth];
+        /** In-order tree walk to store the nodes in an array based on depth
+         *
+         * @param tree Root of the tree we wish to recurse upon
+         */
+        const recursiveDepthSort = (tree: Node): void => {
+            sortedNodes[tree.depth].push(tree);
+            for (let i = 0; i < tree.children.length; i++) {
+                recursiveDepthSort(tree.children[i], depth + 1);
+            }
+        };
+
+        /** drawTree draw the tree-map recursively.
+         *
+         * @param {Node} tree The root of the subtree upon which we recurse
+         * @param {Bounds} bounds The bounding-box indicating where we should draw the current root
+         * @param {boolean} internalNode Whether we are recursing on internal nodes, or on the root of the initial input tree
+         * @param {number[]} color The color with which we should draw our current bounding-box based rectangle
+         * @param {boolean} selected Whether one of its parent was selected
+         */
+        const drawTree = (treeLeft: Node, treeCenter: Node, treeRight: Node, depth: number, depthIndex: number, depthTotal: number, selected: boolean = false): void => {
+            let tmpWidth = 600 / depthTotal;
+            const heightOffset = 30;
+            let currentX = tmpWidth * depthIndex - 300;
+            const currentY = 30 * depth + 2;
+
+            // if (tree.selected) {
+            //     selected = true;
+            //
+            //     if (!drawOutlines) {
+            //         color = selectedColor;
+            //     } else {
+            //         lineColor = selectedColor;
+            //     }
+            // } else {
+            //     lineColor = defaultLineColor;
+            // }
+
+            if (treeLeft.parent !== treeCenter.parent) {
+                currentX += 2;
+                tmpWidth -= 4;
+            } else if (treeCenter.parent !== treeRight.parent) {
+                currentX -= 2;
+                tmpWidth -= 4;
+            }
+
+            // Draw the bounds of the current node
+            if (drawOutlines) {
+                draws.push({
+                    type: 6 /** FillLinedAAQuad **/,
+                    identifier: treeCenter.identifier,
+                    options: {
+                        x: currentX,
+                        y: currentY,
+                        width: tmpWidth,
+                        height: heightOffset,
+                        fillColor: [1, 0, 0, 1],
+                        lineColor: lineColor
+                    }
+                });
             } else {
-                color = palette.gradientColorMap[tree.maxDepth][tree.depth];
-            }
-            // Draw the previously calculated rectangle
-            draws.push({
-                type: 1 /** FillRotatedQuad **/,
-                identifier: tree.identifier,
-                options: {
-                    x: rectangle[0],
-                    y: rectangle[1],
-                    width: rectangle[2],
-                    height: rectangle[3],
-                    rotation: rectangle[4] * radianToDegreeMultiplier,
-                    color: color
-                }
-            });
-
-            /** This function can be considered in two ways. The first way is as it's done here. We loop over all the children
-             * of a node and consider what part this child is of the parent. Thus the child calculates what relative size it is
-             * of the parent. The second way is to take the parent and calculate the relative size of each of its children.
-             * Using the first way we can immediately recurse on the element we are considering, using the second way we need to
-             * recurse on the children of the element we are considering.
-             */
-            if (tree.subTreeSize > 1) { // If a node does not have children it does not have to draw its children
-                // Calculate the size of all the children of a parent ahead of time so that this only has to be done
-                // once for all the children of a node, instead of once per child of a node.
-                let sizeParent = 0; // Unfortunately have to always define otherwise typescript complains
-                if (drawNodeSize) {
-                    for (let child of tree.children) {
-                        sizeParent += child.length;
+                draws.push({
+                    type: 4 /** FillAAQuad **/,
+                    identifier: treeCenter.identifier,
+                    options: {
+                        x: currentX,
+                        y: currentY,
+                        width: tmpWidth,
+                        height: heightOffset,
+                        color: [1, 0, 0, 1]
                     }
-                }
-                let prevAngle;
-                let newAngle = 0;
-                // Loop over all the children of the node and recurse on each child
-                for (let child of tree.children) {
-                    prevAngle = newAngle;
-                    if (!drawNodeSize) {
-                        newAngle = newAngle + Math.PI * (child.subTreeSize / (child.parent.subTreeSize - 1));
-                    } else {
-                        newAngle = newAngle + Math.PI * (child.length / sizeParent);
-                    }
-                    let sinAngleDifference = Math.sin((newAngle - prevAngle) / 2); // This saves us one sin calculation per child
-                    let width = rectangle[2] * sinAngleDifference; // The last value in the array is always the one calculated last
-                    let height = weightHeight * rectangle[3] * sinAngleDifference;
-                    let center = calculateCenter(rectangle[2], rectangle[3], width, height, prevAngle, newAngle, rectangle[4]);
-
-                    // The previously calculated center coordinates still need to be offset by the old coordinates
-                    center = [center[0] + rectangle[0], center[1] + rectangle[1]];
-
-                    // The rotation of the new rectangle is equal to its angle relative to the angle of the rectangle that
-                    // comes before it. It needs to be offset by the angle of the parent rectangle and then offset by
-                    // -90 degrees for it to draw correctly using the fillRotatedQuad.
-                    let rotation = (newAngle + prevAngle) / 2 + rectangle[4] - Math.PI / 2;
-                    let rectangleChild = [center[0], center[1], width, height, rotation];
-                    // Finally we recurse using all the previously calculated values
-                    generate(child, rectangleChild, isSelected);
-                }
+                });
             }
         };
 
-        // Call the main recursive drawing function
-        generate(tree, rectangle);
+        // Initialize the array to sort the nodes by depth
+        treeHeight = originalTree.maxDepth;
+        sortedNodes = [];
+        for (let i = 0; i <= treeHeight; i++) {
+            sortedNodes.push([]);
+        }
+
+        recursiveDepthSort(originalTree);
+
+        let depth = 0;
+        for (let i = 0; i < sortedNodes.length; i++) {
+            let depthTotal = sortedNodes[i].length;
+            for (let j = 0; j < depthTotal; j++) {
+                if (j == 0) {
+                    if (depthTotal > 1) {
+                        drawTree(sortedNodes[i][j], sortedNodes[i][j], sortedNodes[i][j+1], depth, j, depthTotal);
+                    } else {
+                        drawTree(sortedNodes[i][j], sortedNodes[i][j], sortedNodes[i][j], depth, j, depthTotal);
+                    }
+                } else if (j == depthTotal - 1) {
+                    drawTree(sortedNodes[i][j-1], sortedNodes[i][j], sortedNodes[i][j], depth, j, depthTotal);
+                } else {
+                    drawTree(sortedNodes[i][j-1], sortedNodes[i][j], sortedNodes[i][j+1], depth, j, depthTotal);
+                }
+            }
+            depth += 1;
+        }
+
         return draws;
     }
 
-    public getForm(formFactory: FormFactory): Form | null {
+    public getForm(formFactory: FormFactory) {
         return formFactory.createFormBuilder()
-            .addSliderField("heightScale", 10, {label: "Height scale", min: 2, max: 20})
-            .addToggleField("nodeSize", false, {label: "Calculate using size of nodes",})
+            .addToggleField('outline', true, {label: 'Draw outlines'})
+            .addSliderField('offset', 0, {label: 'Offset', min: 0, max: 25})
+            // .addChoiceField('offsetType', 'relative', { label: 'Offset type', expanded: false, choices: { relative: 'relative', fixed: 'fixed' } })
             .getForm();
     }
 
     public getName(): string {
-        return 'Generalized Pythagoras Tree';
+        return 'Fixed Area Stack';
     }
 
     public getThumbnailImage(): string | null {
-        return '/assets/images/visualization-generalized-pythagoras-tree.png';
+        return '/assets/images/visualization-simple-tree-map.png';
     }
-
-    /** @end-author Jules Cornelissen */
 }
+/** @end-author Nico Klaassen */
