@@ -7,7 +7,7 @@
         </div>
 
         <div class="header-buttons">
-            <!--<app-loader [hidden]="!isLoading() || showFullScreenLoader"></app-loader>-->
+            <app-loader [white]="true" [hidden]="!isLoading() || showFullScreenLoader"></app-loader>
             <app-upload-tool (newContent)="parseTree($event)"></app-upload-tool>
             <app-general-settings-button></app-general-settings-button>
             <app-help-button [container]="layoutContainer"></app-help-button>

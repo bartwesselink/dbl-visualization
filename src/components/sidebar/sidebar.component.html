@@ -9,9 +9,12 @@
         </div>
 
         <div class="sidebar-buttons">
-            <i class="sidebar-button mdi mdi-arrow-collapse-vertical" (click)="contractAll()"></i>
+            <i [tooltip]="contract" class="sidebar-button mdi mdi-arrow-collapse-vertical" (click)="contractAll()"></i>
             <button class="button button-no-shadow button-primary button-small" (click)="resetTree()">Reset to original</button>
-            <i class="sidebar-button mdi mdi-file-download" (click)="exportTree()"></i>
+            <i [tooltip]="export" class="sidebar-button mdi mdi-file-download" (click)="exportTree()"></i>
         </div>
     </div>
+
+    <app-tooltip #contract [visible]="false" label="Contract all"></app-tooltip>
+    <app-tooltip #export [visible]="false" label="Export tree"></app-tooltip>
 </div>

@@ -1,19 +1,19 @@
 <div class="tree-navigator-item" [class.leaf]="!node.expandable" id="node-{{ node.identifier }}" [class.tree-navigator-selected]="node.original.selected">
     <div class="tree-navigator-holder">
         <div class="tree-navigator-expand-holder">
-            <i id="expand-button_{{node.identifier}}" class="mdi mdi-arrow-right-drop-circle tree-navigator-item-button" (click)="toggle()" [hidden]="!node.expandable || node.children.length > 0"></i>
-            <i id="collapse-button_{{node.identifier}}" class="mdi mdi-arrow-down-drop-circle tree-navigator-item-button" (click)="toggle()" [hidden]="!node.expandable || node.children.length === 0"></i>
+            <i [tooltip]="expand" class="mdi mdi-arrow-right-drop-circle tree-navigator-item-button" (click)="toggle()" [hidden]="!node.expandable || node.children.length > 0"></i>
+            <i [tooltip]="collapse" class="mdi mdi-arrow-down-drop-circle tree-navigator-item-button" (click)="toggle()" [hidden]="!node.expandable || node.children.length === 0"></i>
         </div>
 
         <div class="tree-navigator-label-holder" (click)="select()">
             <span class="tree-navigator-label" [class.tree-navigator-unnamed]="node.label === ''">{{ node.label === '' ? '(unnamed)' : node.label }}{{ node.specifiedLength ? ' : ' + node.length : '' }}</span>
-            <i id="subtree-button_{{node.identifier}}" class="mdi mdi-checkbox-multiple-blank-circle tree-navigator-open" (click)="openSubtree()"></i>
+            <i [tooltip]="subTree" class="mdi mdi-checkbox-multiple-blank-circle tree-navigator-open" (click)="openSubtree()"></i>
         </div>
     </div>
 
     <app-tree-navigator [tree]="node.children" #component></app-tree-navigator>
 
-    <!--<div class="mdl-tooltip" [attr.data-mdl-for]="'expand-button_' + node.identifier">Expand</div>-->
-    <!--<div class="mdl-tooltip" [attr.data-mdl-for]="'collapse-button_' + node.identifier">Collapse</div>-->
-    <!--<div class="mdl-tooltip" [attr.data-mdl-for]="'subtree-button_' + node.identifier">Open subtree</div>-->
+    <app-tooltip #expand [visible]="false" label="Expand"></app-tooltip>
+    <app-tooltip #collapse [visible]="false" label="Collapse"></app-tooltip>
+    <app-tooltip #subTree [visible]="false" label="Open subtree"></app-tooltip>
 </div>

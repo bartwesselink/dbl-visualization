@@ -64,6 +64,10 @@
     .holder-item-2 {
       order: 3;
     }
+
+    .holder-header {
+      display: block;
+    }
   }
 
   &.holder-app-tabs {
@@ -156,6 +160,10 @@
     display: block;
     margin-right: 0.5rem;
     cursor: pointer;
+  }
+
+  &[hidden] {
+    display: none;
   }
 }
 

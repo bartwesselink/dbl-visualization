@@ -30,6 +30,7 @@ import {SubtreeBus} from "../providers/subtree-bus";
 import {SearchComponent} from '../components/search/search.component';
 import {DatasetSelectionComponent} from "../components/dataset-selection/dataset-selection.component";
 import {DatasetStorageService} from "../providers/dataset-storage-service";
+import {TooltipDirective} from '../directives/tooltip/tooltip.directive';
 
 @NgModule({
     declarations: [
@@ -46,6 +47,7 @@ import {DatasetStorageService} from "../providers/dataset-storage-service";
         VisualizationSettingsButtonComponent,
         GeneralSettingsButtonComponent,
         MdlDirective,
+        TooltipDirective,
         WelcomePageComponent,
         LoaderComponent,
         TooltipComponent,
