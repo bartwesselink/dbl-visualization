@@ -102,6 +102,7 @@ export class WindowComponent implements OnInit {
 
             this.stateRedraw();
             this.interactionHandler.scaleToNode(this.gl, this.canvas, this.currentDraws, node, this.selectBus.interactionOptions);
+            this.viewCube.setZoomLevel(this.gl.getZoom());
         });
 
         /** @author Nico Klaassen & Jules Cornelissen*/
@@ -204,7 +205,7 @@ export class WindowComponent implements OnInit {
             case 'T':
                 this.gl.resetTransformations();
                 this.render();
-                this.viewCube.setZoomLevel(1);
+                this.viewCube.setZoomLevel(this.gl.getZoom());
                 break;
         }
     }
