@@ -66,6 +66,8 @@ Toggles verbose mode on all OpenGL instances.
 Copies the color given to the original node to the target node.
 - `public copyLineColor(original: number, target: number): void`    
 Copies the line color given to the original node to the target node.
+- `public bufferSizeHint(size: number): void`    
+Hints the number of shapes that will be drawn so memory can be allocated efficiently.
 
 ## Available but not intended to be used
 - `public getModelviewMatrix(): Float32Array`    

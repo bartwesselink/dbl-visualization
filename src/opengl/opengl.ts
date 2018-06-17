@@ -53,9 +53,12 @@ export class OpenGL{
         }
     }
     
-    //hints to correct OpenGL buffer size
+    //hints to the expected number of shapes that will be drawn
     public bufferSizeHint(size: number): void{
         this.arrays.length = size;
+        if(OpenGL.verbose){
+            console.log("[OpenGL] Buffer size set to: " + size);
+        }
     }
     
     //toggles verbose mode
