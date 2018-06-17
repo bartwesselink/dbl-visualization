@@ -128,7 +128,12 @@ export class OpenGL{
     
     //get the referenced element
     private getElem(id: number): Element{
-        return this.indices == null ? this.arrays[id] : this.arrays[this.indices[id]];
+        return this.arrays[this.resolveElem(id)];
+    }
+    
+    //resolve the element index
+    private resolveElem(id: number): number{
+        return this.indices == null ? id : this.indices[id];
     }
 
     //optimize default draw calls
@@ -391,7 +396,12 @@ export class OpenGL{
 
     //releases all the OpenGL buffers
     public releaseBuffers(): void {
-        for(var elem of this.arrays){
+        var index;
+        var elem;
+        for(var i = 0; i < this.id; i++){
+            index = this.resolveElem(i);
+            elem = this.arrays[index];
+            this.arrays[index] = undefined;
             this.gl.deleteBuffer(elem.pos);
             this.gl.deleteBuffer(elem.indices);
         }
