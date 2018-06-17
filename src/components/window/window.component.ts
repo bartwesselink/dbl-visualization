@@ -241,8 +241,7 @@ export class WindowComponent implements OnInit {
         this.gl.scale(value);
         this.render();
         
-        console.log(this.gl.getZoom());
-        if(this.gl.getZoom() >= Math.pow(2.0, 15.0) && !this.warningShown){
+        if(this.gl.getZoom() >= this.ZOOM_WARNING && !this.warningShown){
             this.warningShown = true;
             this.snackbar.MaterialSnackbar.showSnackbar({
                 message: "You've reached a zoom level where floating point rounding errors will start to accumulate. If things don't look right anymore reset the transformations using 'T'.",
