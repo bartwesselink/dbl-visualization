@@ -187,6 +187,7 @@ export class AppComponent implements OnInit {
             new GeneralizedPythagorasTree(),
             new SimpleTreeMap(),
             new BasicTree(),
+            new SpaceReclaimingStack(),
         ];
     }
 
