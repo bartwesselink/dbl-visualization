@@ -100,8 +100,8 @@ export class WindowComponent implements OnInit {
             this.tree.selectedNode = node;
             node.selected = true;
 
-            this.stateRedraw();
             this.interactionHandler.scaleToNode(this.gl, this.canvas, this.currentDraws, node, this.selectBus.interactionOptions);
+            this.stateRedraw();
         });
 
         /** @author Nico Klaassen & Jules Cornelissen*/
