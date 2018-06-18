@@ -150,7 +150,7 @@ export class WindowComponent implements OnInit {
 
     public setDarkmode(enabled: boolean): void {
         if (enabled) {
-            this.gl.setBackgroundColor(50.0 / 255.0, 50.0 / 255.0, 50.0 / 255.0);
+            this.gl.setBackgroundColor(32 / 255.0, 37 / 255.0, 53 / 255.0);
         } else {
             this.gl.setBackgroundColor(1.0, 1.0, 1.0);
         }

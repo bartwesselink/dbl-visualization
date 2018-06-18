@@ -1,4 +1,4 @@
-<div #layoutContainer [class.dark-mode]="darkMode">
+<div #layoutContainer [class.dark-mode]="darkMode" [class.show-app]="showApp">
     <header [hidden]="!showApp">
         <img class="header-logo" src="assets/images/logo-white.png">
 
@@ -20,7 +20,7 @@
             <div class="pointer-text">Add a visualization</div>
         </div>
 
-        <div class="holder" [hidden]="!showApp || tabs.length == 0">
+        <div class="holder" [hidden]="!showApp || tabs.length == 0" [class.has-sidebar]="tree">
             <div class="holder-tabs" [hidden]="!isTabViewMode()">
                 <div *ngFor="let tab of tabs;" (click)="switchTab(tab)" class="holder-tab holder-header" [class.is-active]="tab.active">
                     <div class="holder-header-title">

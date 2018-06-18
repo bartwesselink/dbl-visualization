@@ -55,6 +55,10 @@ export class DatasetSelectionComponent {
         this.view = true;
     }
 
+    public toggle(): void {
+        this.view = !this.view;
+    }
+
     public close(): void {
         this.view = false;
     }

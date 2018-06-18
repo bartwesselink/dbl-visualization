@@ -21,9 +21,7 @@
       "styles": [
         "assets/scss/styles.scss"
       ],
-      "scripts": [
-        "../node_modules/material-design-lite/dist/material.min.js"
-      ],
+      "scripts": [],
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",

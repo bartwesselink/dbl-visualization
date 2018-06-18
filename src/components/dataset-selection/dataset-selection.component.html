@@ -1,7 +1,7 @@
 <div class="data-selection-menu dropdown-holder">
     <div class="data-selection-label"></div>
 
-    <div class="data-selection-current" [class.data-selection-empty]="currentFile == null" (click)="open()">
+    <div class="data-selection-current" [class.data-selection-empty]="currentFile == null" (click)="toggle()">
         {{ currentFile != null ? currentFile : '(no tree selected yet)' }}
 
         <i class="data-selection-chevron mdi mdi-chevron-down"></i>

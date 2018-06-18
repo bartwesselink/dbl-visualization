@@ -1,6 +1,247 @@
 /** @author Mathijs Boezer */
-.dark-mode {
+$color-dark-base: #202b4f;
+$color-dark-primary: #224dae;
+$color-dark-background: #202535;
+$color-dark-card: #2b334e;
+$color-dark-card-hover: darken(#2b334e, 8%);
 
+.dark-mode {
+    background: $color-dark-background;
+
+    color: white;
+
+    header {
+        background-color: $color-dark-base;
+    }
+
+    .header-button-icon {
+        color: $color-dark-base;
+    }
+
+    .welcome-page-bottom {
+        &, &:before {
+            background-color: $color-dark-base;
+        }
+    }
+
+    .welcome-page-full-screen-animation {
+        .welcome-page-bottom {
+            &, &:before {
+                background-color: $color-dark;
+            }
+        }
+    }
+
+    .button:not(.button-primary) {
+        color: $color-dark-base;
+    }
+
+    .welcome-thumbnail {
+        filter: brightness(0) invert(100%);
+        opacity: 1;
+    }
+
+    .welcome-page-logo, .welcome-page-school {
+        filter: brightness(0) invert(100%);
+    }
+
+    .view-cube-pan {
+        background-image: url('../images/dark-nav-base.png');
+    }
+
+    .view-cube-home {
+        background-image: url('../images/dark-home-button.png');
+    }
+
+    .view-cube-arrow-left {
+        background-image: url('../images/dark-arrow-left.png');
+    }
+
+    .view-cube-arrow-right {
+        background-image: url('../images/dark-arrow-right.png');
+    }
+
+    .view-cube-arrow-up {
+        background-image: url('../images/dark-arrow-up.png');
+    }
+
+    .view-cube-arrow-down {
+        background-image: url('../images/dark-arrow-down.png');
+    }
+
+    .view-cube-rotate-left {
+        background-image: url('../images/dark-rotate-left.png');
+    }
+
+    .view-cube-rotate-right {
+        background-image: url('../images/dark-rotate-right.png');
+    }
+
+    .view-cube-zoom {
+        background-image: url('../images/dark-scale-drag-slider-area.png');
+    }
+
+    .view-cube-zoom-indicator {
+        background-image: url('../images/dark-scale-drag-slider.png');
+    }
+
+    .view-cube-help {
+        background-image: url('../images/dark-help-button.png');
+    }
+
+    .button-primary {
+        color: white;
+        background: $color-dark-primary;
+
+        &:hover {
+            background: darken($color-dark-primary, 6%);
+        }
+    }
+
+    .snackbar, .holder-header {
+        background: $color-dark-primary;
+    }
+
+    .is-active.holder-header {
+        background: $color-dark-base;
+        border: 1px solid $color-dark-primary;
+    }
+
+    .sidebar-search, .search, .search-results, .search-field, .sidebar-navigator {
+        &, & .input {
+            background: $color-dark-card;
+            color: white;
+            border: 0;
+
+            &::placeholder {
+                color: white;
+            }
+        }
+
+        .mdi {
+            color: $color-dark-primary;
+        }
+    }
+
+    .sidebar-button {
+        color: white !important;
+        border-color: white;
+    }
+
+    .tree-navigator-label-holder {
+        background-color: $color-dark-background;
+
+        .tree-navigator-open {
+            color: white;
+            border-color: white;
+        }
+    }
+
+    .tree-navigator-item {
+        .tree-navigator-item-button {
+            color: $color-dark-background !important;
+        }
+    }
+
+    .tree-navigator-selected {
+        > .tree-navigator-holder > .tree-navigator-label-holder {
+            background-color: $color-dark-base;
+            border: 1px solid $color-dark-primary;
+        }
+
+        > .tree-navigator-holder > .tree-navigator-expand-holder > .tree-navigator-item-button {
+            color: $color-dark-primary !important;
+        }
+    }
+
+    .sidebar-buttons {
+        border-top: 1px solid $color-dark-base;
+    }
+
+    .settings-button {
+        background: $color-dark-base;
+        color: white !important;
+
+        &:hover {
+            background: darken($color-dark-base, 10%);
+        }
+    }
+
+    .dropdown {
+        color: white;
+        background-color: $color-dark-background;
+
+        .input {
+            border-color: white;
+        }
+
+        &::before, &::after {
+            border-color: $color-dark-card transparent transparent transparent;
+        }
+    }
+
+    .input, .input-select {
+        background-color: transparent;
+        color: white;
+    }
+
+    .input-radio input + label {
+        color: white;
+    }
+
+    .input-switch input:checked + .input-switch-slider {
+        background-color: $color-dark-primary
+    }
+
+    .data-selection-container {
+        color: white;
+    }
+
+    .data-selection-list {
+        li:hover {
+            background: $color-dark-card-hover;
+        }
+    }
+
+    .input-radio input[checked] + label:after {
+        background: $color-dark-primary;
+    }
+
+    .visualization-picker-dropdown {
+        background: $color-dark-card;
+        color: white;
+
+        li:hover {
+            background-color: $color-dark-card-hover !important;
+        }
+    }
+
+    .visualization-picker-dropdown-visualizer-image {
+        filter: brightness(0) invert(100%);
+    }
+
+    .dialog-modal {
+        background: $color-dark-card;
+    }
+
+    .help-key {
+        background: $color-dark-background;
+    }
+
+    .introjs-tooltip {
+        background: $color-dark-card;
+        color: white;
+    }
+
+    .introjs-tooltiptext {
+        color: white !important;
+    }
+
+    .visualization-picker-dropdown {
+        &::before {
+            border-color: $color-dark-card transparent transparent transparent;
+        }
+    }
 }
 
 /** @end-author Mathijs Boezer */

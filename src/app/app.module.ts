@@ -17,7 +17,6 @@ import {NgPipesModule} from 'ngx-pipes';
 import {VisualizationSettingsButtonComponent} from '../components/visualization-settings-button/visualization-settings-button.component';
 import {GeneralSettingsButtonComponent} from '../components/general-settings-button/general-settings-button.component';
 import {SettingsBus} from '../providers/settings-bus';
-import {MdlDirective} from '../directives/material-design/material-design.directive';
 import {WelcomePageComponent} from '../components/welcome-page/welcome-page.component';
 import {APP_BASE_HREF} from '@angular/common';
 import {WorkerManager} from '../utils/worker-manager';
@@ -48,7 +47,6 @@ import {SnackbarBus} from '../providers/snackbar-bus';
         FormComponent,
         VisualizationSettingsButtonComponent,
         GeneralSettingsButtonComponent,
-        MdlDirective,
         TooltipDirective,
         SnackbarComponent,
         WelcomePageComponent,

@@ -38,7 +38,6 @@ export class SnackbarComponent {
                 this.animate = false;
 
                 setTimeout(() => {
-                    console.log('clearing out');
                     this.current = null;
                     this.checkQueue();
                 }, this.ANIMATION_WAIT_TIME);

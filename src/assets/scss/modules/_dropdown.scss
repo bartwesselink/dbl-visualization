@@ -71,6 +71,7 @@
 .dropdown-content {
     max-height: calc(100vh - 7rem);
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .dropdown-holder {
