@@ -20,8 +20,8 @@ export class SpaceReclaimingStack implements Visualizer {
         // define variables
         let height = settings.height;
         let width = settings.width;
-        let reclaimCoefficient = settings.reclaimCoefficient;
-        let offsetBasis = settings.offset / 200;
+        let reclaimCoefficient = settings.reclaimCoefficient / 100; // Percentage
+        let offsetBasis = settings.offset / 200; // Percentage 0 - 50%
         let maximumOffset = settings.maximumOffset;
         const levelHeight = height / originalTree.maxDepth;
 
@@ -48,14 +48,27 @@ export class SpaceReclaimingStack implements Visualizer {
                 }
             }
             return -1;
-        }
+        };
 
         const simpleCompute = (): void => {//tree:NodeSpaceReclaimingStack, index: number): void => {
             for (let depth = 0; depth < sortedNodes.length; depth++) {
-                const offset = Math.min(width / sortedNodes[depth].length * offsetBasis, maximumOffset);
-                const segmentWidth = (width - offset * (sortedNodes[depth].length - 1)) / sortedNodes[depth].length;
-                let left = - width / 2;
-                let right = left + segmentWidth;
+                let left;
+                let right;
+                let segmentWidth;
+                let offset;
+                if (depth > 0) { // reclaim coefficient implementation
+                    let parentWidth = Math.abs(sortedNodes[depth - 1][0].topleft[0] - sortedNodes[depth - 1][sortedNodes[depth-1].length - 1].topright[0]);
+                    parentWidth = parentWidth + (width - parentWidth) * reclaimCoefficient;
+                    offset = Math.min(parentWidth / sortedNodes[depth].length * offsetBasis, maximumOffset);
+                    segmentWidth = (parentWidth - offset * (sortedNodes[depth].length - 1)) / sortedNodes[depth].length;
+                    left = -parentWidth / 2;
+                    right = left + segmentWidth;
+                } else {
+                    offset = Math.min(width / sortedNodes[depth].length * offsetBasis, maximumOffset);
+                    segmentWidth = (width - offset * (sortedNodes[depth].length - 1)) / sortedNodes[depth].length;
+                    left = - width / 2;
+                    right = left + segmentWidth;
+                }
 
                 for (let i = 0; i < sortedNodes[depth].length; i++) {
                     const tree = sortedNodes[depth][i];
