@@ -80,23 +80,23 @@ export class SpaceReclaimingStack implements Visualizer {
 
         const simpleCompute = (): void => {//tree:NodeSpaceReclaimingStack, index: number): void => {
             for (let depth = 0; depth < sortedNodes.length; depth++) {
-                console.log("=-=-=-=-=-=-=");
+                // console.log("=-=-=-=-=-=-=");
                 console.log(depth);
-                const offset = 4; //width / (tree.parent.children.length - 1 ) * 2 * 0.025; // 0.1 = 10%
+                const offset = 6; //width / (tree.parent.children.length - 1 ) * 2 * 0.025; // 0.1 = 10%
                 const segmentWidth = (600 - offset * (sortedNodes[depth].length - 1)) / sortedNodes[depth].length;
-                console.log("segwidth");
-                console.log(segmentWidth);
+                // console.log("segwidth");
+                // console.log(segmentWidth);
                 let oldParent = sortedNodes[depth][0].parent;
                 let parent = null;
                 let differentParent = false;
                 let left = -300;
                 let right = left + segmentWidth;
                 for (let i = 0; i < sortedNodes[depth].length; i++) {
-                    console.log(left);
+                    // console.log(left);
                     const tree = sortedNodes[depth][i];
-                    const topY = 300 - 15 * tree.depth;
-                    const bottomY = 300 - 15 * (tree.depth + 1);
-                    console.log(tree.parent);
+                    const topY = 300 - 5 * tree.depth;
+                    const bottomY = 300 - 5 * (tree.depth + 1);
+                    // console.log(tree.parent);
                     if (tree.parent) {
                         parent = tree.parent;
                         // if (parent === oldParent || parent === null) {
@@ -107,7 +107,7 @@ export class SpaceReclaimingStack implements Visualizer {
                             // right += offset;
                         // }
                         if (tree.parent.children.length > 1) {
-                            const width = Math.abs(tree.parent.bottomleft[0] - tree.parent.bottomright[0])
+                            const width = Math.abs(tree.parent.bottomleft[0] - tree.parent.bottomright[0]);
                             const index = calculateIndex(tree);
 
                             if (index == 0) {
@@ -158,7 +158,7 @@ export class SpaceReclaimingStack implements Visualizer {
                 node.bottomright[0] = ((node.bottomright[0] + Math.abs(leftX)) / width) * 600 - 300;
             }
 
-        }
+        };
 
         const recursiveDraw = (tree: NodeSpaceReclaimingStack, selected: boolean = false): void => {
             // if (tree.selected) {
