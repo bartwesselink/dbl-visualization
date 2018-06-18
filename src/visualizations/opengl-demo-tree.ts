@@ -117,25 +117,8 @@ export class OpenglDemoTree implements Visualizer {
 
         // draw calls for slices
         draws.push({ type: 20 /** FillCircleSlice **/, options: { x: 500, y: -165, radius: 100, start: 0, end: (360 / 3), color: [1, 0, 0] }});
-        draws.push({ type: 20 /** FillCircleSlice **/, options: { x: 500, y: -165, radius: 100, start: 0, end: (360 / 3), color: [1, 0, 0] }});
-        draws.push({ type: 20 /** FillCircleSlice **/, options: { x: 500, y: -165, radius: 100, start: 0, end: (360 / 3), color: [1, 0, 0] }});
-        draws.push({ type: 20 /** FillCircleSlice **/, options: { x: 500, y: -165, radius: 100, start: 0, end: (360 / 3), color: [1, 0, 0] }});
-        draws.push({ type: 20 /** FillCircleSlice **/, options: { x: 500, y: -165, radius: 100, start: 0, end: (360 / 3), color: [1, 0, 0] }});
-        draws.push({ type: 20 /** FillCircleSlice **/, options: { x: 500, y: -165, radius: 100, start: 0, end: (360 / 3), color: [1, 0, 0] }});
-        draws.push({ type: 20 /** FillCircleSlice **/, options: { x: 500, y: -165, radius: 100, start: 0, end: (360 / 3), color: [1, 0, 0] }});
-        draws.push({ type: 20 /** FillCircleSlice **/, options: { x: 500, y: -165, radius: 100, start: 0, end: (360 / 3), color: [1, 0, 0] }});
-        draws.push({ type: 20 /** FillCircleSlice **/, options: { x: 500, y: -165, radius: 100, start: 0, end: (360 / 3), color: [1, 0, 0] }});
-        draws.push({ type: 20 /** FillCircleSlice **/, options: { x: 500, y: -165, radius: 100, start: 0, end: (360 / 3), color: [1, 0, 0] }});
         draws.push({ type: 21 /** DrawCircleSlice **/, options: { x: 500 - 50, y: -165, radius: 100, start: (360 / 3), end: (360 / 3) * 2, color: [1, 0, 0] }});
-        draws.push({ type: 21 /** DrawCircleSlice **/, options: { x: 500 - 50, y: -165, radius: 100, start: (360 / 3), end: (360 / 3) * 2, color: [1, 0, 0] }});
-        draws.push({ type: 21 /** DrawCircleSlice **/, options: { x: 500 - 50, y: -165, radius: 100, start: (360 / 3), end: (360 / 3) * 2, color: [1, 0, 0] }});
-        draws.push({ type: 21 /** DrawCircleSlice **/, options: { x: 500 - 50, y: -165, radius: 100, start: (360 / 3), end: (360 / 3) * 2, color: [1, 0, 0] }});
-        draws.push({ type: 21 /** DrawCircleSlice **/, options: { x: 500 - 50, y: -165, radius: 100, start: (360 / 3), end: (360 / 3) * 2, color: [1, 0, 0] }});
-        draws.push({ type: 21 /** DrawCircleSlice **/, options: { x: 500 - 50, y: -165, radius: 100, start: (360 / 3), end: (360 / 3) * 2, color: [1, 0, 0] }});
-        draws.push({ type: 21 /** DrawCircleSlice **/, options: { x: 500 - 50, y: -165, radius: 100, start: (360 / 3), end: (360 / 3) * 2, color: [1, 0, 0] }});
-        draws.push({ type: 21 /** DrawCircleSlice **/, options: { x: 500 - 50, y: -165, radius: 100, start: (360 / 3), end: (360 / 3) * 2, color: [1, 0, 0] }});
-        draws.push({ type: 21 /** DrawCircleSlice **/, options: { x: 500 - 50, y: -165, radius: 100, start: (360 / 3), end: (360 / 3) * 2, color: [1, 0, 0] }});
-
+       
         draws.push({ type: 22 /** FillLinedCircleSlice **/, options: { x: 500, y: -165, radius: 100, start: (360 / 3) * 2, end: (360 / 3) * 3, fillColor: [1, 0, 0], lineColor: [0, 0, 0] }});
 
         draws.push({ type: 17 /** DrawRingSlice **/, options: { x: -500, y: -165, near: 50, far: 100, start: 0, end: (360 / 3), color: [1, 0, 0] }});

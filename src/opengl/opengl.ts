@@ -45,8 +45,6 @@ export class OpenGL{
 
         this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
         this.gl.enable(this.gl.BLEND);
-        
-        this.shader.enableGrid(true);//TODO
 
         if(OpenGL.verbose){
             console.log("[OpenGL] OpenGL version: " + this.gl.getParameter(gl.VERSION));
@@ -62,6 +60,11 @@ export class OpenGL{
     //set the size thres hold
     public setSizeThresHold(pixels: number): void{
         this.sizethreshold = pixels;
+    }
+    
+    //enables or disables the background grid
+    public setGrid(enabled: boolean): void{
+        this.shader.enableGrid(enabled);
     }
 
     //optimises the given shader mode
@@ -1371,6 +1374,11 @@ export class OpenGL{
         if(OpenGL.verbose){
             console.log("[OpenGL] Rendered " + vertices + " out of " + total + " vertices in", (performance.now() - start), "ms");
         }
+    }
+    
+    //checks if the shape with the given id is visible
+    public isShapeVisible(id: number): boolean {
+        return this.isVisible(this.getElem(id));
     }
 
     //checks if an element is visible

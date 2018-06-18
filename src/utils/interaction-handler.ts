@@ -16,7 +16,7 @@ import {InteractionOptions} from "../enums/interaction-options";
 export class InteractionHandler {
     private readonly ZOOM_FOCUS_FACTOR = 6;
 
-    public determineElement(tree: Node, draws: Draw[], coords: number[]): Node|null {
+    public determineElement(gl: OpenGL, tree: Node, draws: Draw[], coords: number[]): Node|null {
         const x: number = coords[0];
         const y: number = coords[1];
 
@@ -27,7 +27,7 @@ export class InteractionHandler {
         for (let i = draws.length - 1; i >= 0; i--) {
             const draw: Draw = draws[i];
 
-            if (draw != undefined && draw.identifier >= 0 && this.withinDraw(draw, x, y)) {
+            if (draw != undefined && draw.identifier >= 0 && gl.isShapeVisible(draw.glid) && this.withinDraw(draw, x, y)) {
                 const node = this.findNodeByIdentifier(tree, draw.identifier);
 
                 return node;

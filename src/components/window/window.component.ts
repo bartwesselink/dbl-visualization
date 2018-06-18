@@ -102,6 +102,7 @@ export class WindowComponent implements OnInit {
 
             this.stateRedraw();
             this.interactionHandler.scaleToNode(this.gl, this.canvas, this.currentDraws, node, this.selectBus.interactionOptions);
+            this.viewCube.setZoomLevel(this.gl.getZoom());
         });
 
         /** @author Nico Klaassen & Jules Cornelissen*/
@@ -201,6 +202,7 @@ export class WindowComponent implements OnInit {
             case 'T':
                 this.gl.resetTransformations();
                 this.render();
+                this.viewCube.setZoomLevel(this.gl.getZoom());
                 break;
         }
     }
@@ -225,7 +227,7 @@ export class WindowComponent implements OnInit {
 
         // check if the current move was a drag, or if it was just a click
         if (!this.dragging) {
-            const node: Node = this.interactionHandler.determineElement(this.tree, this.currentDraws, coords);
+            const node: Node = this.interactionHandler.determineElement(this.gl, this.tree, this.currentDraws, coords);
             if (node !== null) {
                 this.selectBus.selectNode(node);
             }
@@ -264,7 +266,7 @@ export class WindowComponent implements OnInit {
         } else if (this.tree != null) {
             var coords = this.gl.transformPoint(event.layerX, event.layerY);
 
-            const node: Node = this.interactionHandler.determineElement(this.tree, this.currentDraws, coords);
+            const node: Node = this.interactionHandler.determineElement(this.gl, this.tree, this.currentDraws, coords);
             if (node != null) {
                 if (this.lastTooltipNode !== node) {
                     this.tooltipLabel = node.label;
@@ -425,6 +427,8 @@ export class WindowComponent implements OnInit {
         } catch (error) {
             this.onError((<Error>error).message);
         }
+        
+        this.gl.setGrid(true);
 
         this.setDarkmode(this.darkMode);
 
