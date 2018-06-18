@@ -14,6 +14,7 @@ import {ViewMode} from '../enums/view-mode';
 import {SubtreeBus} from "../providers/subtree-bus";
 import {SelectBus} from "../providers/select-bus";
 import {BasicTree} from "../visualizations/basic-tree";
+import {SpaceReclaimingStack} from "../visualizations/space-reclaiming-stack";
 
 declare var dialogPolyfill;
 

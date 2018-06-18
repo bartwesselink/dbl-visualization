@@ -70,35 +70,44 @@ export class SpaceReclaimingStack implements Visualizer {
         };
 
         const simpleCompute = (tree:NodeSpaceReclaimingStack, index: number): void => {
+            console.log(tree.parent);
+            const topY = 300 - 15 * tree.depth;
+            const bottomY = 300 - 15 * (tree.depth + 1);
             if (tree.parent) {
                 if (tree.parent.children.length > 1) {
+                    const width = Math.abs(tree.parent.bottomleft[0] - tree.parent.bottomright[0])
+                    const offset = width / (tree.parent.children.length - 1 ) * 2 * 0.025; // 0.1 = 10%
+                    console.log("index: ");
+                    console.log(index);
                     if (index == 0) {
                         tree.topleft = tree.parent.bottomleft;
-                        tree.topright = [tree.parent.bottomright[0] / tree.parent.children.length, tree.parent.bottomright[1]];
-                        tree.topleft = [tree.parent.bottomleft[0], 300 - 15 * tree.depth];
-                        tree.topright = [tree.parent.bottomright[0], 300 - 15 * tree.depth];
+                        tree.topright = [tree.parent.bottomleft[0] + width / tree.parent.children.length, topY];
+                        tree.bottomleft = [tree.topleft[0], bottomY];
+                        tree.bottomright = [tree.topright[0] - offset, bottomY];
+
                     } else if (index < tree.parent.children.length - 1) {
-                        tree.topleft = tree.parent.bottomleft;
-                        tree.topright = [tree.parent.bottomright[0] / tree.parent.children.length, tree.parent.bottomright[1]];
-                        tree.topleft = [tree.parent.bottomleft[0], 300 - 15 * tree.depth];
-                        tree.topright = [tree.parent.bottomright[0], 300 - 15 * tree.depth];
+                        tree.topleft = [tree.parent.bottomleft[0] + width / tree.parent.children.length * index, topY];
+                        tree.topright = [tree.parent.bottomleft[0] + width / tree.parent.children.length * (index + 1), topY];
+                        tree.bottomleft = [tree.topleft[0] + offset, bottomY];
+                        tree.bottomright = [tree.topright[0] - offset, bottomY];
+
                     } else {
-                        tree.topleft = tree.parent.bottomleft;
-                        tree.topright = [tree.parent.bottomright[0] / tree.parent.children.length, tree.parent.bottomright[1]];
-                        tree.topleft = [tree.parent.bottomleft[0], 300 - 15 * tree.depth];
-                        tree.topright = [tree.parent.bottomright[0], 300 - 15 * tree.depth];
+                        tree.topleft = [tree.parent.bottomleft[0] + width / tree.parent.children.length * index, tree.parent.bottomleft[1]];
+                        tree.topright = [tree.parent.bottomright[0], tree.parent.bottomright[1]];
+                        tree.bottomleft = [tree.topleft[0] + offset, bottomY];
+                        tree.bottomright = [tree.topright[0], bottomY];
                     }
-                } else {
+                } else { // Only child
                     tree.topleft = tree.parent.bottomleft;
                     tree.topright = tree.parent.bottomright;
-                    tree.bottomleft = [tree.parent.bottomleft[0], 300 - 15 * tree.depth];
-                    tree.bottomright = [tree.parent.bottomright[0], 300 - 15 * tree.depth];
+                    tree.bottomleft = [tree.parent.bottomleft[0], bottomY];
+                    tree.bottomright = [tree.parent.bottomright[0], bottomY];
                 }
             } else { // Root case
-                tree.topleft = [-300, 300];
-                tree.topright = [300, 300];
-                tree.bottomleft = [-300, 300 - 15 * tree.depth];
-                tree.bottomright = [300, 300 - 15 * tree.depth];
+                tree.topleft = [-300, topY];
+                tree.topright = [300, topY];
+                tree.bottomleft = [-300, bottomY];
+                tree.bottomright = [300, bottomY];
             }
 
             for (let i = 0; i < tree.children.length; i++) {
@@ -144,7 +153,7 @@ export class SpaceReclaimingStack implements Visualizer {
                                    x2: tree.bottomright[0], y2: tree.bottomright[1],
                                    x3: tree.topright[0]   , y3: tree.topright[1],
                                    x4: tree.topleft[0]    , y4: tree.topleft[1],
-                                   fillColor: [1, 1, 0]}});
+                                   fillColor: [Math.random(), Math.random(), Math.random()]}});
 
             for (let i = 0; i < tree.children.length; i++) {
                 recursiveDraw(tree.children[i], selected);
@@ -162,27 +171,13 @@ export class SpaceReclaimingStack implements Visualizer {
             endPoints.push([]);
         }
 
+        console.log("simpleCompute start");
         simpleCompute(originalTree, 0);
+        console.log("recursiveDepthSort start");
         recursiveDepthSort(originalTree);
+        console.log("recursiveDraw start");
         recursiveDraw(originalTree, false);
-        // let depth = 0;
-        // for (let i = 0; i < sortedNodes.length; i++) {
-        //     let depthTotal = sortedNodes[i].length;
-        //     for (let j = 0; j < depthTotal; j++) {
-        //         if (j == 0) {
-        //             if (depthTotal > 1) {
-        //                 drawTree(sortedNodes[i][j], sortedNodes[i][j], sortedNodes[i][j+1], depth, j, depthTotal);
-        //             } else {
-        //                 drawTree(sortedNodes[i][j], sortedNodes[i][j], sortedNodes[i][j], depth, j, depthTotal);
-        //             }
-        //         } else if (j == depthTotal - 1) {
-        //             drawTree(sortedNodes[i][j-1], sortedNodes[i][j], sortedNodes[i][j], depth, j, depthTotal);
-        //         } else {
-        //             drawTree(sortedNodes[i][j-1], sortedNodes[i][j], sortedNodes[i][j+1], depth, j, depthTotal);
-        //         }
-        //     }
-        //     depth += 1;
-        // }
+        console.log("done");
 
         return draws;
     }
@@ -196,7 +191,7 @@ export class SpaceReclaimingStack implements Visualizer {
     }
 
     public getName(): string {
-        return 'Fixed Area Stack';
+        return 'Space Reclaiming Stack';
     }
 
     public getThumbnailImage(): string | null {

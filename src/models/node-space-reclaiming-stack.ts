@@ -14,5 +14,6 @@ export interface NodeSpaceReclaimingStack extends Node {
     topright?: number[];
     bottomleft?: number[];
     bottomright?: number[];
+    depth?: number; // Depth of the node
 }
 /** @end-author Nico Klaassen */
