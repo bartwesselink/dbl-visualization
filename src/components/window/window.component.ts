@@ -422,7 +422,7 @@ export class WindowComponent implements OnInit {
 
     //initialise OpenGL
     private init(): void {
-        var gl: WebGLRenderingContext = this.canvas.nativeElement.getContext('webgl', {
+        var gl: WebGLRenderingContext = this.canvas.nativeElement.getContext('webgl2', {
             preserveDrawingBuffer: true,
             depth: false,
             alpha: false,
