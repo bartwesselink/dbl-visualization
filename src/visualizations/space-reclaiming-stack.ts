@@ -21,6 +21,8 @@ export class SpaceReclaimingStack implements Visualizer {
         let height = settings.height;
         let width = settings.width;
         let reclaimCoefficient = settings.reclaimCoefficient;
+        let offsetBasis = settings.offset / 200;
+        let maximumOffset = settings.maximumOffset;
         const levelHeight = height / originalTree.maxDepth;
 
         let sortedNodes: any;
@@ -50,7 +52,7 @@ export class SpaceReclaimingStack implements Visualizer {
 
         const simpleCompute = (): void => {//tree:NodeSpaceReclaimingStack, index: number): void => {
             for (let depth = 0; depth < sortedNodes.length; depth++) {
-                const offset = Math.min(width / sortedNodes[depth].length * 0.025, 4);
+                const offset = Math.min(width / sortedNodes[depth].length * offsetBasis, maximumOffset);
                 const segmentWidth = (width - offset * (sortedNodes[depth].length - 1)) / sortedNodes[depth].length;
                 let left = - width / 2;
                 let right = left + segmentWidth;
@@ -139,6 +141,8 @@ export class SpaceReclaimingStack implements Visualizer {
             .addNumberField('height', 800, {label: 'Height'})
             .addNumberField('width', 600, {label: 'Width'})
             .addSliderField('reclaimCoefficient', 50, {label: "Reclaiming coefficient", min: 0, max: 100})
+            .addSliderField('offset', 50, {label: "Relative offset in between nodes on the same depth", min: 0, max: 100})
+            .addNumberField('maximumOffset', 10, {label: 'Maximum offset'})
             .getForm();
     }
 
