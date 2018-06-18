@@ -75,6 +75,8 @@ export class WindowComponent implements OnInit {
     private readonly DEFAULT_DR = 1;
     private readonly DEFAULT_DT = 5;
     private readonly DEFAULT_DS = 0.1;
+    private readonly ZOOM_WARNING = Math.pow(2.0, 15.0);
+    private warningShown: boolean = false;
     private darkMode: boolean;
 
     private currentDraws: Draw[];
@@ -100,8 +102,9 @@ export class WindowComponent implements OnInit {
             this.tree.selectedNode = node;
             node.selected = true;
 
-            this.stateRedraw();
             this.interactionHandler.scaleToNode(this.gl, this.canvas, this.currentDraws, node, this.selectBus.interactionOptions);
+            this.stateRedraw();
+
             this.viewCube.setZoomLevel(this.gl.getZoom());
         });
 
@@ -237,6 +240,18 @@ export class WindowComponent implements OnInit {
     private scaleView(value: number) {
         this.gl.scale(value);
         this.render();
+        
+        if(this.gl.getZoom() >= this.ZOOM_WARNING && !this.warningShown){
+            this.warningShown = true;
+            this.snackbar.MaterialSnackbar.showSnackbar({
+                message: "You've reached a zoom level where floating point rounding errors will start to accumulate. If things don't look right anymore reset the transformations using 'T'.",
+                timeout: 1e8,
+                actionHandler: () => {
+                    this.snackbar.MaterialSnackbar.cleanup_();
+                }, // close on click
+                actionText: "CLOSE"
+            });
+        }
 
         this.viewCube.setZoomLevel(this.gl.getZoom());
     }
@@ -411,10 +426,11 @@ export class WindowComponent implements OnInit {
 
     //initialise OpenGL
     private init(): void {
-        var gl: WebGLRenderingContext = this.canvas.nativeElement.getContext('webgl', {
+        var gl: WebGLRenderingContext = this.canvas.nativeElement.getContext('webgl2', {
             preserveDrawingBuffer: true,
             depth: false,
-            alpha: false
+            alpha: false,
+            antialias: this.visualizer.requireAntiAliasing
         });
 
         if (!gl) {
