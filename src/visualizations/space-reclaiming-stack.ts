@@ -69,70 +69,78 @@ export class SpaceReclaimingStack implements Visualizer {
             }
         };
 
-        const simpleCompute = (tree:NodeSpaceReclaimingStack, index: number): void => {
-            console.log(tree.parent);
-            const topY = 300 - 15 * tree.depth;
-            const bottomY = 300 - 15 * (tree.depth + 1);
-            if (tree.parent) {
-                if (tree.parent.children.length > 1) {
-                    const width = Math.abs(tree.parent.bottomleft[0] - tree.parent.bottomright[0])
-                    const offset = width / (tree.parent.children.length - 1 ) * 2 * 0.025; // 0.1 = 10%
-                    console.log("index: ");
-                    console.log(index);
-                    if (index == 0) {
-                        tree.topleft = tree.parent.bottomleft;
-                        tree.topright = [tree.parent.bottomleft[0] + width / tree.parent.children.length, topY];
-                        tree.bottomleft = [tree.topleft[0], bottomY];
-                        tree.bottomright = [tree.topright[0] - offset, bottomY];
-
-                    } else if (index < tree.parent.children.length - 1) {
-                        tree.topleft = [tree.parent.bottomleft[0] + width / tree.parent.children.length * index, topY];
-                        tree.topright = [tree.parent.bottomleft[0] + width / tree.parent.children.length * (index + 1), topY];
-                        tree.bottomleft = [tree.topleft[0] + offset, bottomY];
-                        tree.bottomright = [tree.topright[0] - offset, bottomY];
-
-                    } else {
-                        tree.topleft = [tree.parent.bottomleft[0] + width / tree.parent.children.length * index, tree.parent.bottomleft[1]];
-                        tree.topright = [tree.parent.bottomright[0], tree.parent.bottomright[1]];
-                        tree.bottomleft = [tree.topleft[0] + offset, bottomY];
-                        tree.bottomright = [tree.topright[0], bottomY];
-                    }
-                } else { // Only child
-                    tree.topleft = tree.parent.bottomleft;
-                    tree.topright = tree.parent.bottomright;
-                    tree.bottomleft = [tree.parent.bottomleft[0], bottomY];
-                    tree.bottomright = [tree.parent.bottomright[0], bottomY];
+        const calculateIndex = (tree: NodeSpaceReclaimingStack): number => {
+            for (let i = 0; i < tree.parent.children.length; i++) {
+                if (tree.parent.children[i] === tree) {
+                    return i;
                 }
-            } else { // Root case
-                tree.topleft = [-300, topY];
-                tree.topright = [300, topY];
-                tree.bottomleft = [-300, bottomY];
-                tree.bottomright = [300, bottomY];
             }
+            return -1;
+        }
 
-            for (let i = 0; i < tree.children.length; i++) {
-                simpleCompute(tree.children[i], i);
+        const simpleCompute = (): void => {//tree:NodeSpaceReclaimingStack, index: number): void => {
+            for (let depth = 0; depth < sortedNodes.length; depth++) {
+                for (let i = 0; i < sortedNodes[depth].length; i++) {
+                    const tree = sortedNodes[depth][i];
+                    const topY = 300 - 15 * tree.depth;
+                    const bottomY = 300 - 15 * (tree.depth + 1);
+                    console.log(tree.parent);
+                    if (tree.parent) {
+                        if (tree.parent.children.length > 1) {
+                            const width = Math.abs(tree.parent.bottomleft[0] - tree.parent.bottomright[0])
+                            const offset = 2; //width / (tree.parent.children.length - 1 ) * 2 * 0.025; // 0.1 = 10%
+                            const index = calculateIndex(tree);
+
+                            if (index == 0) {
+                                tree.topleft = tree.parent.bottomleft;
+                                tree.topright = [tree.parent.bottomleft[0] + width / tree.parent.children.length, topY];
+                                tree.bottomleft = [tree.topleft[0], bottomY];
+                                tree.bottomright = [tree.topright[0] - offset, bottomY];
+
+                            } else if (index < tree.parent.children.length - 1) {
+                                tree.topleft = [tree.parent.bottomleft[0] + width / tree.parent.children.length * index, topY];
+                                tree.topright = [tree.parent.bottomleft[0] + width / tree.parent.children.length * (index + 1), topY];
+                                tree.bottomleft = [tree.topleft[0] + offset, bottomY];
+                                tree.bottomright = [tree.topright[0] - offset, bottomY];
+
+                            } else {
+                                tree.topleft = [tree.parent.bottomleft[0] + width / tree.parent.children.length * index, tree.parent.bottomleft[1]];
+                                tree.topright = [tree.parent.bottomright[0], tree.parent.bottomright[1]];
+                                tree.bottomleft = [tree.topleft[0] + offset, bottomY];
+                                tree.bottomright = [tree.topright[0], bottomY];
+                            }
+                        } else { // Only child
+                            tree.topleft = tree.parent.bottomleft;
+                            tree.topright = tree.parent.bottomright;
+                            tree.bottomleft = [tree.parent.bottomleft[0], bottomY];
+                            tree.bottomright = [tree.parent.bottomright[0], bottomY];
+                        }
+                    } else { // Root case
+                        tree.topleft = [-300, topY];
+                        tree.topright = [300, topY];
+                        tree.bottomleft = [-300, bottomY];
+                        tree.bottomright = [300, bottomY];
+                    }
+
+                    // for (let i = 0; i < tree.children.length; i++) {
+                    //     simpleCompute(tree.children[i], i);
+                    // }
+                }
+                scaleFullWidth(depth);
             }
         };
 
-        const drawByDepth = (): void => {
-            // for (int i = 0; i < sortedNodes.length; i++) {
-            //     let depthTotal = sortedNodes[i].length;
-            //     for (let j = 0; j < depthTotal; j++) {
-            //         if (j == 0) {
-            //             if (depthTotal > 1) {
-            //                 draw(sortedNodes[i][j], sortedNodes[i][j], sortedNodes[i][j+1], depth, j, depthTotal);
-            //             } else {
-            //                 drawTree(sortedNodes[i][j], sortedNodes[i][j], sortedNodes[i][j], depth, j, depthTotal);
-            //             }
-            //         } else if (j == depthTotal - 1) {
-            //             drawTree(sortedNodes[i][j-1], sortedNodes[i][j], sortedNodes[i][j], depth, j, depthTotal);
-            //         } else {
-            //             drawTree(sortedNodes[i][j-1], sortedNodes[i][j], sortedNodes[i][j+1], depth, j, depthTotal);
-            //         }
-            //     }
-            // }
-        };
+        const scaleFullWidth = (depth: number): void => {
+            let leftX = sortedNodes[depth][0].bottomleft[0];
+            let rightX = sortedNodes[depth][sortedNodes[depth].length - 1].bottomright[0];
+            let width = Math.abs(leftX) + Math.abs(rightX);
+            for (let i = 0; i < sortedNodes[depth].length; i++) {
+                const node = sortedNodes[depth][i];
+                node.bottomleft[0] = ((node.bottomleft[0] + Math.abs(leftX)) / width) * 600 - 300;
+                node.bottomright[0] = ((node.bottomright[0] + Math.abs(leftX)) / width) * 600 - 300;
+            }
+
+        }
 
         const recursiveDraw = (tree: NodeSpaceReclaimingStack, selected: boolean = false): void => {
             // if (tree.selected) {
@@ -172,9 +180,11 @@ export class SpaceReclaimingStack implements Visualizer {
         }
 
         console.log("simpleCompute start");
-        simpleCompute(originalTree, 0);
-        console.log("recursiveDepthSort start");
         recursiveDepthSort(originalTree);
+        console.log("recursiveDepthSort start");
+        simpleCompute();//originalTree, 0);
+        console.log("scaleFullWidth start");
+        // scaleFullWidth();
         console.log("recursiveDraw start");
         recursiveDraw(originalTree, false);
         console.log("done");
