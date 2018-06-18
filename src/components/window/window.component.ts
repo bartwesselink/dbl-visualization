@@ -441,7 +441,7 @@ export class WindowComponent implements OnInit {
         } catch (error) {
             this.onError((<Error>error).message);
         }
-        
+
         this.gl.setGrid(true);
 
         this.setDarkmode(this.darkMode);
@@ -513,14 +513,26 @@ export class WindowComponent implements OnInit {
     /** @author Nico Klaassen */
     private getPalette(paletteString: string): Palette {
         switch (paletteString) {
-            case 'default':
-                return Palettes.default;
-            case 'alt':
-                return Palettes.alt;
+            case 'defaultBlue':
+                return Palettes.defaultBlue;
+            case 'redBlue':
+                return Palettes.redBlue;
             case 'greyScale':
                 return Palettes.greyScale;
+            case 'vaporWave':
+                return Palettes.vaporWave;
+            case 'malachite':
+                return Palettes.malachite;
+            case 'candy':
+                return Palettes.candy;
+            case 'goldenBlue':
+                return Palettes.goldenBlue;
+            case 'neon':
+                return Palettes.neon;
+            case 'purpleOrange':
+                return Palettes.purpleOrange;
         }
-        return Palettes.default; // Fallback
+        return Palettes.defaultBlue; // Fallback
     }
     /** @end-author Nico Klaassen */
 
