@@ -73,7 +73,8 @@ export class GeneralSettingsButtonComponent implements OnInit {
                         malachite: 'Malachite',
                         candy: 'Candy',
                         goldenBlue: 'Golden Blue',
-                        neon: 'Neon'}})
+                        neon: 'Neon',
+                        purpleOrange: 'Purple & Orange'}})
             .addToggleField('reversePalette', false, {label: 'Reverse palette colors'})
             /** @end-author Nico Klaassen */
             /** @author Jules Cornelissen */

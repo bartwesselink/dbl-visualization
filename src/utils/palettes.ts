@@ -30,8 +30,8 @@ export class Palettes {
         ]
     );
     static vaporWave = new Palette(
-        Color.fromHex('cbffe6'),
-        Color.fromHex('afe9ff'),
+        Color.fromHex('adffd7'),
+        Color.fromHex('99e2ff'),
         [
             Color.fromHex('bfb9ff'),
             Color.fromHex('ffcfea'),
@@ -66,12 +66,21 @@ export class Palettes {
         ]
     );
     static neon = new Palette(
-        Color.fromHex('00ff6b'),
         Color.fromHex('ff00db'),
+        Color.fromHex('00ff6b'),
         [
             Color.fromHex('00dfff'),
             Color.fromHex('fdff00'),
             Color.fromHex('7c00ff')
+        ]
+    );
+    static purpleOrange = new Palette(
+        Color.fromHex('8426ff'),
+        Color.fromHex('ff4d00'),
+        [
+            Color.fromHex('fef352'),
+            Color.fromHex('fc447c'),
+            Color.fromHex('44ff00')
         ]
     );
 }

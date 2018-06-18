@@ -514,6 +514,8 @@ export class WindowComponent implements OnInit {
                 return Palettes.goldenBlue;
             case 'neon':
                 return Palettes.neon;
+            case 'purpleOrange':
+                return Palettes.purpleOrange;
         }
         return Palettes.defaultBlue; // Fallback
     }
