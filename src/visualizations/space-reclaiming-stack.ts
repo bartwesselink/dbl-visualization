@@ -18,6 +18,13 @@ export class SpaceReclaimingStack implements Visualizer {
         const settings: any = input.settings;
 
         // define variables
+        let height = settings.height;
+        let width = settings.width;
+        let reclaimCoefficient = settings.reclaimCoefficient;
+
+        const levelHeight = height / originalTree.maxDepth;
+
+
         const defaultSize = 600;
         let colorA: number[] = [255 / 255, 153 / 255, 0, 1];
         let colorB: number[] = [51 / 255, 0, 255 / 255, 1];
@@ -86,19 +93,19 @@ export class SpaceReclaimingStack implements Visualizer {
                 // console.log("=-=-=-=-=-=-=");
                 console.log(depth);
                 const offset = 6; //width / (tree.parent.children.length - 1 ) * 2 * 0.025; // 0.1 = 10%
-                const segmentWidth = (600 - offset * (sortedNodes[depth].length - 1)) / sortedNodes[depth].length;
+                const segmentWidth = (width - offset * (sortedNodes[depth].length - 1)) / sortedNodes[depth].length;
                 // console.log("segwidth");
                 // console.log(segmentWidth);
                 let oldParent = sortedNodes[depth][0].parent;
                 let parent = null;
                 let differentParent = false;
-                let left = -300;
+                let left = - width / 2;
                 let right = left + segmentWidth;
                 for (let i = 0; i < sortedNodes[depth].length; i++) {
                     // console.log(left);
                     const tree = sortedNodes[depth][i];
-                    const topY = 300 - 15 * tree.depth;
-                    const bottomY = 300 - 15 * (tree.depth + 1);
+                    const topY = height / 2 - levelHeight * tree.depth;
+                    const bottomY = height / 2 - levelHeight * (tree.depth + 1);
                     // console.log(tree.parent);
                     if (tree.parent) {
                         parent = tree.parent;
@@ -138,16 +145,15 @@ export class SpaceReclaimingStack implements Visualizer {
                             tree.bottomright = [tree.parent.bottomright[0], bottomY];
                         }
                     } else { // Root case
-                        tree.topleft = [-300, topY];
-                        tree.topright = [300, topY];
-                        tree.bottomleft = [-300, bottomY];
-                        tree.bottomright = [300, bottomY];
+                        tree.topleft = [-width / 2, topY];
+                        tree.topright = [width / 2, topY];
+                        tree.bottomleft = [- width / 2, bottomY];
+                        tree.bottomright = [width / 2, bottomY];
                     }
                     left += segmentWidth + offset;
                     right += segmentWidth + offset;
                     oldParent = parent;
                 }
-                // scaleFullWidth(depth);
             }
         };
 
@@ -216,8 +222,9 @@ export class SpaceReclaimingStack implements Visualizer {
 
     public getForm(formFactory: FormFactory) {
         return formFactory.createFormBuilder()
-            .addToggleField('outline', true, {label: 'Draw outlines'})
-            .addSliderField('offset', 0, {label: 'Offset', min: 0, max: 25})
+            .addNumberField('height', 800, {label: 'Height'})
+            .addNumberField('width', 600, {label: 'Width'})
+            .addSliderField('reclaimCoefficient', 50, {label: "Reclaiming coefficient", min: 0, max: 100})
             // .addChoiceField('offsetType', 'relative', { label: 'Offset type', expanded: false, choices: { relative: 'relative', fixed: 'fixed' } })
             .getForm();
     }
