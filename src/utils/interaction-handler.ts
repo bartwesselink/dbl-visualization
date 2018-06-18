@@ -236,8 +236,8 @@ export class InteractionHandler {
                 y = options.y + options.height / 2;
             } else if (draw.type === DrawType.DRAW_CUSTOM_QUAD || draw.type === DrawType.FILL_CUSTOM_QUAD || draw.type === DrawType.FILL_LINED_CUSTOM_QUAD) {
                 const options: CustomQuadOptions = draw.options as CustomQuadOptions;
-                x = draw.options.x;
-                y = draw.options.y;
+                x = Math.min(draw.options.x1, draw.options.x4) + (Math.abs(Math.min(draw.options.x1, draw.options.x4) - Math.max(draw.options.x2, draw.options.x3))) / 2;
+                y = draw.options.y1 + (draw.options.y4 - draw.options.y1) / 2;
             } else {
                 x = draw.options.x;
                 y = draw.options.y;
@@ -332,6 +332,13 @@ export class InteractionHandler {
                         size = width;
                     }
 
+                    break;
+
+                case DrawType.FILL_LINED_ELLIPSOID:
+                case DrawType.DRAW_ELLIPSOID:
+                case DrawType.FILL_ELLIPSOID:
+                    size = (draw.options as CustomQuadOptions).y4 - (draw.options as CustomQuadOptions).y1;
+                    orientation = Orientation.WIDTH;
                     break;
             }
 
