@@ -9,7 +9,8 @@ import {OpenGL} from '../opengl/opengl';
 import {ShaderMode} from '../opengl/shaders/shaderMode';
 
 export class Sunburst implements Visualizer {
-    shapesPerNode: number = 1;
+    public requireAntiAliasing: boolean = false;
+    public shapesPerNode: number = 1;
 
     /** @author Bart Wesselink */
     public draw(input: VisualizerInput): Draw[] {
