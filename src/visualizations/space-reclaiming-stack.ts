@@ -164,7 +164,7 @@ export class SpaceReclaimingStack implements Visualizer {
     }
 
     public getThumbnailImage(): string | null {
-        return '/assets/images/visualization-simple-tree-map.png';
+        return '/assets/images/visualization-space-reclaiming-stack.png';
     }
 
     /** @author Roan Hofland */
