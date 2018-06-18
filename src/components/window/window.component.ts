@@ -102,6 +102,7 @@ export class WindowComponent implements OnInit {
 
             this.stateRedraw();
             this.interactionHandler.scaleToNode(this.gl, this.canvas, this.currentDraws, node, this.selectBus.interactionOptions);
+            this.viewCube.setZoomLevel(this.gl.getZoom());
         });
 
         /** @author Nico Klaassen & Jules Cornelissen*/
@@ -204,6 +205,7 @@ export class WindowComponent implements OnInit {
             case 'T':
                 this.gl.resetTransformations();
                 this.render();
+                this.viewCube.setZoomLevel(this.gl.getZoom());
                 break;
         }
     }
@@ -344,11 +346,11 @@ export class WindowComponent implements OnInit {
 
                         this.stopLoading();
                     }, 100);
-                    
+
                     if(this.visualizer.optimizeShaders){
                         this.visualizer.optimizeShaders(this.gl);
                     }
-                    
+
                     if(this.visualizer.updateColors){
                         if(!(this.visualizer instanceof OpenglDemoTree)){
                             draws = this.sort(draws);
@@ -440,7 +442,7 @@ export class WindowComponent implements OnInit {
             this.render();
         }
     }
-    
+
     private sort(draws: Draw[]): Draw[]{
         const arr = new Array(draws.length);
         var offset = this.tree.subTreeSize;
@@ -451,9 +453,9 @@ export class WindowComponent implements OnInit {
                 arr[draw.identifier] = draw;
             }
         }
-        return arr; 
+        return arr;
     }
-    
+
     private stateRedraw(): void {
         if(this.visualizer.updateColors){
             this.computeColors();
