@@ -16,7 +16,7 @@ import {InteractionOptions} from "../enums/interaction-options";
 export class InteractionHandler {
     private readonly ZOOM_FOCUS_FACTOR = 6;
 
-    public determineElement(tree: Node, draws: Draw[], coords: number[]): Node|null {
+    public determineElement(gl: OpenGL, tree: Node, draws: Draw[], coords: number[]): Node|null {
         const x: number = coords[0];
         const y: number = coords[1];
 
@@ -27,7 +27,7 @@ export class InteractionHandler {
         for (let i = draws.length - 1; i >= 0; i--) {
             const draw: Draw = draws[i];
 
-            if (this.withinDraw(draw, x, y)) {
+            if (draw != undefined && draw.identifier >= 0 && gl.isShapeVisible(draw.glid) && this.withinDraw(draw, x, y)) {
                 const node = this.findNodeByIdentifier(tree, draw.identifier);
 
                 return node;
@@ -268,7 +268,25 @@ export class InteractionHandler {
                 case DrawType.FILL_LINED_RING_SLICE:
                 case DrawType.DRAW_RING_SLICE:
                 case DrawType.FILL_RING_SLICE:
-                    size = (draw.options as RingSliceOptions).far;
+                    let ringSliceOptions = draw.options as RingSliceOptions;
+
+                    let startAngle = ringSliceOptions.start;
+                    let endAngle = ringSliceOptions.end;
+
+                    let radius = ringSliceOptions.far;
+                    let innerRadius = ringSliceOptions.near;
+                    let angleDifference = endAngle - startAngle;
+                    let halfAngle = angleDifference / 2 + startAngle;
+
+                    let startX = Math.cos(startAngle * (Math.PI / 180)) * radius;
+                    let startY = Math.sin(startAngle * (Math.PI / 180)) * radius;
+                    let endX = Math.cos(endAngle * (Math.PI / 180)) * radius;
+                    let endY = Math.sin(endAngle * (Math.PI / 180)) * radius;
+
+                    x = Math.cos(halfAngle * (Math.PI / 180)) * innerRadius;
+                    y = Math.sin(halfAngle * (Math.PI / 180)) * innerRadius;
+
+                    size = 2 * Math.PI * radius * (1 / 360) * angleDifference; // not entirely correct but gives a reasonable estimation
 
                     if (glWidth > glHeight) {
                         orientation = Orientation.HEIGHT;
@@ -308,6 +326,8 @@ export class InteractionHandler {
                 gl.scale(zoomFactor);
             }
         }
+
+        gl.render();
     }
 
     private normalizeAngle(angle: number) {

@@ -9,6 +9,7 @@ import {Node} from "./node";
 export interface NodeSpaceReclaimingStack extends Node {
     children: NodeSpaceReclaimingStack[];
     parent?: NodeSpaceReclaimingStack;
+    identifier: number;
     orientation?: number; // actually it is Orientation, but this cannot be imported.
     topleft?: number[];
     topright?: number[];

@@ -6,9 +6,12 @@ import {Draw} from '../interfaces/draw';
 import {VisualizerInput} from '../interfaces/visualizer-input';
 import {Palette} from "../models/palette";
 import {NodeSpaceReclaimingStack} from "../models/node-space-reclaiming-stack";
+import {OpenGL} from "../opengl/opengl";
 
 /** @author Nico Klaassen */
 export class SpaceReclaimingStack implements Visualizer {
+    shapesPerNode: number = 1;
+
     public draw(input: VisualizerInput): Draw[] {
         const originalTree = input.tree as NodeSpaceReclaimingStack;
         const draws: Draw[] = [];
@@ -94,8 +97,8 @@ export class SpaceReclaimingStack implements Visualizer {
                 for (let i = 0; i < sortedNodes[depth].length; i++) {
                     // console.log(left);
                     const tree = sortedNodes[depth][i];
-                    const topY = 300 - 5 * tree.depth;
-                    const bottomY = 300 - 5 * (tree.depth + 1);
+                    const topY = 300 - 15 * tree.depth;
+                    const bottomY = 300 - 15 * (tree.depth + 1);
                     // console.log(tree.parent);
                     if (tree.parent) {
                         parent = tree.parent;
@@ -175,11 +178,12 @@ export class SpaceReclaimingStack implements Visualizer {
 
             // Draw the bounds of the current node
             draws.push({ type: 23 /** FillCustomQuad **/,
+                         identifier: tree.identifier,
                          options: {x1: tree.bottomleft[0] , y1: tree.bottomleft[1],
                                    x2: tree.bottomright[0], y2: tree.bottomright[1],
                                    x3: tree.topright[0]   , y3: tree.topright[1],
-                                   x4: tree.topleft[0]    , y4: tree.topleft[1],
-                                   fillColor: [Math.random(), Math.random(), Math.random()]}});
+                                   x4: tree.topleft[0]    , y4: tree.topleft[1]}});
+
 
             for (let i = 0; i < tree.children.length; i++) {
                 recursiveDraw(tree.children[i], selected);
@@ -225,5 +229,23 @@ export class SpaceReclaimingStack implements Visualizer {
     public getThumbnailImage(): string | null {
         return '/assets/images/visualization-simple-tree-map.png';
     }
+
+    /** @author Roan Hofland */
+    public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void{
+        this.recolor(input.tree, input.palette, gl, draws, input.tree.selected);
+    }
+
+    private recolor(tree: Node, palette: Palette, gl: OpenGL, draws: Draw[], selected: boolean){
+        if (selected || tree.selected) {
+            selected = true;
+            gl.setColor(draws[tree.identifier].glid, palette.gradientColorMapSelected[tree.maxDepth][tree.depth]);
+        } else {
+            gl.setColor(draws[tree.identifier].glid, palette.gradientColorMap[tree.maxDepth][tree.depth]);
+        }
+        for(let child of tree.children){
+            this.recolor(child, palette, gl, draws, selected);
+        }
+    }
+    /** @end-author Roan Hofland */
 }
 /** @end-author Nico Klaassen */
