@@ -20,6 +20,10 @@
     padding: 0.3rem 0;
     border-bottom: 1px solid white;
     position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 0.5rem;
 }
 
 .data-selection-chevron {

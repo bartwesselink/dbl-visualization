@@ -21,6 +21,7 @@ import * as FileSaver from "file-saver";
 import {DatasetSelectionComponent} from '../components/dataset-selection/dataset-selection.component';
 import {TreeInput} from '../interfaces/tree-input';
 import {HelpButtonComponent} from '../components/help-button/help-button.component';
+import {SnackbarBus} from '../providers/snackbar-bus';
 
 @Component({
     selector: 'app-root',
@@ -47,7 +48,6 @@ export class AppComponent implements OnInit {
     @ViewChild(SidebarComponent) private sidebar: SidebarComponent;
     @ViewChild(DatasetSelectionComponent) private datasetSelection: DatasetSelectionComponent;
     @ViewChild(HelpButtonComponent) private help: HelpButtonComponent;
-    @ViewChild("snackbar") public snackbar: ElementRef;
     @ViewChild('appHolder') private appHolder: ElementRef;
     @ViewChild('resizer') private resizer: ElementRef;
     @ViewChild('holderSidebar') private holderSidebar: ElementRef;
@@ -64,7 +64,7 @@ export class AppComponent implements OnInit {
     // variables for dragging the column around
     public windowResizing: boolean = false;
 
-    constructor(private settingsBus: SettingsBus, private selectBus: SelectBus, private subtreeBus: SubtreeBus) {
+    constructor(private settingsBus: SettingsBus, private selectBus: SelectBus, private subtreeBus: SubtreeBus, private snackbarBus: SnackbarBus) {
         this.createVisualizers();
 
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
@@ -75,7 +75,11 @@ export class AppComponent implements OnInit {
 
                 if (settings.viewMode === ViewMode.SIDE_BY_SIDE) {
                     if (this.tabs.length > this.SIDE_BY_SIDE_MAX_WINDOWS) {
-                        this.snackbar.nativeElement.MaterialSnackbar.showSnackbar({message: 'Please close tabs, because for this view-mode there are only ' + this.SIDE_BY_SIDE_MAX_WINDOWS + ' windows allowed.'});
+                        this.snackbarBus.send({
+                            message: 'Please close tabs, because for this view-mode there are only ' + this.SIDE_BY_SIDE_MAX_WINDOWS + ' windows allowed.',
+                            duration: 10000,
+                            closeButton: true,
+                        });
 
                         return;
                     }
@@ -99,8 +103,8 @@ export class AppComponent implements OnInit {
     }
 
     public ngOnInit(): void {
-        this.parser = new NewickParser(this.snackbar);
-        this.exporter = new NewickExporter(this.snackbar);
+        this.parser = new NewickParser(this.snackbarBus);
+        this.exporter = new NewickExporter(this.snackbarBus);
     }
 
     /** @author Jordy Verhoeven */

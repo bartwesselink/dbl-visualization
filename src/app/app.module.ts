@@ -31,6 +31,8 @@ import {SearchComponent} from '../components/search/search.component';
 import {DatasetSelectionComponent} from "../components/dataset-selection/dataset-selection.component";
 import {DatasetStorageService} from "../providers/dataset-storage-service";
 import {TooltipDirective} from '../directives/tooltip/tooltip.directive';
+import {SnackbarComponent} from '../components/snackbar/snackbar.component';
+import {SnackbarBus} from '../providers/snackbar-bus';
 
 @NgModule({
     declarations: [
@@ -48,6 +50,7 @@ import {TooltipDirective} from '../directives/tooltip/tooltip.directive';
         GeneralSettingsButtonComponent,
         MdlDirective,
         TooltipDirective,
+        SnackbarComponent,
         WelcomePageComponent,
         LoaderComponent,
         TooltipComponent,
@@ -64,6 +67,7 @@ import {TooltipDirective} from '../directives/tooltip/tooltip.directive';
         FormFactory,
         WebWorkerService,
         WorkerManager,
+        SnackbarBus,
         SettingsBus,
         SelectBus,
         DatasetStorageService,

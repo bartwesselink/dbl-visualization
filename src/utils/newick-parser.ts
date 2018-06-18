@@ -1,5 +1,6 @@
 import {Node} from "../models/node";
 import {Newick} from 'newick';
+import {SnackbarBus} from '../providers/snackbar-bus';
 
 export class NewickParser {
     /** @author Jordy Verhoeven */
@@ -7,7 +8,7 @@ export class NewickParser {
     errorMsg = "Invalid Newick file.";
     successMsg = "Succefully parsed Newick file.";
 
-    constructor(private snackbar: any) {
+    constructor(private snackbarBus: SnackbarBus) {
     }
 
     public extractLines(data: string): string | null {
@@ -118,8 +119,12 @@ export class NewickParser {
         }
     };
 
-    private feedback(message: String): void {
-        this.snackbar.nativeElement.MaterialSnackbar.showSnackbar({message: message});
+    private feedback(message: string): void {
+        this.snackbarBus.send({
+            message: message,
+            duration: 10000,
+            closeButton: true,
+        });
     }
 
     /** @end-author Jordy Verhoeven */

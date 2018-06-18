@@ -26,6 +26,7 @@ import {Palettes} from "../../utils/palettes";
 import {VisualizerInput} from "../../interfaces/visualizer-input";
 import {GradientType} from "../../enums/gradient-type";
 import {ViewCubeComponent} from '../view-cube/view-cube.component';
+import {SnackbarBus} from '../../providers/snackbar-bus';
 
 @Component({
     selector: 'app-window',
@@ -35,7 +36,6 @@ export class WindowComponent implements OnInit {
     @ViewChild('canvas') private canvas: ElementRef;
     @ViewChild(ViewCubeComponent) private viewCube: ViewCubeComponent;
     @Input('tree') private tree: Node;
-    @Input('snackbar') private snackbar: any;
     @Input('visualizer') public visualizer: Visualizer;
     @Input('tab') public tab: Tab;
 
@@ -88,7 +88,7 @@ export class WindowComponent implements OnInit {
     private gradientType: GradientType = GradientType.RGBLinear;
     private invertHSV: boolean = false;
 
-    constructor(private formFactory: FormFactory, private workerManager: WorkerManager, private selectBus: SelectBus, private settingsBus: SettingsBus) {
+    constructor(private formFactory: FormFactory, private workerManager: WorkerManager, private selectBus: SelectBus, private settingsBus: SettingsBus, private snackbarBus: SnackbarBus) {
         this.interactionHandler = new InteractionHandler();
 
         this.selectBus.nodeSelected.subscribe((node: Node) => {
@@ -128,13 +128,10 @@ export class WindowComponent implements OnInit {
     // called from AppComponent to prevent multiple calls
     public checkGpu(): void {
         if (!this.gl.isDedicatedGPU()) {
-            this.snackbar.MaterialSnackbar.showSnackbar({
-                message: "You are using integrated graphics, this could diminish your experience.",
-                timeout: 1e8, // practically infinite
-                actionHandler: () => {
-                    this.snackbar.MaterialSnackbar.cleanup_();
-                }, // close on click
-                actionText: "CLOSE"
+            this.snackbarBus.send({
+                message: 'You are using integrated graphics, this could diminish your experience.',
+                duration: -1,
+                closeButton: true,
             });
         }
     }

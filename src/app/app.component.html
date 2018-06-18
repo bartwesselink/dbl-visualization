@@ -42,7 +42,7 @@
                                 </div>
                             </div>
 
-                            <app-window [tree]="tree" [visualizer]="tab.visualizer" [tab]="tab" (loading)="updateLoading($event)" (redrawAll)="redrawAllTabs()" [snackbar]="snackbar"></app-window>
+                            <app-window [tree]="tree" [visualizer]="tab.visualizer" [tab]="tab" (loading)="updateLoading($event)" (redrawAll)="redrawAllTabs()"></app-window>
                         </div>
                     </section>
                 </ng-container>
@@ -63,8 +63,5 @@
         </div>
     </div>
 
-    <div #snackbar class="mdl-js-snackbar mdl-snackbar" style="display: none;">
-        <div class="mdl-snackbar__text"></div>
-        <button class="mdl-snackbar__action" type="button"></button>
-    </div>
+    <app-snackbar></app-snackbar>
 </div>
