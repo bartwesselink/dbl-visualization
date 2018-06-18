@@ -11,6 +11,7 @@ import {OpenGL} from '../opengl/opengl';
 import {ElementRef} from '@angular/core';
 import {Matrix} from '../opengl/matrix';
 import {InteractionOptions} from "../enums/interaction-options";
+import {CustomQuadOptions} from "../interfaces/custom-quad-options";
 
 /** @author Bart Wesselink */
 export class InteractionHandler {
@@ -174,7 +175,29 @@ export class InteractionHandler {
             case DrawType.DRAW_CUSTOM_QUAD:
             case DrawType.FILL_CUSTOM_QUAD:
             case DrawType.FILL_LINED_CUSTOM_QUAD:
+                /** @author Nico Klaassen */
+                options = draw.options as CustomQuadOptions;
+                // First check if it is on the right height
+                if (options.y1 <= y && y <= options.y4) {
+                    // Then extract the coords
+                    const topleft = [options.x4, options.y4];
+                    const topright = [options.x3, options.y3];
+                    const bottomleft = [options.x1, options.y1];
+                    const bottomright = [options.x2, options.y2];
+                    const yRatio = Math.abs(topleft[1] - y) / Math.abs(topleft[1] - bottomleft[1]);
+                    const xMin = topleft[0] < bottomleft[0] ?
+                        Math.abs(topleft[0] - bottomleft[0]) * yRatio + topleft[0]:
+                        Math.abs(topleft[0] - bottomleft[0]) * (1 - yRatio) + bottomleft[0];
+                    const xMax = topleft[0] < bottomleft[0] ?
+                        Math.abs(topright[0] - bottomright[0]) * yRatio + topright[0]:
+                        Math.abs(topright[0] - bottomright[0]) * (1 - yRatio) + bottomright[0];
+                    if (xMin <= x && x <= xMax) {
+                        return true;
+                    }
+                }
+
                 return false;
+                /** @end-author Nico Klaassen */
         }
 
         return false;
@@ -205,7 +228,6 @@ export class InteractionHandler {
             gl.resetTranslation();
 
             let x, y;
-
             if (draw.type === DrawType.DRAW_AA_QUAD || draw.type === DrawType.FILL_AA_QUAD || draw.type === DrawType.FILL_LINED_AA_QUAD) {
                 const options: AaQuadOptions = draw.options as AaQuadOptions;
 
@@ -213,8 +235,9 @@ export class InteractionHandler {
                 x = options.x + options.width / 2;
                 y = options.y + options.height / 2;
             } else if (draw.type === DrawType.DRAW_CUSTOM_QUAD || draw.type === DrawType.FILL_CUSTOM_QUAD || draw.type === DrawType.FILL_LINED_CUSTOM_QUAD) {
-                x = draw.options.x1;
-                y = draw.options.y1;
+                const options: CustomQuadOptions = draw.options as CustomQuadOptions;
+                x = draw.options.x;
+                y = draw.options.y;
             } else {
                 x = draw.options.x;
                 y = draw.options.y;
