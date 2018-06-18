@@ -426,6 +426,8 @@ export class WindowComponent implements OnInit {
         } catch (error) {
             this.onError((<Error>error).message);
         }
+        
+        this.gl.setGrid(true);
 
         this.setDarkmode(this.darkMode);
 

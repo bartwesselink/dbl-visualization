@@ -61,6 +61,11 @@ export class OpenGL{
     public setSizeThresHold(pixels: number): void{
         this.sizethreshold = pixels;
     }
+    
+    //enables or disables the background grid
+    public setGrid(enabled: boolean): void{
+        this.shader.enableGrid(enabled);
+    }
 
     //optimises the given shader mode
     public optimizeFor(mode: ShaderMode): void {
@@ -373,9 +378,11 @@ export class OpenGL{
     public render(): void {
         var start = performance.now();
         this.clear();
-
+        
+        this.shader.drawGrid();
+        
         this.shader.prepareRenderPass();
-
+        
         this.drawBuffers(start);
     }
 
