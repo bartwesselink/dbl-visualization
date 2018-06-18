@@ -243,13 +243,11 @@ export class WindowComponent implements OnInit {
         
         if(this.gl.getZoom() >= this.ZOOM_WARNING && !this.warningShown){
             this.warningShown = true;
-            this.snackbar.MaterialSnackbar.showSnackbar({
+
+            this.snackbarBus.send({
                 message: "You've reached a zoom level where floating point rounding errors will start to accumulate. If things don't look right anymore reset the transformations using 'T'.",
-                timeout: 1e8,
-                actionHandler: () => {
-                    this.snackbar.MaterialSnackbar.cleanup_();
-                }, // close on click
-                actionText: "CLOSE"
+                duration: -1,
+                closeButton: true,
             });
         }
 
