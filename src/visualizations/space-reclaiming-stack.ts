@@ -80,34 +80,53 @@ export class SpaceReclaimingStack implements Visualizer {
 
         const simpleCompute = (): void => {//tree:NodeSpaceReclaimingStack, index: number): void => {
             for (let depth = 0; depth < sortedNodes.length; depth++) {
+                console.log("=-=-=-=-=-=-=");
+                console.log(depth);
+                const offset = 4; //width / (tree.parent.children.length - 1 ) * 2 * 0.025; // 0.1 = 10%
+                const segmentWidth = (600 - offset * (sortedNodes[depth].length - 1)) / sortedNodes[depth].length;
+                console.log("segwidth");
+                console.log(segmentWidth);
+                let oldParent = sortedNodes[depth][0].parent;
+                let parent = null;
+                let differentParent = false;
+                let left = -300;
+                let right = left + segmentWidth;
                 for (let i = 0; i < sortedNodes[depth].length; i++) {
+                    console.log(left);
                     const tree = sortedNodes[depth][i];
                     const topY = 300 - 15 * tree.depth;
                     const bottomY = 300 - 15 * (tree.depth + 1);
                     console.log(tree.parent);
                     if (tree.parent) {
+                        parent = tree.parent;
+                        // if (parent === oldParent || parent === null) {
+                        //     differentParent = false;
+                        // } else {
+                        //     differentParent = true;
+                            // left += offset;
+                            // right += offset;
+                        // }
                         if (tree.parent.children.length > 1) {
                             const width = Math.abs(tree.parent.bottomleft[0] - tree.parent.bottomright[0])
-                            const offset = 2; //width / (tree.parent.children.length - 1 ) * 2 * 0.025; // 0.1 = 10%
                             const index = calculateIndex(tree);
 
                             if (index == 0) {
                                 tree.topleft = tree.parent.bottomleft;
                                 tree.topright = [tree.parent.bottomleft[0] + width / tree.parent.children.length, topY];
-                                tree.bottomleft = [tree.topleft[0], bottomY];
-                                tree.bottomright = [tree.topright[0] - offset, bottomY];
+                                tree.bottomleft = [left, bottomY];
+                                tree.bottomright = [right, bottomY];
 
                             } else if (index < tree.parent.children.length - 1) {
                                 tree.topleft = [tree.parent.bottomleft[0] + width / tree.parent.children.length * index, topY];
                                 tree.topright = [tree.parent.bottomleft[0] + width / tree.parent.children.length * (index + 1), topY];
-                                tree.bottomleft = [tree.topleft[0] + offset, bottomY];
-                                tree.bottomright = [tree.topright[0] - offset, bottomY];
+                                tree.bottomleft = [left, bottomY];
+                                tree.bottomright = [right, bottomY];
 
                             } else {
                                 tree.topleft = [tree.parent.bottomleft[0] + width / tree.parent.children.length * index, tree.parent.bottomleft[1]];
                                 tree.topright = [tree.parent.bottomright[0], tree.parent.bottomright[1]];
-                                tree.bottomleft = [tree.topleft[0] + offset, bottomY];
-                                tree.bottomright = [tree.topright[0], bottomY];
+                                tree.bottomleft = [left, bottomY];
+                                tree.bottomright = [right, bottomY];
                             }
                         } else { // Only child
                             tree.topleft = tree.parent.bottomleft;
@@ -121,12 +140,11 @@ export class SpaceReclaimingStack implements Visualizer {
                         tree.bottomleft = [-300, bottomY];
                         tree.bottomright = [300, bottomY];
                     }
-
-                    // for (let i = 0; i < tree.children.length; i++) {
-                    //     simpleCompute(tree.children[i], i);
-                    // }
+                    left += segmentWidth + offset;
+                    right += segmentWidth + offset;
+                    oldParent = parent;
                 }
-                scaleFullWidth(depth);
+                // scaleFullWidth(depth);
             }
         };
 
