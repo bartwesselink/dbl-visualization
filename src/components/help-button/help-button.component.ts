@@ -52,7 +52,7 @@ export class HelpButtonComponent implements OnInit{
                     clickStart: true,
                 },
                 {
-                    intro: "For the tour we will be using the Phylviz dataset.",
+                    intro: "For the tour we will be using the Phyloviz dataset.",
                     element: ".data-selection-menu .dropdown",
                     execute: () => {
                         (document.querySelector(".data-selection-chevron") as HTMLElement).click(); // close menu
@@ -67,7 +67,7 @@ export class HelpButtonComponent implements OnInit{
                     }
                 },
                 {
-                    intro: "Here you can see the Phylviz dataset visualized with the Generalized Pythagoras Tree visualization.",
+                    intro: "Here you can see the Phyloviz dataset visualized with the Generalized Pythagoras Tree visualization.",
                 },
                 {
                     intro: "In the canvas you are able to move around using either the keyboard, the mouse or the navigation widget. You can also click on a node to select it and move to it."

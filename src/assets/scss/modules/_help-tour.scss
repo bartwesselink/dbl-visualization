@@ -47,6 +47,11 @@
     &:not(:last-of-type) {
         margin-right: 0.3rem;
     }
+
+    &:hover {
+        background: darken($color-primary, 6%) !important;
+        box-shadow: none;
+    }
 }
 
 .introjs-nextbutton {

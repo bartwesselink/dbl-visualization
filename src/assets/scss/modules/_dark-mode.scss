@@ -237,6 +237,15 @@ $color-dark-card-hover: darken(#2b334e, 8%);
         color: white !important;
     }
 
+    .introjs-button {
+        background: $color-dark-primary !important;
+
+        &:hover {
+            background: darken($color-dark-primary, 6%) !important;
+            box-shadow: none;
+        }
+    }
+
     .visualization-picker-dropdown {
         &::before {
             border-color: $color-dark-card transparent transparent transparent;
