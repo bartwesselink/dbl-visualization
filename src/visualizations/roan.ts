@@ -62,7 +62,7 @@ export class Roan implements Visualizer {
     
     public getForm(formFactory: FormFactory): Form {
         return formFactory.createFormBuilder()
-            .addToggleField('rim', false, {label: 'Draw rim'})
+            .addToggleField('rim', false, {label: 'Draw orbit'})
             .getForm();
     }
 
