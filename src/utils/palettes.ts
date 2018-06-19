@@ -21,7 +21,7 @@ export class Palettes {
         ]
     );
     static greyScale = new Palette(
-        Color.fromHex('0D0D0D'),
+        Color.fromHex('4D4D4D'),
         Color.fromHex('D9D9D9'),
         [
             Color.fromHex('595959'),

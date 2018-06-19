@@ -70,7 +70,7 @@ export class GeneralSettingsButtonComponent implements OnInit {
                         longRed: 'Min-max Red',
                         longGreen: 'Min-max Green',
                         longBlue: 'Min-max Blue',
-                        longGrey: 'Min-max Grey',
+                        longGrey: 'Min-max Greyscale',
                         redBlue: 'Red and Blue',
                         greyScale: 'Greyscale',
                         vaporWave: 'Vaporwave',

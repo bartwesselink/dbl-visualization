@@ -547,7 +547,7 @@ export class WindowComponent implements OnInit {
 
     private readSettings(settings: Settings, initialize: boolean): void {
         if (!settings.colorMode) {
-            this.palette = Palettes.greyScale;
+            this.palette = Palettes.longGrey;
         } else {
             this.palette = this.getPalette(settings.palette);
         }
