@@ -7,6 +7,7 @@ import {Draw} from '../interfaces/draw';
 import {VisualizerInput} from '../interfaces/visualizer-input';
 import {Node} from "../models/node";
 import {Palette} from "../models/palette";
+import {Form} from '../form/form';
 
 export class Roan implements Visualizer {
     public shapesPerNode: number = 1;
@@ -14,6 +15,7 @@ export class Roan implements Visualizer {
     public draw(input: VisualizerInput): Draw[] {
             const tree = input.tree;
             const draws = new Array();
+            const settings = input.settings;
             
             const compute = (parent: Node, cx: number, cy: number, rad: number): void => {
                 draws.push({ 
@@ -25,11 +27,27 @@ export class Roan implements Visualizer {
                         radius: rad
                     } 
                 });
-                if(parent.subTreeSize > 0){
-                    var dr = (2 * Math.PI) / parent.children.length;
+                if(parent.subTreeSize > 1){
+                    var dr;
+                    if(parent.subTreeSize = parent.children.length){
+                        dr = (2 * Math.PI) / parent.children.length;
+                    }else{
+                        dr = (2 * Math.PI) / parent.children.length;
+                    }
                     var r = 0;
                     rad /= 4;
                     var size = Math.min(rad, ((2 * Math.PI * rad * 6) / parent.children.length) / 4);
+                    if(settings.rim){
+                        draws.push({ 
+                            type: 11 /** DrawCircle **/, 
+                            linked: parent.identifier,
+                            options: { 
+                                x: cx, 
+                                y: cy, 
+                                radius: rad * 6
+                            } 
+                        });
+                    }
                     for(let child of parent.children){
                         compute(child, cx + rad * 6 * Math.cos(r), cy + rad * 6 * Math.sin(r), size);
                         r += dr;
@@ -42,8 +60,10 @@ export class Roan implements Visualizer {
             return draws;
     }
     
-    public getForm(formFactory: FormFactory) {
-        return null;
+    public getForm(formFactory: FormFactory): Form {
+        return formFactory.createFormBuilder()
+            .addToggleField('rim', false, {label: 'Draw rim'})
+            .getForm();
     }
 
     public getName(): string {
@@ -56,10 +76,19 @@ export class Roan implements Visualizer {
 
     public enableShaders(gl: OpenGL): void {
         gl.enableShaders(ShaderMode.FILL_CIRCLE);
+        gl.enableShaders(ShaderMode.DRAW_CIRCLE);
+    }
+    
+    public optimizeShaders(gl: OpenGL): void {
+        gl.optimizeFor(ShaderMode.DRAW_CIRCLE);
+        gl.optimizeFor(ShaderMode.FILL_CIRCLE);
     }
     
     public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void{
         this.recolor(input.tree, input.palette, gl, draws, input.tree.selected);
+        for(var i = input.tree.subTreeSize; i < draws.length; i++){
+            gl.copyColor(draws[draws[i].linked].glid, draws[i].glid);
+        }
     }
     
     private recolor(tree: Node, palette: Palette, gl: OpenGL, draws: Draw[], selected: boolean){
