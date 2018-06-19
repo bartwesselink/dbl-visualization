@@ -18,6 +18,7 @@ import {SelectBus} from "../providers/select-bus";
 import {BasicTree} from "../visualizations/basic-tree";
 import {IciclePlot} from "../visualizations/icicle-plot";
 import * as FileSaver from "file-saver";
+import {Galaxy} from "../visualizations/galaxy";
 
 declare var dialogPolyfill;
 
@@ -197,6 +198,7 @@ export class AppComponent implements OnInit {
             new BasicTree(),
             new Sunburst(),
             new IciclePlot(),
+            new Galaxy()
         ];
     }
 
