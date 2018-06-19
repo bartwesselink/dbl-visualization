@@ -10,7 +10,8 @@ import {Palette} from "../models/palette";
 
 /** @author Mathijs Boezer */
 export class BasicTree implements Visualizer {
-    shapesPerNode: number = 2;
+    public requireAntiAliasing: boolean = true;
+    public shapesPerNode: number = 2;
 
     public draw(input: VisualizerInput): Draw[] {
         const widthMultiplier = input.settings.width; // distance between nodes horizontally
