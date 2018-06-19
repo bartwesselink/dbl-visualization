@@ -247,32 +247,28 @@ export class OpenGL{
 
     //reset scale, rotation and translations
     public resetTransformations(): void {
-        this.rx = 1;
-        this.ry = 0;
-        this.dx = 0;
-        this.dy = 0;
-        this.rotation = 0;
-        this.factor = 1;
-        this.modelviewMatrix = Matrix.createMatrix();
+        this.resetZoom();
+        this.resetRotation();
+        this.resetTranslation();
+        this.modelviewMatrix = Matrix.createMatrix();//TODO remove
     }
 
     //reset all scalings
     public resetZoom(): void {
-        this.scale(1 / this.factor);
+        this.factor = 1.0;
     }
 
     //reset all rotations
     public resetRotation(): void {
-        this.rotate(-this.rotation);
-        this.rx = 1;
-        this.ry = 0;
+        this.rx = 1.0;
+        this.ry = 0.0;
+        this.rotation = 0.0;
     }
 
     //reset all translations
     public resetTranslation(): void {
-        Matrix.translateSelf(this.modelviewMatrix, [-this.dx, -this.dy, 0]);
-        this.dx = 0;
-        this.dy = 0;
+        this.dx = 0.0;
+        this.dy = 0.0;
     }
 
     //rotate the model view by the given number of degrees
@@ -377,6 +373,13 @@ export class OpenGL{
     //render the OpenGL scene
     public render(): void {
         var start = performance.now();
+        
+        console.log("real", this.modelviewMatrix.toString());
+        Matrix.multiply4(this.modelviewMatrix, Matrix.create2DScalingMatrix(this.factor), Matrix.create2DRotationMatrix4(this.rotation));
+        console.log("a", this.modelviewMatrix.toString());
+        Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]);
+        console.log("b", this.modelviewMatrix.toString());
+        
         this.clear();
         
         this.shader.drawGrid();
