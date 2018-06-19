@@ -17,8 +17,8 @@ export class DatasetStorageService {
     private userDatasetsStorageKey = 'userDatasets';
 
     public defaultDatasets: DatasetFile[] = [
-        {title: 'NCBI Dataset', path: this.defaultDataPath + 'ncbi-taxonomy.tre'},
         {title: 'Phylviz', path: this.defaultDataPath + 'newick_example_phyloviz.nwk'},
+        {title: 'NCBI Dataset', path: this.defaultDataPath + 'ncbi-taxonomy.tre'},
     ]; // list of all example/default datasets that user can pick from with their paths
 
     public userDatasets: DatasetFile[] = [];
