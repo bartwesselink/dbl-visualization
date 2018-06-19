@@ -4,8 +4,6 @@ import { FormFactory } from '../form/form-factory';
 import { Form } from "../form/form";
 import { Draw } from '../interfaces/draw';
 import { VisualizerInput } from '../interfaces/visualizer-input';
-import { ShaderMode } from "../opengl/shaders/shaderMode";
-import { OpenGL } from "../opengl/opengl";
 
 export class Circles implements Visualizer {
     /** @author Jordy Verhoeven */
@@ -91,9 +89,9 @@ export class Circles implements Visualizer {
                     //checks whether the next linear function should be used and adjusts h at the appropriate
                     //the displacement over the y axis means y should be subtracted from the position because the if statement
                     //checks if y is 0 or -2*radius of the current node, this calculation causes floating point errors on larger
-                    //datasets 
+                    //datasets
 
-                    if (((newY - y).toFixed(12) == (0).toFixed(12) && (pos == 0 || pos == 1 || pos == 3)) || ((newY - y).toFixed(12) == ((-2 * radius).toFixed(12)) && (pos == 2 || pos == 4))) {
+                    if ((newY - y < 0.00001 && (pos == 0 || pos == 1 || pos == 3)) || ((newY - y) > (-2 * radius) - 0.00001 && (newY - y < (-2 * radius) + 0.00001 && (pos == 2 || pos == 4)))) {
 
                         if (pos == 4) {
 
@@ -149,7 +147,7 @@ export class Circles implements Visualizer {
 
             }
 
-        }
+        };
 
         //draws the root
 
