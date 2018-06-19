@@ -17,7 +17,7 @@ export class Galaxy implements Visualizer {
             const draws = new Array();
             const settings = input.settings;
             
-            const compute = (parent: Node, cx: number, cy: number, rad: number): void => {
+            const compute = (parent: Node, cx: number, cy: number, rad: number, offset: number): void => {
                 draws.push({ 
                     type: 10 /** FillCircle **/, 
                     identifier: parent.identifier,
@@ -28,15 +28,15 @@ export class Galaxy implements Visualizer {
                     } 
                 });
                 if(parent.subTreeSize > 1){
-                    var dr;
-                    if(parent.subTreeSize = parent.children.length){
-                        dr = (2 * Math.PI) / parent.children.length;
-                    }else{
-                        dr = (2 * Math.PI) / parent.children.length;
-                    }
-                    var r = 0;
+                    var dr = (2 * Math.PI) / parent.children.length;
+                    var r = offset;
                     rad /= 4;
-                    var size = Math.min(rad, ((2 * Math.PI * rad * 6) / parent.children.length) / 4);
+                    var size;
+                    if(parent.subTreeSize - 1 == parent.children.length){
+                        size = Math.min(rad, ((2 * Math.PI * rad * 6) / parent.children.length) / 2);
+                    }else{
+                        size = Math.min(rad, ((2 * Math.PI * rad * 6) / parent.children.length) / 5);
+                    }
                     if(settings.rim){
                         draws.push({ 
                             type: 11 /** DrawCircle **/, 
@@ -49,20 +49,20 @@ export class Galaxy implements Visualizer {
                         });
                     }
                     for(let child of parent.children){
-                        compute(child, cx + rad * 6 * Math.cos(r), cy + rad * 6 * Math.sin(r), size);
+                        compute(child, cx + rad * 6 * Math.cos(r), cy + rad * 6 * Math.sin(r), size, r);
                         r += dr;
                     }
                 }
             };
             
-            compute(tree, 0, 0, 400);
+            compute(tree, 0, 0, 400, 0);
             
             return draws;
     }
     
     public getForm(formFactory: FormFactory): Form {
         return formFactory.createFormBuilder()
-            .addToggleField('rim', true, {label: 'Draw orbit'})
+            .addToggleField('rim', true, {label: 'Show orbit'})
             .getForm();
     }
 
