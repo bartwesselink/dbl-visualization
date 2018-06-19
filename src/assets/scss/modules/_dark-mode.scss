@@ -176,7 +176,7 @@ $color-dark-card-hover: darken(#2b334e, 8%);
         }
 
         &::before, &::after {
-            border-color: $color-dark-card transparent transparent transparent;
+            border-color: $color-dark-background transparent transparent transparent;
         }
     }
 
@@ -240,6 +240,16 @@ $color-dark-card-hover: darken(#2b334e, 8%);
     .visualization-picker-dropdown {
         &::before {
             border-color: $color-dark-card transparent transparent transparent;
+        }
+    }
+
+    select {
+        option {
+            background: $color-dark-background;
+
+            &:hover {
+                background: $color-dark-primary;
+            }
         }
     }
 }

@@ -89,18 +89,22 @@
   height: 200%;
 }
 
-.welcome-page-buttons {
-  width: 100%;
-  max-width: 20rem;
-  position: relative;
+.welcome-page-buttons-content {
   max-height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  margin-top: -3rem;
+  overflow: visible;
 
   > * {
     width: 100%;
   }
+}
+
+.welcome-page-buttons {
+  width: 100%;
+  max-width: 20rem;
+  position: relative;
+  margin-top: -3rem;
+  height: 100%;
+  padding: 1rem 0;
 
   button {
     margin: 1rem 0;

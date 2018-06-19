@@ -17,9 +17,11 @@
         <canvas class="welcome-page-animation-canvas" #animationCanvas></canvas>
 
         <div class="welcome-page-buttons">
-            <button class="button" (click)="navigateToHelp()">Start tour</button>
-            <app-upload-tool (newContent)="outputContent($event)" type="home"></app-upload-tool>
-            <button class="button" (click)="navigateToDatasets()">Choose existing data</button>
+            <div class="welcome-page-buttons-content">
+                <button class="button" (click)="navigateToHelp()">Start tour</button>
+                <app-upload-tool (newContent)="outputContent($event)" type="home"></app-upload-tool>
+                <button class="button" (click)="navigateToDatasets()">Choose existing data</button>
+            </div>
         </div>
     </div>
 </div>
