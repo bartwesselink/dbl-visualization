@@ -83,4 +83,24 @@ export class Palettes {
             Color.fromHex('44ff00')
         ]
     );
+    static longRed = new Palette(
+        Color.fromHex('FF0000'),
+        Color.fromHex('FFF2F2'),
+        []
+    );
+    static longGreen = new Palette(
+        Color.fromHex('00FF00'),
+        Color.fromHex('F2FFF2'),
+        []
+    );
+    static longBlue = new Palette(
+        Color.fromHex('0000FF'),
+        Color.fromHex('F2F2FF'),
+        []
+    );
+    static longGrey = new Palette(
+        Color.fromHex('000000'),
+        Color.fromHex('F2F2F2'),
+        []
+    );
 }

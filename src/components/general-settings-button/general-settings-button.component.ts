@@ -66,7 +66,11 @@ export class GeneralSettingsButtonComponent implements OnInit {
             /** @author Nico Klaassen */
             .addToggleField('colorMode', true, {label: 'Color mode'})
             .addChoiceField('palette', 'defaultBlue', {label: 'Color palette', expanded: false, choices:
-                    {defaultBlue: 'NGL (blue)',
+                    {defaultBlue: 'NGL Blue',
+                        longRed: 'Min-max Red',
+                        longGreen: 'Min-max Green',
+                        longBlue: 'Min-max Blue',
+                        longGrey: 'Min-max Grey',
                         redBlue: 'Red and Blue',
                         greyScale: 'Greyscale',
                         vaporWave: 'Vaporwave',
