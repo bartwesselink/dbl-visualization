@@ -10,6 +10,7 @@ import {Palette} from "../models/palette";
 import {Form} from '../form/form';
 
 export class Galaxy implements Visualizer {
+    public requireAntiAliasing: boolean= false;
     public shapesPerNode: number = 1;
     
     public draw(input: VisualizerInput): Draw[] {
