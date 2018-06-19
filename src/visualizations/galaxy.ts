@@ -9,7 +9,7 @@ import {Node} from "../models/node";
 import {Palette} from "../models/palette";
 import {Form} from '../form/form';
 
-export class Roan implements Visualizer {
+export class Galaxy implements Visualizer {
     public shapesPerNode: number = 1;
     
     public draw(input: VisualizerInput): Draw[] {
@@ -62,12 +62,12 @@ export class Roan implements Visualizer {
     
     public getForm(formFactory: FormFactory): Form {
         return formFactory.createFormBuilder()
-            .addToggleField('rim', false, {label: 'Draw orbit'})
+            .addToggleField('rim', true, {label: 'Draw orbit'})
             .getForm();
     }
 
     public getName(): string {
-        return 'Roan';
+        return 'Galaxy';
     }
 
     public getThumbnailImage(): string | null {
