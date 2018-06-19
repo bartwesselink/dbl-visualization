@@ -260,8 +260,6 @@ export class OpenGL{
 
     //reset all rotations
     public resetRotation(): void {
-        this.rx = 1.0;
-        this.ry = 0.0;
         this.rotation = 0.0;
     }
 
@@ -273,14 +271,7 @@ export class OpenGL{
 
     //rotate the model view by the given number of degrees
     public rotate(rotation: number): void {
-        Matrix.translateSelf(this.modelviewMatrix, [-this.dx, -this.dy, 0]);
-        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(this.HALFHEIGHT, this.HALFWIDTH));
-        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DRotationMatrix4(rotation));
-        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(1 / this.HALFHEIGHT, 1 / this.HALFWIDTH));
-        Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]);
         this.rotation += rotation;
-        this.rx = Math.cos(-this.rotation * Matrix.oneDeg);
-        this.ry = Math.sin(-this.rotation * Matrix.oneDeg);
     }
 
     //translates the model view by the given distance
@@ -297,27 +288,18 @@ export class OpenGL{
             w = (this.height / this.HEIGHT) * this.WIDTH;
             h = this.height;
         }
-        dx = ((dx / w) * 2) / this.factor;
-        dy = ((-dy / h) * 2) / this.factor;
-        Matrix.translateSelf(this.modelviewMatrix, [dx, dy, 0]);
-        this.dx += dx;
-        this.dy += dy;
+        this.dx += ((dx / w) * 2) / this.factor;
+        this.dy += ((-dy / h) * 2) / this.factor;
     }
 
     //translates the model view by the given distance
     public glTranslate(dx: number, dy: number): void {
-        dx /= this.HALFWIDTH;
-        dy /= this.HALFHEIGHT;
-        Matrix.translateSelf(this.modelviewMatrix, [dx, dy, 0]);
-        this.dx += dx;
-        this.dy += dy;
+        this.dx += dx / this.HALFWIDTH;
+        this.dy += dy / this.HALFHEIGHT;
     }
 
     //scales the model view by the given factor
     public scale(factor: number): void {
-        Matrix.translateSelf(this.modelviewMatrix, [-this.dx, -this.dy, 0]);
-        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DScalingMatrix(factor));
-        Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]);
         this.factor *= factor;
     }
 
@@ -378,6 +360,8 @@ export class OpenGL{
         Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(1.0 / this.HALFHEIGHT, 1.0 / this.HALFWIDTH));  
         Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DScalingMatrix(this.factor));
         Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]);
+        this.rx = Math.cos(-this.rotation * Matrix.oneDeg);
+        this.ry = Math.sin(-this.rotation * Matrix.oneDeg);
         
         this.clear();
         
