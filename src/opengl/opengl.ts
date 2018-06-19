@@ -374,13 +374,10 @@ export class OpenGL{
     public render(): void {
         var start = performance.now();
         
-        console.log("real", this.modelviewMatrix.toString());
         Matrix.multiply4(this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(this.HALFHEIGHT, this.HALFWIDTH), Matrix.create2DRotationMatrix4(this.rotation));
-        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(1 / this.HALFHEIGHT, 1 / this.HALFWIDTH));  
+        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(1.0 / this.HALFHEIGHT, 1.0 / this.HALFWIDTH));  
         Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DScalingMatrix(this.factor));
-        console.log("a", this.modelviewMatrix.toString());
         Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]);
-        console.log("b", this.modelviewMatrix.toString());
         
         this.clear();
         
