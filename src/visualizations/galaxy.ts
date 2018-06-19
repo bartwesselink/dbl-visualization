@@ -72,7 +72,7 @@ export class Galaxy implements Visualizer {
     }
 
     public getThumbnailImage(): string | null {
-        return null;
+        return '/assets/images/visualization-galaxy.png';
     }
 
     public enableShaders(gl: OpenGL): void {
