@@ -39,28 +39,6 @@ export class SimpleTreeMap implements Visualizer {
         }
 
         // define functions
-
-        /**
-         * Function which checks if no node is selected within the given tree.
-         *
-         * @param {Node} tree Tree to recurse upon
-         */
-        const hasSelected = (tree: NodeTreeMap): boolean => {
-            let hasSomeSelectedNode = tree.selected;
-            if (hasSomeSelectedNode) {
-                return true;
-            }
-
-            for (let child of tree.children) {
-               hasSomeSelectedNode = hasSelected(child);
-               if (hasSomeSelectedNode) {
-                   return true;
-               }
-            }
-
-            return false;
-        };
-
         /**
          * Function which augments the tree data structure and adds in an orientation.
          *
@@ -85,7 +63,7 @@ export class SimpleTreeMap implements Visualizer {
          * @param {boolean} internalNode Whether we are recursing on internal nodes, or on the root of the initial input tree
          * @param {boolean} selected Whether one of its parent was selected
          */
-        const drawTree = (tree: NodeTreeMap, bounds: Bounds, internalNode: boolean, selected: boolean = false): void => {
+        const drawTree = (tree: NodeTreeMap, bounds: Bounds, internalNode: boolean): void => {
             let doneSize = 0; // How many subtree-nodes are already taking up space within the bounds.
 
             const relativeOffset = tree.orientation === Orientation.HORIZONTAL ?
@@ -168,7 +146,7 @@ export class SimpleTreeMap implements Visualizer {
                 childNode.height = Math.abs(childBounds.top - childBounds.bottom);
                 doneSize = doneSize + childNode.subTreeSize; // Add the # of nodes in the subtree rooted at the childnode to doneSize.
 
-                drawTree(childNode, childBounds, true, selected);
+                drawTree(childNode, childBounds, true);
             }
         };
 
@@ -181,7 +159,7 @@ export class SimpleTreeMap implements Visualizer {
         tree.width = defaultSize;
         tree.height = defaultSize;
 
-        drawTree(tree, rootBounds, false, (tree.selected || !hasSelected(tree)));
+        drawTree(tree, rootBounds, false);
 
         return draws;
     }
@@ -206,12 +184,33 @@ export class SimpleTreeMap implements Visualizer {
     public enableShaders(gl: OpenGL): void {
         gl.setSizeThresHold(5);
     }
+
+    /**
+     * Function which checks if no node is selected within the given tree.
+     *
+     * @param {Node} tree Tree to recurse upon
+     */
+    private hasSelected (tree: NodeTreeMap): boolean {
+        let hasSomeSelectedNode = tree.selected;
+        if (hasSomeSelectedNode) {
+            return true;
+        }
+
+        for (let child of tree.children) {
+            hasSomeSelectedNode = this.hasSelected(child);
+            if (hasSomeSelectedNode) {
+                return true;
+            }
+        }
+
+        return false;
+    };
     /** @end-author Nico Klaassen */
     /** @author Roan Hofland */
     public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void{
-        this.recolor(input.tree, input.palette, input.settings.outline, gl, draws, input.tree.selected);
+        this.recolor(input.tree, input.palette, input.settings.outline, gl, draws, input.tree.selected || !this.hasSelected(input.tree));
     }
-    
+
     private recolor(tree: Node, palette: Palette, outline: boolean, gl: OpenGL, draws: Draw[], selected: boolean){
         if (selected || tree.selected) {
             selected = true;
