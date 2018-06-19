@@ -9,9 +9,9 @@ import {Palette} from "../models/palette";
 import {OpenGL} from "../opengl/opengl";
 
 /** @author Nico Klaassen */
-
 export class SimpleTreeMap implements Visualizer {
-    shapesPerNode: number = 1;
+    public requireAntiAliasing: boolean = true;
+    public shapesPerNode: number = 1;
 
     public draw(input: VisualizerInput): Draw[] {
         const originalTree = input.tree;

@@ -75,6 +75,8 @@ export class WindowComponent implements OnInit {
     private readonly DEFAULT_DR = 1;
     private readonly DEFAULT_DT = 5;
     private readonly DEFAULT_DS = 0.1;
+    private readonly ZOOM_WARNING = Math.pow(2.0, 15.0);
+    private warningShown: boolean = false;
     private darkMode: boolean;
 
     private currentDraws: Draw[];
@@ -100,8 +102,10 @@ export class WindowComponent implements OnInit {
             this.tree.selectedNode = node;
             node.selected = true;
 
-            this.stateRedraw();
             this.interactionHandler.scaleToNode(this.gl, this.canvas, this.currentDraws, node, this.selectBus.interactionOptions);
+            this.stateRedraw();
+
+            this.viewCube.setZoomLevel(this.gl.getZoom());
         });
 
         /** @author Nico Klaassen & Jules Cornelissen*/
@@ -204,6 +208,7 @@ export class WindowComponent implements OnInit {
             case 'T':
                 this.gl.resetTransformations();
                 this.render();
+                this.viewCube.setZoomLevel(this.gl.getZoom());
                 break;
         }
     }
@@ -228,7 +233,7 @@ export class WindowComponent implements OnInit {
 
         // check if the current move was a drag, or if it was just a click
         if (!this.dragging) {
-            const node: Node = this.interactionHandler.determineElement(this.tree, this.currentDraws, coords);
+            const node: Node = this.interactionHandler.determineElement(this.gl, this.tree, this.currentDraws, coords);
             if (node !== null) {
                 this.selectBus.selectNode(node);
             }
@@ -238,6 +243,18 @@ export class WindowComponent implements OnInit {
     private scaleView(value: number) {
         this.gl.scale(value);
         this.render();
+        
+        if(this.gl.getZoom() >= this.ZOOM_WARNING && !this.warningShown){
+            this.warningShown = true;
+            this.snackbar.MaterialSnackbar.showSnackbar({
+                message: "You've reached a zoom level where floating point rounding errors will start to accumulate. If things don't look right anymore reset the transformations using 'T'.",
+                timeout: 1e8,
+                actionHandler: () => {
+                    this.snackbar.MaterialSnackbar.cleanup_();
+                }, // close on click
+                actionText: "CLOSE"
+            });
+        }
 
         this.viewCube.setZoomLevel(this.gl.getZoom());
     }
@@ -267,7 +284,7 @@ export class WindowComponent implements OnInit {
         } else if (this.tree != null) {
             var coords = this.gl.transformPoint(event.layerX, event.layerY);
 
-            const node: Node = this.interactionHandler.determineElement(this.tree, this.currentDraws, coords);
+            const node: Node = this.interactionHandler.determineElement(this.gl, this.tree, this.currentDraws, coords);
             if (node != null) {
                 if (this.lastTooltipNode !== node) {
                     this.tooltipLabel = node.label;
@@ -344,11 +361,11 @@ export class WindowComponent implements OnInit {
 
                         this.stopLoading();
                     }, 100);
-                    
+
                     if(this.visualizer.optimizeShaders){
                         this.visualizer.optimizeShaders(this.gl);
                     }
-                    
+
                     if(this.visualizer.updateColors){
                         if(!(this.visualizer instanceof OpenglDemoTree)){
                             draws = this.sort(draws);
@@ -408,10 +425,11 @@ export class WindowComponent implements OnInit {
 
     //initialise OpenGL
     private init(): void {
-        var gl: WebGLRenderingContext = this.canvas.nativeElement.getContext('webgl', {
+        var gl: WebGLRenderingContext = this.canvas.nativeElement.getContext('webgl2', {
             preserveDrawingBuffer: true,
             depth: false,
-            alpha: false
+            alpha: false,
+            antialias: this.visualizer.requireAntiAliasing
         });
 
         if (!gl) {
@@ -424,6 +442,8 @@ export class WindowComponent implements OnInit {
         } catch (error) {
             this.onError((<Error>error).message);
         }
+
+        this.gl.setGrid(true);
 
         this.setDarkmode(this.darkMode);
 
@@ -440,7 +460,7 @@ export class WindowComponent implements OnInit {
             this.render();
         }
     }
-    
+
     private sort(draws: Draw[]): Draw[]{
         const arr = new Array(draws.length);
         var offset = this.tree.subTreeSize;
@@ -451,9 +471,9 @@ export class WindowComponent implements OnInit {
                 arr[draw.identifier] = draw;
             }
         }
-        return arr; 
+        return arr;
     }
-    
+
     private stateRedraw(): void {
         if(this.visualizer.updateColors){
             this.computeColors();
@@ -494,14 +514,26 @@ export class WindowComponent implements OnInit {
     /** @author Nico Klaassen */
     private getPalette(paletteString: string): Palette {
         switch (paletteString) {
-            case 'default':
-                return Palettes.default;
-            case 'alt':
-                return Palettes.alt;
+            case 'defaultBlue':
+                return Palettes.defaultBlue;
+            case 'redBlue':
+                return Palettes.redBlue;
             case 'greyScale':
                 return Palettes.greyScale;
+            case 'vaporWave':
+                return Palettes.vaporWave;
+            case 'malachite':
+                return Palettes.malachite;
+            case 'candy':
+                return Palettes.candy;
+            case 'goldenBlue':
+                return Palettes.goldenBlue;
+            case 'neon':
+                return Palettes.neon;
+            case 'purpleOrange':
+                return Palettes.purpleOrange;
         }
-        return Palettes.default; // Fallback
+        return Palettes.defaultBlue; // Fallback
     }
     /** @end-author Nico Klaassen */
 
