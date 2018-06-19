@@ -65,7 +65,16 @@ export class GeneralSettingsButtonComponent implements OnInit {
             })
             /** @author Nico Klaassen */
             .addToggleField('colorMode', true, {label: 'Color mode'})
-            .addChoiceField('palette', 'default', {label: 'Color palette', expanded: false, choices: {default: 'default', alt: 'alt', greyScale: 'greyScale'}})
+            .addChoiceField('palette', 'defaultBlue', {label: 'Color palette', expanded: false, choices:
+                    {defaultBlue: 'NGL (blue)',
+                        redBlue: 'Red and Blue',
+                        greyScale: 'Greyscale',
+                        vaporWave: 'Vaporwave',
+                        malachite: 'Malachite',
+                        candy: 'Candy',
+                        goldenBlue: 'Golden Blue',
+                        neon: 'Neon',
+                        purpleOrange: 'Purple & Orange'}})
             .addToggleField('reversePalette', false, {label: 'Reverse palette colors'})
             /** @end-author Nico Klaassen */
             /** @author Jules Cornelissen */
