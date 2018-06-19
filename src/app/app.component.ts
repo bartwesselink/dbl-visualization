@@ -22,6 +22,7 @@ import {DatasetSelectionComponent} from '../components/dataset-selection/dataset
 import {TreeInput} from '../interfaces/tree-input';
 import {HelpButtonComponent} from '../components/help-button/help-button.component';
 import {SnackbarBus} from '../providers/snackbar-bus';
+import {Galaxy} from "../visualizations/galaxy";
 
 @Component({
     selector: 'app-root',
@@ -214,6 +215,7 @@ export class AppComponent implements OnInit {
             new BasicTree(),
             new Sunburst(),
             new IciclePlot(),
+            new Galaxy()
         ];
     }
 
