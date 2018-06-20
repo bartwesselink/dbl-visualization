@@ -104,3 +104,4 @@ export class Palettes {
         []
     );
 }
+
