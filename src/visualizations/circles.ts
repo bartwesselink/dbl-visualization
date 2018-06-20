@@ -1,11 +1,12 @@
-import { Visualizer } from '../interfaces/visualizer';
-import { Node } from '../models/node';
-import { Form } from '../form/form';
-import { FormFactory } from '../form/form-factory';
-import { Draw } from '../interfaces/draw';
-import { VisualizerInput } from '../interfaces/visualizer-input';
-import { Palette } from "../models/palette";
-import { OpenGL } from "../opengl/opengl";
+import {Visualizer} from '../interfaces/visualizer';
+import {Node} from '../models/node';
+import {FormFactory} from '../form/form-factory';
+import {Form} from "../form/form";
+import {Draw} from '../interfaces/draw';
+import {VisualizerInput} from '../interfaces/visualizer-input';
+import {ShaderMode} from "../opengl/shaders/shaderMode";
+import {OpenGL} from "../opengl/opengl";
+import {Palette} from "../models/palette";
 
 export class Circles implements Visualizer {
     /** @author Jordy Verhoeven */
@@ -212,6 +213,10 @@ export class Circles implements Visualizer {
 
     public getThumbnailImage(): string | null {
         return null;
+    }
+
+    public enableShaders(gl: OpenGL): void {
+        gl.enableShaders(ShaderMode.LINED_CIRCLE);
     }
 
     public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void {
