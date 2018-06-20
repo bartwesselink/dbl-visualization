@@ -6,18 +6,17 @@ import {FormFactory} from '../form/form-factory';
 import {VisualizerInput} from '../interfaces/visualizer-input';
 import {Draw} from '../interfaces/draw';
 import {Palette} from "../models/palette";
-import { OpenGL } from "../opengl/opengl";
+import {OpenGL} from "../opengl/opengl";
 
 /** @author Nico Klaassen */
-
 export class SimpleTreeMap implements Visualizer {
-    shapesPerNode: number = 1;
+    public requireAntiAliasing: boolean = true;
+    public shapesPerNode: number = 1;
 
     public draw(input: VisualizerInput): Draw[] {
         const originalTree = input.tree;
         const draws: Draw[] = [];
         const settings: any = input.settings;
-
 
         // define variables
         const defaultSize = 600;
@@ -38,7 +37,6 @@ export class SimpleTreeMap implements Visualizer {
         }
 
         // define functions
-
         /**
          * Function which augments the tree data structure and adds in an orientation.
          *
@@ -56,91 +54,94 @@ export class SimpleTreeMap implements Visualizer {
             }
         };
 
-        /** setBounds calculates the new and nested bounding-box (bounds) for a particular child-node and stores it on the
-         * node itself.
-         *
-         * @param {Node} tree The (sub)tree for which to calculate bounds
-         * @param {Bounds} parentBounds The bounding-box of the parent node
-         * @param {number} doneSize How many descendants of the parent node are already accounted for by other siblings.
-         * @param {boolean} last Whether this is the last of the children
-         * @param {number} index The index of the child within the array containing its siblings (on the parent node)
-         * @returns {Bounds} New bounding-box with the correct position and offset such that it is nested within parentBounds
-         */
-        const setBounds = (tree: NodeTreeMap, parentBounds: Bounds, doneSize: number, last: boolean, index: number): Bounds => {
-            // Compute the new bounds which are nested within the bounds of the parent
-            if (tree.parent.orientation === Orientation.HORIZONTAL) {
-                const relativeOffset = Math.min(tree.parent.width / 100 * offset / (tree.parent.children.length + 1), tree.parent.height / 100 * offset / (tree.parent.children.length + 1));
-                const freeSpace = tree.parent.width - (tree.parent.children.length + 1) * relativeOffset;
-                return {
-                    left: (index == 0) ?
-                        parentBounds.left + relativeOffset :
-                        parentBounds.left + relativeOffset * (index + 1) + (freeSpace * doneSize / (tree.parent.subTreeSize - 1)),
-                    right: (last) ?
-                        parentBounds.left + relativeOffset * (index + 1) + freeSpace :
-                        parentBounds.left + relativeOffset * (index + 1) + (freeSpace * (doneSize + tree.subTreeSize) / (tree.parent.subTreeSize - 1)),
-                    bottom: parentBounds.bottom + relativeOffset,
-                    top: parentBounds.top - relativeOffset
-                };
-            } else {
-                const relativeOffset = Math.min(tree.parent.width / 100 * offset / (tree.parent.children.length + 1), tree.parent.height / 100 * offset / (tree.parent.children.length + 1));
-                const freeSpace = tree.parent.height - (tree.parent.children.length + 1) * relativeOffset;
-                return {
-                    left: parentBounds.left + relativeOffset,
-                    right: parentBounds.right - relativeOffset,
-                    bottom: (last) ?
-                        parentBounds.top - relativeOffset * (index + 1) - freeSpace :
-                        parentBounds.top - relativeOffset * (index + 1) - (freeSpace * (doneSize + tree.subTreeSize) / (tree.parent.subTreeSize - 1)),
-                    top: (index == 0) ?
-                        parentBounds.top - relativeOffset :
-                        parentBounds.top - relativeOffset * (index + 1) - (freeSpace * doneSize / (tree.parent.subTreeSize - 1))
-                };
-            }
-        };
-
-
         /** drawTree draw the tree-map recursively.
          *
          * @param {NodeTreeMap} tree The root of the subtree upon which we recurse
          * @param {Bounds} bounds The bounding-box indicating where we should draw the current root
          * @param {boolean} internalNode Whether we are recursing on internal nodes, or on the root of the initial input tree
-         * @param {number[]} color The color with which we should draw our current bounding-box based rectangle
          * @param {boolean} selected Whether one of its parent was selected
          */
-        const drawTree = (tree: NodeTreeMap, bounds: Bounds, internalNode: boolean, selected: boolean = false): void => {
+        const drawTree = (tree: NodeTreeMap, bounds: Bounds, internalNode: boolean): void => {
             let doneSize = 0; // How many subtree-nodes are already taking up space within the bounds.
 
-            let width = Math.abs(bounds.right - bounds.left);
-            let height = Math.abs(bounds.top - bounds.bottom);
+            const relativeOffset = tree.orientation === Orientation.HORIZONTAL ?
+                Math.min(tree.width / 100 * offset / (tree.children.length + 1), tree.height / 100 * offset / (tree.children.length + 1)) :
+                Math.min(tree.width / 100 * offset / (tree.children.length + 1), tree.height / 100 * offset / (tree.children.length + 1));
+            const freeSpace = tree.orientation === Orientation.HORIZONTAL ?
+                tree.width - (tree.children.length + 1) * relativeOffset :
+                tree.height - (tree.children.length + 1) * relativeOffset;
 
             // Draw the bounds of the current node
-            if (drawOutlines) {
-                draws.push({
-                    type: 6 /** FillLinedAAQuad **/,
-                    identifier: tree.identifier,
-                    options: {
-                        x: bounds.left,
-                        y: bounds.bottom,
-                        width: width,
-                        height: height,
-                    }
-                });
-            } else {
-                draws.push({
-                    type: 4 /** FillAAQuad **/,
-                    identifier: tree.identifier,
-                    options: {x: bounds.left, y: bounds.bottom, width: width, height: height}
-                });
+            if (tree.orientation === Orientation.HORIZONTAL) {
+                if (drawOutlines) {
+                    draws.push({
+                        type: 6 /** FillLinedAAQuad **/,
+                        identifier: tree.identifier,
+                        options: {
+                            x: bounds.left,
+                            y: bounds.bottom,
+                            width: tree.width,
+                            height: tree.height
+                        }
+                    });
+                } else {
+                    draws.push({
+                        type: 4 /** FillAAQuad **/,
+                        identifier: tree.identifier,
+                        options: {x: bounds.left, y: bounds.bottom, width: tree.width, height: tree.height}
+                    });
+                }
+            } else { // (tree.orientation === Orientation.VERTICAL)
+                if (drawOutlines) {
+                    draws.push({
+                        type: 6 /** FillLinedAAQuad **/,
+                        identifier: tree.identifier,
+                        options: {
+                            x: bounds.left,
+                            y: bounds.bottom,
+                            width: tree.width,
+                            height: tree.height
+                        }
+                    });
+                } else {
+                    draws.push({
+                        type: 4 /** FillAAQuad **/,
+                        identifier: tree.identifier,
+                        options: {x: bounds.left, y: bounds.bottom, width: tree.width, height: tree.height}
+                    });
+                }
             }
 
             // Compute color and size per child, recurse on each child with the new - and nested - bounds.
             for (let i = 0; i < tree.children.length; i++) {
                 const childNode = tree.children[i];
-                const childBounds = setBounds(childNode, bounds, doneSize, (i == tree.children.length - 1), i);
+                const childBounds = tree.orientation === Orientation.HORIZONTAL ?
+                    {
+                        left: (i == 0) ?
+                            bounds.left + relativeOffset :
+                            bounds.left + relativeOffset * (i + 1) + (freeSpace * doneSize / (tree.subTreeSize - 1)),
+                        right: (i == tree.children.length - 1) ?
+                            bounds.left + relativeOffset * (i + 1) + freeSpace :
+                            bounds.left + relativeOffset * (i + 1) + (freeSpace * (doneSize + childNode.subTreeSize) / (tree.subTreeSize - 1)),
+                        bottom: bounds.bottom + relativeOffset,
+                        top: bounds.top - relativeOffset
+                    } :
+                    {
+                        left: bounds.left + relativeOffset,
+                        right: bounds.right - relativeOffset,
+                        bottom: (i == tree.children.length - 1) ?
+                            bounds.top - relativeOffset * (i + 1) - freeSpace :
+                            bounds.top - relativeOffset * (i + 1) - (freeSpace * (doneSize + childNode.subTreeSize) / (tree.subTreeSize - 1)),
+                        top: (i == 0) ?
+                            bounds.top - relativeOffset :
+                            bounds.top - relativeOffset * (i + 1) - (freeSpace * doneSize / (tree.subTreeSize - 1))
+                    };
+
                 childNode.width = Math.abs(childBounds.right - childBounds.left);
                 childNode.height = Math.abs(childBounds.top - childBounds.bottom);
                 doneSize = doneSize + childNode.subTreeSize; // Add the # of nodes in the subtree rooted at the childnode to doneSize.
 
-                drawTree(childNode, childBounds, true, selected);
+                drawTree(childNode, childBounds, true);
             }
         };
 
@@ -149,7 +150,7 @@ export class SimpleTreeMap implements Visualizer {
             tree.orientation = Orientation.HORIZONTAL;
             orientTreeNodes(tree);
         }
-        // Give the default width and height
+
         tree.width = defaultSize;
         tree.height = defaultSize;
 
@@ -160,8 +161,8 @@ export class SimpleTreeMap implements Visualizer {
 
     public getForm(formFactory: FormFactory) {
         return formFactory.createFormBuilder()
-            .addToggleField('outline', true, {label: 'Draw outlines'})
-            .addSliderField('offset', 0, {label: 'Offset', min: 0, max: 25})
+            .addToggleField('outline', true, {label: 'Draw outline for each node'})
+            .addSliderField('offset', 0, {label: 'Padding for each node', min: 0, max: 25})
             .getForm();
     }
 
@@ -172,23 +173,48 @@ export class SimpleTreeMap implements Visualizer {
     public getThumbnailImage(): string | null {
         return '/assets/images/visualization-simple-tree-map.png';
     }
+
+    public enableShaders(gl: OpenGL): void {
+        gl.setSizeThresHold(5);
+    }
+
+    /**
+     * Function which checks if no node is selected within the given tree.
+     *
+     * @param {Node} tree Tree to recurse upon
+     */
+    private hasSelected (tree: NodeTreeMap): boolean {
+        let hasSomeSelectedNode = tree.selected;
+        if (hasSomeSelectedNode) {
+            return true;
+        }
+
+        for (let child of tree.children) {
+            hasSomeSelectedNode = this.hasSelected(child);
+            if (hasSomeSelectedNode) {
+                return true;
+            }
+        }
+
+        return false;
+    };
     /** @end-author Nico Klaassen */
     /** @author Roan Hofland */
     public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void{
-        this.recolor(input.tree, input.palette, input.settings.outline, gl, draws, input.tree.selected);
+        this.recolor(input.tree, input.palette, input.settings.outline, gl, draws, input.tree.selected || !this.hasSelected(input.tree));
     }
-    
+
     private recolor(tree: Node, palette: Palette, outline: boolean, gl: OpenGL, draws: Draw[], selected: boolean){
         if (selected || tree.selected) {
             selected = true;
             gl.setColor(draws[tree.identifier].glid, palette.gradientColorMapSelected[tree.maxDepth][tree.depth]);
             if(outline){
-                gl.setLineColor(draws[tree.identifier].glid, [0, 0, 0, 1]);
+                gl.setLineColor(draws[tree.identifier].glid, [0, 0, 0]);
             }
         } else {
             gl.setColor(draws[tree.identifier].glid, palette.gradientColorMap[tree.maxDepth][tree.depth]);
             if(outline){
-                gl.setLineColor(draws[tree.identifier].glid, [0.3, 0.3, 0.3, 1]);
+                gl.setLineColor(draws[tree.identifier].glid, [0.3, 0.3, 0.3]);
             }
         }
         for(let child of tree.children){

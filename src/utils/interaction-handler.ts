@@ -13,6 +13,7 @@ import {Matrix} from '../opengl/matrix';
 import {InteractionOptions} from "../enums/interaction-options";
 import {CustomQuadOptions} from "../interfaces/custom-quad-options";
 
+
 /** @author Bart Wesselink */
 export class InteractionHandler {
     private readonly ZOOM_FOCUS_FACTOR = 6;
@@ -28,20 +29,8 @@ export class InteractionHandler {
         for (let i = draws.length - 1; i >= 0; i--) {
             const draw: Draw = draws[i];
 
-            if (draw != undefined && draw.identifier >= 0 && gl.isShapeVisible(draw.glid) && this.withinDraw(draw, x, y)) {
-                const node = this.findNodeByIdentifier(tree, draw.identifier);
-
-                return node;
-            }
-        }
-
-        return null;
-    }
-
-    public fetchDrawByNode(draws: Draw[], node: Node): Draw|null {
-        for (let i = draws.length - 1; i >= 0; i--) {
-            if (draws[i].identifier === node.identifier) {
-                return draws[i];
+            if (draw.identifier != undefined && gl.isShapeVisible(draw.glid) && this.withinDraw(draw, x, y)) {
+                return this.findNodeByIdentifier(tree, draw.identifier);
             }
         }
 
@@ -197,7 +186,7 @@ export class InteractionHandler {
                 }
 
                 return false;
-                /** @end-author Nico Klaassen */
+            /** @end-author Nico Klaassen */
         }
 
         return false;
@@ -222,150 +211,146 @@ export class InteractionHandler {
     public scaleToNode(gl: OpenGL, canvas: ElementRef, currentDraws: Draw[], node: Node, interactionOptions: InteractionOptions): void {
         if (interactionOptions === InteractionOptions.Nothing) return;
 
-        const draw: Draw = this.fetchDrawByNode(currentDraws, node);
+        const draw: Draw = currentDraws[node.identifier];
 
-        if (draw != null) {
-            gl.resetTranslation();
+        gl.resetTranslation();
 
-            let x, y;
-            if (draw.type === DrawType.DRAW_AA_QUAD || draw.type === DrawType.FILL_AA_QUAD || draw.type === DrawType.FILL_LINED_AA_QUAD) {
-                const options: AaQuadOptions = draw.options as AaQuadOptions;
+        let x, y;
 
-                // x,y are not centered, but in bottom-left corner
-                x = options.x + options.width / 2;
-                y = options.y + options.height / 2;
-            } else if (draw.type === DrawType.DRAW_CUSTOM_QUAD || draw.type === DrawType.FILL_CUSTOM_QUAD || draw.type === DrawType.FILL_LINED_CUSTOM_QUAD) {
-                const options: CustomQuadOptions = draw.options as CustomQuadOptions;
-                x = Math.min(options.x1, options.x4) + (Math.abs(Math.min(options.x1, options.x4) - Math.max(options.x2, options.x3))) / 2;
-                y = options.y1 + (options.y4 - options.y1) / 2;
-            } else {
-                x = draw.options.x;
-                y = draw.options.y;
-            }
+        if (draw.type === DrawType.DRAW_AA_QUAD || draw.type === DrawType.FILL_AA_QUAD || draw.type === DrawType.FILL_LINED_AA_QUAD) {
+            const options: AaQuadOptions = draw.options as AaQuadOptions;
 
-            enum Orientation {
-                WIDTH,
-                HEIGHT,
-            }
-
-            let size, width, height;
-            let orientation: Orientation;
-
-            const glWidth = gl.getWidth();
-            const glHeight = gl.getHeight();
-
-            switch (draw.type) {
-                case DrawType.FILL_LINED_ROTATED_QUAD:
-                case DrawType.DRAW_ROTATED_QUAD:
-                case DrawType.FILL_ROTATED_QUAD:
-                case DrawType.FILL_LINED_AA_QUAD:
-                case DrawType.DRAW_AA_QUAD:
-                case DrawType.FILL_AA_QUAD:
-                    width = (draw.options as RotatedQuadOptions).width;
-                    height = (draw.options as RotatedQuadOptions).height;
-
-                    if (height > width) {
-                        orientation = Orientation.HEIGHT;
-                        size = height;
-                    } else {
-                        orientation = Orientation.WIDTH;
-                        size = width;
-                    }
-
-                    break;
-                case DrawType.FILL_LINED_CIRCLE:
-                case DrawType.DRAW_CIRCLE:
-                case DrawType.FILL_CIRCLE:
-                case DrawType.FILL_LINED_CIRCLE_SLICE:
-                case DrawType.DRAW_CIRCLE_SLICE:
-                case DrawType.FILL_CIRCLE_SLICE:
-                    size = (draw.options as CircleOptions).radius * 2;
-
-                    if (glWidth > glHeight) {
-                        orientation = Orientation.HEIGHT;
-                    } else {
-                        orientation = Orientation.WIDTH;
-                    }
-
-                    break;
-                case DrawType.FILL_LINED_RING_SLICE:
-                case DrawType.DRAW_RING_SLICE:
-                case DrawType.FILL_RING_SLICE:
-                    let ringSliceOptions = draw.options as RingSliceOptions;
-
-                    let startAngle = ringSliceOptions.start;
-                    let endAngle = ringSliceOptions.end;
-
-                    let radius = ringSliceOptions.far;
-                    let innerRadius = ringSliceOptions.near;
-                    let angleDifference = endAngle - startAngle;
-                    let halfAngle = angleDifference / 2 + startAngle;
-
-                    let startX = Math.cos(startAngle * (Math.PI / 180)) * radius;
-                    let startY = Math.sin(startAngle * (Math.PI / 180)) * radius;
-                    let endX = Math.cos(endAngle * (Math.PI / 180)) * radius;
-                    let endY = Math.sin(endAngle * (Math.PI / 180)) * radius;
-
-                    x = Math.cos(halfAngle * (Math.PI / 180)) * innerRadius;
-                    y = Math.sin(halfAngle * (Math.PI / 180)) * innerRadius;
-
-                    size = 2 * Math.PI * radius * (1 / 360) * angleDifference; // not entirely correct but gives a reasonable estimation
-
-                    if (glWidth > glHeight) {
-                        orientation = Orientation.HEIGHT;
-                    } else {
-                        orientation = Orientation.WIDTH;
-                    }
-
-                    break;
-                case DrawType.FILL_LINED_ELLIPSOID:
-                case DrawType.DRAW_ELLIPSOID:
-                case DrawType.FILL_ELLIPSOID:
-                    width = (draw.options as EllipsoidOptions).radx;
-                    height = (draw.options as EllipsoidOptions).rady;
-
-                    if (height > width) {
-                        orientation = Orientation.HEIGHT;
-                        size = height;
-                    } else {
-                        orientation = Orientation.WIDTH;
-                        size = width;
-                    }
-
-                    break;
-
-                case DrawType.FILL_LINED_CUSTOM_QUAD:
-                case DrawType.DRAW_CUSTOM_QUAD:
-                case DrawType.FILL_CUSTOM_QUAD:
-                    width = Math.max(Math.abs((draw.options as CustomQuadOptions).x4 - (draw.options as CustomQuadOptions).x3),
-                        Math.abs((draw.options as CustomQuadOptions).x1 - (draw.options as CustomQuadOptions).x2));
-                    height = Math.abs((draw.options as CustomQuadOptions).y4 - (draw.options as CustomQuadOptions).y1);
-                    if (width > height) {
-                        size = width;
-                        orientation = Orientation.WIDTH;
-                    } else {
-                        size = height;
-                        orientation = Orientation.HEIGHT;
-                    }
-                    break;
-            }
-
-            gl.glTranslate(-x, -y);
-
-            if (interactionOptions === InteractionOptions.ZoomAndPan) {
-                let zoomFactor;
-
-                if (orientation === Orientation.WIDTH) {
-                    zoomFactor = glWidth / (size * this.ZOOM_FOCUS_FACTOR);
-                } else {
-                    zoomFactor = glHeight / (size * this.ZOOM_FOCUS_FACTOR);
-                }
-
-                gl.scale(zoomFactor);
-            }
+            // x,y are not centered, but in bottom-left corner
+            x = options.x + options.width / 2;
+            y = options.y + options.height / 2;
+        } else if (draw.type === DrawType.DRAW_CUSTOM_QUAD || draw.type === DrawType.FILL_CUSTOM_QUAD || draw.type === DrawType.FILL_LINED_CUSTOM_QUAD) {
+            const options: CustomQuadOptions = draw.options as CustomQuadOptions;
+            x = Math.min(options.x1, options.x4) + (Math.abs(Math.min(options.x1, options.x4) - Math.max(options.x2, options.x3))) / 2;
+            y = options.y1 + (options.y4 - options.y1) / 2;
+        } else {
+            x = draw.options.x;
+            y = draw.options.y;
         }
 
-        gl.render();
+        enum Orientation {
+            WIDTH,
+            HEIGHT,
+        }
+
+        let size, width, height;
+        let orientation: Orientation;
+
+        const glWidth = gl.getWidth();
+        const glHeight = gl.getHeight();
+
+        switch (draw.type) {
+            case DrawType.FILL_LINED_ROTATED_QUAD:
+            case DrawType.DRAW_ROTATED_QUAD:
+            case DrawType.FILL_ROTATED_QUAD:
+            case DrawType.FILL_LINED_AA_QUAD:
+            case DrawType.DRAW_AA_QUAD:
+            case DrawType.FILL_AA_QUAD:
+                width = (draw.options as RotatedQuadOptions).width;
+                height = (draw.options as RotatedQuadOptions).height;
+
+                if (height > width) {
+                    orientation = Orientation.HEIGHT;
+                    size = height;
+                } else {
+                    orientation = Orientation.WIDTH;
+                    size = width;
+                }
+
+                break;
+            case DrawType.FILL_LINED_CIRCLE:
+            case DrawType.DRAW_CIRCLE:
+            case DrawType.FILL_CIRCLE:
+            case DrawType.FILL_LINED_CIRCLE_SLICE:
+            case DrawType.DRAW_CIRCLE_SLICE:
+            case DrawType.FILL_CIRCLE_SLICE:
+                size = (draw.options as CircleOptions).radius * 2;
+
+                if (glWidth > glHeight) {
+                    orientation = Orientation.HEIGHT;
+                } else {
+                    orientation = Orientation.WIDTH;
+                }
+
+                break;
+            case DrawType.FILL_LINED_RING_SLICE:
+            case DrawType.DRAW_RING_SLICE:
+            case DrawType.FILL_RING_SLICE:
+                let ringSliceOptions = draw.options as RingSliceOptions;
+
+                let startAngle = ringSliceOptions.start;
+                let endAngle = ringSliceOptions.end;
+
+                let radius = ringSliceOptions.far;
+                let innerRadius = ringSliceOptions.near;
+                let angleDifference = endAngle - startAngle;
+                let halfAngle = angleDifference / 2 + startAngle;
+
+                let startX = Math.cos(startAngle * (Math.PI / 180)) * radius;
+                let startY = Math.sin(startAngle * (Math.PI / 180)) * radius;
+                let endX = Math.cos(endAngle * (Math.PI / 180)) * radius;
+                let endY = Math.sin(endAngle * (Math.PI / 180)) * radius;
+
+                x = Math.cos(halfAngle * (Math.PI / 180)) * innerRadius;
+                y = Math.sin(halfAngle * (Math.PI / 180)) * innerRadius;
+
+                size = 2 * Math.PI * radius * (1 / 360) * angleDifference; // not entirely correct but gives a reasonable estimation
+
+                if (glWidth > glHeight) {
+                    orientation = Orientation.HEIGHT;
+                } else {
+                    orientation = Orientation.WIDTH;
+                }
+
+                break;
+            case DrawType.FILL_LINED_ELLIPSOID:
+            case DrawType.DRAW_ELLIPSOID:
+            case DrawType.FILL_ELLIPSOID:
+                width = (draw.options as EllipsoidOptions).radx;
+                height = (draw.options as EllipsoidOptions).rady;
+
+                if (height > width) {
+                    orientation = Orientation.HEIGHT;
+                    size = height;
+                } else {
+                    orientation = Orientation.WIDTH;
+                    size = width;
+                }
+
+                break;
+            case DrawType.FILL_LINED_CUSTOM_QUAD:
+            case DrawType.DRAW_CUSTOM_QUAD:
+            case DrawType.FILL_CUSTOM_QUAD:
+                width = Math.max(Math.abs((draw.options as CustomQuadOptions).x4 - (draw.options as CustomQuadOptions).x3),
+                    Math.abs((draw.options as CustomQuadOptions).x1 - (draw.options as CustomQuadOptions).x2));
+                height = Math.abs((draw.options as CustomQuadOptions).y4 - (draw.options as CustomQuadOptions).y1);
+                if (width > height) {
+                    size = width;
+                    orientation = Orientation.WIDTH;
+                } else {
+                    size = height;
+                    orientation = Orientation.HEIGHT;
+                }
+                break;
+        }
+
+        gl.glTranslate(-x, -y);
+
+        if (interactionOptions === InteractionOptions.ZoomAndPan) {
+            let zoomFactor;
+
+            if (orientation === Orientation.WIDTH) {
+                zoomFactor = glWidth / (size * this.ZOOM_FOCUS_FACTOR);
+            } else {
+                zoomFactor = glHeight / (size * this.ZOOM_FOCUS_FACTOR);
+            }
+
+            gl.scale(zoomFactor);
+        }
     }
 
     private normalizeAngle(angle: number) {

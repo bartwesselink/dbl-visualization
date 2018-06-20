@@ -13,6 +13,7 @@ import {environment} from "../environments/environment";
 export class OpenGL{
     private gl: WebGLRenderingContext;
     private modelviewMatrix: Float32Array;
+    private update: boolean = true;
     private arrays: Element[] = [];
     public readonly WIDTH = 1600;
     public readonly HEIGHT = 900;
@@ -247,44 +248,34 @@ export class OpenGL{
 
     //reset scale, rotation and translations
     public resetTransformations(): void {
-        this.rx = 1;
-        this.ry = 0;
-        this.dx = 0;
-        this.dy = 0;
-        this.rotation = 0;
-        this.factor = 1;
-        this.modelviewMatrix = Matrix.createMatrix();
+        this.resetZoom();
+        this.resetRotation();
+        this.resetTranslation();
     }
 
     //reset all scalings
     public resetZoom(): void {
-        this.scale(1 / this.factor);
+        this.factor = 1.0;
+        this.update = true;
     }
 
     //reset all rotations
     public resetRotation(): void {
-        this.rotate(-this.rotation);
-        this.rx = 1;
-        this.ry = 0;
+        this.rotation = 0.0;
+        this.update = true;
     }
 
     //reset all translations
     public resetTranslation(): void {
-        Matrix.translateSelf(this.modelviewMatrix, [-this.dx, -this.dy, 0]);
-        this.dx = 0;
-        this.dy = 0;
+        this.dx = 0.0;
+        this.dy = 0.0;
+        this.update = true;
     }
 
     //rotate the model view by the given number of degrees
     public rotate(rotation: number): void {
-        Matrix.translateSelf(this.modelviewMatrix, [-this.dx, -this.dy, 0]);
-        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(this.HALFHEIGHT, this.HALFWIDTH));
-        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DRotationMatrix4(rotation));
-        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(1 / this.HALFHEIGHT, 1 / this.HALFWIDTH));
-        Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]);
         this.rotation += rotation;
-        this.rx = Math.cos(-this.rotation * Matrix.oneDeg);
-        this.ry = Math.sin(-this.rotation * Matrix.oneDeg);
+        this.update = true;
     }
 
     //translates the model view by the given distance
@@ -301,28 +292,22 @@ export class OpenGL{
             w = (this.height / this.HEIGHT) * this.WIDTH;
             h = this.height;
         }
-        dx = ((dx / w) * 2) / this.factor;
-        dy = ((-dy / h) * 2) / this.factor;
-        Matrix.translateSelf(this.modelviewMatrix, [dx, dy, 0]);
-        this.dx += dx;
-        this.dy += dy;
+        this.dx += ((dx / w) * 2) / this.factor;
+        this.dy += ((-dy / h) * 2) / this.factor;
+        this.update = true;
     }
 
     //translates the model view by the given distance
     public glTranslate(dx: number, dy: number): void {
-        dx /= this.HALFWIDTH;
-        dy /= this.HALFHEIGHT;
-        Matrix.translateSelf(this.modelviewMatrix, [dx, dy, 0]);
-        this.dx += dx;
-        this.dy += dy;
+        this.dx += dx / this.HALFWIDTH;
+        this.dy += dy / this.HALFHEIGHT;
+        this.update = true;
     }
 
     //scales the model view by the given factor
     public scale(factor: number): void {
-        Matrix.translateSelf(this.modelviewMatrix, [-this.dx, -this.dy, 0]);
-        Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DScalingMatrix(factor));
-        Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]);
         this.factor *= factor;
+        this.update = true;
     }
 
     //enables the given shader
@@ -377,6 +362,17 @@ export class OpenGL{
     //render the OpenGL scene
     public render(): void {
         var start = performance.now();
+        
+        if(this.update){
+            Matrix.multiply4(this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(this.HALFHEIGHT, this.HALFWIDTH), Matrix.create2DRotationMatrix4(this.rotation));
+            Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DInconsistentScalingMatrix(1.0 / this.HALFHEIGHT, 1.0 / this.HALFWIDTH));  
+            Matrix.multiply4(this.modelviewMatrix, this.modelviewMatrix, Matrix.create2DScalingMatrix(this.factor));
+            Matrix.translateSelf(this.modelviewMatrix, [this.dx, this.dy, 0]);
+            this.rx = Math.cos(-this.rotation * Matrix.oneDeg);
+            this.ry = Math.sin(-this.rotation * Matrix.oneDeg);
+            this.update = false;
+        }
+        
         this.clear();
         
         this.shader.drawGrid();

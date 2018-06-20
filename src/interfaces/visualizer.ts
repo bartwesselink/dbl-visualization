@@ -15,5 +15,6 @@ export interface Visualizer {
     optimizeShaders?(gl: OpenGL): void;
     updateColors?(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void;
     shapesPerNode: number;
+    requireAntiAliasing: boolean;
 }
 /** @end-author Bart Wesselink */

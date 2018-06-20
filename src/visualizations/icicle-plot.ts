@@ -11,7 +11,8 @@ import {OpenGL} from "../opengl/opengl";
 /** @author Nico Klaassen */
 
 export class IciclePlot implements Visualizer {
-    shapesPerNode: number = 1;
+    public requireAntiAliasing: boolean = true;
+    public shapesPerNode: number = 1;
 
     public draw(input: VisualizerInput): Draw[] {
         const originalTree = input.tree;
@@ -169,7 +170,7 @@ export class IciclePlot implements Visualizer {
     public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void{
         this.recolor(input.tree, input.palette, gl, draws, input.tree.selected);
     }
-    
+
     private recolor(tree: Node, palette: Palette, gl: OpenGL, draws: Draw[], selected: boolean){
         if (selected || tree.selected) {
             selected = true;
