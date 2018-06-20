@@ -1,22 +1,57 @@
 /** @author Bart Wesselink */
-.mdl-layout__tab-app {
-    @extend .mdl-layout__tab; // extending the tab to prevent MDL interventions in tab handling
+header {
     display: flex;
+    justify-content: space-between;
+    width: 100%;
+    z-index: 8;
+    height: 3.8rem;
+    background-color: $color-primary;
+    position: relative;
+    padding: 0.3rem;
     align-items: center;
-    cursor: pointer;
+    box-shadow: 0 0 10px 0 rgba(0,0,0,0.75);
+    border-bottom: 1px solid $color-blue-border;
 
-    &::after {
-        animation: none !important;
+    &[hidden] {
+      display: none;
     }
 }
 
-.close-tab {
-    margin-left: 0.5rem;
+.header-logo {
+    height: 100%;
+}
+
+.header-button-icon {
+    border-radius: 0.3rem;
+    background: white;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $color-primary;
+    font-size: 1.5rem;
+    cursor: pointer;
+    border: 0;
+    margin: 0;
+
+    &:hover {
+        background-color: $color-white-hover;
+    }
+}
+
+.header-center {
+    position: absolute;
+    left: 50%;
+    margin-left: -1rem;
+}
+
+.header-buttons {
+    display: flex;
+    justify-content: flex-end;
+
+    .header-button-icon {
+        margin-left: 0.5rem;
+    }
 }
 /** @end-author Bart Wesselink */
-
-/** @author Mathijs Boezer */
-.header-row {
-    justify-content: space-between;
-}
-/** @end-author Mathijs Boezer */

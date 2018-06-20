@@ -1,21 +1,67 @@
 /** @author Mathijs Boezer */
+.data-selection-menu {
+    color: white;
+    display: flex;
+    align-items: center;
+}
+
+.data-selection-label {
+    width: 4.938rem;
+    height: 1.188rem;
+    background-size: 100% 100%;
+    background-image: url('../images/label-data.png');
+    margin-right: 0.5rem;
+}
+
+.data-selection-current {
+    cursor: pointer;
+    width: 12rem;
+    font-size: 0.9rem;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid white;
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 0.5rem;
+}
+
+.data-selection-chevron {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    margin-top: -0.3rem;
+}
+
+.data-selection-empty {
+    font-style: italic;
+}
+
 .data-selection-container {
-    padding-top: 10px;
-    padding-bottom: 20px;
-    padding-left: 10px;
-    float: left;
-    width: 100%;
-}
+    margin-bottom: 1rem;
+    color: $color-primary;
 
-.dataset-selector {
-    width: 150px;
-}
-
-.data-selection-button {
-    width: 40px;
+    &:last-of-type {
+        margin-bottom: 0;
+    }
 }
 
 .data-selection-title {
-    font-size: 18px;
+    font-weight: bold;
+}
+
+.data-selection-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    cursor: pointer;
+
+    li {
+        padding: 0.3rem 0;
+
+        &:hover {
+            background-color: $color-white-hover;
+        }
+    }
 }
 /** @end-author Mathijs Boezer */

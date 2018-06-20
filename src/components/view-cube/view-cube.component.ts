@@ -1,7 +1,5 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 
-declare var dialogPolyfill;
-
 @Component({
     selector: 'app-view-cube',
     templateUrl: './view-cube.component.html',
@@ -9,7 +7,6 @@ declare var dialogPolyfill;
 export class ViewCubeComponent implements OnInit {
     @Input() private keyStrokeFunction: (event: KeyboardEvent) => any;
     @Input() private zoomFunction: (value: number) => any;
-    @ViewChild('dialog') private dialog: ElementRef;
 
     @ViewChild('zoomSliderHolder') private zoomSliderHolder: ElementRef;
     public zoomSliderValue: number = 50;
@@ -18,10 +15,9 @@ export class ViewCubeComponent implements OnInit {
     public readonly sliderPadding: number = 5;
     private readonly zoomMin = -2;
     private readonly zoomMax = 20;
+    public dialogOpen: boolean = false;
 
     public ngOnInit(): void {
-        dialogPolyfill.registerDialog(this.dialog.nativeElement);
-
         window.addEventListener('mouseup', () => this.stopZoomDrag());
         window.addEventListener('mousemove', (event: MouseEvent) => this.zoomDrag(event));
 
@@ -66,14 +62,11 @@ export class ViewCubeComponent implements OnInit {
     }
 
     public openHelp(): void {
-        this.dialog.nativeElement.showModal();
-
-        // fix for button being selected
-        setTimeout(() => this.dialog.nativeElement.focus());
+        this.dialogOpen = true;
     }
 
     public close(): void {
-        this.dialog.nativeElement.close();
+        this.dialogOpen = false;
     }
 
     public rotateLeft(start: boolean): void {

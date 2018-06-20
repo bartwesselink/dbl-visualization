@@ -1,17 +1,27 @@
-<div class="welcome-page">
-    <div class="welcome-content">
-        <h3>Welcome!</h3>
-        <p>
-            Using this tool, one can visualize hierarchical tree data in the Newick format. Use the upload-button in the upper right
-            corner to start working. If you want to know the ins-and-outs of the tool, please consult the help-button.
-        </p>
-    </div>
+<div class="welcome-page" [class.welcome-page-full-screen-animation]="fullScreenAnimation">
+    <div class="welcome-page-top">
+        <img class="welcome-page-logo" src="assets/images/logo-transparent.png" height="110">
 
-    <div class="welcome-examples">
-        <h3>Example visualizations:</h3>
+        <span class="welcome-page-title">A visualization tool for Newick encoded hierarchies</span>
 
         <div class="welcome-thumbnails">
-            <img *ngFor="let thumbnail of getThumbnails();" [src]="thumbnail" class="welcome-thumbnail" height="120">
+            <img *ngFor="let thumbnail of getThumbnails();" [src]="thumbnail" class="welcome-thumbnail" height="100">
+        </div>
+
+        <span class="welcome-page-authors">Student project by group 01D</span>
+
+        <img class="welcome-page-school" src="assets/images/tue-logo.png" height="40">
+    </div>
+
+    <div class="welcome-page-bottom">
+        <canvas class="welcome-page-animation-canvas" #animationCanvas></canvas>
+
+        <div class="welcome-page-buttons">
+            <div class="welcome-page-buttons-content">
+                <button class="button" (click)="navigateToHelp()">Start tour</button>
+                <app-upload-tool (newContent)="outputContent($event)" type="home"></app-upload-tool>
+                <button class="button" (click)="navigateToDatasets()">Choose existing data</button>
+            </div>
         </div>
     </div>
 </div>

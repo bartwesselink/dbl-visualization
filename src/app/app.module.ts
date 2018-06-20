@@ -17,7 +17,6 @@ import {NgPipesModule} from 'ngx-pipes';
 import {VisualizationSettingsButtonComponent} from '../components/visualization-settings-button/visualization-settings-button.component';
 import {GeneralSettingsButtonComponent} from '../components/general-settings-button/general-settings-button.component';
 import {SettingsBus} from '../providers/settings-bus';
-import {MdlDirective} from '../directives/material-design/material-design.directive';
 import {WelcomePageComponent} from '../components/welcome-page/welcome-page.component';
 import {APP_BASE_HREF} from '@angular/common';
 import {WorkerManager} from '../utils/worker-manager';
@@ -30,6 +29,9 @@ import {SubtreeBus} from "../providers/subtree-bus";
 import {SearchComponent} from '../components/search/search.component';
 import {DatasetSelectionComponent} from "../components/dataset-selection/dataset-selection.component";
 import {DatasetStorageService} from "../providers/dataset-storage-service";
+import {TooltipDirective} from '../directives/tooltip/tooltip.directive';
+import {SnackbarComponent} from '../components/snackbar/snackbar.component';
+import {SnackbarBus} from '../providers/snackbar-bus';
 
 @NgModule({
     declarations: [
@@ -45,7 +47,8 @@ import {DatasetStorageService} from "../providers/dataset-storage-service";
         FormComponent,
         VisualizationSettingsButtonComponent,
         GeneralSettingsButtonComponent,
-        MdlDirective,
+        TooltipDirective,
+        SnackbarComponent,
         WelcomePageComponent,
         LoaderComponent,
         TooltipComponent,
@@ -62,6 +65,7 @@ import {DatasetStorageService} from "../providers/dataset-storage-service";
         FormFactory,
         WebWorkerService,
         WorkerManager,
+        SnackbarBus,
         SettingsBus,
         SelectBus,
         DatasetStorageService,
