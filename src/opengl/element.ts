@@ -15,5 +15,6 @@ export interface Element{
     overlay?: Element;
     shader?: ShaderMode;
     hidden?: boolean;
+    id?: number;
 }
 /** @end-author Roan Hofland */

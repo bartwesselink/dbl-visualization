@@ -5,13 +5,16 @@ import {FormFactory} from '../form/form-factory';
 import {Draw} from '../interfaces/draw';
 import {VisualizerInput} from '../interfaces/visualizer-input';
 import {Palette} from "../models/palette";
+import {OpenGL} from "../opengl/opengl";
 
 export class GeneralizedPythagorasTree implements Visualizer {
+    public requireAntiAliasing: boolean = true;
+    public shapesPerNode: number = 1;
+
     /** @author Jules Cornelissen */
     public draw(input: VisualizerInput): Draw[] {
         const tree = input.tree;
         const draws: Draw[] = [];
-        const palette: Palette = input.palette;
 
         const weightHeight: number = input.settings.heightScale / 10; // Scaling factor for the height of every rectangle that is not the root
         const drawNodeSize: boolean = input.settings.nodeSize;
@@ -59,12 +62,6 @@ export class GeneralizedPythagorasTree implements Visualizer {
         };
 
         const generate = (tree: Node, rectangle: number[], isSelected: boolean = false): void => {
-            if (tree.selected === true || isSelected) {
-                isSelected = true;
-                color = palette.gradientColorMapSelected[tree.maxDepth][tree.depth];
-            } else {
-                color = palette.gradientColorMap[tree.maxDepth][tree.depth];
-            }
             // Draw the previously calculated rectangle
             draws.push({
                 type: 1 /** FillRotatedQuad **/,
@@ -74,8 +71,7 @@ export class GeneralizedPythagorasTree implements Visualizer {
                     y: rectangle[1],
                     width: rectangle[2],
                     height: rectangle[3],
-                    rotation: rectangle[4] * radianToDegreeMultiplier,
-                    color: color
+                    rotation: rectangle[4] * radianToDegreeMultiplier
                 }
             });
 
@@ -142,6 +138,22 @@ export class GeneralizedPythagorasTree implements Visualizer {
     public getThumbnailImage(): string | null {
         return '/assets/images/visualization-generalized-pythagoras-tree.png';
     }
-
     /** @end-author Jules Cornelissen */
+    /** @author Roan Hofland */
+    public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void{
+        this.recolor(input.tree, input.palette, gl, draws, input.tree.selected);
+    }
+    
+    private recolor(tree: Node, palette: Palette, gl: OpenGL, draws: Draw[], selected: boolean){
+        if (selected || tree.selected) {
+            selected = true;
+            gl.setColor(draws[tree.identifier].glid, palette.gradientColorMapSelected[tree.maxDepth][tree.depth]);
+        } else {
+            gl.setColor(draws[tree.identifier].glid, palette.gradientColorMap[tree.maxDepth][tree.depth]);
+        }
+        for(let child of tree.children){
+            this.recolor(child, palette, gl, draws, selected);
+        }
+    }
+    /** @end-author Roan Hofland */
 }
