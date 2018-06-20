@@ -16,7 +16,6 @@ export class SidebarComponent {
     @ViewChild('content') contentHolder: ElementRef;
     @Input() tree: Node;
     @Output() reset: EventEmitter<any> = new EventEmitter();
-    @Output() export: EventEmitter<any> = new EventEmitter();
 
     contractAll(): void {
         this.navigator.reset();
@@ -46,9 +45,5 @@ export class SidebarComponent {
 
     public resetTree() {
         this.reset.emit();
-    }
-
-    public exportTree() {
-        this.export.emit();
     }
 }

@@ -9,21 +9,27 @@ import {Matrix} from "../../matrix";
 export abstract class CircleSliceShader extends CircleShader{
     private startUniform: WebGLUniformLocation; 
     private endUniform: WebGLUniformLocation;
-    private rotationUniform: WebGLUniformLocation;
 
     public init(shader: Shader, gl: WebGLRenderingContext): void{
         super.init(shader, gl);
         this.startUniform = gl.getUniformLocation(this.shader, "start");
         this.endUniform = gl.getUniformLocation(this.shader, "end");
-        this.rotationUniform = gl.getUniformLocation(this.shader, "rotation");
     }
     
     public preProcess(elem: Element, gl: WebGLRenderingContext, opengl: OpenGL): void {
         super.preProcess(elem, gl, opengl);
         
-        gl.uniform1f(this.startUniform, (elem as CircleSliceElement).start);
-        gl.uniform1f(this.endUniform, (elem as CircleSliceElement).end);
-        gl.uniform1f(this.rotationUniform, opengl.getRotation() * Matrix.oneDeg % (2.0 * Math.PI));
+        var r = (opengl.getRotation() % 360.0) * Matrix.oneDeg;
+        if(r > Math.PI){
+            r = 2.0 * Math.PI - r;
+        }else if(r < -Math.PI){
+            r = -2.0 * Math.PI - r;
+        }else{
+            r = -r;
+        }
+           
+        gl.uniform1f(this.startUniform, (elem as CircleSliceElement).start + r);
+        gl.uniform1f(this.endUniform, (elem as CircleSliceElement).end + r);
     }
     
     public getElementX(elem: Element){

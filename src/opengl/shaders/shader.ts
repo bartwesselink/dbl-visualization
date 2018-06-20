@@ -13,7 +13,6 @@ import {FillRingSliceShader} from "./impl/fillRingSliceShader";
 import {DrawCircleSliceShader} from "./impl/drawCircleSliceShader";
 import {DrawRingSliceShader} from "./impl/drawRingSliceShader";
 import {CircularArcShader} from "./impl/circularArcShader";
-import {GridShader} from "./impl/gridShader";
 
 export class Shader{
     private gl: WebGLRenderingContext;
@@ -34,50 +33,12 @@ export class Shader{
     private drawRingSliceShader: DrawRingSliceShader = null;
     private circularArcShader: CircularArcShader = null;
 
-    private gridShader: GridShader = null;
-    private grid: boolean = false;
-    private unitBuffer: WebGLBuffer = null;
-
     constructor(gl: WebGLRenderingContext, opengl: OpenGL){
         this.gl = gl;
         this.opengl = opengl;
         this.copyShader = new CopyShader();
         this.copyShader.init(this, this.gl);
         this.setShader(this.copyShader);
-    }
-    
-    public enableGrid(enabled: boolean): void {
-        if(enabled){
-            this.grid = true;
-            if(this.gridShader == null){
-                this.gridShader = new GridShader();
-                this.gridShader.init(this, this.gl);
-                this.unitBuffer = this.gl.createBuffer();
-                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.unitBuffer);
-                this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array([-1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0]), this.gl.STATIC_DRAW);
-            }
-        }else{
-            this.grid = false;
-        }
-    }
-    
-    public drawGrid(): void{
-        if(this.grid){
-            this.gl.useProgram(this.gridShader.shader);
-                                    
-            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.unitBuffer);
-            this.gl.vertexAttribPointer(this.gridShader.attribPosition, //attribute
-                                        2,                              //2D so two values per iteration: x, y
-                                        this.gl.FLOAT,                  //data type is float32
-                                        false,                          //no normalisation
-                                        0,                              //stride = automatic
-                                        0);                             //skip
-            this.gl.enableVertexAttribArray(this.gridShader.attribPosition);
-            
-            this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
-
-            this.gl.useProgram(this.shader.shader);
-        }
     }
     
     public enableShader(shader: ShaderMode): void{

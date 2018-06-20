@@ -10,7 +10,7 @@ uniform lowp vec3 lcolor;
 varying lowp vec2 vpos;
 
 void main() {
-	lowp float val = sqrt((vpos.x - cx) * (vpos.x - cx) * ratio + (vpos.y - cy) * (vpos.y - cy));
+	lowp float val = sqrt(pow(vpos.x - cx, 2.0) * ratio + pow(vpos.y - cy, 2.0));
 	lowp vec4 clr;
 	if(val <= radius){
 		clr = vec4(color, 1.0);

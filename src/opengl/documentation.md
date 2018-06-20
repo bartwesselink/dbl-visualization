@@ -58,18 +58,6 @@ Sets whether or not the shape indicated by the given ID should be renderer on a 
 Sets the line color of the shape indicated by the given ID, only use this method for lined shapes for drawn shapes use the `setColor` method. Changes only take effect after a rerender.
 - `public setColor(id: number, color: number[]): void`    
 Sets the color of the shape indicated by the given ID. Changes only take effect after a rerender.
-- `public setGrid(enabled: boolean): void`    
-Enables or disables the background grid.
-- `public setSizeThresHold(pixels: number): void`    
-Sets the point at which objects are considered to be too small to render, measured in pixels. The default value is half a pixel.
-- `public static setVerbose(verbose: boolean): void`    
-Toggles verbose mode on all OpenGL instances.
-- `public copyColor(original: number, target: number): void`    
-Copies the color given to the original node to the target node.
-- `public copyLineColor(original: number, target: number): void`    
-Copies the line color given to the original node to the target node.
-- `public isShapeVisible(id: number): boolean`    
-Checks to see if the shape with the given will be rendered.
 
 ## Available but not intended to be used
 - `public getModelviewMatrix(): Float32Array`    
