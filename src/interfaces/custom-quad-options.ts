@@ -14,4 +14,8 @@ export interface CustomQuadOptions {
     color?: number[];
     fillColor?: number[];
     lineColor?: number[];
+
+    // are not used but eases code
+    x?: number;
+    y?: number;
 }
