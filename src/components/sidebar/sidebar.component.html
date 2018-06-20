@@ -1,20 +1,20 @@
-<div class="mdl-card mdl-shadow--2dp sidebar">
-    <div class="mdl-card__title">
-        <h2 class="mdl-card__title-text">Tree Navigator</h2>
+<div class="sidebar">
+    <div class="sidebar-search">
+        <app-search [tree]="tree"></app-search>
     </div>
-    <app-search [tree]="tree"></app-search>
-    <div class="mdl-card__supporting-text sidebar-content" #content>
-        <app-tree-navigator #navigator [tree]="tree" [parent]="true"></app-tree-navigator>
+
+    <div class="sidebar-navigator">
+        <div class="sidebar-content" #content>
+            <app-tree-navigator #navigator [tree]="tree" [parent]="true"></app-tree-navigator>
+        </div>
+
+        <div class="sidebar-buttons">
+            <i [tooltip]="contract" class="sidebar-button mdi mdi-arrow-collapse-vertical" (click)="contractAll()"></i>
+            <button class="button button-no-shadow button-primary button-small" (click)="resetTree()">Reset to original</button>
+            <i [tooltip]="export" class="sidebar-button mdi mdi-file-download" (click)="exportTree()"></i>
+        </div>
     </div>
-    <div class="mdl-card__actions mdl-card--border">
-        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" (click)="contractAll()">
-            Contract all
-        </a>
-        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" (click)="exportTree()">
-            Export
-        </a>
-        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" (click)="resetTree()">
-            Reset
-        </a>
-    </div>
+
+    <app-tooltip #contract [visible]="false" label="Contract all"></app-tooltip>
+    <app-tooltip #export [visible]="false" label="Export tree"></app-tooltip>
 </div>

@@ -7,8 +7,6 @@ import {ViewMode} from '../../enums/view-mode';
 import {InteractionOptions} from '../../enums/interaction-options';
 import {FormComponent} from "../form/form.component";
 
-declare var dialogPolyfill;
-
 @Component({
     selector: 'app-general-settings-button',
     templateUrl: './general-settings-button.component.html',
@@ -18,30 +16,27 @@ export class GeneralSettingsButtonComponent implements OnInit {
     private storageKey = 'General-settings';
 
     public form: Form;
-    @ViewChild('dialog') private dialog: ElementRef;
+    public view: boolean = false;
     @ViewChild('formComponent') private formComponent: FormComponent;
 
     constructor(private formFactory: FormFactory, private settingsBus: SettingsBus) {
     }
 
+    public toggle(): void {
+        this.view = !this.view;
+    }
+
     public ngOnInit(): void {
         this.createForm();
-        dialogPolyfill.registerDialog(this.dialog.nativeElement);
+
         // get stored settings (if any)
         this.fetchPersistentSettings();
         // emit first value
         this.updateValue();
     }
 
-    public open(): void {
-        this.dialog.nativeElement.showModal();
-
-        // fix for button being selected
-        setTimeout(() => this.dialog.nativeElement.focus());
-    }
-
     public close(): void {
-        this.dialog.nativeElement.close();
+        this.view = false;
     }
 
     public updateValue(): void {

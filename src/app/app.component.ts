@@ -19,8 +19,11 @@ import {BasicTree} from "../visualizations/basic-tree";
 import {Circles} from "../visualizations/circles";
 import {IciclePlot} from "../visualizations/icicle-plot";
 import * as FileSaver from "file-saver";
-
-declare var dialogPolyfill;
+import {DatasetSelectionComponent} from '../components/dataset-selection/dataset-selection.component';
+import {TreeInput} from '../interfaces/tree-input';
+import {HelpButtonComponent} from '../components/help-button/help-button.component';
+import {SnackbarBus} from '../providers/snackbar-bus';
+import {Galaxy} from "../visualizations/galaxy";
 
 @Component({
     selector: 'app-root',
@@ -32,6 +35,8 @@ export class AppComponent implements OnInit {
     private originalTree: Node;
     public visualizers: Visualizer[];
     public showFullScreenLoader: boolean = false;
+    public loaderVisible: boolean = false;
+    public showApp: boolean = false;
 
     private activeTab: Tab;
     private amountOfWindowsLoading: number = 0;
@@ -40,9 +45,11 @@ export class AppComponent implements OnInit {
     public readonly SIDE_BY_SIDE_MAX_WINDOWS = 2;
     public readonly SIDE_BY_SIDE_MAX_WIDTH = 200;
 
+    public showPointer: boolean = false;
+
     @ViewChild(SidebarComponent) private sidebar: SidebarComponent;
-    @ViewChild("snackbar") public snackbar: ElementRef;
-    @ViewChild('fullScreenLoader') private fullScreenLoader: ElementRef;
+    @ViewChild(DatasetSelectionComponent) private datasetSelection: DatasetSelectionComponent;
+    @ViewChild(HelpButtonComponent) private help: HelpButtonComponent;
     @ViewChild('appHolder') private appHolder: ElementRef;
     @ViewChild('resizer') private resizer: ElementRef;
     @ViewChild('holderSidebar') private holderSidebar: ElementRef;
@@ -59,7 +66,7 @@ export class AppComponent implements OnInit {
     // variables for dragging the column around
     public windowResizing: boolean = false;
 
-    constructor(private settingsBus: SettingsBus, private selectBus: SelectBus, private subtreeBus: SubtreeBus) {
+    constructor(private settingsBus: SettingsBus, private selectBus: SelectBus, private subtreeBus: SubtreeBus, private snackbarBus: SnackbarBus) {
         this.createVisualizers();
 
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
@@ -70,7 +77,11 @@ export class AppComponent implements OnInit {
 
                 if (settings.viewMode === ViewMode.SIDE_BY_SIDE) {
                     if (this.tabs.length > this.SIDE_BY_SIDE_MAX_WINDOWS) {
-                        this.snackbar.nativeElement.MaterialSnackbar.showSnackbar({message: 'Please close tabs, because for this view-mode there are only ' + this.SIDE_BY_SIDE_MAX_WINDOWS + ' windows allowed.'});
+                        this.snackbarBus.send({
+                            message: 'Please close tabs, because for this view-mode there are only ' + this.SIDE_BY_SIDE_MAX_WINDOWS + ' windows allowed.',
+                            duration: 10000,
+                            closeButton: true,
+                        });
 
                         return;
                     }
@@ -94,14 +105,13 @@ export class AppComponent implements OnInit {
     }
 
     public ngOnInit(): void {
-        dialogPolyfill.registerDialog(this.fullScreenLoader.nativeElement);
-
-        this.parser = new NewickParser(this.snackbar);
-        this.exporter = new NewickExporter(this.snackbar);
+        this.parser = new NewickParser(this.snackbarBus);
+        this.exporter = new NewickExporter(this.snackbarBus);
     }
 
     /** @author Jordy Verhoeven */
-    parseTree(data: string) {
+    parseTree(treeInput: TreeInput) {
+        const data = treeInput.content;
         const line = this.parser.extractLines(data);
 
         if (line !== null) {
@@ -109,6 +119,13 @@ export class AppComponent implements OnInit {
 
             this.openTree(this.parser.parseTree(line));
             this.originalTree = this.tree;
+            this.showApp = true;
+
+            if (treeInput.name != null) {
+                this.datasetSelection.setCurrentFile(treeInput.name);
+            }
+
+            this.showPointer = true;
 
             if(!hadTree) {
                 this.resizeActiveTab();
@@ -118,6 +135,10 @@ export class AppComponent implements OnInit {
     /** @end-author Jordy Verhoeven */
 
     /** @author Bart Wesselink */
+    public goToApp(): void {
+        this.showApp = true;
+    }
+
     public addVisualization(visualizer: Visualizer): void {
         this.addTab(visualizer);
     }
@@ -127,6 +148,7 @@ export class AppComponent implements OnInit {
 
         setTimeout(() => {
             tab.window.ngOnInit();
+            tab.window.resetTransformation();
         }, 100);
     }
 
@@ -176,13 +198,10 @@ export class AppComponent implements OnInit {
 
         // check if we need to show the full screen modal, in case there is no visualization yet
         if (this.amountOfWindowsLoading > 0 && this.showFullScreenLoader) {
-            // check if modal is already open, to prevent any errors
-            if (!this.fullScreenLoader.nativeElement.open) {
-                this.fullScreenLoader.nativeElement.showModal();
-            }
+            this.loaderVisible = true;
         } else if (this.showFullScreenLoader) {
             this.showFullScreenLoader = false;
-            this.fullScreenLoader.nativeElement.close();
+            this.loaderVisible = false;
         }
     }
 
@@ -231,6 +250,16 @@ export class AppComponent implements OnInit {
         //         await tab.window.computeScene();
         //     }
         // }
+    }
+
+    public startHelp(): void {
+        this.showApp = true;
+        this.help.startTour();
+    }
+
+    public selectDataset(): void {
+        this.showApp = true;
+        this.datasetSelection.open();
     }
 
     private addTab(visualizer: Visualizer) {
@@ -284,11 +313,15 @@ export class AppComponent implements OnInit {
         let firstWindow = sections[0];
         let secondWindow = sections[1];
 
-        let holderWidth = document.body.clientWidth;
-        if (this.tree) holderWidth -= this.holderSidebar.nativeElement.offsetWidth;
+        // calculate with of content box without padding
+        const cs = getComputedStyle(this.appHolder.nativeElement);
 
-        let firstWindowSize = ($event.clientX - this.resizer.nativeElement.clientWidth / 2);
-        let secondWindowSize = (holderWidth - ($event.clientX - this.resizer.nativeElement.clientWidth / 2));
+        const paddingLeft = parseFloat(cs.paddingLeft)
+        const paddingX = paddingLeft + parseFloat(cs.paddingRight);
+        let holderWidth = this.appHolder.nativeElement.offsetWidth - paddingX;
+
+        let firstWindowSize = ($event.clientX - paddingLeft - this.resizer.nativeElement.clientWidth / 2);
+        let secondWindowSize = (holderWidth - firstWindowSize - this.resizer.nativeElement.clientWidth);
 
         if (firstWindowSize < this.SIDE_BY_SIDE_MAX_WIDTH || secondWindowSize < this.SIDE_BY_SIDE_MAX_WIDTH) {
             return;
