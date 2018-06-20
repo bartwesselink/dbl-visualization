@@ -238,7 +238,7 @@ export class WindowComponent implements OnInit {
     private scaleView(value: number) {
         this.gl.scale(value);
         this.render();
-        
+
         if(this.gl.getZoom() >= this.ZOOM_WARNING && !this.warningShown){
             this.warningShown = true;
 
@@ -529,6 +529,14 @@ export class WindowComponent implements OnInit {
                 return Palettes.neon;
             case 'purpleOrange':
                 return Palettes.purpleOrange;
+            case 'longRed':
+                return Palettes.longRed;
+            case 'longGreen':
+                return Palettes.longGreen;
+            case 'longBlue':
+                return Palettes.longBlue;
+            case 'longGrey':
+                return Palettes.longGrey;
         }
         return Palettes.defaultBlue; // Fallback
     }
@@ -536,7 +544,7 @@ export class WindowComponent implements OnInit {
 
     private readSettings(settings: Settings, initialize: boolean): void {
         if (!settings.colorMode) {
-            this.palette = Palettes.greyScale;
+            this.palette = Palettes.longGrey;
         } else {
             this.palette = this.getPalette(settings.palette);
         }
