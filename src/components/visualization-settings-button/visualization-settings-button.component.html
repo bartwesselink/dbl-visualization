@@ -3,7 +3,7 @@
         <i class="mdi mdi-settings"></i>
     </button>
 
-    <div [hidden]="!viewSettings" class="dropdown dropdown-down">
+    <div [hidden]="!viewSettings" class="dropdown dropdown-down settings-dropdown">
         <div class="dropdown-content">
             <app-form *ngIf="form" [form]="form" (valueChanges)="change($event)"></app-form>
         </div>
