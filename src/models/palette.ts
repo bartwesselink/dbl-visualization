@@ -136,7 +136,7 @@ export class Palette {
     }
 
     private calcLinearRGBGradient(depth: number, selectedDepth: number, maxDepth: number): number[] {
-        let percent: number = ((depth - selectedDepth) / maxDepth);
+        let percent: number = ((depth - selectedDepth) / (maxDepth - selectedDepth));
         let red: number = this.primary.r - percent * (this.primary.r - this.secondary.r);
         let green: number = this.primary.g - percent * (this.primary.g - this.secondary.g);
         let blue: number = this.primary.b - percent * (this.primary.b - this.secondary.b);
@@ -162,7 +162,7 @@ export class Palette {
             delta = d + ((Math.abs(d) < 180) ? ((d < 0) ? 360 : -360) : 0);
         }
         for (let i = 0; i <= maxDepth; i++) {
-            percent = (i - selectedDepth) / maxDepth;
+            percent = (i - selectedDepth) / (maxDepth - selectedDepth);
             hueValues.push(((this.primary.h + (delta * percent) + 360) % 360) / 360);
             satValues.push(this.primary.s - (this.primary.s - this.secondary.s) * percent);
             valValues.push(this.primary.v - (this.primary.v - this.secondary.v) * percent);
