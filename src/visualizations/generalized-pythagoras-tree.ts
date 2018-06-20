@@ -21,7 +21,7 @@ export class GeneralizedPythagorasTree implements Visualizer {
         let color: number[]; // Have to initialise it here otherwise typescript complains
 
         const initialRectangleCenterX: number = 0;
-        const initialRectangleCenterY: number = -250;
+        const initialRectangleCenterY: number = -300;
         const initialRectangleWidth: number = 50;
         const initialRectangleHeight: number = 50;
         const initialRectangleAngle: number = 0;
@@ -143,7 +143,7 @@ export class GeneralizedPythagorasTree implements Visualizer {
     public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void{
         this.recolor(input.tree, input.palette, gl, draws, input.tree.selected);
     }
-    
+
     private recolor(tree: Node, palette: Palette, gl: OpenGL, draws: Draw[], selected: boolean){
         if (selected || tree.selected) {
             selected = true;
