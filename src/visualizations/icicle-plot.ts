@@ -170,7 +170,7 @@ export class IciclePlot implements Visualizer {
     public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void{
         this.recolor(input.tree, input.palette, gl, draws, input.tree.selected);
     }
-    
+
     private recolor(tree: Node, palette: Palette, gl: OpenGL, draws: Draw[], selected: boolean){
         if (selected || tree.selected) {
             selected = true;

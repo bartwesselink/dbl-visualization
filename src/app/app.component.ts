@@ -16,6 +16,7 @@ import {ViewMode} from '../enums/view-mode';
 import {SubtreeBus} from "../providers/subtree-bus";
 import {SelectBus} from "../providers/select-bus";
 import {BasicTree} from "../visualizations/basic-tree";
+import {SpaceReclaimingStack} from "../visualizations/space-reclaiming-stack";
 import {IciclePlot} from "../visualizations/icicle-plot";
 import * as FileSaver from "file-saver";
 import {DatasetSelectionComponent} from '../components/dataset-selection/dataset-selection.component';
@@ -214,6 +215,7 @@ export class AppComponent implements OnInit {
             new GeneralizedPythagorasTree(),
             new SimpleTreeMap(),
             new BasicTree(),
+            new SpaceReclaimingStack(),
             new Sunburst(),
             new IciclePlot(),
             new Galaxy()
