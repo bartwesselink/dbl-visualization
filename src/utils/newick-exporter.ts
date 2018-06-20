@@ -1,12 +1,13 @@
 import {Node} from "../models/node";
 import * as FileSaver from "file-saver";
+import {SnackbarBus} from '../providers/snackbar-bus';
 
 /** @author Nico Klaassen */
 export class NewickExporter {
     errorMsg = "Error generating Newick data from selected tree.";
     successMsg = "Newick data ready for download.";
 
-    constructor(private snackbar: any) {
+    constructor(private snackbarBus: SnackbarBus) {
     }
 
     public exportTree(tree: Node): void {
@@ -51,8 +52,12 @@ export class NewickExporter {
     }
 
 
-    private feedback(message: String): void {
-        this.snackbar.nativeElement.MaterialSnackbar.showSnackbar({message: message});
+    private feedback(message: string): void {
+        this.snackbarBus.send({
+            message: message,
+            duration: 10000,
+            closeButton: true,
+        });
     }
 
     /** @end-author Nico Klaassen */

@@ -1,18 +1,20 @@
-<button class="mdl-button mdl-js-button mdl-button--icon general-settings-button" (click)="open()">
-    <i class="material-icons">settings</i>
-</button>
+<div class="dropdown-holder">
+    <button class="header-button-icon" (click)="toggle()">
+        <i class="mdi mdi-settings"></i>
+    </button>
 
-<dialog class="mdl-dialog" #dialog tabindex="-1">
-    <h4 class="mdl-dialog__title">Settings</h4>
-    <div class="mdl-dialog__content">
-        <p>
-            Using this tool you can tweak general visualization settings.
-        </p>
+    <div [hidden]="!view" class="dropdown dropdown-up">
+        <div class="dropdown-content">
+            <p>
+                Using this tool you can tweak general visualization settings.
+            </p>
 
-        <app-form #formComponent [form]="form" (valueChanges)="updateValue()" [debounceTime]="0"></app-form>
+            <app-form #formComponent [form]="form" (valueChanges)="updateValue()" [debounceTime]="0"></app-form>
+
+            <div class="dropdown-actions">
+                <button type="button" class="button button-primary button-no-shadow button-small" (click)="close()">Close</button>
+                <button type="button" class="button button-primary button-no-shadow button-small" (click)="resetDefault()">Reset</button>
+            </div>
+        </div>
     </div>
-    <div class="mdl-dialog__actions">
-        <button type="button" class="mdl-button close" (click)="close()">Close</button>
-        <button type="button" class="mdl-button general-settings-reset-button" (click)="resetDefault()">Reset</button>
-    </div>
-</dialog>
+</div>

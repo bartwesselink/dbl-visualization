@@ -26,6 +26,7 @@ import {Palettes} from "../../utils/palettes";
 import {VisualizerInput} from "../../interfaces/visualizer-input";
 import {GradientType} from "../../enums/gradient-type";
 import {ViewCubeComponent} from '../view-cube/view-cube.component';
+import {SnackbarBus} from '../../providers/snackbar-bus';
 
 @Component({
     selector: 'app-window',
@@ -35,7 +36,6 @@ export class WindowComponent implements OnInit {
     @ViewChild('canvas') private canvas: ElementRef;
     @ViewChild(ViewCubeComponent) private viewCube: ViewCubeComponent;
     @Input('tree') private tree: Node;
-    @Input('snackbar') private snackbar: any;
     @Input('visualizer') public visualizer: Visualizer;
     @Input('tab') public tab: Tab;
 
@@ -90,7 +90,7 @@ export class WindowComponent implements OnInit {
     private gradientType: GradientType = GradientType.RGBLinear;
     private invertHSV: boolean = false;
 
-    constructor(private formFactory: FormFactory, private workerManager: WorkerManager, private selectBus: SelectBus, private settingsBus: SettingsBus) {
+    constructor(private formFactory: FormFactory, private workerManager: WorkerManager, private selectBus: SelectBus, private settingsBus: SettingsBus, private snackbarBus: SnackbarBus) {
         this.interactionHandler = new InteractionHandler();
 
         this.selectBus.nodeSelected.subscribe((node: Node) => {
@@ -132,13 +132,10 @@ export class WindowComponent implements OnInit {
     // called from AppComponent to prevent multiple calls
     public checkGpu(): void {
         if (!this.gl.isDedicatedGPU()) {
-            this.snackbar.MaterialSnackbar.showSnackbar({
-                message: "You are using integrated graphics, this could diminish your experience.",
-                timeout: 1e8, // practically infinite
-                actionHandler: () => {
-                    this.snackbar.MaterialSnackbar.cleanup_();
-                }, // close on click
-                actionText: "CLOSE"
+            this.snackbarBus.send({
+                message: 'You are using integrated graphics, this could diminish your experience.',
+                duration: -1,
+                closeButton: true,
             });
         }
     }
@@ -157,7 +154,7 @@ export class WindowComponent implements OnInit {
 
     public setDarkmode(enabled: boolean): void {
         if (enabled) {
-            this.gl.setBackgroundColor(50.0 / 255.0, 50.0 / 255.0, 50.0 / 255.0);
+            this.gl.setBackgroundColor(32 / 255.0, 37 / 255.0, 53 / 255.0);
         } else {
             this.gl.setBackgroundColor(1.0, 1.0, 1.0);
         }
@@ -206,9 +203,7 @@ export class WindowComponent implements OnInit {
                 break;
             case 't':
             case 'T':
-                this.gl.resetTransformations();
-                this.render();
-                this.viewCube.setZoomLevel(this.gl.getZoom());
+                this.resetTransformation();
                 break;
         }
     }
@@ -243,16 +238,14 @@ export class WindowComponent implements OnInit {
     private scaleView(value: number) {
         this.gl.scale(value);
         this.render();
-
+        
         if(this.gl.getZoom() >= this.ZOOM_WARNING && !this.warningShown){
             this.warningShown = true;
-            this.snackbar.MaterialSnackbar.showSnackbar({
+
+            this.snackbarBus.send({
                 message: "You've reached a zoom level where floating point rounding errors will start to accumulate. If things don't look right anymore reset the transformations using 'T'.",
-                timeout: 1e8,
-                actionHandler: () => {
-                    this.snackbar.MaterialSnackbar.cleanup_();
-                }, // close on click
-                actionText: "CLOSE"
+                duration: -1,
+                closeButton: true,
             });
         }
 
@@ -357,6 +350,10 @@ export class WindowComponent implements OnInit {
             this.workerManager.startWorker(this.gl, this.visualizer.draw, input)
                 .then((draws: Draw[]) => {
                     setTimeout(() => {
+                        if (this.visualizer.optimizeShaders) {
+                            this.visualizer.optimizeShaders(this.gl);
+                        }
+
                         this.redraw();
 
                         this.stopLoading();
@@ -532,14 +529,6 @@ export class WindowComponent implements OnInit {
                 return Palettes.neon;
             case 'purpleOrange':
                 return Palettes.purpleOrange;
-            case 'longRed':
-                return Palettes.longRed;
-            case 'longGreen':
-                return Palettes.longGreen;
-            case 'longBlue':
-                return Palettes.longBlue;
-            case 'longGrey':
-                return Palettes.longGrey;
         }
         return Palettes.defaultBlue; // Fallback
     }
@@ -547,7 +536,7 @@ export class WindowComponent implements OnInit {
 
     private readSettings(settings: Settings, initialize: boolean): void {
         if (!settings.colorMode) {
-            this.palette = Palettes.longGrey;
+            this.palette = Palettes.greyScale;
         } else {
             this.palette = this.getPalette(settings.palette);
         }
@@ -575,6 +564,7 @@ export class WindowComponent implements OnInit {
     public resetTransformation() {
         this.gl.resetTransformations();
         this.render();
+        this.viewCube.setZoomLevel(this.gl.getZoom());
     }
 
     /** @end-author Mathijs Boezer */

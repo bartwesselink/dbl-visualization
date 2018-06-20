@@ -21,7 +21,7 @@ export class Palettes {
         ]
     );
     static greyScale = new Palette(
-        Color.fromHex('4D4D4D'),
+        Color.fromHex('0D0D0D'),
         Color.fromHex('D9D9D9'),
         [
             Color.fromHex('595959'),
@@ -82,26 +82,6 @@ export class Palettes {
             Color.fromHex('fc447c'),
             Color.fromHex('44ff00')
         ]
-    );
-    static longRed = new Palette(
-        Color.fromHex('FF0000'),
-        Color.fromHex('FFF2F2'),
-        []
-    );
-    static longGreen = new Palette(
-        Color.fromHex('00FF00'),
-        Color.fromHex('F2FFF2'),
-        []
-    );
-    static longBlue = new Palette(
-        Color.fromHex('0000FF'),
-        Color.fromHex('F2F2FF'),
-        []
-    );
-    static longGrey = new Palette(
-        Color.fromHex('000000'),
-        Color.fromHex('F2F2F2'),
-        []
     );
 }
 

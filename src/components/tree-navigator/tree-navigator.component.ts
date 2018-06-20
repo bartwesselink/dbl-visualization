@@ -25,6 +25,8 @@ export class TreeNavigatorComponent implements OnInit {
             original: node,
             identifier: node.identifier,
             selected: node.selected === true,
+            length: node.length,
+            specifiedLength: node.specifiedLength,
         };
     }
 

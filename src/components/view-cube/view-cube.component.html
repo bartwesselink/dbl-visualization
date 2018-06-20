@@ -21,56 +21,58 @@
     </div>
 </div>
 
-<dialog class="mdl-dialog" #dialog tabindex="-1">
-    <h4 class="mdl-dialog__title">Key bindings</h4>
-    <div class="mdl-dialog__content">
-        <p>
-            The tool supports various key bindings.
-        </p>
+<div class="dialog" #dialog [hidden]="!dialogOpen">
+    <div class="dialog-modal">
+        <h3 class="dialog-title">Key bindings</h3>
+        <div class="dialog-content">
+            <p>
+                The tool supports various key bindings.
+            </p>
 
-        <div class="help-key-stroke">
-            <span class="help-key">W</span> Move up
+            <div class="help-key-stroke">
+                <span class="help-key">W</span> Move up
+            </div>
+
+            <div class="help-key-stroke">
+                <span class="help-key">D</span> Move right
+            </div>
+
+            <div class="help-key-stroke">
+                <span class="help-key">S</span> Move down
+            </div>
+
+            <div class="help-key-stroke">
+                <span class="help-key">A</span> Move left
+            </div>
+
+            <div class="help-spacing"></div>
+
+            <div class="help-key-stroke">
+                <span class="help-key">Q</span> Rotate left
+            </div>
+
+            <div class="help-key-stroke">
+                <span class="help-key">E</span> Rotate right
+            </div>
+
+            <div class="help-spacing"></div>
+
+            <div class="help-key-stroke">
+                <span class="help-key">R</span> Zoom in
+            </div>
+
+            <div class="help-key-stroke">
+                <span class="help-key">F</span> Zoom out
+            </div>
+
+            <div class="help-spacing"></div>
+
+            <div class="help-key-stroke">
+                <span class="help-key">T</span> Reset all transformations
+            </div>
         </div>
-
-        <div class="help-key-stroke">
-            <span class="help-key">D</span> Move right
-        </div>
-
-        <div class="help-key-stroke">
-            <span class="help-key">S</span> Move down
-        </div>
-
-        <div class="help-key-stroke">
-            <span class="help-key">A</span> Move left
-        </div>
-
-        <div class="help-spacing"></div>
-
-        <div class="help-key-stroke">
-            <span class="help-key">Q</span> Rotate left
-        </div>
-
-        <div class="help-key-stroke">
-            <span class="help-key">E</span> Rotate right
-        </div>
-
-        <div class="help-spacing"></div>
-
-        <div class="help-key-stroke">
-            <span class="help-key">R</span> Zoom in
-        </div>
-
-        <div class="help-key-stroke">
-            <span class="help-key">F</span> Zoom out
-        </div>
-
-        <div class="help-spacing"></div>
-
-        <div class="help-key-stroke">
-            <span class="help-key">T</span> Reset all transformations
+        <div class="dialog-actions">
+            <button type="button" class="button button-no-shadow button-primary button-small" (click)="close()">Close</button>
         </div>
     </div>
-    <div class="mdl-dialog__actions">
-        <button type="button" class="mdl-button close" (click)="close()">Close</button>
-    </div>
-</dialog>
+</div>

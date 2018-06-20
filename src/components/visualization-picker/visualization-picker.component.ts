@@ -8,15 +8,23 @@ import {Visualizer} from '../../interfaces/visualizer';
 export class VisualizationPickerComponent {
     /** @author Bart Wesselink */
     @Input() identifier: string = 'select';
-    @Input() icon: string = 'add';
+    @Input() type: 'menu'|'tab' = 'menu';
     @Input() visualizers: Visualizer[];
     @Output() select: EventEmitter<Visualizer> = new EventEmitter<Visualizer>();
+    public opened: boolean = false;
 
     public selectItem(visualizer: Visualizer): void {
         this.select.emit(visualizer);
 
-        // hide select box
-        document.body.click();
+        this.close();
+    }
+
+    public open(): void {
+        this.opened = true;
+    }
+
+    public close(): void {
+        this.opened = false;
     }
 
     /** @end-author Bart Wesselink */

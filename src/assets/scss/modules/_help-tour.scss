@@ -1,47 +1,65 @@
 /** @author Mathijs Boezer */
 .introjs-helperLayer {
     background-color: rgba(150,150,150,0.7);
-    border-radius: 2px;
-}
-
-.introjs-tooltip {
-    padding: 10px 10px;
-    background-color: white;
-    min-width: 250px;
-    max-width: 350px;
     border-radius: 0;
 }
 
+.introjs-tooltip {
+    padding: 1rem;
+    background-color: white;
+    width: 100%;
+    max-width: 40rem;
+    min-width: 20rem;
+    border-radius: 0.3rem;
+    box-shadow: 0 0 12px -1px rgba(0,0,0,0.75);
+}
+
 .introjs-tooltiptext {
-    margin-left: -10px;
-    margin-right: -10px;
-    font: 16px/normal Helvetica;
-    color: black !important;
-    padding: 25px 30px 15px;
+    color: $color-dark !important;
+    margin-bottom: 1rem;
+    padding: 1rem 1.2rem 0 1.2rem;
 }
 
 .introjs-tooltipbuttons {
     border-radius: 0;
+    margin: 0 1.2rem;
 }
 
 .introjs-button {
-    border: none;
-    background: transparent;
-    font: 14px/normal Helvetica;
-    color: black;
-    border-radius: 2px;
-    margin-top: 10px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    text-transform: uppercase;
+    @extend .button;
+    @extend .button-no-shadow;
+    @extend .button-primary;
+    @extend .button-small;
 
-    &:focus, &:active, &:hover {
-        background: rgba(158,158,158, 0.20);
+    width: auto !important;
+    display: inline-block !important;
+    text-shadow: none;
+    padding: 0.5rem 0.8rem !important;
+    background: $color-primary !important;
+
+    &.introjs-disabled {
+        border: 0;
+        background: $color-primary;
+        pointer-events: none;
+        opacity: 0.6;
+    }
+
+    &:not(:last-of-type) {
+        margin-right: 0.3rem;
+    }
+
+    &:hover {
+        background: darken($color-primary, 6%) !important;
+        box-shadow: none;
     }
 }
 
 .introjs-nextbutton {
     margin-right: 10px;
+}
+
+.introjs-prevbutton {
+    display: none !important;
 }
 
 .introjs-skipbutton {
@@ -54,13 +72,13 @@
 }
 
 .introjs-progress {
-    background-color: lightgrey;
+    background-color: $color-dark;
     margin: 5px 20px;
     border-radius: 0;
 }
 
 .introjs-progressbar {
-    background-color: grey;
+    background-color: $color-primary;
     border-radius: 0;
 }
 /** @end-author Mathijs Boezer */

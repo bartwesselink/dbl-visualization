@@ -1,0 +1,7 @@
+<div class="snackbar" *ngIf="current" [class.snackbar-active]="animate">
+    <div class="snackbar-text">
+        {{ current.message }}
+    </div>
+
+    <div class="snackbar-close" *ngIf="current.closeButton" (click)="close()"><i class="mdi mdi-close-circle"></i></div>
+</div>

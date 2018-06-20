@@ -1,11 +1,16 @@
 /** @author Bart Wesselink */
 .holder {
   display: flex;
+  background: $color-dark;
   position: absolute;
   left: 0;
   right: 0;
   top: 0;
   bottom: 0;
+
+  &[hidden] {
+    display: none;
+  }
 }
 
 .holder-app {
@@ -13,49 +18,44 @@
   position: relative;
 
   &.holder-app-side-by-side {
-    height: calc(100vh - 64px);
-    max-height: calc(100vh - 64px);
+    padding: 0.5rem 1rem;
+    height: 100%;
     overflow: hidden;
     position: relative;
 
     section {
       width: 100%;
       height: auto;
-      padding: 1rem;
     }
 
     .page-content {
       display: flex;
       flex-direction: column;
-    }
-
-    .holder-content {
-      height: 100%;
-      border-width: 0 1px 1px 1px;
-      border-style: solid;
-      box-sizing: border-box;
-      border-color: unquote("rgb(#{$palette-indigo-500})");
+      border-radius: 0.3rem;
       overflow: hidden;
-      position: relative;
+      box-shadow: 0 0 5px -1px rgba(0,0,0,0.75);
     }
 
     app-window {
       flex-grow: 1;
+      height: 100%;
     }
 
-    .holder-header {
-      display: flex;
+    .holder-header-close, .holder-header-pick-visualization {
+      &:hover {
+        color: rgba(255, 255, 255, .8);
+      }
     }
 
     display: flex;
 
     .holder-divider {
-      background: rgba(0, 0, 0, .8);
       cursor: col-resize;
       height: 100%;
-      width: 0.6rem;
+      width: 1rem;
       order: 2;
       flex-grow: 0;
+      flex-shrink: 0;
     }
 
     .holder-item-1 {
@@ -64,6 +64,10 @@
 
     .holder-item-2 {
       order: 3;
+    }
+
+    .holder-header {
+      display: block;
     }
   }
 
@@ -75,6 +79,12 @@
     .holder-content {
       height: 100%;
     }
+
+    position: absolute;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    top: 0;
   }
 }
 
@@ -88,30 +98,83 @@
 }
 
 .holder-sidebar {
-  width: 20rem;
+  width: 18rem !important;
   flex-grow: 0;
+
+  &.holder-sidebar-tabs {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+  }
+}
+
+.holder-header {
+  display: block;
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  background: white;
+  box-shadow: 0 0 4px -1px rgba(0,0,0,0.75);
+}
+
+.holder-app-side-by-side .holder-header, .holder-header.is-active {
+  background: $color-primary;
+  color: white;
+}
+
+.holder-header-title {
+  padding: 0.3rem;
+  display: flex;
+  font-size: 0.9rem;
+}
+
+.holder-header-pick-visualization {
+  margin-left: 0.5rem;
+  cursor: pointer;
+}
+
+.holder-header-close {
+  cursor: pointer;
+  padding-left: 0.3rem;
+  margin-left: 0.3rem;
+  border-left: 1px solid white;
 }
 
 .holder-header {
   display: none;
-  height: 2rem;
-  flex-grow: 0;
-  justify-content: space-between;
-  align-items: center;
-  border-top-left-radius: 1rem;
-  border-top-right-radius: 1rem;
-  padding: 0.8rem 2rem;
-  color: white;
-  background-color: unquote("rgb(#{$palette-indigo-500})");
-  border: 1px solid unquote("rgb(#{$palette-indigo-500})");
-}
-
-.holder-header-close {
-  color: white;
-  cursor: pointer;
 }
 
 .holder-view {
   position: relative;
+}
+
+.holder-tabs {
+  position: absolute;
+  left: 0.5rem;
+  top: 0.5rem;
+  z-index: 1;
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+
+  .holder-header {
+    position: static;
+    display: block;
+    margin-right: 0.5rem;
+    cursor: pointer;
+  }
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.holder-tab-panel {
+  display: none;
+
+  &.is-active {
+    display: block;
+  }
 }
 /** @end-author Bart Wesselink */
