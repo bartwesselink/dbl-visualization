@@ -16,12 +16,15 @@ export class Circles implements Visualizer {
 
     public draw(input: VisualizerInput): Draw[] {
         const tree = input.tree;
+        const settings = input.settings;
         const draws: Draw[] = [];
         const color = [0, 0, 0];
         let space = 1;
         let height = 0;
         let newX;
         let newY;
+
+        const baseSize = settings.baseSize;
 
         const generate = (subTree: Node, radius: number, x: number, y: number): void => {
 
@@ -172,7 +175,7 @@ export class Circles implements Visualizer {
             options: {
                 x: 0,
                 y: 0,
-                radius: 400,
+                radius: baseSize,
                 lineColor: color,
             }
         });
@@ -186,13 +189,13 @@ export class Circles implements Visualizer {
 
         }
 
-        let newRadius = 400 / (2 * (height - 0.5));
+        let newRadius = baseSize / (2 * (height - 0.5));
         space = 1;
         height = 0;
 
         if (tree.children.length == 1) {
 
-            newRadius = 400 * 0.75;
+            newRadius = baseSize * 0.75;
 
         }
 
@@ -203,6 +206,7 @@ export class Circles implements Visualizer {
 
     public getForm(formFactory: FormFactory): Form | null {
         return formFactory.createFormBuilder()
+            .addSliderField('baseSize', 400, { label: 'Root size', min: 100, max: 1000 })
             .getForm();
 
     }
