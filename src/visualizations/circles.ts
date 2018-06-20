@@ -10,7 +10,7 @@ import { OpenGL } from "../opengl/opengl";
 export class Circles implements Visualizer {
     /** @author Jordy Verhoeven */
 
-    public requireAntiAliasing: boolean = true;
+    public requireAntiAliasing: boolean = false;
     public shapesPerNode: number = 1;
 
     public draw(input: VisualizerInput): Draw[] {
