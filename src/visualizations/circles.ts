@@ -1,17 +1,22 @@
 import { Visualizer } from '../interfaces/visualizer';
 import { Node } from '../models/node';
+import { Form } from '../form/form';
 import { FormFactory } from '../form/form-factory';
-import { Form } from "../form/form";
 import { Draw } from '../interfaces/draw';
 import { VisualizerInput } from '../interfaces/visualizer-input';
+import { Palette } from "../models/palette";
+import { OpenGL } from "../opengl/opengl";
 
 export class Circles implements Visualizer {
     /** @author Jordy Verhoeven */
 
+    public requireAntiAliasing: boolean = true;
+    public shapesPerNode: number = 1;
+
     public draw(input: VisualizerInput): Draw[] {
         const tree = input.tree;
         const draws: Draw[] = [];
-        const color = [255, 0, 0];
+        const color = [0, 0, 0];
         let space = 1;
         let height = 0;
         let newX;
@@ -74,14 +79,16 @@ export class Circles implements Visualizer {
 
                     //draw node after position is calculated
 
+                    console.log('x: ' + x + ' y: ' + y + ' radius: ' + radius);
+
                     draws.push({
-                        type: 11 /** Cirlce **/,
+                        type: 12 /** Cirlce **/,
                         identifier: child.identifier,
                         options: {
                             x: newX,
                             y: newY,
                             radius: radius,
-                            color: color
+                            lineColor: color,
                         }
                     });
 
@@ -140,6 +147,13 @@ export class Circles implements Visualizer {
                     let newRadius = radius / (2 * (height - 0.5));
                     space = 1;
                     height = 0;
+
+                    if (child.children.length == 1) {
+
+                        newRadius = radius * 0.75;
+
+                    }
+
                     generate(child, newRadius, newX, newY);
 
 
@@ -152,13 +166,13 @@ export class Circles implements Visualizer {
         //draws the root
 
         draws.push({
-            type: 11 /** Cirlce **/,
+            type: 12 /** Cirlce **/,
             identifier: tree.identifier,
             options: {
                 x: 0,
                 y: 0,
                 radius: 400,
-                color: color
+                lineColor: color,
             }
         });
 
@@ -174,6 +188,12 @@ export class Circles implements Visualizer {
         let newRadius = 400 / (2 * (height - 0.5));
         space = 1;
         height = 0;
+
+        if (tree.children.length == 1) {
+
+            newRadius = 400 * 0.75;
+
+        }
 
         generate(tree, newRadius, 0, 0);
 
@@ -192,6 +212,22 @@ export class Circles implements Visualizer {
 
     public getThumbnailImage(): string | null {
         return null;
+    }
+
+    public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void {
+        this.recolor(input.tree, input.palette, gl, draws, input.tree.selected);
+    }
+
+    private recolor(tree: Node, palette: Palette, gl: OpenGL, draws: Draw[], selected: boolean) {
+        if (selected || tree.selected) {
+            selected = true;
+            gl.setColor(draws[tree.identifier].glid, palette.gradientColorMapSelected[tree.maxDepth][tree.depth]);
+        } else {
+            gl.setColor(draws[tree.identifier].glid, palette.gradientColorMap[tree.maxDepth][tree.depth]);
+        }
+        for (let child of tree.children) {
+            this.recolor(child, palette, gl, draws, selected);
+        }
     }
 
 }

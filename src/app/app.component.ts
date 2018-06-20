@@ -16,12 +16,9 @@ import {ViewMode} from '../enums/view-mode';
 import {SubtreeBus} from "../providers/subtree-bus";
 import {SelectBus} from "../providers/select-bus";
 import {BasicTree} from "../visualizations/basic-tree";
-<<<<<<< HEAD
 import {Circles} from "../visualizations/circles";
-=======
 import {IciclePlot} from "../visualizations/icicle-plot";
 import * as FileSaver from "file-saver";
->>>>>>> develop
 
 declare var dialogPolyfill;
 
@@ -199,13 +196,10 @@ export class AppComponent implements OnInit {
             new GeneralizedPythagorasTree(),
             new SimpleTreeMap(),
             new BasicTree(),
-<<<<<<< HEAD
             new Circles(),
-=======
             new Sunburst(),
             new IciclePlot(),
->>>>>>> develop
-        ];
+         ];
     }
 
     private resizeActiveTab(forceAll: boolean = false): void {
