@@ -208,11 +208,11 @@ export class Circles implements Visualizer {
     }
 
     public getName(): string {
-        return 'Circles';
+        return 'Circular Tree Map';
     }
 
     public getThumbnailImage(): string | null {
-        return null;
+        return '/assets/images/visualization-circular-tree-map.png';
     }
 
     public enableShaders(gl: OpenGL): void {

@@ -218,6 +218,7 @@ export class AppComponent implements OnInit {
             new Circles(),
             new Sunburst(),
             new IciclePlot(),
+            new Galaxy(),
          ];
     }
 
