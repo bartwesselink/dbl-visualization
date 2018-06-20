@@ -203,9 +203,7 @@ export class WindowComponent implements OnInit {
                 break;
             case 't':
             case 'T':
-                this.gl.resetTransformations();
-                this.render();
-                this.viewCube.setZoomLevel(this.gl.getZoom());
+                this.resetTransformation();
                 break;
         }
     }
@@ -566,6 +564,7 @@ export class WindowComponent implements OnInit {
     public resetTransformation() {
         this.gl.resetTransformations();
         this.render();
+        this.viewCube.setZoomLevel(this.gl.getZoom());
     }
 
     /** @end-author Mathijs Boezer */

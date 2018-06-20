@@ -147,6 +147,7 @@ export class AppComponent implements OnInit {
 
         setTimeout(() => {
             tab.window.ngOnInit();
+            tab.window.resetTransformation();
         }, 100);
     }
 

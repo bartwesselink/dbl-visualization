@@ -15,11 +15,13 @@
 
   .input {
     background: $color-light;
+    flex-grow: 1;
   }
 
   .search-icon {
     font-size: 2rem;
     margin-right: 0.5rem;
+    flex-grow: 0;
   }
 }
 
