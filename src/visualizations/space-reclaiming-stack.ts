@@ -152,7 +152,7 @@ export class SpaceReclaimingStack implements Visualizer {
     public getForm(formFactory: FormFactory) {
         return formFactory.createFormBuilder()
             .addNumberField('height', 800, {label: 'Height'})
-            .addNumberField('width', 600, {label: 'Width'})
+            .addNumberField('width', 300, {label: 'Width'})
             .addSliderField('reclaimCoefficient', 50, {label: "Reclaiming coefficient", min: 0, max: 100})
             .addSliderField('offset', 50, {label: "Relative offset in between nodes on the same depth", min: 0, max: 100})
             .addNumberField('maximumOffset', 10, {label: 'Maximum offset'})

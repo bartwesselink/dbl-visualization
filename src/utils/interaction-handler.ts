@@ -337,8 +337,16 @@ export class InteractionHandler {
                 case DrawType.FILL_LINED_CUSTOM_QUAD:
                 case DrawType.DRAW_CUSTOM_QUAD:
                 case DrawType.FILL_CUSTOM_QUAD:
-                    size = (draw.options as CustomQuadOptions).y4 - (draw.options as CustomQuadOptions).y1;
-                    orientation = Orientation.WIDTH;
+                    width = Math.max(Math.abs((draw.options as CustomQuadOptions).x4 - (draw.options as CustomQuadOptions).x3),
+                        Math.abs((draw.options as CustomQuadOptions).x1 - (draw.options as CustomQuadOptions).x2));
+                    height = Math.abs((draw.options as CustomQuadOptions).y4 - (draw.options as CustomQuadOptions).y1);
+                    if (width > height) {
+                        size = width;
+                        orientation = Orientation.WIDTH;
+                    } else {
+                        size = height;
+                        orientation = Orientation.HEIGHT;
+                    }
                     break;
             }
 
