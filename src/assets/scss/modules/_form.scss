@@ -1,0 +1,142 @@
+/** @author Bart Wesselink */
+.input {
+    width: 100%;
+    border: 0;
+    outline: 0 !important;
+    color: $color-dark;
+    padding: 0.5rem 0;
+    border-bottom: 0.1rem solid $color-primary;
+    font-size: 1rem;
+    font-family: inherit;
+    margin: 0.3rem 0;
+    appearance: none;
+}
+
+.label {
+    font-weight: bold;
+    font-size: 0.8rem;
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.label + .input {
+    margin: 0;
+}
+
+.input-switch {
+    display: block;
+    width: 3rem;
+    height: 1.9rem;
+    position: relative;
+
+    input {
+        width: 0;
+        height: 0;
+        visibility: hidden;
+    }
+
+    input:checked + .input-switch-slider {
+        background-color: $color-primary;
+
+        &:before {
+            transform: translateX(1.1rem); // use translations to make it smooth
+        }
+    }
+}
+
+.input-switch-slider {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: $text-light;
+    border-radius: calc(1.9rem / 2);
+    transition: 400ms;
+    cursor: pointer;
+
+    &:before {
+        position: absolute;
+        background-color: white;
+        transition: 400ms;
+        content: ' ';
+        top: 0.2rem;
+        left: 0.2rem;
+        height: 1.5rem;
+        width: 1.5rem;
+        border-radius: 50%;
+    }
+}
+
+.input-select {
+    width: 100%;
+    display: block;
+    appearance: none;
+    outline: none !important;
+    border-radius: 0;
+    background-image: url(../images/arrow-down.png);
+    background-repeat: no-repeat;
+    background-color: transparent;
+
+    background-position: right 0 top 50%;
+    background-size: 18px 10px;
+
+    @extend .input;
+}
+
+.input-radio {
+    display: inline-block;
+    margin-right: 1rem;
+
+    input {
+        width: 0;
+        height: 0;
+        margin: 0;
+        display: none;
+    }
+
+    input + label {
+        position: relative;
+        color: $color-dark;
+
+        &:before {
+            display: inline-block;
+            margin-right: 0.3rem;
+            content: '';
+            width: 0.9rem;
+            height: 0.9rem;
+            border-radius: 50%;
+            background: white;
+            border: 0.1rem solid $color-border;
+            vertical-align: middle;
+        }
+
+        &:after {
+            position: absolute;
+            display: block;
+            content: '';
+            width: 0.5rem;
+            height: 0.5rem;
+            background-color: white;
+            border-radius: 50%;
+            top: 50%;
+            left: 0.3rem;
+            margin-top: -0.2rem;
+        }
+    }
+
+    input[checked] + label {
+        &:after {
+            background-color: $color-primary;
+        }
+    }
+}
+
+.form-group {
+    margin-bottom: 1rem;
+
+    &:last-of-type {
+        margin-bottom: 0;
+    }
+}
+/** @end-author Bart Wesselink */

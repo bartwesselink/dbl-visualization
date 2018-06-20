@@ -1,4 +1,5 @@
-<input id="fileSelector" type="file" class="hidden" (change)="uploadFile($event.target.files)" accept=".txt,.tre,.tree,.new,.nwk,.ngl"/>
-<label for="fileSelector" class="mdl-button mdl-js-button mdl-button--icon upload-button">
-  <i class="material-icons">file_upload</i>
+<input id="fileSelector" type="file" class="hidden file-upload" (change)="uploadFile($event.target.files)" accept=".txt,.tre,.tree,.new,.nwk"/>
+<label for="fileSelector" class="header-button-icon upload-button" *ngIf="type == 'menu'">
+  <i class="mdi mdi-arrow-up-bold"></i>
 </label>
+<label class="button" for="fileSelector" *ngIf="type == 'home'">Upload data</label>

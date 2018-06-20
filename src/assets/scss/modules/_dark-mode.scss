@@ -1,72 +1,236 @@
 /** @author Mathijs Boezer */
-$dark-primary: rgb(10, 10, 10);
-$dark-secondary: rgb(20, 20, 20);
-$dark-canvas: rgb(50, 50, 50);
-$dark-dialogs: rgb(30, 30, 30);
-$dark-dialogs_hover: rgb(80, 80, 80);
+$color-dark-base: #202b4f;
+$color-dark-primary: #224dae;
+$color-dark-background: #202535;
+$color-dark-card: #2b334e;
+$color-dark-card-hover: darken(#2b334e, 8%);
 
 .dark-mode {
-    .canvas {
-        background-color: $dark-canvas;
+    background: $color-dark-background;
+
+    color: white;
+
+    header {
+        background-color: $color-dark-base;
     }
 
-    .holder-sidebar {
-        background-color: $dark-secondary;
-        .sidebar {
-            background-color: $dark-secondary;
+    .header-button-icon {
+        color: $color-dark-base;
+    }
 
-            .mdl-card__title, .sidebar-content{
+    .welcome-page-bottom {
+        &, &:before {
+            background-color: $color-dark-base;
+        }
+    }
+
+    .welcome-page-full-screen-animation {
+        .welcome-page-bottom {
+            &, &:before {
+                background-color: $color-dark;
+            }
+        }
+    }
+
+    .button:not(.button-primary) {
+        color: $color-dark-base;
+    }
+
+    .welcome-thumbnail {
+        filter: brightness(0) invert(100%);
+        opacity: 1;
+    }
+
+    .welcome-page-logo, .welcome-page-school {
+        filter: brightness(0) invert(100%);
+    }
+
+    .view-cube-pan {
+        background-image: url('../images/dark-nav-base.png');
+    }
+
+    .view-cube-home {
+        background-image: url('../images/dark-home-button.png');
+    }
+
+    .view-cube-arrow-left {
+        background-image: url('../images/dark-arrow-left.png');
+    }
+
+    .view-cube-arrow-right {
+        background-image: url('../images/dark-arrow-right.png');
+    }
+
+    .view-cube-arrow-up {
+        background-image: url('../images/dark-arrow-up.png');
+    }
+
+    .view-cube-arrow-down {
+        background-image: url('../images/dark-arrow-down.png');
+    }
+
+    .view-cube-rotate-left {
+        background-image: url('../images/dark-rotate-left.png');
+    }
+
+    .view-cube-rotate-right {
+        background-image: url('../images/dark-rotate-right.png');
+    }
+
+    .view-cube-zoom {
+        background-image: url('../images/dark-scale-drag-slider-area.png');
+    }
+
+    .view-cube-zoom-indicator {
+        background-image: url('../images/dark-scale-drag-slider.png');
+    }
+
+    .view-cube-help {
+        background-image: url('../images/dark-help-button.png');
+    }
+
+    .button-primary {
+        color: white;
+        background: $color-dark-primary;
+
+        &:hover {
+            background: darken($color-dark-primary, 6%);
+        }
+    }
+
+    .snackbar, .holder-header {
+        background: $color-dark-primary;
+    }
+
+    .is-active.holder-header {
+        background: $color-dark-base;
+        border: 1px solid $color-dark-primary;
+    }
+
+    .sidebar-search, .search, .search-results, .search-field, .sidebar-navigator {
+        &, & .input {
+            background: $color-dark-card;
+            color: white;
+            border: 0;
+
+            &::placeholder {
                 color: white;
             }
+        }
 
-            .mdl-card__actions .mdl-button {
-                color: white !important;
-            }
+        .mdi {
+            color: $color-dark-primary;
         }
     }
 
-    .holder {
-        background-color: $dark-dialogs_hover;
+    .sidebar-button {
+        color: white !important;
+        border-color: white;
     }
 
-    .mdl-dialog {
-        color: white;
-        background-color: $dark-dialogs;
+    .tree-navigator-label-holder {
+        background-color: $color-dark-background;
 
-        .mdl-dialog__content, .mdl-dialog__title, .mdl-button {
+        .tree-navigator-open {
             color: white;
-            background-color: $dark-dialogs;
-        }
-
-        select {
-            background-color: $dark-dialogs;
+            border-color: white;
         }
     }
 
-    .mdl-layout__drawer {
+    .tree-navigator-item {
+        .tree-navigator-item-button {
+            color: $color-dark-background !important;
+        }
+    }
+
+    .tree-navigator-selected {
+        > .tree-navigator-holder > .tree-navigator-label-holder {
+            background-color: $color-dark-base;
+            border: 1px solid $color-dark-primary;
+        }
+
+        > .tree-navigator-holder > .tree-navigator-expand-holder > .tree-navigator-item-button {
+            color: $color-dark-primary !important;
+        }
+    }
+
+    .sidebar-buttons {
+        border-top: 1px solid $color-dark-base;
+    }
+
+    .settings-button {
+        background: $color-dark-base;
+        color: white !important;
+
+        &:hover {
+            background: darken($color-dark-base, 10%);
+        }
+    }
+
+    .dropdown {
         color: white;
-        background-color: $dark-secondary;
-        border-right-color: $dark-secondary;
-    }
+        background-color: $color-dark-background;
 
-    .mdl-layout__header {
-        background-color: $dark-primary;
+        .input {
+            border-color: white;
+        }
 
-        .mdl-layout__tab-bar, .mdl-layout__tab-bar-button .material-icons {
-            background-color: $dark-primary;
+        &::before, &::after {
+            border-color: $color-dark-background transparent transparent transparent;
         }
     }
 
-    .mdl-layout__tab-bar-button {
-        background-color: $dark-primary;
+    .input, .input-select {
+        background-color: transparent;
+        color: white;
     }
 
-    .welcome-page {
-        background-color: $dark-secondary;
+    .input-radio input + label {
+        color: white;
+    }
+
+    .input-switch input:checked + .input-switch-slider {
+        background-color: $color-dark-primary
+    }
+
+    .data-selection-container {
+        color: white;
+    }
+
+    .data-selection-list {
+        li:hover {
+            background: $color-dark-card-hover;
+        }
+    }
+
+    .input-radio input[checked] + label:after {
+        background: $color-dark-primary;
+    }
+
+    .visualization-picker-dropdown {
+        background: $color-dark-card;
+        color: white;
+
+        li:hover {
+            background-color: $color-dark-card-hover !important;
+        }
+    }
+
+    .visualization-picker-dropdown-visualizer-image {
+        filter: brightness(0) invert(100%);
+    }
+
+    .dialog-modal {
+        background: $color-dark-card;
+    }
+
+    .help-key {
+        background: $color-dark-background;
     }
 
     .introjs-tooltip {
-        background-color: $dark-secondary;
+        background: $color-dark-card;
+        color: white;
     }
 
     .introjs-tooltiptext {
@@ -74,36 +238,29 @@ $dark-dialogs_hover: rgb(80, 80, 80);
     }
 
     .introjs-button {
-        color: white;
-    }
+        background: $color-dark-primary !important;
 
-    .settings-button-form {
-        background-color: $dark-primary;
-        color: white;
-        .mdl-textfield__label {
-            color: white;
+        &:hover {
+            background: darken($color-dark-primary, 6%) !important;
+            box-shadow: none;
         }
     }
 
-    .mdl-menu {
-        background-color: $dark-dialogs;
-        .mdl-menu__item {
-            color: white;
-        }
-        .mdl-menu__item:hover {
-            background-color: $dark-dialogs_hover;
+    .visualization-picker-dropdown {
+        &::before {
+            border-color: $color-dark-card transparent transparent transparent;
         }
     }
 
-    .holder-header {
-        background: $dark-primary;
-        border-color: $dark-canvas;
-    }
+    select {
+        option {
+            background: $color-dark-background;
 
-    .holder-app.holder-app-side-by-side  .holder-content {
-        border-color: $dark-canvas;
+            &:hover {
+                background: $color-dark-primary;
+            }
+        }
     }
-
 }
 
 /** @end-author Mathijs Boezer */

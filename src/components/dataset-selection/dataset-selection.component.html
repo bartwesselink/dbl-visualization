@@ -1,22 +1,33 @@
-<div class="data-selection-container">
-    <span class="data-selection-title">Example datasets</span>
-    <div>
-        <div class="mdl-selectfield mdl-js-selectfield dataset-selector">
-            <select class="mdl-selectfield__select" #defaultSelector id="defaultSelector">
-                <option *ngFor="let dataset of datasetStorageService.defaultDatasets" value="{{dataset.path}}">{{dataset.title}}</option>
-            </select>
+<div class="data-selection-menu dropdown-holder">
+    <div class="data-selection-label"></div>
+
+    <div class="data-selection-current" [class.data-selection-empty]="currentFile == null" (click)="toggle()">
+        {{ currentFile != null ? currentFile : '(no tree selected yet)' }}
+
+        <i class="data-selection-chevron mdi mdi-chevron-down"></i>
+    </div>
+
+    <div [hidden]="!view" class="dropdown dropdown-up">
+        <div class="dropdown-content">
+            <div class="data-selection-container">
+                <span class="data-selection-title">Example datasets</span>
+                <ul class="data-selection-list">
+                    <li *ngFor="let dataset of datasetStorageService.defaultDatasets" (click)="loadDefaultDataset(dataset)">{{dataset.title}}</li>
+                </ul>
+            </div>
+
+            <div class="data-selection-container" *ngIf="datasetStorageService.userDatasets.length > 0">
+                <span class="data-selection-title">User uploaded datasets</span>
+                <ul class="data-selection-list">
+                    <li *ngFor="let dataset of datasetStorageService.userDatasets" (click)="loadUserDataset(dataset)">{{dataset.title}}</li>
+                </ul>
+            </div>
+
+            <div class="dropdown-actions">
+                <button type="button" class="button button-primary button-no-shadow button-small" (click)="close()">Close</button>
+            </div>
         </div>
-        <button class="mdl-button data-selection-button" (click)="loadDefaultDataset(defaultSelector.value)">Load</button>
     </div>
 </div>
-<div class="data-selection-container">
-    <span class="data-selection-title">User uploaded datasets</span>
-    <div>
-        <div class="mdl-selectfield mdl-js-selectfield dataset-selector">
-            <select class="mdl-selectfield__select" #userSelector id="userSelector">
-                <option *ngFor="let dataset of datasetStorageService.userDatasets" value="{{dataset.title}}">{{dataset.title}}</option>
-            </select>
-        </div>
-        <button class="mdl-button data-selection-button" (click)="loadUserDataset(userSelector.value)">Load</button>
-    </div>
-</div>
+
+<div class="dropdown-overlay" [hidden]="!view" (click)="close()"></div>

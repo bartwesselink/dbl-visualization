@@ -30,68 +30,77 @@ export class HelpButtonComponent implements OnInit{
         this.tour.setOptions({
             steps: [
                 {
-                    intro: "This short tour will explain how to use this website to visualize a Newick dataset."
+                    intro: "This short tour will explain how to use this website to visualize a Newick dataset.",
+                    execute: () => {
+                        // close all tabs to make sure we don't accidentally create a third side-by-side tab
+                        let buttons = document.querySelectorAll(".holder-header-close");
+                        for(let i = 0; i < document.querySelectorAll(".holder-header-close").length; i++) {
+                            (buttons[i] as HTMLElement).click(); // close tab
+                        }
+                    }
                 },
                 {
-                    intro: "This is the upload button, by clicking it you will be able to select your Newick dataset and upload it.",
-                    element: 'app-upload-tool label'
+                    intro: "To visualize something, you need a dataset. There are a couple of options you can choose."
                 },
                 {
-                    intro: "This bar contains the visualization tabs, each tab represents a visualization of your dataset.",
-                    element: '.mdl-layout__tab-bar-container'
+                    intro: "Either you upload a dataset by clicking this button.",
+                    element: ".mdi-upload"
                 },
                 {
-                    intro: "To add a new visualization to the tabs, click here and choose one of the options.",
-                    element: 'app-visualization-picker > button',
-                    clickExit: true,
-                },
-                {
-                    intro: "For this tour we will use this one as an example.",
-                    element: 'app-visualization-picker div ul li',
-                    clickExit: true,
-                },
-                {
-                    intro: "Here you will be able to see your dataset as a tree with nodes you can collapse and expand.",
-                    element: '.sidebar-content',
-                    position: "left"
-                },
-                {
-                    intro: "This is the visualization window, your dataset will be visualized here according to your selected visualization.",
-                    element: '.mdl-layout__tab-panel.is-active'
-                },
-                {
-                    intro: "You are able to move the window by dragging, and able to zoom by using the scroll wheel.",
-                    element: '.mdl-layout__tab-panel.is-active'
-                },
-                {
-                    intro: "You can also use the keyboard: W, A, S, D for moving around, R and F for zooming and T for going back to the default view.",
-                    element: '.mdl-layout__tab-panel.is-active'
-                },
-                {
-                    intro: "By holding the left mouse button and scrolling you can rotate the view, alternatively you can use Q and E to do this with the keyboard.",
-                    element: '.mdl-layout__tab-panel.is-active'
-                },
-                {
-                    intro: "If you want to change something about the current visualization, click here.",
-                    element: '.mdl-layout__tab-panel.is-active app-visualization-settings-button button',
+                    intro: "Or you choose one of the datasets we provide.",
+                    element: ".data-selection-chevron",
                     clickStart: true,
-                    clickExit: true,
-                    position: 'right'
                 },
                 {
-                    intro: "If you want to make a screenshot of your visualization window, click here.",
-                    element: '.mdl-layout__tab-panel.is-active app-screenshot-button button',
+                    intro: "For the tour we will be using the Phyloviz dataset.",
+                    element: ".data-selection-menu .dropdown",
+                    execute: () => {
+                        (document.querySelector(".data-selection-chevron") as HTMLElement).click(); // close menu
+                        (document.querySelector(".data-selection-list li") as HTMLElement).click(); // close menu
+                        (document.querySelector("app-visualization-picker .header-button-icon") as HTMLElement).click(); // open visualization picker dropdown
+                    },
                 },
                 {
-                    intro: "Finally you can close a visualization by clicking here.",
-                    element: '.mdl-layout__tab-app.is-active i',
-                    clickExit: true,
+                    intro: "Now you can choose a visualization, for the tour we use the Generalized Pythagoras Tree.",
+                    execute: () => {
+                        (document.querySelectorAll(".visualization-picker-dropdown-item")[1] as HTMLElement).click(); // TODO When the demo tree is gone this could be index 0
+                    }
+                },
+                {
+                    intro: "Here you can see the Phyloviz dataset visualized with the Generalized Pythagoras Tree visualization.",
+                },
+                {
+                    intro: "In the canvas you are able to move around using either the keyboard, the mouse or the navigation widget. You can also click on a node to select it and move to it."
+                },
+                {
+                    intro: "On the right side of the page you can find the tree navigator. Here you can select nodes, open their subtrees, export the current tree as a Newick file, and browse through the hierarchy.",
+                    execute: () => {
+                        (document.querySelector(".settings-button") as HTMLElement).click(); // open visualization settings
+                    }
+                },
+                {
+                    intro: "Each visualization has settings you can tweak. For example the Generalized Pythagoras Tree allows you to increase the height of the rectangles.",
+                    execute: () => {
+                        (document.querySelector(".settings-button") as HTMLElement).click(); // close visualization settings
+                        (document.querySelector("app-general-settings-button .header-button-icon") as HTMLElement).click(); // open general settings
+                    }
+                },
+                {
+                    intro: "There are also settings for the entire page. These include, dark mode, alternate colors for the gradients, different types of gradients and more!",
+                    execute: () => {
+                        (document.querySelector("app-general-settings-button .header-button-icon") as HTMLElement).click(); // close general settings
+                    }
+                },
+                {
+                    intro: "That wraps up the tour, if you ever need help, you can go through the tour again by clicking here.",
+                    element: "app-help-button .header-button-icon"
                 }
+
             ],
             showStepNumbers: false, // Hide step numbers
             showBullets: false,     // Hide bullets
             showProgress: true,     // Instead use progress bar
-            overlayOpacity: 0.5,    // Set opacity of page overlay to 0.5
+            overlayOpacity: 0.0,    // Set opacity of page overlay to 0.5
             nextLabel: "Next",      // Default has arrow, doesn't fit with material style
             prevLabel: "Back",      // Default has arrow, doesn't fit with material style
         });
@@ -108,6 +117,11 @@ export class HelpButtonComponent implements OnInit{
                 this._introItems[this._currentStep - 1].element.click();
             }
 
+            if(this._options.steps[this._currentStep - 1] &&
+                this._options.steps[this._currentStep - 1].execute) {
+                this._options.steps[this._currentStep - 1].execute();
+            }
+
             // Update the tour elements for if new elements have been added since the tour started (in our case the canvas and its buttons)
             for (let i = this._currentStep; i < this._options.steps.length; i++) {
                 let currentItem = this._introItems[i];
@@ -120,11 +134,16 @@ export class HelpButtonComponent implements OnInit{
             }
         });
 
-        // Edge case for triggering a click on exiting the last step of the tour
+        // Edge case for triggering a click or a execute on exiting the last step of the tour
         this.tour.onbeforeexit(function() {
             if(this._options.steps[this._currentStep - 1] &&
                 this._options.steps[this._currentStep - 1].clickExit) {
                 this._introItems[this._currentStep - 1].element.click();
+            }
+
+            if(this._options.steps[this._currentStep - 1] &&
+                this._options.steps[this._currentStep - 1].execute) {
+                this._options.steps[this._currentStep - 1].execute();
             }
         })
     }

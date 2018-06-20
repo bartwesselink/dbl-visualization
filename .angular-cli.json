@@ -21,11 +21,7 @@
       "styles": [
         "assets/scss/styles.scss"
       ],
-      "scripts": [
-        "../node_modules/material-design-lite/dist/material.min.js",
-        "../node_modules/mdl-selectfield/dist/mdl-selectfield.js",
-        "../node_modules/dialog-polyfill/dialog-polyfill.js"
-      ],
+      "scripts": [],
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",

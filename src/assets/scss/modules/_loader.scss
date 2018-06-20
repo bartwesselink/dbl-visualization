@@ -1,10 +1,17 @@
 /** @author Bart Wesselink */
 .loader {
+  background-size: 100% 100%;
+  background-image: url('../images/loader.svg');
+  width: 2rem;
+  height: 2rem;
   vertical-align: middle;
-  margin-right: 1rem;
 }
 
-.full-screen-loader {
+.loader-white {
+  background-image: url('../images/loader-white.svg');
+}
+
+.full-screen-loader .dialog-modal {
   width: fit-content;
 
   .loader {

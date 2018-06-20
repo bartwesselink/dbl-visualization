@@ -21,7 +21,7 @@ export class BasicTree implements Visualizer {
 
         const tree: Node = input.tree;
         const draws: Draw[] = [];
-        const yOffset = -400 * (growDown ? -1 : 1); // move the origin to the bottom (or top if grow down) instead of middle with 50px of spacing
+        const yOffset = -300 * (growDown ? -1 : 1); // move the origin to the bottom (or top if grow down) instead of middle with 50px of spacing
         const radianToDegreeMultiplier = 180 / Math.PI;
 
         let node = tree;

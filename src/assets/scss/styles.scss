@@ -1,9 +1,9 @@
 /** Vendor components */
-@import "~material-design-lite/src/material-design-lite";
-@import "~mdl-selectfield/dist/mdl-selectfield";
-@import "~dialog-polyfill/dialog-polyfill";
 @import "~intro.js/minified/introjs.min.css";
-@import "~material-design-icons/iconfont/material-icons.css";
+@import "~@mdi/font/css/materialdesignicons.min.css";
+
+/** */
+@import "vars.scss";
 
 /** Styles component */
 @import "modules/global";
@@ -12,7 +12,6 @@
 @import "modules/sidebar";
 @import "modules/canvas";
 @import "modules/utilities";
-@import "modules/radio";
 @import "modules/screenshot-button";
 @import "modules/tree-navigator";
 @import "modules/upload-button";
@@ -29,3 +28,9 @@
 @import "modules/view-cube";
 @import "modules/search";
 @import "modules/dataset-selection";
+@import "modules/button";
+@import "modules/visualization-picker";
+@import "modules/form";
+@import "modules/dropdown";
+@import "modules/pointer";
+@import "modules/snackbar";

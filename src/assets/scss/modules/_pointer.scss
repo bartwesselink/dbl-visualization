@@ -1,0 +1,30 @@
+/** @author Bart Wesselink */
+.pointer {
+    position: absolute;
+    display: flex;
+    left: 50%;
+    top: 1rem;
+    align-items: flex-end;
+    z-index: 2;
+    margin-left: -4.5rem;
+
+    &[hidden] {
+        display: none;
+    }
+}
+
+.pointer-image {
+    width: 100px;
+    height: 250px;
+    background-image: url('../images/pointer.png');
+}
+
+.pointer-text {
+    color: white;
+    margin-left: 0.5rem;
+    margin-bottom: 0.4rem;
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    text-shadow: 0 0 16px rgba(0, 0, 0, 0.6);
+}
+/** @end-author Bart Wesselink */
