@@ -172,7 +172,7 @@ export class SpaceReclaimingStack implements Visualizer {
 
     /** @author Roan Hofland */
     public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void{
-        gl.setSizeThresHold(5);
+        gl.setSizeThresHold(15);
         this.recolor(input.tree, input.palette, gl, draws, input.tree.selected);
     }
 
