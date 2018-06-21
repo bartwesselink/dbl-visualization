@@ -1,6 +1,5 @@
 import {Visualizer} from '../interfaces/visualizer';
 import {Node} from '../models/node';
-import {Form} from '../form/form';
 import {FormFactory} from '../form/form-factory';
 import {Draw} from '../interfaces/draw';
 import {VisualizerInput} from '../interfaces/visualizer-input';
@@ -19,12 +18,12 @@ export class SpaceReclaimingStack implements Visualizer {
         const settings: any = input.settings;
 
         // define variables
-        let height = settings.height;
-        let width = settings.width;
+        let globalHeight = settings.height;
+        let globalWidth = settings.width;
         let reclaimCoefficient = settings.reclaimCoefficient / 100; // Percentage
         let offsetBasis = settings.offset / 200; // Percentage 0 - 50%
         let maximumOffset = settings.maximumOffset;
-        const levelHeight = height / originalTree.maxDepth;
+        const levelHeight = globalHeight / originalTree.maxDepth;
 
         let sortedNodes: any;
         let startPoints: any;
@@ -53,28 +52,10 @@ export class SpaceReclaimingStack implements Visualizer {
 
         const simpleCompute = (): void => {//tree:NodeSpaceReclaimingStack, index: number): void => {
             for (let depth = 0; depth < sortedNodes.length; depth++) {
-                let left;
-                let right;
-                let segmentWidth;
-                let offset;
-                if (depth > 0) { // reclaim coefficient implementation
-                    let parentWidth = Math.abs(sortedNodes[depth - 1][0].topleft[0] - sortedNodes[depth - 1][sortedNodes[depth-1].length - 1].topright[0]);
-                    parentWidth = parentWidth + (width - parentWidth) * reclaimCoefficient;
-                    offset = Math.min(parentWidth / sortedNodes[depth].length * offsetBasis, maximumOffset);
-                    segmentWidth = (parentWidth - offset * (sortedNodes[depth].length - 1)) / sortedNodes[depth].length;
-                    left = -parentWidth / 2;
-                    right = left + segmentWidth;
-                } else {
-                    offset = Math.min(width / sortedNodes[depth].length * offsetBasis, maximumOffset);
-                    segmentWidth = (width - offset * (sortedNodes[depth].length - 1)) / sortedNodes[depth].length;
-                    left = - width / 2;
-                    right = left + segmentWidth;
-                }
-
+                // Points at the top
                 for (let i = 0; i < sortedNodes[depth].length; i++) {
                     const tree = sortedNodes[depth][i];
-                    const topY = height / 2 - levelHeight * tree.depth;
-                    const bottomY = height / 2 - levelHeight * (tree.depth + 1);
+                    const topY = globalHeight / 2 - levelHeight * tree.depth;
 
                     if (tree.parent) {
                         if (tree.parent.children.length > 1) {
@@ -84,33 +65,54 @@ export class SpaceReclaimingStack implements Visualizer {
                             if (index == 0) {
                                 tree.topleft = tree.parent.bottomleft;
                                 tree.topright = [tree.parent.bottomleft[0] + width / tree.parent.children.length, topY];
-                                tree.bottomleft = [left, bottomY];
-                                tree.bottomright = [right, bottomY];
 
                             } else if (index < tree.parent.children.length - 1) {
                                 tree.topleft = [tree.parent.bottomleft[0] + width / tree.parent.children.length * index, topY];
                                 tree.topright = [tree.parent.bottomleft[0] + width / tree.parent.children.length * (index + 1), topY];
-                                tree.bottomleft = [left, bottomY];
-                                tree.bottomright = [right, bottomY];
 
                             } else {
                                 tree.topleft = [tree.parent.bottomleft[0] + width / tree.parent.children.length * index, tree.parent.bottomleft[1]];
                                 tree.topright = [tree.parent.bottomright[0], tree.parent.bottomright[1]];
-                                tree.bottomleft = [left, bottomY];
-                                tree.bottomright = [right, bottomY];
                             }
                         } else { // Only child
                             tree.topleft = tree.parent.bottomleft;
                             tree.topright = tree.parent.bottomright;
-                            tree.bottomleft = [tree.parent.bottomleft[0], bottomY];
-                            tree.bottomright = [tree.parent.bottomright[0], bottomY];
                         }
                     } else { // Root case
-                        tree.topleft = [-width / 2, topY];
-                        tree.topright = [width / 2, topY];
-                        tree.bottomleft = [- width / 2, bottomY];
-                        tree.bottomright = [width / 2, bottomY];
+                        tree.topleft = [-globalWidth / 2, topY];
+                        tree.topright = [globalWidth / 2, topY];
                     }
+                }
+
+
+                // Points at the bottom
+                let left;
+                let right;
+                let segmentWidth;
+                let offset;
+
+                if (depth > 0) { // reclaim coefficient implementation
+                    let parentWidth = Math.abs(sortedNodes[depth][0].topleft[0] - sortedNodes[depth][sortedNodes[depth].length - 1].topright[0]);
+                    parentWidth = parentWidth + (globalWidth - parentWidth) * reclaimCoefficient;
+                    offset = Math.min(parentWidth / sortedNodes[depth].length * offsetBasis, maximumOffset);
+                    segmentWidth = (parentWidth - offset * (sortedNodes[depth].length - 1)) / sortedNodes[depth].length;
+
+                    left = -parentWidth / 2;
+                } else {
+                    offset = Math.min(globalWidth / sortedNodes[depth].length * offsetBasis, maximumOffset);
+                    segmentWidth = (globalWidth - offset * (sortedNodes[depth].length - 1)) / sortedNodes[depth].length;
+
+                    left = - globalWidth / 2;
+                }
+
+                right = left + segmentWidth;
+
+                for (let i = 0; i < sortedNodes[depth].length; i++) {
+                    const tree = sortedNodes[depth][i];
+                    const bottomY = globalHeight / 2 - levelHeight * (tree.depth + 1);
+
+                    tree.bottomleft = [left, bottomY];
+                    tree.bottomright = [right, bottomY];
 
                     left += segmentWidth + offset;
                     right += segmentWidth + offset;
@@ -170,6 +172,7 @@ export class SpaceReclaimingStack implements Visualizer {
 
     /** @author Roan Hofland */
     public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void{
+        gl.setSizeThresHold(5);
         this.recolor(input.tree, input.palette, gl, draws, input.tree.selected);
     }
 
