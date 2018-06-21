@@ -176,9 +176,10 @@ export class SimpleTreeMap implements Visualizer {
     /** @end-author Nico Klaassen */
     /** @author Roan Hofland */
     public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void{
+        gl.setSizeThresHold(5);
         this.recolor(input.tree, input.palette, input.settings.outline, gl, draws, input.tree.selected);
     }
-    
+
     private recolor(tree: Node, palette: Palette, outline: boolean, gl: OpenGL, draws: Draw[], selected: boolean){
         if (selected || tree.selected) {
             selected = true;
