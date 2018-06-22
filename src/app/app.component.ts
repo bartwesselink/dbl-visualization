@@ -8,7 +8,6 @@ import {Visualizer} from '../interfaces/visualizer';
 import {GeneralizedPythagorasTree} from '../visualizations/generalized-pythagoras-tree';
 import {SettingsBus} from '../providers/settings-bus';
 import {Settings} from '../interfaces/settings';
-import {OpenglDemoTree} from "../visualizations/opengl-demo-tree";
 import {SimpleTreeMap} from "../visualizations/simple-tree-map";
 import {WorkerManager} from '../utils/worker-manager';
 import {Sunburst} from '../visualizations/sunburst';
@@ -212,7 +211,6 @@ export class AppComponent implements OnInit {
 
     private createVisualizers(): void {
         this.visualizers = [
-            new OpenglDemoTree(),
             new GeneralizedPythagorasTree(),
             new SimpleTreeMap(),
             new BasicTree(),
