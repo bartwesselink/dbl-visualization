@@ -1,0 +1,16 @@
+image: node:7.10
+
+# Cache modules in between jobs
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+  - node_modules/
+
+stages:
+   - build
+
+build:
+  script:
+    - yarn install
+    - yarn build
+  stage: build
