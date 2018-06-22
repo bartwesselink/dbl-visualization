@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {Component, Input, OnInit, QueryList, ViewChildren} from '@angular/core';
 import {Node} from '../../models/node';
 import {SelectBus} from '../../providers/select-bus';
 import {TreeNavigatorItemComponent} from '../tree-navigator-item/tree-navigator-item.component';
@@ -89,7 +89,7 @@ export class TreeNavigatorComponent implements OnInit {
                 return true;
             } else if (this.expandNode(needle, node.children)) {
                 node.forceExpand = true;
-                
+
                 return true;
             } else {
                 node.forceExpand = false;

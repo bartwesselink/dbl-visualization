@@ -1,6 +1,4 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {Element} from '../../opengl/element';
-import {Matrix} from '../../opengl/matrix';
 import {OpenGL} from '../../opengl/opengl';
 import {Visualizer} from '../../interfaces/visualizer';
 import {Node} from '../../models/node';
@@ -9,24 +7,17 @@ import {Form} from '../../form/form';
 import {FormFactory} from '../../form/form-factory';
 import {OpenglDemoTree} from '../../visualizations/opengl-demo-tree';
 import {WorkerManager} from '../../utils/worker-manager';
-import {DrawType} from '../../enums/draw-type';
-import {FormComponent} from '../form/form.component';
 import {Draw} from '../../interfaces/draw';
 import {InteractionHandler} from '../../utils/interaction-handler';
 import {SelectBus} from '../../providers/select-bus';
-import {AaQuadOptions} from '../../interfaces/aa-quad-options';
-import {RotatedQuadOptions} from '../../interfaces/rotated-quad-options';
-import {CircleOptions} from '../../interfaces/circle-options';
-import {EllipsoidOptions} from '../../interfaces/ellipsoid-options';
-import {RingSliceOptions} from '../../interfaces/ring-slice-options';
 import {Settings} from "../../interfaces/settings";
 import {SettingsBus} from "../../providers/settings-bus";
 import {Palette} from "../../models/palette";
 import {Palettes} from "../../utils/palettes";
-import {VisualizerInput} from "../../interfaces/visualizer-input";
 import {GradientType} from "../../enums/gradient-type";
 import {ViewCubeComponent} from '../view-cube/view-cube.component';
 import {SnackbarBus} from '../../providers/snackbar-bus';
+import {Subscription} from 'rxjs/Subscription';
 
 @Component({
     selector: 'app-window',
@@ -90,10 +81,13 @@ export class WindowComponent implements OnInit {
     private gradientType: GradientType = GradientType.RGBLinear;
     private invertHSV: boolean = false;
 
+    private selectBusSubscription: Subscription;
+    private settingsBusSubscription: Subscription;
+
     constructor(private formFactory: FormFactory, private workerManager: WorkerManager, private selectBus: SelectBus, private settingsBus: SettingsBus, private snackbarBus: SnackbarBus) {
         this.interactionHandler = new InteractionHandler();
 
-        this.selectBus.nodeSelected.subscribe((node: Node) => {
+        this.selectBusSubscription = this.selectBus.nodeSelected.subscribe((node: Node) => {
             if (this.tree.selectedNode != null) {
                 this.tree.selectedNode.selected = false;
                 this.tree.selectedNode = null;
@@ -113,7 +107,7 @@ export class WindowComponent implements OnInit {
         // initialize settings
         this.readSettings(this.settingsBus.getSettings(), true);
 
-        this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
+        this.settingsBusSubscription = this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
             this.readSettings(settings, false);
         });
         /** @end-author Nico Klaassen & Jules Cornelissen*/
@@ -314,6 +308,8 @@ export class WindowComponent implements OnInit {
 
     public destroyScene(): void {
         this.gl.releaseBuffers();
+        this.selectBusSubscription.unsubscribe();
+        this.settingsBusSubscription.unsubscribe();
     }
 
     public redrawAllScenes(): void { // redraws all canvases through the AppComponent
