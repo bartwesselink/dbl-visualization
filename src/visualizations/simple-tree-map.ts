@@ -173,10 +173,13 @@ export class SimpleTreeMap implements Visualizer {
     public getThumbnailImage(): string | null {
         return '/assets/images/visualization-simple-tree-map.png';
     }
+
+    public enableShaders(gl: OpenGL): void {
+        gl.setSizeThresHold(5);
+    }
     /** @end-author Nico Klaassen */
     /** @author Roan Hofland */
     public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void{
-        gl.setSizeThresHold(5);
         this.recolor(input.tree, input.palette, input.settings.outline, gl, draws, input.tree.selected);
     }
 

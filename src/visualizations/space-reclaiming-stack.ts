@@ -170,9 +170,12 @@ export class SpaceReclaimingStack implements Visualizer {
         return '/assets/images/visualization-space-reclaiming-stack.png';
     }
 
+    public enableShaders(gl: OpenGL):void {
+        gl.setSizeThresHold(15);
+    }
+
     /** @author Roan Hofland */
     public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void{
-        gl.setSizeThresHold(15);
         this.recolor(input.tree, input.palette, gl, draws, input.tree.selected);
     }
 
