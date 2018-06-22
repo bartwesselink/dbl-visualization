@@ -9,7 +9,7 @@ cache:
 stages:
    - build
 
-compile:
+build:
   script:
     - yarn install
     - yarn build
