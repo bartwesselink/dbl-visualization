@@ -41,29 +41,6 @@ export class IciclePlot implements Visualizer {
         };
 
         // define functions
-
-        /**
-         * Function which calculates the height of the given tree recursively
-         *
-         * @param {Node} tree Tree for which to calculate the height for
-         * @param {number} currentHeight Initially should be 0, variable to track current height.
-         * @returns {number} The height of the tree
-         */
-        const calculateTreeMaxDepth = (tree: Node, currentHeight: number): number => {
-            let treeHeight = currentHeight;
-            for (let child of tree.children) {
-                if (treeHeight == 0) {
-                    treeHeight = calculateTreeMaxDepth(child, currentHeight + 1);
-                } else {
-                    const newHeight = calculateTreeMaxDepth(child, currentHeight + 1);
-                    if (newHeight > treeHeight) {
-                        treeHeight = newHeight;
-                    }
-                }
-            }
-            return treeHeight;
-        };
-
         const calculateChildBounds = (tree: Node, parentBounds: Bounds, index: number): Bounds => {
             if (sizeCalculationMethod === 'asChildCount') {
                 return {
@@ -134,7 +111,7 @@ export class IciclePlot implements Visualizer {
         };
 
         // Give the default width and height
-        heightOffset = defaultHeight / (calculateTreeMaxDepth(tree, 0) - 1);
+        heightOffset = defaultHeight / tree.maxDepth;
         drawTree(tree, rootBounds);
 
         return draws;
