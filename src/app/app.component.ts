@@ -144,6 +144,7 @@ export class AppComponent implements OnInit {
     }
 
     public updateVisualization(visualizer: Visualizer, tab: Tab): void {
+        tab.window.form = null;
         tab.visualizer = visualizer;
 
         setTimeout(() => {
