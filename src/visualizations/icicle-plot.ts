@@ -44,8 +44,8 @@ export class IciclePlot implements Visualizer {
         const calculateChildBounds = (tree: Node, parentBounds: Bounds, index: number): Bounds => {
             if (sizeCalculationMethod === 'asChildCount') {
                 return {
-                    left: parentBounds.left + (Math.abs(parentBounds.right - parentBounds.left) / tree.children.length) * index,
-                    right: parentBounds.left + (Math.abs(parentBounds.right - parentBounds.left) / tree.children.length) * (index + 1)
+                    left: parentBounds.left + (Math.abs(parentBounds.right - parentBounds.left) / tree.parent.children.length) * index,
+                    right: parentBounds.left + (Math.abs(parentBounds.right - parentBounds.left) / tree.parent.children.length) * (index + 1)
                 }
             } else {// (sizeCalculationMethod === 'asSubtreeSize')
                 let doneSize = 0;
@@ -56,15 +56,13 @@ export class IciclePlot implements Visualizer {
                 return {left: parentBounds.left + (Math.abs(parentBounds.right - parentBounds.left) * (doneSize - tree.subTreeSize) / (tree.parent.subTreeSize - 1)),
                     right: parentBounds.left + (Math.abs(parentBounds.right - parentBounds.left) * doneSize / (tree.parent.subTreeSize - 1))};
             }
-        }
+        };
 
         /** drawTree draw the tree-map recursively.
          *
-         * @param {NodeTreeMap} tree The root of the subtree upon which we recurse
+         * @param {Node} tree The root of the subtree upon which we recurse
          * @param {Bounds} bounds The bounding-box indicating where we should draw the current root
-         * @param {boolean} internalNode Whether we are recursing on internal nodes, or on the root of the initial input tree
-         * @param {number[]} color The color with which we should draw our current bounding-box based rectangle
-         * @param {boolean} selected Whether one of its parent was selected
+         * @param {boolean} selected Whether this node or some ancestor of it is selected
          */
         const drawTree = (tree: Node, bounds: Bounds, selected: boolean = false): void => {
             // Draw the bounds of the current node
