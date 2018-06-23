@@ -83,7 +83,6 @@ export class Circles implements Visualizer {
 
                     //draw node after position is calculated
 
-                    console.log('x: ' + x + ' y: ' + y + ' radius: ' + radius);
 
                     draws.push({
                         type: 12 /** Cirlce **/,
