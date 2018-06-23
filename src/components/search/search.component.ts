@@ -1,6 +1,5 @@
-import {Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {Node} from '../../models/node';
-import {TreeNavigatorComponent} from '../tree-navigator/tree-navigator.component';
 import {SelectBus} from '../../providers/select-bus';
 import {FormBuilder, FormControl} from '@angular/forms';
 
