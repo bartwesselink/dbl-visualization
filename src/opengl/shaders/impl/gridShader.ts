@@ -8,14 +8,18 @@ import * as fragmentSource from "raw-loader!../fragment/gridFragmentShader.glsl"
 export class GridShader{
     public shader: WebGLProgram;
     public attribPosition: number;
-    public uniformDX: WebGLUniformLocation;
-    public uniformDY: WebGLUniformLocation;
+    public dxUniform: WebGLUniformLocation;
+    public dyUniform: WebGLUniformLocation;
+    public rxUniform: WebGLUniformLocation;
+    public ryUniform: WebGLUniformLocation;
 
     public init(shader: Shader, gl: WebGLRenderingContext): void{
         this.shader = shader.initShader(vertexSource, fragmentSource);
         this.attribPosition = gl.getAttribLocation(this.shader, "pos");
-        this.uniformDX = gl.getUniformLocation(this.shader, "dx");
-        this.uniformDY = gl.getUniformLocation(this.shader, "dy");
+        this.dxUniform = gl.getUniformLocation(this.shader, "dx");
+        this.dyUniform = gl.getUniformLocation(this.shader, "dy");
+        this.rxUniform = gl.getUniformLocation(this.shader, "rx");
+        this.ryUniform = gl.getUniformLocation(this.shader, "ry");
     }
 }
 /** @end-author Roan Hofland */  

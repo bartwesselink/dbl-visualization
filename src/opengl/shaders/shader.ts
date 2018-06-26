@@ -65,8 +65,10 @@ export class Shader{
         if(this.grid){
             this.gl.useProgram(this.gridShader.shader);
             
-            this.gl.uniform1f(this.gridShader.uniformDX, this.opengl.getDX() * this.opengl.getZoom());
-            this.gl.uniform1f(this.gridShader.uniformDY, this.opengl.getDY() * this.opengl.getZoom());
+            this.gl.uniform1f(this.gridShader.dxUniform, this.opengl.getDX() * this.opengl.getZoom());
+            this.gl.uniform1f(this.gridShader.dyUniform, this.opengl.getDY() * this.opengl.getZoom());
+            this.gl.uniform1f(this.gridShader.rxUniform, this.opengl.getRX() * this.opengl.getZoom());
+            this.gl.uniform1f(this.gridShader.ryUniform, this.opengl.getRY() * this.opengl.getZoom());
                                     
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.unitBuffer);
             this.gl.vertexAttribPointer(this.gridShader.attribPosition, //attribute

@@ -6,8 +6,12 @@ varying lowp vec2 vpos;
 
 uniform lowp float dx;
 uniform lowp float dy;
+uniform lowp float rx;
+uniform lowp float ry;
 
 void main() {
-	gl_FragColor = vec4(color, color, color, 0.15 - 100.0 * min(abs(mod((vpos.x - dx) * ratio, 0.1) - 0.05), abs(mod(vpos.y - dy, 0.1) - 0.05)));
+	lowp float x = (vpos.x - dx) * ratio;
+	lowp float y = vpos.y - dy;
+	gl_FragColor = vec4(color, color, color, 0.15 - 100.0 * min(abs(mod(x * rx + y * ry, 0.1) - 0.05), abs(mod(x * ry - y * rx, 0.1) - 0.05)));
 }
 /** @end-author Roan Hofland */
