@@ -64,6 +64,9 @@ export class Shader{
     public drawGrid(): void{
         if(this.grid){
             this.gl.useProgram(this.gridShader.shader);
+            
+            this.gl.uniform1f(this.gridShader.uniformDX, this.opengl.getDX() * this.opengl.getZoom());
+            this.gl.uniform1f(this.gridShader.uniformDY, this.opengl.getDY() * this.opengl.getZoom());
                                     
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.unitBuffer);
             this.gl.vertexAttribPointer(this.gridShader.attribPosition, //attribute
