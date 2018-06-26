@@ -8,8 +8,9 @@ uniform lowp float dx;
 uniform lowp float dy;
 uniform lowp float rx;
 uniform lowp float ry;
+uniform lowp float factor;
 
 void main() {
-	gl_FragColor = vec4(color, color, color, 0.15 - 100.0 * min(abs(mod(vpos.x * ratio * rx + vpos.y * ry - dx * ratio, 0.1) - 0.05), abs(mod(vpos.x * ratio * ry - vpos.y * rx + dy, 0.1) - 0.05)));
+	gl_FragColor = vec4(color, color, color, 0.15 - 100.0 * min(abs(mod(vpos.x * ratio * rx + vpos.y * ry - dx * ratio * factor, 0.1) - 0.05), abs(mod(vpos.x * ratio * ry - vpos.y * rx + dy * factor, 0.1) - 0.05)));
 }
 /** @end-author Roan Hofland */
