@@ -367,14 +367,16 @@ export class AppComponent implements OnInit {
             this.tree.selectedNode = null;
         }
 
+        console.log("open tree");
+        
         this.tree = node;
         
         this.assignTreeIDs(0, this.tree);
 
         setTimeout(() => {
             this.sidebar.reloadData();
+            console.log("redraw tabs");
             this.redrawAllTabs();
-            this.resetAllTabTransformations();
         }, 100);
     }
     

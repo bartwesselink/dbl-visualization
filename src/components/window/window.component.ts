@@ -198,6 +198,7 @@ export class WindowComponent implements OnInit {
             case 't':
             case 'T':
                 this.resetTransformation();
+                this.render();
                 break;
         }
     }
@@ -321,6 +322,8 @@ export class WindowComponent implements OnInit {
 
     //compute the visualisation
     public computeScene(): Promise<void> {
+        this.currentDraws = null;
+        console.log("start compute");
         return new Promise((resolve, reject) => {
             this.gl.releaseBuffers();
 
@@ -367,6 +370,7 @@ export class WindowComponent implements OnInit {
                     }
 
                     this.currentDraws = draws;
+                    console.log("end compute");
 
                     resolve();
                 });
@@ -567,7 +571,6 @@ export class WindowComponent implements OnInit {
     /** @author Mathijs Boezer */
     public resetTransformation() {
         this.gl.resetTransformations();
-        this.render();
         this.viewCube.setZoomLevel(this.gl.getZoom());
     }
 

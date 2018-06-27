@@ -86,6 +86,7 @@ export class Galaxy implements Visualizer {
     }
 
     public updateColors(gl: OpenGL, input: VisualizerInput, draws: Draw[]): void{
+        console.log("recolor", draws);
         this.recolor(input.tree, input.palette, gl, draws, input.tree.selected);
         for(var i = input.tree.subTreeSize; i < draws.length; i++){
             gl.copyColor(draws[draws[i].linked].glid, draws[i].glid);
