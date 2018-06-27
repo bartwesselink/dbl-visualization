@@ -12,7 +12,6 @@ export class GridShader{
     public dyUniform: WebGLUniformLocation;
     public rxUniform: WebGLUniformLocation;
     public ryUniform: WebGLUniformLocation;
-    public factorUniform: WebGLUniformLocation;
 
     public init(shader: Shader, gl: WebGLRenderingContext): void{
         this.shader = shader.initShader(vertexSource, fragmentSource);
@@ -21,7 +20,6 @@ export class GridShader{
         this.dyUniform = gl.getUniformLocation(this.shader, "dy");
         this.rxUniform = gl.getUniformLocation(this.shader, "rx");
         this.ryUniform = gl.getUniformLocation(this.shader, "ry");
-        this.factorUniform = gl.getUniformLocation(this.shader, "factor");
     }
 }
 /** @end-author Roan Hofland */  
