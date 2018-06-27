@@ -26,8 +26,6 @@ export class OpenGL{
     private factor: number = 1;
     private dx: number = 0;
     private dy: number = 0;
-    private gldx: number = 0;
-    private gldy: number = 0;
     private rotation: number = 0;
     private rx: number = 1;
     private ry: number = 0;
@@ -146,16 +144,6 @@ export class OpenGL{
 
     //gets the x translation in transformed OpenGL space
     public getDX(): number{
-        return this.dx;
-    }
-    
-    //gets the y translation in OpenGL space
-    public getGLDY(): number{
-        return this.dy;
-    }
-
-    //gets the x translation in OpenGL space
-    public getGLDX(): number{
         return this.dx;
     }
 
@@ -306,8 +294,6 @@ export class OpenGL{
         }
         this.dx += ((dx / w) * 2) / this.factor;
         this.dy += ((-dy / h) * 2) / this.factor;
-        this.gldx += ((dx / w) * 2);
-        this.gldy += ((-dy / h) * 2);
         this.update = true;
     }
 
@@ -315,8 +301,6 @@ export class OpenGL{
     public glTranslate(dx: number, dy: number): void {
         this.dx += dx / this.HALFWIDTH;
         this.dy += dy / this.HALFHEIGHT;
-        this.gldx += dx / this.HALFWIDTH;
-        this.gldy += dy / this.HALFHEIGHT;
         this.update = true;
     }
 
@@ -388,10 +372,7 @@ export class OpenGL{
             this.ry = Math.sin(-this.rotation * Matrix.oneDeg);
             this.update = false;
         }
-        
-        console.log(this.modelviewMatrix);
-        console.log(this.dx, this.dy, this.getZoom(), this.dx * this.getZoom(), this.dy * this.getZoom());
-        
+                
         this.clear();
         
         this.shader.drawGrid(this.modelviewMatrix[12], this.modelviewMatrix[13]);
