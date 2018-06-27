@@ -20,7 +20,7 @@ export class WelcomePageComponent implements OnInit {
 
         setTimeout(() => this.animate());
     }
-    
+
     private lastAnimationId: number;
 
     public getThumbnails(): string[] {
@@ -66,15 +66,11 @@ export class WelcomePageComponent implements OnInit {
 
         const c = canvas.getContext('2d');
 
-        const density = 40;
+        const density = 100;
         const minSize = 2;
-        const maxSize = 30;
-        const minV = 0.4;
+        const maxSize = 40;
+        const minV = 0.1;
         const maxV = 2;
-
-        const colorArray = [
-            '#FFFFFF',
-        ];
 
         window.addEventListener('resize', setSize);
 
@@ -85,12 +81,14 @@ export class WelcomePageComponent implements OnInit {
             this.radius = radius;
             this.dx = dx;
             this.dy = dy;
-            this.color = colorArray[Math.floor(Math.random() * colorArray.length)];
+            this.color = 255;
+            this.alpha = Math.max(1 - Math.min(this.default_radius / (maxSize + minSize), 1.0), 0.2);
 
             this.draw = function () {
                 c.beginPath();
                 c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-                c.fillStyle = this.color;
+                c.filter = 'blur(' + Math.max(this.radius / (minSize + maxSize) * 10 - 3, 0)  + 'px) brightness(1.2)';
+                c.fillStyle = "rgba(" + this.color + ", " + this.color + ", " + this.color + ", " + this.alpha + ")";
                 c.fill();
             };
 
@@ -121,10 +119,14 @@ export class WelcomePageComponent implements OnInit {
             const radius = Math.random() * maxSize + minSize;
             const x = radius + Math.random() * (canvas.clientWidth - radius * 2);
             const y = radius + Math.random() * (canvas.clientHeight - radius * 2);
-            const directionX = Math.random() < 0.5 ? -1 : 1;
-            const directionY = Math.random() < 0.5 ? -1 : 1;
-            const dx = Math.random() * maxV + minV * directionX;
-            const dy = Math.random() * maxV + minV * directionY;
+            const directionX = Math.random() > 0.5 ? -1 : 1;
+            const directionY = Math.random() > 0.5 ? -1 : 1;
+            console.log(directionX);
+            console.log(directionY);
+            const dx = Math.max(Math.random() * maxV, minV) * directionX;
+            const dy = Math.max(Math.random() * maxV, minV) * directionY;
+            console.log(dx);
+            console.log(dy);
 
             circles[i] = new Circle(x, y, radius, dx, dy);
         }
