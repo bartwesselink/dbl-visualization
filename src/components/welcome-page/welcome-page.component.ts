@@ -69,8 +69,8 @@ export class WelcomePageComponent implements OnInit {
         const density = 100;
         const minSize = 2;
         const maxSize = 40;
-        const minV = 0.1;
-        const maxV = 2;
+        const minV = 0.08;
+        const maxV = 0.6;
 
         window.addEventListener('resize', setSize);
 
