@@ -349,8 +349,15 @@ export class AppComponent implements OnInit {
             tabSection.nativeElement.style.width = '100%';
         }
     }
-    /** @end-author Bart Wesselink */
-
+    /** @end-author Bart Wesselink */   
+    /** @author Roan Hofland */
+    public assignTreeIDs(start: number, tree: Node): number{
+        for(let child of tree.children){
+            start = this.assignTreeIDs(start, child);
+        }
+        return (tree.identifier = start) + 1;
+    }
+    /** @end-author Roan Hofland */
     /** @author Mathijs Boezer */
 
     private openTree(node: Node): void {
@@ -361,6 +368,8 @@ export class AppComponent implements OnInit {
         }
 
         this.tree = node;
+        
+        this.assignTreeIDs(0, this.tree);
 
         setTimeout(() => {
             this.sidebar.reloadData();
@@ -368,7 +377,7 @@ export class AppComponent implements OnInit {
             this.resetAllTabTransformations();
         }, 100);
     }
-
+    
     private resetAllTabTransformations() {
         for (let tab of this.tabs) {
             tab.window.resetTransformation();
