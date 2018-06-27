@@ -61,12 +61,12 @@ export class Shader{
         }
     }
     
-    public drawGrid(): void{
+    public drawGrid(dx: number, dy: number): void{
         if(this.grid){
             this.gl.useProgram(this.gridShader.shader);
             
-            this.gl.uniform1f(this.gridShader.dxUniform, this.opengl.getDX());
-            this.gl.uniform1f(this.gridShader.dyUniform, this.opengl.getDY());
+            this.gl.uniform1f(this.gridShader.dxUniform, dx);
+            this.gl.uniform1f(this.gridShader.dyUniform, dy);
             this.gl.uniform1f(this.gridShader.rxUniform, this.opengl.getRX());
             this.gl.uniform1f(this.gridShader.ryUniform, this.opengl.getRY());
             this.gl.uniform1f(this.gridShader.factorUniform, this.opengl.getZoom());
