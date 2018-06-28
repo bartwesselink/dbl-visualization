@@ -48,7 +48,8 @@ export class GeneralSettingsButtonComponent implements OnInit {
         this.form = this.formFactory
             .createFormBuilder()
             .addToggleField('darkMode', false, { label: 'Dark mode' })
-            .addChoiceField('viewMode', ViewMode.SIDE_BY_SIDE, { label: 'View Mode', expanded: true, choices: { sideBySide: 'Side by side', tab: 'Tabs' } })
+            .addToggleField('grid', true, { label: 'Show grid' })
+            .addChoiceField('viewMode', ViewMode.SIDE_BY_SIDE, { label: 'View mode', expanded: true, choices: { sideBySide: 'Side by side', tab: 'Tabs' } })
             .addChoiceField('interactionSettings', InteractionOptions.ZoomAndPan, {
                 label: 'Action on clicking a node',
                 choices:{

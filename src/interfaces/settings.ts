@@ -5,6 +5,7 @@ import {GradientType} from "../enums/gradient-type";
 
 export interface Settings {
     darkMode: boolean;
+    grid: boolean;
     viewMode: ViewMode;
     interactionSettings: InteractionOptions
     colorMode: boolean;

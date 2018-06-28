@@ -69,6 +69,7 @@ export class WindowComponent implements OnInit {
     private readonly ZOOM_WARNING = Math.pow(2.0, 15.0);
     private warningShown: boolean = false;
     private darkMode: boolean;
+    private grid: boolean;
 
     private currentDraws: Draw[];
     private interactionHandler: InteractionHandler;
@@ -436,9 +437,8 @@ export class WindowComponent implements OnInit {
             this.onError((<Error>error).message);
         }
 
-        this.gl.setGrid(true);
-
         this.setDarkmode(this.darkMode);
+        this.gl.setGrid(this.grid);
 
         if (this.visualizer.enableShaders) {
             this.visualizer.enableShaders(this.gl);
@@ -551,10 +551,12 @@ export class WindowComponent implements OnInit {
         if (this.reversePalette) {
             this.palette = new Palette(this.palette.secondary, this.palette.primary, this.palette.accents);
         }
-
+        
         if (initialize) {
             this.darkMode = settings.darkMode;
+            this.grid = settings.grid;
         } else {
+            this.gl.setGrid(this.grid = settings.grid);
             if (this.darkMode === settings.darkMode) { // It wasn't the darkMode setting that changed
                 this.stateRedraw();
             } else {
