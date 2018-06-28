@@ -137,12 +137,12 @@ export class OpenGL{
         return this.modelviewMatrix;
     }
 
-    //gets the y translation in OpenGL space
+    //gets the y translation in transformed OpenGL space
     public getDY(): number{
         return this.dy;
     }
 
-    //gets the x translation in OpenGL space
+    //gets the x translation in transformed OpenGL space
     public getDX(): number{
         return this.dx;
     }
@@ -372,10 +372,10 @@ export class OpenGL{
             this.ry = Math.sin(-this.rotation * Matrix.oneDeg);
             this.update = false;
         }
-        
+                
         this.clear();
         
-        this.shader.drawGrid();
+        this.shader.drawGrid(this.modelviewMatrix[12], this.modelviewMatrix[13]);
         
         this.shader.prepareRenderPass();
         

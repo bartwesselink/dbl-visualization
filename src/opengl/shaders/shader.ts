@@ -61,9 +61,14 @@ export class Shader{
         }
     }
     
-    public drawGrid(): void{
+    public drawGrid(dx: number, dy: number): void{
         if(this.grid){
             this.gl.useProgram(this.gridShader.shader);
+            
+            this.gl.uniform1f(this.gridShader.dxUniform, dx);
+            this.gl.uniform1f(this.gridShader.dyUniform, dy);
+            this.gl.uniform1f(this.gridShader.rxUniform, this.opengl.getRX());
+            this.gl.uniform1f(this.gridShader.ryUniform, this.opengl.getRY());
                                     
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.unitBuffer);
             this.gl.vertexAttribPointer(this.gridShader.attribPosition, //attribute
