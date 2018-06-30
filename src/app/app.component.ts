@@ -353,7 +353,6 @@ export class AppComponent implements OnInit {
     /** @author Roan Hofland */
     public assignTreeIDs(start: number, tree: Node): number{
         tree.identifier = start--;
-        console.log(tree.identifier);
         for(let child of tree.children){
             start = this.assignTreeIDs(start, child);
         }
@@ -382,8 +381,6 @@ export class AppComponent implements OnInit {
         
         this.assignTreeIDs(this.tree.subTreeSize - 1, this.tree);
         
-        console.log(this.tree);
-
         setTimeout(() => {
             this.redrawAllTabs(true);
             this.sidebar.reloadData();
