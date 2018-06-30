@@ -349,7 +349,7 @@ export class AppComponent implements OnInit {
             tabSection.nativeElement.style.width = '100%';
         }
     }
-    /** @end-author Bart Wesselink */   
+    /** @end-author Bart Wesselink */
     /** @author Roan Hofland */
     public assignTreeIDs(start: number, tree: Node): number{
         for(let child of tree.children){
@@ -360,7 +360,7 @@ export class AppComponent implements OnInit {
     /** @end-author Roan Hofland */
     /** @author Mathijs Boezer */
 
-    private openTree(node: Node): void {
+    private openTree(node: Node, reset: boolean = false): void {
         for (const tab of this.tabs) {
             if(tab.window.computing){
                 return;//we do not open a new tree if we are in the middle of our computations
@@ -369,15 +369,17 @@ export class AppComponent implements OnInit {
         for (const tab of this.tabs) {
             tab.window.computing = true;
         }
-        
+
         // reset selection on old tree
         if (this.tree && this.tree.selectedNode) {
             this.tree.selectedNode.selected = false;
             this.tree.selectedNode = null;
         }
-        
+
         this.tree = node;
-        
+        if (reset) {
+            this.sidebar.navigator.reset(this.originalTree);
+        }
         this.assignTreeIDs(0, this.tree);
 
         setTimeout(() => {
@@ -385,7 +387,7 @@ export class AppComponent implements OnInit {
             this.sidebar.reloadData();
         }, 100);
     }
-    
+
     private resetAllTabTransformations() {
         for (let tab of this.tabs) {
             tab.window.resetTransformation();
@@ -393,7 +395,7 @@ export class AppComponent implements OnInit {
     }
 
     public restoreTree() {
-        this.openTree(this.originalTree);
+        this.openTree(this.originalTree, true);
     }
     /** @end-author Mathijs Boezer */
 

@@ -90,6 +90,7 @@ export class WindowComponent implements OnInit {
         this.interactionHandler = new InteractionHandler();
 
         this.selectBusSubscription = this.selectBus.nodeSelected.subscribe((node: Node) => {
+            console.log("node: " + node);
             if (this.tree.selectedNode != null) {
                 this.tree.selectedNode.selected = false;
                 this.tree.selectedNode = null;
@@ -374,7 +375,7 @@ export class WindowComponent implements OnInit {
 
                         this.currentDraws = draws;
                         this.computing = false;
-                        
+
                         this.resetTransformation();
 
                         resolve();
@@ -562,7 +563,7 @@ export class WindowComponent implements OnInit {
         if (this.reversePalette) {
             this.palette = new Palette(this.palette.secondary, this.palette.primary, this.palette.accents);
         }
-        
+
         if (initialize) {
             this.darkMode = settings.darkMode;
             this.grid = settings.grid;

@@ -57,7 +57,7 @@ export class TreeNavigatorComponent implements OnInit {
         this.initialize();
     }
 
-    public reset(): void {
+    public reset(tree?:Node): void {
         // contract all
         for (const node of this.current) {
             node.children = [];
@@ -72,17 +72,20 @@ export class TreeNavigatorComponent implements OnInit {
     }
 
     private initialize(): void {
+        // console.log("initializing");
         this.current = [];
 
         // create a flat tree, such that Angular does not have to loop over the whole tree when it is not expanded
         for (const node of (this.tree as Node[])) {
+            // console.log(node);
             this.current.push(TreeNavigatorComponent.transformToNavigatorNode(node));
         }
+        // console.log("done");
     }
 
     private expandNode(needle: Node, haystack: Node[]): boolean {
         this.reload();
-        
+
         for (const node of haystack) {
             if(node != undefined){
                 if (node === needle) {

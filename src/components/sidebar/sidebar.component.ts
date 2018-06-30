@@ -19,6 +19,8 @@ export class SidebarComponent {
     @Output() export: EventEmitter<any> = new EventEmitter();
 
     contractAll(): void {
+        // console.log("reset clicked!");
+        console.log(this.navigator);
         this.navigator.reset();
     }
     /** @end-author Bart Wesselink */
