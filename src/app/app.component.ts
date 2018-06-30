@@ -366,6 +366,10 @@ export class AppComponent implements OnInit {
             this.tree.selectedNode.selected = false;
             this.tree.selectedNode = null;
         }
+        
+        for (const tab of this.tabs) {
+            tab.window.computing = true;
+        }
 
         console.log("open tree");
         

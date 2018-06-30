@@ -55,6 +55,7 @@ export class WindowComponent implements OnInit {
     private lastError: string;
 
     private gl: OpenGL;
+    public computing: boolean = false;
 
     private down: boolean = false;
     private lastX: number;
@@ -323,6 +324,7 @@ export class WindowComponent implements OnInit {
     //compute the visualisation
     public computeScene(): Promise<void> {
         this.currentDraws = null;
+        this.computing = true;
         console.log("start compute");
         return new Promise((resolve, reject) => {
             this.gl.releaseBuffers();
@@ -370,7 +372,10 @@ export class WindowComponent implements OnInit {
                     }
 
                     this.currentDraws = draws;
+                    this.computing = false;
                     console.log("end compute");
+                    
+                    this.resetTransformation();
 
                     resolve();
                 });
@@ -472,16 +477,18 @@ export class WindowComponent implements OnInit {
     }
 
     private stateRedraw(): void {
-        if(this.visualizer.updateColors){
-            this.computeColors();
-            this.visualizer.updateColors(this.gl, {
-                tree: this.tree,
-                settings: this.lastSettings,
-                palette: this.palette
-            }, this.currentDraws);
-            this.render();
-        }else{
-            this.redrawAllScenes();
+        if(!this.computing){
+            if(this.visualizer.updateColors){
+                this.computeColors();
+                this.visualizer.updateColors(this.gl, {
+                    tree: this.tree,
+                    settings: this.lastSettings,
+                    palette: this.palette
+                }, this.currentDraws);
+                this.render();
+            }else{
+                this.redrawAllScenes();
+            }
         }
     }
 
