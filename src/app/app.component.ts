@@ -38,7 +38,7 @@ export class AppComponent implements OnInit {
     public loaderVisible: boolean = false;
     public showApp: boolean = false;
 
-    private activeTab: Tab;
+    public activeTab: Tab;
     private amountOfWindowsLoading: number = 0;
     private firstTabAdded: boolean = false;
 
@@ -349,7 +349,7 @@ export class AppComponent implements OnInit {
             tabSection.nativeElement.style.width = '100%';
         }
     }
-    /** @end-author Bart Wesselink */   
+    /** @end-author Bart Wesselink */
     /** @author Roan Hofland */
     public assignTreeIDs(start: number, tree: Node): number{
         for(let child of tree.children){
@@ -369,15 +369,15 @@ export class AppComponent implements OnInit {
         for (const tab of this.tabs) {
             tab.window.computing = true;
         }
-        
+
         // reset selection on old tree
         if (this.tree && this.tree.selectedNode) {
             this.tree.selectedNode.selected = false;
             this.tree.selectedNode = null;
         }
-        
+
         this.tree = node;
-        
+
         this.assignTreeIDs(0, this.tree);
 
         setTimeout(() => {
@@ -385,7 +385,7 @@ export class AppComponent implements OnInit {
             this.sidebar.reloadData();
         }, 100);
     }
-    
+
     private resetAllTabTransformations() {
         for (let tab of this.tabs) {
             tab.window.resetTransformation();
