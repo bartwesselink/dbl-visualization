@@ -181,10 +181,10 @@ export class AppComponent implements OnInit {
         this.activeTab = tab;
 
         if (tab.window) {
-            setTimeout(() => {
-                tab.window.computeScene();
-                // tab.window.render();
-            }, 100);
+            // setTimeout(() => {
+            //     tab.window.computeScene();
+            //     // tab.window.render();
+            // }, 100);
 
             this.resizeActiveTab();
         }
