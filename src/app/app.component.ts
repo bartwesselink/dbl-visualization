@@ -243,7 +243,7 @@ export class AppComponent implements OnInit {
 
     public async redrawAllTabs(override: boolean = false): Promise<void> { // We generally only want to recompute the tab that is active.
         for (const tab of this.tabs) {
-            if (this.isSideBySideViewMode() || tab.active && tab.window) {
+            if ((this.isSideBySideViewMode() || tab.active && tab.window) || override) {
                 await tab.window.computeScene(override);
             }
         }
@@ -349,7 +349,7 @@ export class AppComponent implements OnInit {
             tabSection.nativeElement.style.width = '100%';
         }
     }
-    /** @end-author Bart Wesselink */   
+    /** @end-author Bart Wesselink */
     /** @author Roan Hofland */
     public assignTreeIDs(start: number, tree: Node): number{
         tree.identifier = start--;
@@ -370,23 +370,23 @@ export class AppComponent implements OnInit {
         for (const tab of this.tabs) {
             tab.window.computing = true;
         }
-        
+
         // reset selection on old tree
         if (this.tree && this.tree.selectedNode) {
             this.tree.selectedNode.selected = false;
             this.tree.selectedNode = null;
         }
-        
+
         this.tree = node;
-        
+
         this.assignTreeIDs(this.tree.subTreeSize - 1, this.tree);
-        
+
         setTimeout(() => {
             this.redrawAllTabs(true);
             this.sidebar.reloadData();
         }, 100);
     }
-    
+
     private resetAllTabTransformations() {
         for (let tab of this.tabs) {
             tab.window.resetTransformation();
