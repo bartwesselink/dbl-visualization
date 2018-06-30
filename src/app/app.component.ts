@@ -370,8 +370,6 @@ export class AppComponent implements OnInit {
         for (const tab of this.tabs) {
             tab.window.computing = true;
         }
-
-        console.log("open tree");
         
         this.tree = node;
         
@@ -379,7 +377,6 @@ export class AppComponent implements OnInit {
 
         setTimeout(() => {
             this.sidebar.reloadData();
-            console.log("redraw tabs");
             this.redrawAllTabs();
         }, 100);
     }

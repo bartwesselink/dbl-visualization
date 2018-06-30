@@ -325,7 +325,6 @@ export class WindowComponent implements OnInit {
     public computeScene(): Promise<void> {
         this.currentDraws = null;
         this.computing = true;
-        console.log("start compute");
         return new Promise((resolve, reject) => {
             this.gl.releaseBuffers();
 
@@ -373,7 +372,6 @@ export class WindowComponent implements OnInit {
 
                     this.currentDraws = draws;
                     this.computing = false;
-                    console.log("end compute");
                     
                     this.resetTransformation();
 
