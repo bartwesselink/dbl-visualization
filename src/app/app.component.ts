@@ -352,10 +352,12 @@ export class AppComponent implements OnInit {
     /** @end-author Bart Wesselink */   
     /** @author Roan Hofland */
     public assignTreeIDs(start: number, tree: Node): number{
+        tree.identifier = start--;
+        console.log(tree.identifier);
         for(let child of tree.children){
             start = this.assignTreeIDs(start, child);
         }
-        return (tree.identifier = start) + 1;
+        return start;
     }
     /** @end-author Roan Hofland */
     /** @author Mathijs Boezer */
@@ -378,7 +380,9 @@ export class AppComponent implements OnInit {
         
         this.tree = node;
         
-        this.assignTreeIDs(0, this.tree);
+        this.assignTreeIDs(this.tree.subTreeSize - 1, this.tree);
+        
+        console.log(this.tree);
 
         setTimeout(() => {
             this.redrawAllTabs(true);
