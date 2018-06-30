@@ -26,7 +26,7 @@ import {Subscription} from 'rxjs/Subscription';
 export class WindowComponent implements OnInit {
     @ViewChild('canvas') private canvas: ElementRef;
     @ViewChild(ViewCubeComponent) private viewCube: ViewCubeComponent;
-    @Input('tree') private tree: Node;
+    @Input('tree') public tree: Node;
     @Input('visualizer') public visualizer: Visualizer;
     @Input('tab') public tab: Tab;
 
@@ -374,7 +374,7 @@ export class WindowComponent implements OnInit {
 
                         this.currentDraws = draws;
                         this.computing = false;
-                        
+
                         this.resetTransformation();
 
                         resolve();
@@ -562,7 +562,7 @@ export class WindowComponent implements OnInit {
         if (this.reversePalette) {
             this.palette = new Palette(this.palette.secondary, this.palette.primary, this.palette.accents);
         }
-        
+
         if (initialize) {
             this.darkMode = settings.darkMode;
             this.grid = settings.grid;
