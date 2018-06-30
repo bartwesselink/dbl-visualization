@@ -55,6 +55,7 @@ export class WindowComponent implements OnInit {
     private lastError: string;
 
     private gl: OpenGL;
+    public computing: boolean = false;
 
     private down: boolean = false;
     private lastX: number;
@@ -199,6 +200,7 @@ export class WindowComponent implements OnInit {
             case 't':
             case 'T':
                 this.resetTransformation();
+                this.render();
                 break;
         }
     }
@@ -321,58 +323,65 @@ export class WindowComponent implements OnInit {
     }
 
     //compute the visualisation
-    public computeScene(): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.gl.releaseBuffers();
+    public computeScene(override: boolean = false): Promise<void> {
+        if(!this.computing || override){
+            this.currentDraws = null;
+            this.computing = true;
+            return new Promise((resolve, reject) => {
+                this.gl.releaseBuffers();
 
-            if (!this.visualizer) {
-                return;
-            }
+                if (!this.visualizer) {
+                    return;
+                }
 
-            if (!this.tree && !(this.visualizer instanceof OpenglDemoTree)) { // only the demo visualizer can be rendered without data
-                return; // there is no tree yet
-            }
+                if (!this.tree && !(this.visualizer instanceof OpenglDemoTree)) { // only the demo visualizer can be rendered without data
+                    return; // there is no tree yet
+                }
 
-            if (this.tree) {
-                this.computeColors();
-            }
-            this.startLoading();
+                if (this.tree) {
+                    this.computeColors();
+                }
+                this.startLoading();
 
-            /** @author Bart Wesselink */
-            const input = {
-                    tree: this.tree,
-                    settings: this.lastSettings,
-                    palette: this.palette
-            };
-            this.workerManager.startWorker(this.gl, this.visualizer.draw, input)
-                .then((draws: Draw[]) => {
-                    setTimeout(() => {
-                        if (this.visualizer.optimizeShaders) {
+                /** @author Bart Wesselink */
+                const input = {
+                        tree: this.tree,
+                        settings: this.lastSettings,
+                        palette: this.palette
+                };
+                this.workerManager.startWorker(this.gl, this.visualizer.draw, input)
+                    .then((draws: Draw[]) => {
+                        setTimeout(() => {
+                            if (this.visualizer.optimizeShaders) {
+                                this.visualizer.optimizeShaders(this.gl);
+                            }
+
+                            this.redraw();
+
+                            this.stopLoading();
+                        }, 100);
+
+                        if(this.visualizer.optimizeShaders){
                             this.visualizer.optimizeShaders(this.gl);
                         }
 
-                        this.redraw();
-
-                        this.stopLoading();
-                    }, 100);
-
-                    if(this.visualizer.optimizeShaders){
-                        this.visualizer.optimizeShaders(this.gl);
-                    }
-
-                    if(this.visualizer.updateColors){
-                        if(!(this.visualizer instanceof OpenglDemoTree)){
-                            draws = this.sort(draws);
+                        if(this.visualizer.updateColors){
+                            if(!(this.visualizer instanceof OpenglDemoTree)){
+                                draws = this.sort(draws);
+                            }
+                            this.visualizer.updateColors(this.gl, input, draws);
                         }
-                        this.visualizer.updateColors(this.gl, input, draws);
-                    }
 
-                    this.currentDraws = draws;
+                        this.currentDraws = draws;
+                        this.computing = false;
+                        
+                        this.resetTransformation();
 
-                    resolve();
-                });
-            /** @end-author Bart Wesselink */
-        });
+                        resolve();
+                    });
+                /** @end-author Bart Wesselink */
+            });
+        }
     }
 
     /** @author Jules Cornelissen */
@@ -468,16 +477,18 @@ export class WindowComponent implements OnInit {
     }
 
     private stateRedraw(): void {
-        if(this.visualizer.updateColors){
-            this.computeColors();
-            this.visualizer.updateColors(this.gl, {
-                tree: this.tree,
-                settings: this.lastSettings,
-                palette: this.palette
-            }, this.currentDraws);
-            this.render();
-        }else{
-            this.redrawAllScenes();
+        if(!this.computing){
+            if(this.visualizer.updateColors){
+                this.computeColors();
+                this.visualizer.updateColors(this.gl, {
+                    tree: this.tree,
+                    settings: this.lastSettings,
+                    palette: this.palette
+                }, this.currentDraws);
+                this.render();
+            }else{
+                this.redrawAllScenes();
+            }
         }
     }
 
@@ -569,7 +580,6 @@ export class WindowComponent implements OnInit {
     /** @author Mathijs Boezer */
     public resetTransformation() {
         this.gl.resetTransformations();
-        this.render();
         this.viewCube.setZoomLevel(this.gl.getZoom());
     }
 

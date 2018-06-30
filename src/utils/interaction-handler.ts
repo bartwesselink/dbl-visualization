@@ -29,7 +29,7 @@ export class InteractionHandler {
         for (let i = draws.length - 1; i >= 0; i--) {
             const draw: Draw = draws[i];
 
-            if (draw != undefined && draw.identifier != undefined && gl.isShapeVisible(draw.glid) && this.withinDraw(draw, x, y)) {
+            if (draw.identifier != undefined && gl.isShapeVisible(draw.glid) && this.withinDraw(draw, x, y)) {
                 return this.findNodeByIdentifier(tree, draw.identifier);
             }
         }

@@ -241,10 +241,10 @@ export class AppComponent implements OnInit {
         }
     }
 
-    public async redrawAllTabs(): Promise<void> { // We generally only want to recompute the tab that is active.
+    public async redrawAllTabs(override: boolean = false): Promise<void> { // We generally only want to recompute the tab that is active.
         for (const tab of this.tabs) {
             if (this.isSideBySideViewMode() || tab.active && tab.window) {
-                await tab.window.computeScene();
+                await tab.window.computeScene(override);
             }
         }
         // for (const tab of this.tabs.slice().sort((a, b) => a === this.activeTab ? 0 : 1)) {
@@ -349,26 +349,43 @@ export class AppComponent implements OnInit {
             tabSection.nativeElement.style.width = '100%';
         }
     }
-    /** @end-author Bart Wesselink */
-
+    /** @end-author Bart Wesselink */   
+    /** @author Roan Hofland */
+    public assignTreeIDs(start: number, tree: Node): number{
+        for(let child of tree.children){
+            start = this.assignTreeIDs(start, child);
+        }
+        return (tree.identifier = start) + 1;
+    }
+    /** @end-author Roan Hofland */
     /** @author Mathijs Boezer */
 
     private openTree(node: Node): void {
+        for (const tab of this.tabs) {
+            if(tab.window.computing){
+                return;//we do not open a new tree if we are in the middle of our computations
+            }
+        }
+        for (const tab of this.tabs) {
+            tab.window.computing = true;
+        }
+        
         // reset selection on old tree
         if (this.tree && this.tree.selectedNode) {
             this.tree.selectedNode.selected = false;
             this.tree.selectedNode = null;
         }
-
+        
         this.tree = node;
+        
+        this.assignTreeIDs(0, this.tree);
 
         setTimeout(() => {
+            this.redrawAllTabs(true);
             this.sidebar.reloadData();
-            this.redrawAllTabs();
-            this.resetAllTabTransformations();
         }, 100);
     }
-
+    
     private resetAllTabTransformations() {
         for (let tab of this.tabs) {
             tab.window.resetTransformation();
