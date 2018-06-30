@@ -241,10 +241,10 @@ export class AppComponent implements OnInit {
         }
     }
 
-    public async redrawAllTabs(): Promise<void> { // We generally only want to recompute the tab that is active.
+    public async redrawAllTabs(override: boolean = false): Promise<void> { // We generally only want to recompute the tab that is active.
         for (const tab of this.tabs) {
             if (this.isSideBySideViewMode() || tab.active && tab.window) {
-                await tab.window.computeScene();
+                await tab.window.computeScene(override);
             }
         }
         // for (const tab of this.tabs.slice().sort((a, b) => a === this.activeTab ? 0 : 1)) {
@@ -361,14 +361,19 @@ export class AppComponent implements OnInit {
     /** @author Mathijs Boezer */
 
     private openTree(node: Node): void {
+        for (const tab of this.tabs) {
+            if(tab.window.computing){
+                return;//we do not open a new tree if we are in the middle of our computations
+            }
+        }
+        for (const tab of this.tabs) {
+            tab.window.computing = true;
+        }
+        
         // reset selection on old tree
         if (this.tree && this.tree.selectedNode) {
             this.tree.selectedNode.selected = false;
             this.tree.selectedNode = null;
-        }
-        
-        for (const tab of this.tabs) {
-            tab.window.computing = true;
         }
         
         this.tree = node;
@@ -376,8 +381,8 @@ export class AppComponent implements OnInit {
         this.assignTreeIDs(0, this.tree);
 
         setTimeout(() => {
+            this.redrawAllTabs(true);
             this.sidebar.reloadData();
-            this.redrawAllTabs();
         }, 100);
     }
     
