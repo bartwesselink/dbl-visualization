@@ -181,16 +181,11 @@ export class AppComponent implements OnInit {
         this.activeTab = tab;
 
         if (tab.window) {
-            console.log("activeTabTree");
-            console.log(tab.window.tree);
-            console.log(this.tree);
-            console.log(tab.window.tree != this.tree);
-            console.log("----------------");
-            // if (tab.window.tree != this.tree) {
-            setTimeout(() => {
-                tab.window.computeScene();
-            }, 100);
-            // }
+            // setTimeout(() => {
+            //     tab.window.computeScene();
+            //     // tab.window.render();
+            // }, 100);
+
             this.resizeActiveTab();
         }
     }
