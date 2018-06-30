@@ -35,6 +35,7 @@ export class TreeNavigatorComponent implements OnInit {
 
         if (this.parent) {
             this.selectBus.nodeSelected.subscribe((node: Node) => {
+                console.log("selection update");
                 this.expandNode(node, this.tree as Node[]);
 
                 this.items.forEach((item: TreeNavigatorItemComponent) => {
@@ -57,13 +58,32 @@ export class TreeNavigatorComponent implements OnInit {
         this.initialize();
     }
 
-    public reset(tree?:Node): void {
+    public reset(resetTree?:boolean): void {
+        // if (resetTree != undefined) {
+        //     this.tree = [resetTree];//[TreeNavigatorComponent.transformToNavigatorNode(resetTree)];// as Node[];
+        //     console.log("=================");
+        //     console.log("resetTree: ");
+        //     console.log(resetTree);
+        //     console.log("tree: ");
+        //     console.log(this.tree);
+        //     console.log("current: ");
+        //     console.log(this.current);
+        //     console.log("=================");
+        // }
         // contract all
         for (const node of this.current) {
             node.children = [];
         }
 
         this.initialize();
+        // if (resetTree) {
+        //     this.contractAllNodes(this.tree);
+        //     // this.current = []
+        //     // this.expandNode(resetTree, this.tree as Node[]);
+        //     // this.items.forEach((item: TreeNavigatorItemComponent) => {
+        //     //     item.checkExpand();
+        //     // });
+        // }
     }
 
     public update(nodes: Node[]) {
@@ -104,4 +124,13 @@ export class TreeNavigatorComponent implements OnInit {
         return false;
     }
     /** @end-author Bart Wesselink */
+
+    /** @author Nico Klaassen */
+    private contractAllNodes(tree:Node|Node[]): void {
+        for (const node of (this.tree as Node[])) {
+            node.forceExpand = false;
+            this.contractAllNodes(node);
+        }
+    }
+    /** @end-author Nico Klaassen */
 }
