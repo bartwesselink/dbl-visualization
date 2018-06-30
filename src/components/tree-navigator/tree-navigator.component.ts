@@ -84,15 +84,17 @@ export class TreeNavigatorComponent implements OnInit {
         this.reload();
         
         for (const node of haystack) {
-            if (node === needle) {
-                node.forceExpand = false;
-                return true;
-            } else if (this.expandNode(needle, node.children)) {
-                node.forceExpand = true;
-                
-                return true;
-            } else {
-                node.forceExpand = false;
+            if(node != undefined){//TODO remove since this is just a hack to stop tree navigator errors so the opengl errors surface
+                if (node === needle) {
+                    node.forceExpand = false;
+                    return true;
+                } else if (this.expandNode(needle, node.children)) {
+                    node.forceExpand = true;
+
+                    return true;
+                } else {
+                    node.forceExpand = false;
+                }
             }
         }
 
