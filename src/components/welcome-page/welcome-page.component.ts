@@ -12,7 +12,10 @@ export class WelcomePageComponent implements OnInit {
     @Output() private goToDatasets: EventEmitter<void> = new EventEmitter<void>();
     @Output() private goToHelp: EventEmitter<void> = new EventEmitter<void>();
     @Input() private visualizers: Visualizer[];
+    @Input() private runAnimation: boolean;
     @ViewChild('animationCanvas') private animationCanvas: ElementRef;
+
+    private animationIsRunning: boolean = true;
 
     public fullScreenAnimation: boolean = true;
     @Input() set showApp(showApp: boolean) {
@@ -133,12 +136,16 @@ export class WelcomePageComponent implements OnInit {
 
         const animate = () => {
             this.lastAnimationId = requestAnimationFrame(animate);
-            c.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight); // Clear canvas
+            if (this.runAnimation) {
+                c.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight); // Clear canvas
 
-            // Update all the shapes for the next 'animation frame' / step
-            for (let i = 0; i < circles.length; i++) {
-                const circle = circles[i];
-                circle.update();
+                // Update all the shapes for the next 'animation frame' / step
+                for (let i = 0; i < circles.length; i++) {
+                    const circle = circles[i];
+                    circle.update();
+                }
+            } else {
+                this.animationIsRunning = false;
             }
         };
 
