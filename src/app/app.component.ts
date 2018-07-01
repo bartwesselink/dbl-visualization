@@ -378,6 +378,8 @@ export class AppComponent implements OnInit {
             this.tree.selectedNode = null;
         }
 
+        this.resetNodeExpansion(this.tree); // reset the expansions for all nodes in the current tree
+
         this.tree = node;
 
         this.assignTreeIDs(this.tree.subTreeSize - 1, this.tree);
@@ -386,6 +388,16 @@ export class AppComponent implements OnInit {
             this.redrawAllTabs(true);
             this.sidebar.reloadData();
         }, 100);
+    }
+
+    private resetNodeExpansion(root: Node) {
+        if(root){
+            root.forceExpand = false;
+            for(let child of root.children) {
+                child.forceExpand = false;
+                this.resetNodeExpansion(child);
+            }
+        }
     }
 
     private resetAllTabTransformations() {
