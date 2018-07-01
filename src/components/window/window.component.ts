@@ -379,8 +379,6 @@ export class WindowComponent implements OnInit {
 
                         this.currentDraws = draws;
                         this.computing = false;
-
-                        this.resetTransformation();
                         this.showModal = false;
                         resolve();
                     });
