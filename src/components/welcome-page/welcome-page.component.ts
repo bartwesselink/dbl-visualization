@@ -1,5 +1,6 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Visualizer} from '../../interfaces/visualizer';
+import {WindowComponent} from '../window/window.component';
 
 @Component({
     selector: 'app-welcome-page',
@@ -14,8 +15,10 @@ export class WelcomePageComponent implements OnInit {
     @Input() private visualizers: Visualizer[];
     @Input() private runAnimation: boolean;
     @ViewChild('animationCanvas') private animationCanvas: ElementRef;
+    @ViewChild('openGlCheckCanvas') private openGlCheckCanvas: ElementRef;
 
     private animationIsRunning: boolean = true;
+    private hasGpu: boolean = false;
 
     public fullScreenAnimation: boolean = true;
     @Input() set showApp(showApp: boolean) {
@@ -32,6 +35,17 @@ export class WelcomePageComponent implements OnInit {
     }
 
     public ngOnInit(): void {
+        try {
+            let gl = WindowComponent.createGL(this.openGlCheckCanvas);
+
+            this.hasGpu = gl.isDedicatedGPU();
+
+            gl = null;
+            this.openGlCheckCanvas.nativeElement.remove();
+        } catch (error) {
+            this.hasGpu = false;
+        }
+
         this.animate();
     }
 
@@ -53,6 +67,7 @@ export class WelcomePageComponent implements OnInit {
 
     public animate(): void {
         /** @author Nico Klaassen */
+        const self: WelcomePageComponent = this;
         const canvas = this.animationCanvas.nativeElement;
 
         // check if we have to cancel a previous animation
@@ -91,7 +106,11 @@ export class WelcomePageComponent implements OnInit {
             this.draw = function () {
                 c.beginPath();
                 c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-                c.filter = 'blur(' + Math.max(this.radius / (minSize + maxSize) * 10 - 3, 0)  + 'px) brightness(1.2)';
+
+                if (self.hasGpu) {
+                    c.filter = 'blur(' + Math.max(this.radius / (minSize + maxSize) * 10 - 3, 0) + 'px) brightness(1.2)';
+                }
+
                 c.fillStyle = "rgba(" + this.color + ", " + this.color + ", " + this.color + ", " + this.alpha + ")";
                 c.fill();
             };

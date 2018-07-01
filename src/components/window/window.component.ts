@@ -429,22 +429,25 @@ export class WindowComponent implements OnInit {
         this.gl.render();
     }
 
-    //initialise OpenGL
-    private init(): void {
-        var gl: WebGLRenderingContext = this.canvas.nativeElement.getContext('webgl2', {
+    public static createGL(canvas: ElementRef, antialias: boolean = false): OpenGL {
+        const gl: WebGLRenderingContext = canvas.nativeElement.getContext('webgl2', {
             preserveDrawingBuffer: true,
             depth: false,
             alpha: false,
-            antialias: this.visualizer.requireAntiAliasing
+            antialias: antialias,
         });
 
         if (!gl) {
-            this.onError("No WebGL present");
-            return;
+            throw new Error("No WebGL present");
         }
 
+        return new OpenGL(gl);
+    }
+
+    //initialise OpenGL
+    private init(): void {
         try {
-            this.gl = new OpenGL(gl);
+            this.gl = WindowComponent.createGL(this.canvas, this.visualizer.requireAntiAliasing);
         } catch (error) {
             this.onError((<Error>error).message);
         }
