@@ -38,7 +38,7 @@ export class AppComponent implements OnInit {
     public loaderVisible: boolean = false;
     public showApp: boolean = false;
 
-    private activeTab: Tab;
+    public activeTab: Tab;
     private amountOfWindowsLoading: number = 0;
     private firstTabAdded: boolean = false;
 
@@ -181,10 +181,10 @@ export class AppComponent implements OnInit {
         this.activeTab = tab;
 
         if (tab.window) {
-            setTimeout(() => {
-                tab.window.computeScene();
-                // tab.window.render();
-            }, 100);
+            // setTimeout(() => {
+            //     tab.window.computeScene();
+            //     // tab.window.render();
+            // }, 100);
 
             this.resizeActiveTab();
         }

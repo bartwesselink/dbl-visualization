@@ -56,6 +56,7 @@ export class WindowComponent implements OnInit {
 
     private gl: OpenGL;
     public computing: boolean = false;
+    public showModal: boolean = false;
 
     private down: boolean = false;
     private lastX: number;
@@ -327,6 +328,10 @@ export class WindowComponent implements OnInit {
         if(!this.computing || override){
             this.currentDraws = null;
             this.computing = true;
+            if (this.tree.subTreeSize > 60000) { // Prevents annoying short modal on small hierarchies which render fast anyway. 60k is arbitrary.
+                this.showModal = true;
+            }
+
             return new Promise((resolve, reject) => {
                 this.gl.releaseBuffers();
 
@@ -374,9 +379,9 @@ export class WindowComponent implements OnInit {
 
                         this.currentDraws = draws;
                         this.computing = false;
-                        
-                        this.resetTransformation();
 
+                        this.resetTransformation();
+                        this.showModal = false;
                         resolve();
                     });
                 /** @end-author Bart Wesselink */
@@ -562,7 +567,7 @@ export class WindowComponent implements OnInit {
         if (this.reversePalette) {
             this.palette = new Palette(this.palette.secondary, this.palette.primary, this.palette.accents);
         }
-        
+
         if (initialize) {
             this.darkMode = settings.darkMode;
             this.grid = settings.grid;

@@ -57,7 +57,7 @@
         <app-welcome-page [runAnimation]="tabs.length == 0" [visualizers]="visualizers" [hidden]="tabs.length > 0" [showApp]="showApp" (newContent)="parseTree($event)" (goToApp)="goToApp()" (goToHelp)="startHelp()" (goToDatasets)="selectDataset()"></app-welcome-page>
     </main>
 
-    <div class="dialog full-screen-loader" #fullScreenLoader [hidden]="!loaderVisible">
+    <div class="dialog full-screen-loader" #fullScreenLoader [hidden]="!(loaderVisible || this.activeTab ? this.activeTab.window.showModal : false)">
         <div class="dialog-modal">
             <app-loader></app-loader>
         </div>
