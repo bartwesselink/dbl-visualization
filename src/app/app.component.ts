@@ -369,6 +369,7 @@ export class AppComponent implements OnInit {
         }
         for (const tab of this.tabs) {
             tab.window.computing = true;
+            tab.window.resetTransformation();
         }
 
         // reset selection on old tree
