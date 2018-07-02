@@ -379,7 +379,7 @@ export class WindowComponent implements OnInit {
                         }
 
                         var glid = this.gl.renderBlurryCircle(200, 100, 0.5, OpenGL.toColor([1,0,0]));
-                        console.log(glid);
+                        this.gl.setPosition(glid, -400, 200);
                         
                         this.currentDraws = draws;
                         this.computing = false;

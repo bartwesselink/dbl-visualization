@@ -11,8 +11,6 @@ export class BlurCircleShader extends CircleShader{
     private colorUniform: WebGLUniformLocation;
     private blurUniform: WebGLUniformLocation;
     private alphaUniform: WebGLUniformLocation;
-    private dxUniform: WebGLUniformLocation;
-    private dyUniform: WebGLUniformLocation;
     
     public preInit(shader: Shader): WebGLProgram {
         return shader.initShader(vertexSource, fragmentSource);
@@ -23,16 +21,20 @@ export class BlurCircleShader extends CircleShader{
         console.log(elem);
         gl.uniform1f(this.blurUniform, (elem as BlurCircleElement).blur);
         gl.uniform1f(this.alphaUniform, (elem as BlurCircleElement).alpha);
-        gl.uniform1f(this.dxUniform, (elem as BlurCircleElement).dx);
-        gl.uniform1f(this.dyUniform, (elem as BlurCircleElement).dy);
     }
     
     public postInit(gl: WebGLRenderingContext): void {
         this.colorUniform = gl.getUniformLocation(this.shader, "color");
         this.blurUniform = gl.getUniformLocation(this.shader, "blur");
         this.alphaUniform = gl.getUniformLocation(this.shader, "alpha");
-        this.dxUniform = gl.getUniformLocation(this.shader, "dx");
-        this.dyUniform = gl.getUniformLocation(this.shader, "dy");
+    }
+    
+    public getElementX(elem: Element){
+        return (elem as BlurCircleElement).cx;
+    }
+    
+    public getElementY(elem: Element){
+        return (elem as BlurCircleElement).cy;
     }
 }
 /** @end-author Roan Hofland */ 

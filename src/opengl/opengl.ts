@@ -128,6 +128,13 @@ export class OpenGL{
         this.getElem(target).color = this.getElem(original).color;
     }
     
+    //sets the position of the element
+    public setPosition(id: number, x: number, y: number): void{
+        var elem = this.getElem(id) as any;
+        elem.cx = x;
+        elem.cy = y;
+    }
+    
     //get the referenced element
     private getElem(id: number): Element{
         return this.indices == null ? this.arrays[id - 1] : this.arrays[this.indices[id - 1]];
@@ -876,8 +883,8 @@ export class OpenGL{
                 color: mainColor,
                 x: 0,
                 y: 0,
-                dx: 0,
-                dy: 0,
+                cx: 0,
+                cy: 0,
                 blur: blurradius / this.HALFHEIGHT,
                 alpha: alpha,
                 rad: rad,
