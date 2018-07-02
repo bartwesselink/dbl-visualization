@@ -18,6 +18,7 @@ import {GradientType} from "../../enums/gradient-type";
 import {ViewCubeComponent} from '../view-cube/view-cube.component';
 import {SnackbarBus} from '../../providers/snackbar-bus';
 import {Subscription} from 'rxjs/Subscription';
+import { ShaderMode } from "../../opengl/shaders/shaderMode";
 
 @Component({
     selector: 'app-window',
@@ -377,6 +378,9 @@ export class WindowComponent implements OnInit {
                             this.visualizer.updateColors(this.gl, input, draws);
                         }
 
+                        var glid = this.gl.renderBlurryCircle(200,1,1,OpenGL.toColor([1,0,0]));
+                        console.log(glid);
+                        
                         this.currentDraws = draws;
                         this.computing = false;
                         this.showModal = false;
@@ -434,7 +438,7 @@ export class WindowComponent implements OnInit {
         var gl: WebGLRenderingContext = this.canvas.nativeElement.getContext('webgl2', {
             preserveDrawingBuffer: true,
             depth: false,
-            alpha: false,
+            alpha: true,
             antialias: this.visualizer.requireAntiAliasing
         });
 
@@ -444,11 +448,13 @@ export class WindowComponent implements OnInit {
         }
 
         try {
-            this.gl = new OpenGL(gl);
+            this.gl = new OpenGL(gl, true);
         } catch (error) {
             this.onError((<Error>error).message);
         }
 
+        this.gl.enableShaders(ShaderMode.BLUR_CIRCLE);
+        
         this.setDarkmode(this.darkMode);
         this.gl.setGrid(this.grid);
 

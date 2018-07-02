@@ -14,6 +14,7 @@ import {DrawCircleSliceShader} from "./impl/drawCircleSliceShader";
 import {DrawRingSliceShader} from "./impl/drawRingSliceShader";
 import {CircularArcShader} from "./impl/circularArcShader";
 import {GridShader} from "./impl/gridShader";
+import {BlurCircleShader} from "./impl/blurCircleShader";
 
 export class Shader{
     private gl: WebGLRenderingContext;
@@ -33,6 +34,7 @@ export class Shader{
     private drawCircleSliceShader: DrawCircleSliceShader = null;
     private drawRingSliceShader: DrawRingSliceShader = null;
     private circularArcShader: CircularArcShader = null;
+    private blurCircleShader: BlurCircleShader = null;
 
     private gridShader: GridShader = null;
     private grid: boolean = false;
@@ -122,6 +124,10 @@ export class Shader{
             this.circularArcShader = new CircularArcShader();
             this.circularArcShader.init(this, this.gl);
         }
+        if((mode & ShaderMode.BLUR_CIRCLE) > 0 && this.blurCircleShader == null){
+            this.blurCircleShader = new BlurCircleShader();
+            this.blurCircleShader.init(this, this.gl);
+        }
         this.mode |= mode;
     }
     
@@ -161,6 +167,9 @@ export class Shader{
             break;
         case ShaderMode.CIRCULAR_ARC:
             this.setShader(this.circularArcShader);
+            break;
+        case ShaderMode.BLUR_CIRCLE:
+            this.setShader(this.blurCircleShader);
             break;
         }
         

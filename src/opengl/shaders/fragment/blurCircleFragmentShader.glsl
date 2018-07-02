@@ -6,7 +6,7 @@ uniform lowp float cx;
 uniform lowp float cy;
 uniform lowp vec3 color;
 uniform lowp float alpha;
-uniform lwop float blur;
+uniform lowp float blur;
 
 varying lowp vec2 vpos;
 

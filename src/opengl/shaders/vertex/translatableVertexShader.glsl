@@ -2,6 +2,8 @@
 attribute vec4 pos;
  
 uniform mat4 modelviewMatrix;
+uniform lowp float dx;
+uniform lowp float dy;
 
 varying lowp vec2 vpos;
     
