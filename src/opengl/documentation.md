@@ -2,7 +2,8 @@
 For people working with the OpenGL abstraction layer. These are the only methods that you should ever need all collected in one document.
 
 # Constructor
-`var gl = new OpenGL(WebGLRenderingContext)`
+`var gl = new OpenGL(WebGLRenderingContext, alpha)`    
+_Note: The alpha argument is optional and defaults to false._
 
 # General
 ## Public subroutines
@@ -58,6 +59,8 @@ Sets whether or not the shape indicated by the given ID should be renderer on a 
 Sets the line color of the shape indicated by the given ID, only use this method for lined shapes for drawn shapes use the `setColor` method. Changes only take effect after a rerender.
 - `public setColor(id: number, color: number[]): void`    
 Sets the color of the shape indicated by the given ID. Changes only take effect after a rerender.
+- `public setPosition(id: number, x: number, y: number): void`    
+Sets the position of the shape indicated by the given ID. Changes only take effect after a rerender.
 - `public setGrid(enabled: boolean): void`    
 Enables or disables the background grid.
 - `public setSizeThresHold(pixels: number): void`    
@@ -172,6 +175,8 @@ Draws a filled circle with a given center coordinate, radius, rotation and color
 Outlines a circle with a given center coordinate, radius, rotation and color. The optional precision argument specifies how good the ellipsoid approximation has to be, this value has to be a divisor of 360 for correct results. If the precision argument is not specified then the default value of 10 is used.
 - `public fillLinedCircle(x: number, y: number, radius: number, fillColor: number[], lineColor: number[], precision: number): number`    
 Draws a filled circle with a line around it with a given center coordinate, x radius, y radius, rotation, fill color and line color. If the line color is set to `null` then the fill color is also used as the line color. The optional precision argument specifies how good the ellipsoid approximation has to be, this value has to be a divisor of 360 for correct results. If the precision argument is not specified then the default value of 10 is used.
+- `public renderBlurryCircle(radius: number, blurradius: number, alpha: number, color: number[]): number`
+**Note this rendering function does not have proper support for zooming**. Renders a circle with a blurry fade out outline. The circle is given the provided `radius` and `blurradius`. These two radius arguments are additive meaning that the actual radius of the circle is the sum of the two. The given alpha argument specifies the maximum alpha value of the circle fill color and the color array the color of the circle. The circle is initially positioned at 0, 0 but can later be moved using `setPosition(glid, x, y)` calls.
 
 ## Slices
 **Note:** The precision argument for slices is a bit more relaxed and does not have to be a divisor of 360. In fact the best results are achieved when it is a divisor of the difference between the `start` and `end` argument. For a small enough precision value this difference is however unnoticeable.
