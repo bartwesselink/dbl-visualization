@@ -858,15 +858,15 @@ export class OpenGL{
             var positionBuffer = this.gl.createBuffer();
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
             const pos = new Float32Array(8);
-            radius += blurradius;
-            pos[0] = radius / this.HALFWIDTH;
-            pos[1] = radius / this.HALFHEIGHT;
-            pos[2] = -radius / this.HALFWIDTH;
-            pos[3] = radius / this.HALFHEIGHT;
-            pos[4] = radius / this.HALFWIDTH;
-            pos[5] = -radius / this.HALFHEIGHT;
-            pos[6] = -radius / this.HALFWIDTH;
-            pos[7] = -radius / this.HALFHEIGHT;
+            var rad = radius + blurradius;
+            pos[0] = rad / this.HALFWIDTH;
+            pos[1] = rad / this.HALFHEIGHT;
+            pos[2] = -rad / this.HALFWIDTH;
+            pos[3] = rad / this.HALFHEIGHT;
+            pos[4] = rad / this.HALFWIDTH;
+            pos[5] = -rad / this.HALFHEIGHT;
+            pos[6] = -rad / this.HALFWIDTH;
+            pos[7] = -rad / this.HALFHEIGHT;
             this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
             
             console.log("done: ", positionBuffer);
@@ -876,8 +876,12 @@ export class OpenGL{
                 color: mainColor,
                 x: 0,
                 y: 0,
-                rad: radius,
-                span: radius * 2,
+                dx: 0,
+                dy: 0,
+                blur: blurradius / this.HALFHEIGHT,
+                alpha: alpha,
+                rad: rad,
+                span: rad * 2,
                 length: 4,
                 radius: radius / this.HALFHEIGHT,
                 shader: ShaderMode.BLUR_CIRCLE

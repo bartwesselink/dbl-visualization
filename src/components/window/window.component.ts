@@ -378,7 +378,7 @@ export class WindowComponent implements OnInit {
                             this.visualizer.updateColors(this.gl, input, draws);
                         }
 
-                        var glid = this.gl.renderBlurryCircle(200,1,1,OpenGL.toColor([1,0,0]));
+                        var glid = this.gl.renderBlurryCircle(200, 100, 0.5, OpenGL.toColor([1,0,0]));
                         console.log(glid);
                         
                         this.currentDraws = draws;
