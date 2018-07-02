@@ -11,6 +11,6 @@ uniform lowp float blur;
 varying lowp vec2 vpos;
 
 void main() {
-	gl_FragColor = vec4(color, alpha + min(radius - sqrt((vpos.x - cx) * (vpos.x - cx) * ratio + (vpos.y - cy) * (vpos.y - cy)), 0.0) / blur);
+	gl_FragColor = vec4(color, alpha + (min(radius - sqrt((vpos.x - cx) * (vpos.x - cx) * ratio + (vpos.y - cy) * (vpos.y - cy)), 0.0) / blur));
 }
 /** @end-author Roan Hofland */

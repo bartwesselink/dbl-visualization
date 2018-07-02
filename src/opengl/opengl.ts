@@ -9,7 +9,7 @@ import {CircleSliceElement} from "./shaders/elem/circleSliceElement";
 import {RingSliceElement} from "./shaders/elem/ringSliceElement";
 import {CircularArcElement} from "./shaders/elem/circularArcElement";
 import {environment} from "../environments/environment";
-import { BlurCircleElement } from "./shaders/elem/blurCircleElement";
+import {BlurCircleElement} from "./shaders/elem/blurCircleElement";
 
 export class OpenGL{
     private gl: WebGLRenderingContext;
@@ -875,9 +875,7 @@ export class OpenGL{
             pos[6] = -rad / this.HALFWIDTH;
             pos[7] = -rad / this.HALFHEIGHT;
             this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
-            
-            console.log("done: ", positionBuffer);
-            
+                        
             return this.arrays.push(<BlurCircleElement>{
                 pos: positionBuffer,
                 color: mainColor,

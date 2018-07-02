@@ -18,7 +18,6 @@ export class BlurCircleShader extends CircleShader{
     
     public postProcess(elem: Element, gl: WebGLRenderingContext): void {
         gl.uniform3fv(this.colorUniform, elem.color);
-        console.log(elem);
         gl.uniform1f(this.blurUniform, (elem as BlurCircleElement).blur);
         gl.uniform1f(this.alphaUniform, (elem as BlurCircleElement).alpha);
     }
