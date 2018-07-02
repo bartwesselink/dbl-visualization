@@ -175,7 +175,7 @@ Draws a filled circle with a given center coordinate, radius, rotation and color
 Outlines a circle with a given center coordinate, radius, rotation and color. The optional precision argument specifies how good the ellipsoid approximation has to be, this value has to be a divisor of 360 for correct results. If the precision argument is not specified then the default value of 10 is used.
 - `public fillLinedCircle(x: number, y: number, radius: number, fillColor: number[], lineColor: number[], precision: number): number`    
 Draws a filled circle with a line around it with a given center coordinate, x radius, y radius, rotation, fill color and line color. If the line color is set to `null` then the fill color is also used as the line color. The optional precision argument specifies how good the ellipsoid approximation has to be, this value has to be a divisor of 360 for correct results. If the precision argument is not specified then the default value of 10 is used.
-- `public renderBlurryCircle(radius: number, blurradius: number, alpha: number, color: number[]): number`
+- `public renderBlurryCircle(radius: number, blurradius: number, alpha: number, color: number[]): number`    
 **Note this rendering function does not have proper support for zooming**. Renders a circle with a blurry fade out outline. The circle is given the provided `radius` and `blurradius`. These two radius arguments are additive meaning that the actual radius of the circle is the sum of the two. The given alpha argument specifies the maximum alpha value of the circle fill color and the color array the color of the circle. The circle is initially positioned at 0, 0 but can later be moved using `setPosition(glid, x, y)` calls.
 
 ## Slices
