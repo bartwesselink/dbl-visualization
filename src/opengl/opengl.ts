@@ -860,7 +860,7 @@ export class OpenGL{
     }
 
     //shader blurry circle buffer subroutine
-    public renderBlurryCircle(radius: number, blurradius: number, alpha: number, mainColor: Float32Array): number {
+    public renderBlurryCircle(radius: number, blurradius: number, alpha: number, color: number[]): number {
         if(this.shader.isShaderEnabled(ShaderMode.BLUR_CIRCLE)){
             var positionBuffer = this.gl.createBuffer();
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
@@ -878,7 +878,7 @@ export class OpenGL{
                         
             return this.arrays.push(<BlurCircleElement>{
                 pos: positionBuffer,
-                color: mainColor,
+                color: OpenGL.toColor(color),
                 x: 0,
                 y: 0,
                 cx: 0,
@@ -1494,7 +1494,7 @@ export class OpenGL{
     }
 
     //creates a color from the given array
-    public static toColor(array: number[]): Float32Array{
+    private static toColor(array: number[]): Float32Array{
         if(array == null){
             return null;
         }else{
