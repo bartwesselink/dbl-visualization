@@ -4,7 +4,7 @@ import {CircleElement} from "./circleElement";
 export interface BlurSliceElement extends CircleElement{
     cx?: number;
     cy?: number;
-    start: number;
-    end: number;
+    alpha: number;
+    blur: number;
 }
 /** @end-author Roan Hofland */
