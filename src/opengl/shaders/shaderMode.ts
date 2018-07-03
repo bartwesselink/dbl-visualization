@@ -29,6 +29,9 @@ export enum ShaderMode{
     CIRCULAR_ARC = 1 << 14,
     ARCS = CIRCULAR_ARC | ELLIPSOIDAL_ARC,
     
+    //special
+    BLUR_CIRCLE = 1 << 15,
+    
     //For debug usage only
     ALL = CIRCLES | CIRCLE_SLICES | RING_SLICES | ELLIPSOIDS | ARCS,
 }

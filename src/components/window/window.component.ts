@@ -376,7 +376,7 @@ export class WindowComponent implements OnInit {
                             }
                             this.visualizer.updateColors(this.gl, input, draws);
                         }
-
+                        
                         this.currentDraws = draws;
                         this.computing = false;
                         this.showModal = false;
@@ -451,7 +451,7 @@ export class WindowComponent implements OnInit {
         } catch (error) {
             this.onError((<Error>error).message);
         }
-
+        
         this.setDarkmode(this.darkMode);
         this.gl.setGrid(this.grid);
 
