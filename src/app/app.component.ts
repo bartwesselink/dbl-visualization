@@ -98,6 +98,7 @@ export class AppComponent implements OnInit {
         });
 
         this.subtreeBus.subtreeSelected.subscribe((node: Node) => {
+            this.selectBus.selectNode(node);
             this.openTree(node);
         });
 
