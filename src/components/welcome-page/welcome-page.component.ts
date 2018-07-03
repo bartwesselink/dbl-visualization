@@ -1,8 +1,6 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Visualizer} from '../../interfaces/visualizer';
-import {WindowComponent} from '../window/window.component';
 import {OpenGL} from "../../opengl/opengl";
-import {CircleShader} from "../../opengl/shaders/impl/circleShader";
 import {ShaderMode} from "../../opengl/shaders/shaderMode";
 
 @Component({
@@ -132,10 +130,10 @@ export class WelcomePageComponent implements OnInit {
         const minSize = 2;  // Minimum radius
         const maxSize = 50; // Maximum radius
         const minV = 0.15;  // Minimum speed
-        const maxV = 0.4;   // Maximum speed
+        const maxV = 0.6;   // Maximum speed
 
         // Circle object to track positions
-        function Circle(x, y, radius, dx, dy, centerX, centerY, biasX, biasY, canvas, opengl) {
+        function Circle(x, y, radius, dx, dy, centerX, centerY, biasX, biasY, variance, canvas, opengl) {
             this.opengl = opengl;
             this.canvas = canvas;
             this.x = x;
@@ -148,7 +146,7 @@ export class WelcomePageComponent implements OnInit {
             this.dx = dx;
             this.dy = dy;
             this.color = 255;
-            this.maxPull = 0.3;
+            this.maxPull = 0.3 + variance;
             this.velMix = 0.2;
             this.alpha = Math.max(1 - Math.min(radius / (maxSize + minSize), 1.0), 0.3);
             this.glid = this.opengl.renderBlurryCircle(Math.max(this.radius - Math.pow(1 + 0.05 * this.radius, 5), 0), Math.pow(1 + 0.05 * this.radius, 4), this.alpha, [1, 1, 1]);
@@ -160,21 +158,18 @@ export class WelcomePageComponent implements OnInit {
 
             // Method which calculates the next 'step' in the animation
             this.update = function() {
-                // Gravitate to center - calculate new velocity
-                if (Math.abs(this.x - this.centerX) > this.opengl.getWidth()) {
+                if (Math.sqrt(Math.pow(this.x - this.centerX, 2) + Math.pow(this.y - this.centerY, 2)) > Math.min(this.opengl.getWidth() / 2, this.opengl.getHeight()) * 1.3) {
                     const pullX = (this.x - this.centerX) < 0 ?
                         Math.min(Math.abs(this.x - this.centerX) / 1000 * this.biasX, this.maxPull) :
                         -Math.min(Math.abs(this.x - this.centerX) / 1000 * this.biasX, this.maxPull) ;
                     this.dx = this.dx + pullX;
 
                     if (this.dx < 0) {
-                        this.dx = this.velMix * Math.max(this.dx, -this.maxPull) + (1-this.velMix) * this.dx;
+                        this.dx = Math.max(this.velMix * Math.max(this.dx, -this.maxPull) + (1-this.velMix) * this.dx, -maxV);
                     } else {
-                        this.dx = this.velMix * Math.min(this.dx, this.maxPull) + (1-this.velMix) * this.dx;
+                        this.dx = Math.min(this.velMix * Math.min(this.dx, this.maxPull) + (1-this.velMix) * this.dx, maxV);
                     }
-                }
 
-                if (Math.abs(this.y - this.centerY) > this.opengl.getHeight()) {
                     const pullY = (this.y - this.centerY) < 0 ?
                         Math.min(Math.abs(this.y - this.centerY) / 1000 * this.biasY, this.maxPull) :
                         -Math.min(Math.abs(this.y - this.centerY) / 1000 * this.biasY, this.maxPull) ;
@@ -204,16 +199,16 @@ export class WelcomePageComponent implements OnInit {
                 // Random shape parameters
                 const radius = Math.random() * maxSize + minSize;
 
-                const x = Math.random() * (this.animationCanvas.nativeElement.width / 2) - this.animationCanvas.nativeElement.width / 4;
-                const y = Math.random() * (this.animationCanvas.nativeElement.width / 2) - this.animationCanvas.nativeElement.width / 4;
+                const x = Math.random() * (this.gl.getWidth()) - this.gl.getWidth() / 2;
+                const y = Math.random() * (this.gl.getHeight()) - this.gl.getHeight() / 2;
 
                 // Random up/down and left/right
                 const directionX = Math.random() > 0.5 ? -1 : 1;
                 const directionY = Math.random() > 0.5 ? -1 : 1;
 
                 // Gravity center
-                const centerX = Math.random() * 3 * 50 - 3 * 25;
-                const centerY = Math.random() * 3 * 50 - 3 * 25;
+                const centerX = Math.random() * 3 * 100 - 3 * 50;
+                const centerY = Math.random() * 3 * 100 - 3 * 50;
 
                 // Pull bias
                 const biasX = Math.random() / 2 + 0.5;
@@ -223,7 +218,10 @@ export class WelcomePageComponent implements OnInit {
                 const dx = Math.max(Math.random() * maxV, minV) * directionX;
                 const dy = Math.max(Math.random() * maxV, minV) * directionY;
 
-                circles[i] = new Circle(x, y, radius, dx, dy, centerX, centerY, biasX, biasY, this.animationCanvas, this.gl);
+                // Variance
+                const variance = 1 + (Math.random() - 0.5) / 10;
+
+                circles[i] = new Circle(x, y, radius, dx, dy, centerX, centerY, biasX, biasY, variance, this.animationCanvas, this.gl);
             }
         };
 
