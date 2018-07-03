@@ -55,8 +55,9 @@ export class WelcomePageComponent implements OnInit {
         }
 
         this.gl = new OpenGL(this.glContext);
-        this.gl.enableShaders(ShaderMode.FILL_CIRCLE);
+        this.gl.enableShaders(ShaderMode.BLUR_CIRCLE);
         this.gl.setBackgroundColor(74/255, 115/255, 255/255);
+        this.gl.setBackgroundColor(40/255, 40/255, 40/255);
         window.addEventListener('resize', () => this.setSize());
         this.setSize();
 
@@ -108,7 +109,6 @@ export class WelcomePageComponent implements OnInit {
         if (this.errored) {
             this.onError(this.lastError);
         } else {
-            this.gl.setBackgroundColor(1, 0, 0);
             this.gl.render();
         }
     }
@@ -119,8 +119,8 @@ export class WelcomePageComponent implements OnInit {
         setTimeout(() => {
             this.animationCanvas.nativeElement.width = this.animationCanvas.nativeElement.clientWidth;
             this.animationCanvas.nativeElement.height = this.animationCanvas.nativeElement.clientHeight;
-            console.log(this.animationCanvas.nativeElement.width);
-            console.log(this.animationCanvas.nativeElement.height);
+            console.log("canvas width: " + this.animationCanvas.nativeElement.width);
+            console.log("canvas height: " + this.animationCanvas.nativeElement.height);
 
             this.gl.resize(this.animationCanvas.nativeElement.width, this.animationCanvas.nativeElement.height);
             this.redraw();
@@ -131,6 +131,9 @@ export class WelcomePageComponent implements OnInit {
         /** @author Nico Klaassen */
         const self: WelcomePageComponent = this;
 
+        // Release buffers when the animation is restarted
+        this.gl.releaseBuffers();
+
         // check if we have to cancel a previous animation
         if (this.lastAnimationId != null) {
             cancelAnimationFrame(this.lastAnimationId);
@@ -138,11 +141,11 @@ export class WelcomePageComponent implements OnInit {
 
         this.setSize();
         console.log(this.gl);
-        const density = 10;// Number of circles
+        const density = 200;// Number of circles
         const minSize = 2;  // Minimum radius
-        const maxSize = 40; // Maximum radius
-        const minV = 0.08;  // Minimum speed
-        const maxV = 0.6;   // Maximum speed
+        const maxSize = 50; // Maximum radius
+        const minV = 0.15;  // Minimum speed
+        const maxV = 0.4;   // Maximum speed
 
         // Circle object to track positions
         function Circle(x, y, radius, dx, dy, centerX, centerY, biasX, biasY, canvas, opengl) {
@@ -158,33 +161,50 @@ export class WelcomePageComponent implements OnInit {
             this.dx = dx;
             this.dy = dy;
             this.color = 255;
-            this.maxPull = 3;
-            this.alpha = Math.max(1 - Math.min(radius / (maxSize + minSize), 1.0), 0.2);
+            this.maxPull = 0.3;
+            this.velMix = 0.2;
+            this.alpha = Math.max(1 - Math.min(radius / (maxSize + minSize), 1.0), 0.3);
+            this.glid = this.opengl.renderBlurryCircle(Math.max(this.radius - Math.pow(1 + 0.05 * this.radius, 5), 0), Math.pow(1 + 0.05 * this.radius, 4), this.alpha, [1, 1, 1]);
 
             // Method to draw the shape
             this.draw = function () {
-                this.opengl.fillCircle(this.x, this.y, this.radius, [1, 1, 1]);
+                this.opengl.setPosition(this.glid, this.x, this.y);
             };
 
             // Method which calculates the next 'step' in the animation
             this.update = function() {
                 // Gravitate to center - calculate new velocity
-                const distance = Math.sqrt(Math.pow(this.x - this.centerX, 2) + Math.pow(this.y - this.centerY, 2));
-                const pullX = (this.x - this.centerX) < 0 ?
-                    Math.min(Math.abs(this.x - this.centerX) * distance / 1000 * this.biasX, this.maxPull) :
-                    -Math.min(Math.abs(this.x - this.centerX) * distance / 1000 * this.biasX, this.maxPull) ;
-                const pullY = (this.y - this.centerY) < 0 ?
-                    Math.min(Math.abs(this.y - this.centerY) * distance / 1000 * this.biasY, this.maxPull) :
-                    -Math.min(Math.abs(this.y - this.centerY) * distance / 1000 * this.biasY, this.maxPull) ;
-                this.dx = this.dx + pullX;
-                this.dy = this.dy + pullY;
-                console.log("DD");
-                console.log(this.dx);
-                console.log(this.dy);
+                if (Math.abs(this.x - this.centerX) > this.opengl.getWidth()) {
+                    console.log("swapping X");
+                    const pullX = (this.x - this.centerX) < 0 ?
+                        Math.min(Math.abs(this.x - this.centerX) / 1000 * this.biasX, this.maxPull) :
+                        -Math.min(Math.abs(this.x - this.centerX) / 1000 * this.biasX, this.maxPull) ;
+                    this.dx = this.dx + pullX;
+
+                    if (this.dx < 0) {
+                        this.dx = this.velMix * Math.max(this.dx, -this.maxPull) + (1-this.velMix) * this.dx;
+                    } else {
+                        this.dx = this.velMix * Math.min(this.dx, this.maxPull) + (1-this.velMix) * this.dx;
+                    }
+                }
+
+                if (Math.abs(this.y - this.centerY) > this.opengl.getHeight()) {
+                    console.log("swapping Y");
+                    const pullY = (this.y - this.centerY) < 0 ?
+                        Math.min(Math.abs(this.y - this.centerY) / 1000 * this.biasY, this.maxPull) :
+                        -Math.min(Math.abs(this.y - this.centerY) / 1000 * this.biasY, this.maxPull) ;
+                    this.dy = this.dy + pullY;
+
+                    if (this.dy < 0) {
+                        this.dy = Math.max(this.velMix * Math.max(this.dy, -this.maxPull) + (1-this.velMix) * this.dy, -maxV);
+                    } else {
+                        this.dy = Math.min(this.velMix * Math.min(this.dy, this.maxPull) + (1-this.velMix) * this.dy, maxV);
+                    }
+                }
+
                 // Updating positions according to x and y velocities
                 this.x += this.dx;
                 this.y += this.dy;
-                console.log("coord: " + this.x + " - " + this.y);
 
                 this.draw();
             };
@@ -198,18 +218,18 @@ export class WelcomePageComponent implements OnInit {
             for (let i = 0; i < density; i++) {
                 // Random shape parameters
                 const radius = Math.random() * maxSize + minSize;
-                console.log(this.animationCanvas.nativeElement.width);
-                console.log(this.animationCanvas.nativeElement.height);
+                console.log("canvas width: " + this.animationCanvas.nativeElement.width);
+                console.log("canvas height: " + this.animationCanvas.nativeElement.height);
                 const x = Math.random() * (this.animationCanvas.nativeElement.width / 2) - this.animationCanvas.nativeElement.width / 4;
-                const y = Math.random() * (this.animationCanvas.nativeElement.height / 2) - this.animationCanvas.nativeElement.height / 4;
+                const y = Math.random() * (this.animationCanvas.nativeElement.width / 2) - this.animationCanvas.nativeElement.width / 4;
 
                 // Random up/down and left/right
                 const directionX = Math.random() > 0.5 ? -1 : 1;
                 const directionY = Math.random() > 0.5 ? -1 : 1;
 
                 // Gravity center
-                const centerX = Math.random() * 3 * 25 - 3 * 12.5;
-                const centerY = Math.random() * 3 * 25 - 3 * 12.5;
+                const centerX = Math.random() * 3 * 50 - 3 * 25;
+                const centerY = Math.random() * 3 * 50 - 3 * 25;
 
                 // Pull bias
                 const biasX = Math.random() / 2 + 0.5;
@@ -230,20 +250,9 @@ export class WelcomePageComponent implements OnInit {
                     this.counter++;
                 } else {
                     this.counter = 0;
-                    // c.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight); // Clear canvas
-                    this.gl.releaseBuffers();
-
                     // BG to check size
-                    console.log("quadcoord: " + this.gl.transformPoint(0, 0));
-                    this.gl.fillAAQuad(-this.animationCanvas.nativeElement.width / 8, -this.animationCanvas.nativeElement.height / 8, this.animationCanvas.nativeElement.width / 4, this.animationCanvas.nativeElement.height / 4,[.8, .8, .8]);
                     if (circles.length == 0) {
                         initCircles();
-                    }
-                    // Grid from circle to debug canvas position if needed.
-                    for (let i = 0; i < 50; i++) {
-                        for (let j = 0; j < 50; j++) {
-                            this.gl.fillCircle(i*20, j*20, 0.5 * ((i % 2) + 1), [1, 1, 1]);
-                        }
                     }
 
                     // Update all the shapes for the next 'animation frame' / step
@@ -251,6 +260,8 @@ export class WelcomePageComponent implements OnInit {
                         const circle = circles[i];
                         circle.update();
                     }
+                    // this.gl.fillCircle(0,0, 10, [1, 1, 1]);
+
                     this.redraw();
                 }
             } else {
