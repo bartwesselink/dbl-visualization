@@ -46,7 +46,7 @@ export class WelcomePageComponent implements OnInit {
         this.glContext = this.animationCanvas.nativeElement.getContext('webgl2', {
             preserveDrawingBuffer: false,
             depth: true,
-            alpha: false,
+            alpha: true,
             antialias: true,
         });
 
@@ -54,10 +54,14 @@ export class WelcomePageComponent implements OnInit {
             throw new Error("No WebGL present");
         }
 
-        this.gl = new OpenGL(this.glContext);
+        this.gl = new OpenGL(this.glContext, true);
         this.gl.enableShaders(ShaderMode.BLUR_CIRCLE);
-        this.gl.setBackgroundColor(74/255, 115/255, 255/255);
-        this.gl.setBackgroundColor(40/255, 40/255, 40/255);
+
+        // ROAN HIER
+        // this.gl.setBackgroundColor(74/255, 115/255, 255/255);
+        // this.gl.setBackgroundColor(40/255, 40/255, 40/255);
+        this.gl.setBackgroundColor(0, 0, 0);
+
         window.addEventListener('resize', () => this.setSize());
         this.setSize();
 
@@ -68,7 +72,7 @@ export class WelcomePageComponent implements OnInit {
         //     this.hasGpu = gl.isDedicatedGPU();
         //
         //     gl = null;
-        //     this.openGlCheckCanvas.nativeElement.remove();
+        //     this.openGlCheckCanvas.nativeElement.remove();HO
         // } catch (error) {
         //     this.hasGpu = false;
         // }
