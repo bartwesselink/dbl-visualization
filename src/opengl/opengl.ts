@@ -9,6 +9,7 @@ import {CircleSliceElement} from "./shaders/elem/circleSliceElement";
 import {RingSliceElement} from "./shaders/elem/ringSliceElement";
 import {CircularArcElement} from "./shaders/elem/circularArcElement";
 import {environment} from "../environments/environment";
+import {BlurCircleElement} from "./shaders/elem/blurCircleElement";
 
 export class OpenGL{
     private gl: WebGLRenderingContext;
@@ -34,10 +35,15 @@ export class OpenGL{
     private shader: Shader;
     private index: number = 0;
     private indices: number[] = null;
+    private bga: number = 1.0;
 
-    constructor(gl: WebGLRenderingContext){
+    constructor(gl: WebGLRenderingContext, alpha: boolean = false){
         this.gl = gl;
         this.shader = new Shader(gl, this);
+        
+        if(alpha){
+            this.bga = 0.0;
+        }
 
         //set the canvas background color to white
         this.setBackgroundColor(1.0, 1.0, 1.0);
@@ -120,6 +126,13 @@ export class OpenGL{
     //copy element color
     public copyLineColor(original: number, target: number): void{
         this.getElem(target).color = this.getElem(original).color;
+    }
+    
+    //sets the position of the element
+    public setPosition(id: number, x: number, y: number): void{
+        var elem = this.getElem(id) as any;
+        elem.cx = x;
+        elem.cy = y;
     }
     
     //get the referenced element
@@ -223,7 +236,7 @@ export class OpenGL{
 
     //sets the background clear color
     public setBackgroundColor(r: number, g: number, b: number): void {
-        this.gl.clearColor(r, g, b, 1.0);
+        this.gl.clearColor(r, g, b, this.bga);
     }
 
     //return the rotation
@@ -846,6 +859,41 @@ export class OpenGL{
         return this.renderEllipsoidImpl(pos, x, y, radius, 2 * radius, fill, line, lineColor, fillColor, 2);
     }
 
+    //shader blurry circle buffer subroutine
+    public renderBlurryCircle(radius: number, blurradius: number, alpha: number, color: number[]): number {
+        if(this.shader.isShaderEnabled(ShaderMode.BLUR_CIRCLE)){
+            var positionBuffer = this.gl.createBuffer();
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
+            const pos = new Float32Array(8);
+            var rad = radius + blurradius;
+            pos[0] = rad / this.HALFWIDTH;
+            pos[1] = rad / this.HALFHEIGHT;
+            pos[2] = -rad / this.HALFWIDTH;
+            pos[3] = rad / this.HALFHEIGHT;
+            pos[4] = rad / this.HALFWIDTH;
+            pos[5] = -rad / this.HALFHEIGHT;
+            pos[6] = -rad / this.HALFWIDTH;
+            pos[7] = -rad / this.HALFHEIGHT;
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, pos, this.gl.STATIC_DRAW);
+                        
+            return this.arrays.push(<BlurCircleElement>{
+                pos: positionBuffer,
+                color: OpenGL.toColor(color),
+                x: 0,
+                y: 0,
+                cx: 0,
+                cy: 0,
+                blur: blurradius / this.HALFHEIGHT,
+                alpha: alpha,
+                rad: rad,
+                span: rad * 2,
+                length: 4,
+                radius: radius / this.HALFHEIGHT,
+                shader: ShaderMode.BLUR_CIRCLE
+            });
+        }
+    }
+    
     //shader circle buffer subroutine
     private shaderCircle(x: number, y: number, radius: number, mode: ShaderMode, mainColor: Float32Array, extraColor: Float32Array): number {
         var positionBuffer = this.gl.createBuffer();
