@@ -36,7 +36,6 @@ export class WelcomePageComponent implements OnInit {
     private glContext: WebGLRenderingContext;
     private errored: boolean = false;
     private lastError: string;
-    private counter: number = 0;
 
     public getThumbnails(): string[] {
         return this.visualizers.filter((item: Visualizer) => item.getThumbnailImage() !== null)
@@ -228,24 +227,19 @@ export class WelcomePageComponent implements OnInit {
         const animate = () => {
             this.lastAnimationId = requestAnimationFrame(animate);
             if (this.runAnimation) {
-                if (this.counter < 0) {
-                    this.counter++;
-                } else {
-                    this.counter = 0;
-                    // BG to check size
-                    if (circles.length == 0) {
-                        initCircles();
-                    }
-
-                    // Update all the shapes for the next 'animation frame' / step
-                    for (let i = 0; i < circles.length; i++) {
-                        const circle = circles[i];
-                        circle.update();
-                    }
-                    // this.gl.fillCircle(0,0, 10, [1, 1, 1]);
-
-                    this.redraw();
+                this.counter = 0;
+                // BG to check size
+                if (circles.length == 0) {
+                    initCircles();
                 }
+
+                // Update all the shapes for the next 'animation frame' / step
+                for (let i = 0; i < circles.length; i++) {
+                    const circle = circles[i];
+                    circle.update();
+                }
+
+                this.redraw();
             } else {
                 this.animationIsRunning = false;
             }
