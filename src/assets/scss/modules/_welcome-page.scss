@@ -69,6 +69,7 @@
 .welcome-page-bottom {
   width: 100%;
   flex-grow: 1;
+  background-color: $color-primary;
   position: relative;
   margin-top: -6.25rem;
   display: flex;
@@ -113,6 +114,10 @@
 }
 
 .welcome-page-full-screen-animation {
+  .triangle { 
+  	display: none;
+  }
+
   .welcome-page-top {
     display: none;
   }
