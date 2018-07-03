@@ -227,8 +227,7 @@ export class WelcomePageComponent implements OnInit {
         const animate = () => {
             this.lastAnimationId = requestAnimationFrame(animate);
             if (this.runAnimation) {
-                this.counter = 0;
-                // BG to check size
+                // Init circles if they don't exist yet.
                 if (circles.length == 0) {
                     initCircles();
                 }
