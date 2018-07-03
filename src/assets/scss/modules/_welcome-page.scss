@@ -10,7 +10,6 @@
   bottom: 0;
   z-index: 1;
   height: 100vh;
-  background-color: $color-primary;
 }
 
 .triangle { 
@@ -19,7 +18,7 @@
   z-index: 300;
   margin-top: 0rem;
   border-bottom: 100px solid transparent;
-  border-left: 100vw solid $color-primary;
+  border-left: 100vw solid red;
 }
 
 .welcome-page-top {
