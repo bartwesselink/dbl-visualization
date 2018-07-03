@@ -20,6 +20,8 @@ export class WelcomePageComponent implements OnInit {
     @ViewChild('animationCanvas') private animationCanvas: ElementRef;
     @ViewChild('openGlCheckCanvas') private openGlCheckCanvas: ElementRef;
 
+    private initial: boolean = true
+
     private animationIsRunning: boolean = true;
     private hasGpu: boolean = false;
 
@@ -27,7 +29,8 @@ export class WelcomePageComponent implements OnInit {
     @Input() set showApp(showApp: boolean) {
         this.fullScreenAnimation = showApp;
 
-        setTimeout(() => this.animate());
+        setTimeout(() => this.animate(), this.initial ? 300 : 0);
+        this.initial = false;
     }
 
     private lastAnimationId: number;
@@ -57,27 +60,10 @@ export class WelcomePageComponent implements OnInit {
         this.gl = new OpenGL(this.glContext, true);
         this.gl.enableShaders(ShaderMode.BLUR_CIRCLE);
 
-        // ROAN HIER
-        // this.gl.setBackgroundColor(74/255, 115/255, 255/255);
-        // this.gl.setBackgroundColor(40/255, 40/255, 40/255);
         this.gl.setBackgroundColor(0, 0, 0);
 
         window.addEventListener('resize', () => this.setSize());
         this.setSize();
-
-
-        // try {
-        //     let gl = WindowComponent.createGL(this.openGlCheckCanvas);
-        //
-        //     this.hasGpu = gl.isDedicatedGPU();
-        //
-        //     gl = null;
-        //     this.openGlCheckCanvas.nativeElement.remove();HO
-        // } catch (error) {
-        //     this.hasGpu = false;
-        // }
-
-        // this.animate();
     }
 
     public outputContent(content: string) {
@@ -118,13 +104,10 @@ export class WelcomePageComponent implements OnInit {
     }
 
     private setSize() {
-        console.log("resizing!");
         // fix to set correct canvas size
         setTimeout(() => {
             this.animationCanvas.nativeElement.width = this.animationCanvas.nativeElement.clientWidth;
             this.animationCanvas.nativeElement.height = this.animationCanvas.nativeElement.clientHeight;
-            console.log("canvas width: " + this.animationCanvas.nativeElement.width);
-            console.log("canvas height: " + this.animationCanvas.nativeElement.height);
 
             this.gl.resize(this.animationCanvas.nativeElement.width, this.animationCanvas.nativeElement.height);
             this.redraw();
@@ -144,7 +127,7 @@ export class WelcomePageComponent implements OnInit {
         }
 
         this.setSize();
-        console.log(this.gl);
+
         const density = 200;// Number of circles
         const minSize = 2;  // Minimum radius
         const maxSize = 50; // Maximum radius
@@ -179,7 +162,6 @@ export class WelcomePageComponent implements OnInit {
             this.update = function() {
                 // Gravitate to center - calculate new velocity
                 if (Math.abs(this.x - this.centerX) > this.opengl.getWidth()) {
-                    console.log("swapping X");
                     const pullX = (this.x - this.centerX) < 0 ?
                         Math.min(Math.abs(this.x - this.centerX) / 1000 * this.biasX, this.maxPull) :
                         -Math.min(Math.abs(this.x - this.centerX) / 1000 * this.biasX, this.maxPull) ;
@@ -193,7 +175,6 @@ export class WelcomePageComponent implements OnInit {
                 }
 
                 if (Math.abs(this.y - this.centerY) > this.opengl.getHeight()) {
-                    console.log("swapping Y");
                     const pullY = (this.y - this.centerY) < 0 ?
                         Math.min(Math.abs(this.y - this.centerY) / 1000 * this.biasY, this.maxPull) :
                         -Math.min(Math.abs(this.y - this.centerY) / 1000 * this.biasY, this.maxPull) ;
@@ -222,8 +203,7 @@ export class WelcomePageComponent implements OnInit {
             for (let i = 0; i < density; i++) {
                 // Random shape parameters
                 const radius = Math.random() * maxSize + minSize;
-                console.log("canvas width: " + this.animationCanvas.nativeElement.width);
-                console.log("canvas height: " + this.animationCanvas.nativeElement.height);
+
                 const x = Math.random() * (this.animationCanvas.nativeElement.width / 2) - this.animationCanvas.nativeElement.width / 4;
                 const y = Math.random() * (this.animationCanvas.nativeElement.width / 2) - this.animationCanvas.nativeElement.width / 4;
 
