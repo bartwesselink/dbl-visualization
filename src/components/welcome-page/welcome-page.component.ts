@@ -55,6 +55,7 @@ export class WelcomePageComponent implements OnInit {
         }
 
         this.gl = new OpenGL(this.glContext);
+        this.gl.enableShaders(ShaderMode.FILL_CIRCLE);
         this.gl.setBackgroundColor(74/255, 115/255, 255/255);
         window.addEventListener('resize', () => this.setSize());
         this.setSize();
@@ -157,6 +158,7 @@ export class WelcomePageComponent implements OnInit {
             this.dx = dx;
             this.dy = dy;
             this.color = 255;
+            this.maxPull = 3;
             this.alpha = Math.max(1 - Math.min(radius / (maxSize + minSize), 1.0), 0.2);
 
             // Method to draw the shape
@@ -168,10 +170,17 @@ export class WelcomePageComponent implements OnInit {
             this.update = function() {
                 // Gravitate to center - calculate new velocity
                 const distance = Math.sqrt(Math.pow(this.x - this.centerX, 2) + Math.pow(this.y - this.centerY, 2));
-                const pullX = -(this.x - this.centerX) * distance / 1000 * this.biasX;
-                const pullY = -(this.y - this.centerY) * distance / 1000 * this.biasY;
+                const pullX = (this.x - this.centerX) < 0 ?
+                    Math.min(Math.abs(this.x - this.centerX) * distance / 1000 * this.biasX, this.maxPull) :
+                    -Math.min(Math.abs(this.x - this.centerX) * distance / 1000 * this.biasX, this.maxPull) ;
+                const pullY = (this.y - this.centerY) < 0 ?
+                    Math.min(Math.abs(this.y - this.centerY) * distance / 1000 * this.biasY, this.maxPull) :
+                    -Math.min(Math.abs(this.y - this.centerY) * distance / 1000 * this.biasY, this.maxPull) ;
                 this.dx = this.dx + pullX;
                 this.dy = this.dy + pullY;
+                console.log("DD");
+                console.log(this.dx);
+                console.log(this.dy);
                 // Updating positions according to x and y velocities
                 this.x += this.dx;
                 this.y += this.dy;
@@ -207,8 +216,8 @@ export class WelcomePageComponent implements OnInit {
                 const biasY = Math.random() / 2 + 0.5;
 
                 // Random velocities
-                const dx = Math.max(Math.random() * maxV, minV) * directionX * 4;
-                const dy = Math.max(Math.random() * maxV, minV) * directionY * 4;
+                const dx = Math.max(Math.random() * maxV, minV) * directionX;
+                const dy = Math.max(Math.random() * maxV, minV) * directionY;
 
                 circles[i] = new Circle(x, y, radius, dx, dy, centerX, centerY, biasX, biasY, this.animationCanvas, this.gl);
             }
