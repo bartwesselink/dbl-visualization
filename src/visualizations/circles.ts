@@ -238,4 +238,6 @@ export class Circles implements Visualizer {
         }
     }
 
+    /** @end-author Jordy Verhoeven */
+
 }
