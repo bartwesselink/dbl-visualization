@@ -25,6 +25,7 @@ export class Circles implements Visualizer {
         let newY;
 
         const baseSize = settings.baseSize;
+        const multiplier = settings.multiplier;
 
         const generate = (subTree: Node, radius: number, x: number, y: number): void => {
 
@@ -153,7 +154,7 @@ export class Circles implements Visualizer {
 
                     if (child.children.length == 1) {
 
-                        newRadius = radius * 0.75;
+                        newRadius = radius * multiplier / 100;
 
                     }
 
@@ -194,7 +195,7 @@ export class Circles implements Visualizer {
 
         if (tree.children.length == 1) {
 
-            newRadius = baseSize * 0.75;
+            newRadius = baseSize * multiplier / 100;
 
         }
 
@@ -206,6 +207,7 @@ export class Circles implements Visualizer {
     public getForm(formFactory: FormFactory): Form | null {
         return formFactory.createFormBuilder()
             .addSliderField('baseSize', 400, { label: 'Root size', min: 100, max: 1000 })
+            .addSliderField('multiplier', 75, {label: 'Single child size', min: 10, max: 90 })
             .getForm();
 
     }
@@ -237,5 +239,7 @@ export class Circles implements Visualizer {
             this.recolor(child, palette, gl, draws, selected);
         }
     }
+
+    /** @end-author Jordy Verhoeven */
 
 }
