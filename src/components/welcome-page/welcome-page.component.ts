@@ -206,8 +206,9 @@ export class WelcomePageComponent implements OnInit {
                 const directionY = Math.random() > 0.5 ? -1 : 1;
 
                 // Gravity center
-                const centerX = Math.random() * 3 * 100 - 3 * 50;
-                const centerY = Math.random() * 3 * 100 - 3 * 50;
+                const centerOffset = 200;
+                const centerX = Math.random() * 3 * centerOffset - 3 * centerOffset / 2;
+                const centerY = Math.random() * 3 * centerOffset - 3 * centerOffset / 2;
 
                 // Pull bias
                 const biasX = Math.random() / 2 + 0.5;
