@@ -18,7 +18,11 @@
   z-index: 300;
   margin-top: 0rem;
   border-bottom: 100px solid transparent;
-  border-left: 100vw solid red;
+  border-left: 100vw solid white;
+}
+
+.dark-mode > .triangle {
+  border-left: 100vw solid black;
 }
 
 .welcome-page-top {

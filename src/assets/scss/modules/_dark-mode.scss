@@ -40,6 +40,10 @@ $color-dark-card-hover: darken(#2b334e, 8%);
         filter: brightness(0) invert(100%);
         opacity: 1;
     }
+    
+    .triangle {
+      border-left: 100vw solid rgb(32, 37, 53);
+    }
 
     .welcome-page-logo, .welcome-page-school {
         filter: brightness(0) invert(100%);
