@@ -48,16 +48,18 @@ A hosted version of our application can currently be found on: [dbl.mboezer.com]
 
 ## Running the app locally
 ### Production
-- Check if the `dist/` folder exists
+1. Check if the `dist/` folder exists
 - In case this folder exists, you can host the files present in that folder on a webserver, and you should be good to go!
-- If this directory does not (yet) exists, continue.
-- Make sure you have NodeJS ([https://nodejs.org/en/download/](https://nodejs.org/en/download/), choose LTS) and the package manager Yarn ([https://yarnpkg.com/lang/en/docs/install/](https://yarnpkg.com/lang/en/docs/install/)) installed and added to your path (meaning it should be accessible via the command line).
+
+If this directory does not (yet) exists, continue.
+3. Make sure you have NodeJS ([https://nodejs.org/en/download/](https://nodejs.org/en/download/), choose LTS) and the package manager Yarn ([https://yarnpkg.com/lang/en/docs/install/](https://yarnpkg.com/lang/en/docs/install/)) installed and added to your path (meaning it should be accessible via the command line).
 - Run `yarn` from the project directory
 - Run `yarn build`
 - Repeat step 1
 
 ### Development
-- Make sure you have NodeJS ([https://nodejs.org/en/download/](https://nodejs.org/en/download/), choose LTS) and the package manager Yarn ([https://yarnpkg.com/lang/en/docs/install/](https://yarnpkg.com/lang/en/docs/install/)) installed and added to your path (meaning it should be accessible via the command line).
+1. Make sure you have NodeJS ([https://nodejs.org/en/download/](https://nodejs.org/en/download/), choose LTS) and the package manager Yarn ([https://yarnpkg.com/lang/en/docs/install/](https://yarnpkg.com/lang/en/docs/install/)) installed and added to your path (meaning it should be accessible via the command line).
 - Run `yarn` from the project directory
 - Run `yarn start`
-- You're all setup! Live-reload should automatically update your code while you're working on it.
+- A console window should show if yarn is ready building and serving the site to `localhost:port` (port is usually 4200)
+- You're all setup! Visit `localhost:4200` in your browser. Live-reload should automatically update your code while you're working on it.
