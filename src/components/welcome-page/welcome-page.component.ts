@@ -1,5 +1,7 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Visualizer} from '../../interfaces/visualizer';
+import {OpenGL} from "../../opengl/opengl";
+import {ShaderMode} from "../../opengl/shaders/shaderMode";
 
 @Component({
     selector: 'app-welcome-page',
@@ -14,17 +16,26 @@ export class WelcomePageComponent implements OnInit {
     @Input() private visualizers: Visualizer[];
     @Input() private runAnimation: boolean;
     @ViewChild('animationCanvas') private animationCanvas: ElementRef;
+    @ViewChild('openGlCheckCanvas') private openGlCheckCanvas: ElementRef;
+
+    private initial: boolean = true
 
     private animationIsRunning: boolean = true;
+    private hasGpu: boolean = false;
 
     public fullScreenAnimation: boolean = true;
     @Input() set showApp(showApp: boolean) {
         this.fullScreenAnimation = showApp;
 
-        setTimeout(() => this.animate());
+        setTimeout(() => this.animate(), this.initial ? 300 : 0);
+        this.initial = false;
     }
 
     private lastAnimationId: number;
+    private gl: OpenGL;
+    private glContext: WebGLRenderingContext;
+    private errored: boolean = false;
+    private lastError: string;
 
     public getThumbnails(): string[] {
         return this.visualizers.filter((item: Visualizer) => item.getThumbnailImage() !== null)
@@ -32,7 +43,24 @@ export class WelcomePageComponent implements OnInit {
     }
 
     public ngOnInit(): void {
-        this.animate();
+        this.glContext = this.animationCanvas.nativeElement.getContext('webgl2', {
+            preserveDrawingBuffer: false,
+            depth: true,
+            alpha: true,
+            antialias: true,
+        });
+
+        if (!this.glContext) {
+            throw new Error("No WebGL present");
+        }
+
+        this.gl = new OpenGL(this.glContext, true);
+        this.gl.enableShaders(ShaderMode.BLUR_CIRCLE);
+
+        this.gl.setBackgroundColor(0, 0, 0);
+
+        window.addEventListener('resize', () => this.setSize());
+        this.setSize();
     }
 
     public outputContent(content: string) {
@@ -51,59 +79,106 @@ export class WelcomePageComponent implements OnInit {
         this.goToHelp.emit();
     }
 
+    private onError(error): void {
+        this.errored = true;
+        this.lastError = error;
+        console.error(error);
+        const context = this.animationCanvas.nativeElement.getContext('2d');
+        context.clearRect(0, 0, this.animationCanvas.nativeElement.width, this.animationCanvas.nativeElement.height);
+
+        context.font = "30px Verdana";
+        context.fillStyle = "red";
+        context.fillText("An internal OpenGL error occurred: " + error, 10, this.animationCanvas.nativeElement.height / 2);
+    }
+
+    //redraw the canvas
+    private redraw(): void {
+        if (this.errored) {
+            this.onError(this.lastError);
+        } else {
+            this.gl.render();
+        }
+    }
+
+    private setSize() {
+        // fix to set correct canvas size
+        setTimeout(() => {
+            this.animationCanvas.nativeElement.width = this.animationCanvas.nativeElement.clientWidth;
+            this.animationCanvas.nativeElement.height = this.animationCanvas.nativeElement.clientHeight;
+
+            this.gl.resize(this.animationCanvas.nativeElement.width, this.animationCanvas.nativeElement.height);
+            this.redraw();
+        }, 100);
+    };
+
     public animate(): void {
         /** @author Nico Klaassen */
-        const canvas = this.animationCanvas.nativeElement;
+        const self: WelcomePageComponent = this;
+
+        // Release buffers when the animation is restarted
+        this.gl.releaseBuffers();
 
         // check if we have to cancel a previous animation
         if (this.lastAnimationId != null) {
             cancelAnimationFrame(this.lastAnimationId);
         }
 
-        const setSize = () => {
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
-        };
+        this.setSize();
 
-        setTimeout(setSize, 100);
-
-        const c = canvas.getContext('2d');
-
-        const density = 100;// Number of circles
+        const density = 200;// Number of circles
         const minSize = 2;  // Minimum radius
-        const maxSize = 40; // Maximum radius
-        const minV = 0.08;  // Minimum speed
+        const maxSize = 50; // Maximum radius
+        const minV = 0.15;  // Minimum speed
         const maxV = 0.6;   // Maximum speed
 
-        window.addEventListener('resize', setSize);
-
         // Circle object to track positions
-        function Circle(x, y, radius, dx, dy) {
+        function Circle(x, y, radius, dx, dy, centerX, centerY, biasX, biasY, variance, canvas, opengl) {
+            this.opengl = opengl;
+            this.canvas = canvas;
             this.x = x;
             this.y = y;
+            this.centerX = centerX;
+            this.centerY = centerY;
+            this.biasX = biasX;
+            this.biasY = biasY;
             this.radius = radius;
             this.dx = dx;
             this.dy = dy;
             this.color = 255;
-            this.alpha = Math.max(1 - Math.min(radius / (maxSize + minSize), 1.0), 0.2);
+            this.maxPull = 0.3 + variance;
+            this.velMix = 0.2;
+            this.alpha = Math.max(1 - Math.min(radius / (maxSize + minSize), 1.0), 0.3);
+            this.glid = this.opengl.renderBlurryCircle(Math.max(this.radius - Math.pow(1 + 0.05 * this.radius, 5), 0), Math.pow(1 + 0.05 * this.radius, 4), this.alpha, [1, 1, 1]);
 
             // Method to draw the shape
             this.draw = function () {
-                c.beginPath();
-                c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-                c.filter = 'blur(' + Math.max(this.radius / (minSize + maxSize) * 10 - 3, 0)  + 'px) brightness(1.2)';
-                c.fillStyle = "rgba(" + this.color + ", " + this.color + ", " + this.color + ", " + this.alpha + ")";
-                c.fill();
+                this.opengl.setPosition(this.glid, this.x, this.y);
             };
 
             // Method which calculates the next 'step' in the animation
             this.update = function() {
-                // Boundary collision detection
-                if ((this.x + this.radius) > canvas.clientWidth || (this.x - this.radius) < 0) {
-                    this.dx *= -1; // Invert
-                }
-                if ((this.y + this.radius) > canvas.clientHeight || (this.y - this.radius) < 0) {
-                    this.dy *= -1; // Invert
+                if (Math.sqrt(Math.pow(this.x - this.centerX, 2) + Math.pow(this.y - this.centerY, 2)) > Math.min(this.opengl.getWidth() / 2, this.opengl.getHeight()) * 1.3) {
+                    const pullX = (this.x - this.centerX) < 0 ?
+                        Math.min(Math.abs(this.x - this.centerX) / 1000 * this.biasX, this.maxPull) :
+                        -Math.min(Math.abs(this.x - this.centerX) / 1000 * this.biasX, this.maxPull) ;
+                    this.dx = this.dx + pullX;
+
+                    if (this.dx < 0) {
+                        this.dx = Math.max(this.velMix * Math.max(this.dx, -this.maxPull) + (1-this.velMix) * this.dx, -maxV);
+                    } else {
+                        this.dx = Math.min(this.velMix * Math.min(this.dx, this.maxPull) + (1-this.velMix) * this.dx, maxV);
+                    }
+
+                    const pullY = (this.y - this.centerY) < 0 ?
+                        Math.min(Math.abs(this.y - this.centerY) / 1000 * this.biasY, this.maxPull) :
+                        -Math.min(Math.abs(this.y - this.centerY) / 1000 * this.biasY, this.maxPull) ;
+                    this.dy = this.dy + pullY;
+
+                    if (this.dy < 0) {
+                        this.dy = Math.max(this.velMix * Math.max(this.dy, -this.maxPull) + (1-this.velMix) * this.dy, -maxV);
+                    } else {
+                        this.dy = Math.min(this.velMix * Math.min(this.dy, this.maxPull) + (1-this.velMix) * this.dy, maxV);
+                    }
                 }
 
                 // Updating positions according to x and y velocities
@@ -111,39 +186,59 @@ export class WelcomePageComponent implements OnInit {
                 this.y += this.dy;
 
                 this.draw();
-            }
+            };
+
+
         }
 
         const circles = [];
 
-        // Initializing all the circles
-        for (let i = 0; i < density; i++) {
-            // Random shape parameters
-            const radius = Math.random() * maxSize + minSize;
-            const x = radius + Math.random() * (canvas.clientWidth - radius * 2);
-            const y = radius + Math.random() * (canvas.clientHeight - radius * 2);
+        const initCircles = () => {
+            for (let i = 0; i < density; i++) {
+                // Random shape parameters
+                const radius = Math.random() * maxSize + minSize;
 
-            // Random up/down and left/right
-            const directionX = Math.random() > 0.5 ? -1 : 1;
-            const directionY = Math.random() > 0.5 ? -1 : 1;
+                const x = Math.random() * (this.gl.getWidth()) - this.gl.getWidth() / 2;
+                const y = Math.random() * (this.gl.getHeight()) - this.gl.getHeight() / 2;
 
-            // Random velocities
-            const dx = Math.max(Math.random() * maxV, minV) * directionX;
-            const dy = Math.max(Math.random() * maxV, minV) * directionY;
+                // Random up/down and left/right
+                const directionX = Math.random() > 0.5 ? -1 : 1;
+                const directionY = Math.random() > 0.5 ? -1 : 1;
 
-            circles[i] = new Circle(x, y, radius, dx, dy);
-        }
+                // Gravity center
+                const centerX = Math.random() * 3 * 100 - 3 * 50;
+                const centerY = Math.random() * 3 * 100 - 3 * 50;
+
+                // Pull bias
+                const biasX = Math.random() / 2 + 0.5;
+                const biasY = Math.random() / 2 + 0.5;
+
+                // Random velocities
+                const dx = Math.max(Math.random() * maxV, minV) * directionX;
+                const dy = Math.max(Math.random() * maxV, minV) * directionY;
+
+                // Variance
+                const variance = 1 + (Math.random() - 0.5) / 10;
+
+                circles[i] = new Circle(x, y, radius, dx, dy, centerX, centerY, biasX, biasY, variance, this.animationCanvas, this.gl);
+            }
+        };
 
         const animate = () => {
             this.lastAnimationId = requestAnimationFrame(animate);
             if (this.runAnimation) {
-                c.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight); // Clear canvas
+                // Init circles if they don't exist yet.
+                if (circles.length == 0) {
+                    initCircles();
+                }
 
                 // Update all the shapes for the next 'animation frame' / step
                 for (let i = 0; i < circles.length; i++) {
                     const circle = circles[i];
                     circle.update();
                 }
+
+                this.redraw();
             } else {
                 this.animationIsRunning = false;
             }
