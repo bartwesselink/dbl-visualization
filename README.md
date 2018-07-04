@@ -1,8 +1,14 @@
 ![Image missing: NGL Tree product image](src/assets/images/product-promo.png "NGL Tree product image")
 
 # NGL tree
-
-This repository contains the source code for the DBL HTI + Webtech course for group 1D.
+This repository contains the source code for the TU/e DBL HTI + Webtech course for group 1D.
+All work presented here is produced by:
+- Mathijs Boezer
+- Jules Cornelissen
+- Roan Hofland
+- Nico Klaassen
+- Jordy Verhoeven
+- Bart Wesselink
 
 ## Feature overview
 The following features and or functionality have been implemented:
@@ -19,12 +25,12 @@ The following features and or functionality have been implemented:
 - Per visualization settings capabilities
 - Support for color vision deficient users through color palettes
 - Exploring and exporting subtrees
+- Introduction tour for new users
 
 ## Visualizations
 In order to support data scientists with the right tools we made a selection of 8 visualizations which we implemented. By offering a wide range of visualization styles we think our tool is suitable for visualizing many hierarchies, regardless of their structure.
 
 ![Image missing: All available visualizations](src/assets/images/readme-all_visualizations.png "All available visualizations")
-
 
 ## Future changes
 NGL Tree is the result of a TU/e student group project. Currently the deadline for the project has passed and hence the work here can be seen as "final". There are no immediate steps we intend to take towards improving the current implementation.
@@ -43,7 +49,7 @@ A hosted version of our application can currently be found on: [dbl.mboezer.com]
 ## Running the app locally
 ### Production
 - Check if the `dist/` folder exists
-- In case this folder exists, open the `index.html` file in a browser, and you should be good to go!
+- In case this folder exists, you can host the files present in that folder on a webserver, and you should be good to go!
 - If this directory does not (yet) exists, continue.
 - Make sure you have NodeJS ([https://nodejs.org/en/download/](https://nodejs.org/en/download/), choose LTS) and the package manager Yarn ([https://yarnpkg.com/lang/en/docs/install/](https://yarnpkg.com/lang/en/docs/install/)) installed and added to your path (meaning it should be accessible via the command line).
 - Run `yarn` from the project directory
