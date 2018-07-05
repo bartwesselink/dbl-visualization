@@ -20,7 +20,7 @@ The following features and or functionality have been implemented:
 - Tree navigator element with a search filter
 - Showing multiple visualizations side by side
 - Screenshot / Export of current visualization
-- Dark-mode
+- Dark mode
 - Global settings integration for the entire tool
 - Per visualization settings capabilities
 - Support for color vision deficient users through color palettes
@@ -36,8 +36,7 @@ In order to support data scientists with the right tools we made a selection of 
 NGL Tree is the result of a TU/e student group project. Currently the deadline for the project has passed and hence the work here can be seen as "final". There are no immediate steps we intend to take towards improving the current implementation.
 
 ## Usage tips
-1. There is a step-by-step help feature at the top right.
-2. Navigation in the canvas can also be done through:
+There is a step-by-step help feature on the front page as well as at the top right of the tool. Aditionally, Navigation in the canvas can also be done with the following hotkeys:
  - W, A, S, D : panning
  - Q, E : rotating
  - R, F : zooming
@@ -47,19 +46,20 @@ NGL Tree is the result of a TU/e student group project. Currently the deadline f
 A hosted version of our application can currently be found on: [dbl.mboezer.com](http://dbl.mboezer.com)
 
 ## Running the app locally
-### Production
-1. Check if the `dist/` folder exists
-- In case this folder exists, you can host the files present in that folder on a webserver, and you should be good to go!
+###Requirements:
+- [NodeJS LTS (currently 8.11.3)](https://yarnpkg.com/en/docs/install)
+- [Yarn package manager](https://nodejs.org/en/download/)
+Make sure to install the Yarn package manager to your PATH to ensure smooth operation and installation of the required packages.
 
-If this directory does not (yet) exists, continue.
-3. Make sure you have NodeJS ([https://nodejs.org/en/download/](https://nodejs.org/en/download/), choose LTS) and the package manager Yarn ([https://yarnpkg.com/lang/en/docs/install/](https://yarnpkg.com/lang/en/docs/install/)) installed and added to your path (meaning it should be accessible via the command line).
-- Run `yarn` from the project directory
-- Run `yarn build`
-- Repeat step 1
+### Production
+Build intstructions:
+1. Navigate to the root directory using a terminal or command prompt.
+2. Run `yarn`
+3. Run `yarn build`
+4. Copy the files from the `dist/` folder to a webserver and the site is good to go!
 
 ### Development
-1. Make sure you have NodeJS ([https://nodejs.org/en/download/](https://nodejs.org/en/download/), choose LTS) and the package manager Yarn ([https://yarnpkg.com/lang/en/docs/install/](https://yarnpkg.com/lang/en/docs/install/)) installed and added to your path (meaning it should be accessible via the command line).
-- Run `yarn` from the project directory
-- Run `yarn start`
-- A console window should show if yarn is ready building and serving the site to `localhost:port` (port is usually 4200)
-- You're all setup! Visit `localhost:4200` in your browser. Live-reload should automatically update your code while you're working on it.
+1. Navigate to the root directory using a terminal or command prompt.
+2. Run `yarn`
+3. Run `yarn start`
+4. Navigate to `localhost:4200` to visit the site. Live-reload should automatically update your code while you're working on it.
