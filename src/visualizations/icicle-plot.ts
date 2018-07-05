@@ -138,7 +138,7 @@ export class IciclePlot implements Visualizer {
     }
 
     public getThumbnailImage(): string | null {
-        return '/assets/images/visualization-icicle-plot.png';
+        return 'assets/images/visualization-icicle-plot.png';
     }
     /** @end-author Nico Klaassen */
     /** @author Roan Hofland */

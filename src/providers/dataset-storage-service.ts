@@ -12,7 +12,7 @@ declare var importScripts;
 @Injectable()
 export class DatasetStorageService {
     /** @author Mathijs Boezer */
-    private defaultDataPath = '/assets/default-data/';
+    private defaultDataPath = 'assets/default-data/';
     private pakoDataPath = 'assets/scripts/pako.js'; // no slash because document.location.href already has one at the end
     private userDatasetsStorageKey = 'userDatasets';
 

@@ -217,7 +217,7 @@ export class Circles implements Visualizer {
     }
 
     public getThumbnailImage(): string | null {
-        return '/assets/images/visualization-circular-tree-map.png';
+        return 'assets/images/visualization-circular-tree-map.png';
     }
 
     public enableShaders(gl: OpenGL): void {

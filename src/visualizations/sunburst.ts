@@ -80,7 +80,7 @@ export class Sunburst implements Visualizer {
     }
 
     public getThumbnailImage(): string | null {
-        return '/assets/images/visualization-sunburst.png';
+        return 'assets/images/visualization-sunburst.png';
     }
 
     public enableShaders(gl: OpenGL): void {

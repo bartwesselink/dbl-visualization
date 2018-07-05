@@ -105,7 +105,7 @@ export class BasicTree implements Visualizer {
     }
 
     public getThumbnailImage(): string|null {
-        return '/assets/images/visualization-basic-tree.png';
+        return 'assets/images/visualization-basic-tree.png';
     }
 
     public enableShaders(gl: OpenGL): void {

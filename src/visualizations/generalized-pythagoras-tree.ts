@@ -136,7 +136,7 @@ export class GeneralizedPythagorasTree implements Visualizer {
     }
 
     public getThumbnailImage(): string | null {
-        return '/assets/images/visualization-generalized-pythagoras-tree.png';
+        return 'assets/images/visualization-generalized-pythagoras-tree.png';
     }
     /** @end-author Jules Cornelissen */
     /** @author Roan Hofland */
