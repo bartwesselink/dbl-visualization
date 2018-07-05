@@ -44,9 +44,9 @@ There is a step-by-step help feature on the front page as well as at the top rig
 
 ## Live demo
 A hosted version of our application can currently be found on: [dbl.mboezer.com](http://dbl.mboezer.com)
+**NOTE: Since this application uses modern technologies like web workers and WebGL 2.0 we can only guarantee optimal performance on the latest versions of Google Chrome and Mozilla Firefox**
 
 ## Running the app locally
-**NOTE: Since this application uses modern technologies like web workers and WebGL 2.0 we can only guarantee optimal performance on the latest versions of Google Chrome and Mozilla Firefox**
 ### Requirements:
 - [NodeJS LTS (currently 8.11.3)](https://yarnpkg.com/en/docs/install)
 - [Yarn package manager](https://nodejs.org/en/download/)
