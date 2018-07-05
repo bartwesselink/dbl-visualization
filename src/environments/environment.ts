@@ -5,5 +5,5 @@
 
 export const environment = {
   production: false,
-  openglVerbose: true
+  openglVerbose: false
 };

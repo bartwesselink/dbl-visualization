@@ -72,6 +72,10 @@
   &.holder-app-tabs {
     section {
       width: auto !important; // has to be important in order to make it work between tab/side-by-side
+
+      &:not(:first-of-type) {
+        display: none;
+      }
     }
 
     .holder-content {

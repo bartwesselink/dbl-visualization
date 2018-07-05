@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {Tab} from '../models/tab';
 import { Node } from '../models/node';
 import {NewickParser} from '../utils/newick-parser';
@@ -31,6 +31,7 @@ import {Galaxy} from "../visualizations/galaxy";
 })
 export class AppComponent implements OnInit {
     public tabs: Tab[] = [];
+    public tabsSorted: Tab[] = [];
     public tree: Node;
     private originalTree: Node;
     public visualizers: Visualizer[];
@@ -62,11 +63,12 @@ export class AppComponent implements OnInit {
     public darkMode = false;
 
     public viewMode = ViewMode.SIDE_BY_SIDE;
+    private tabCounter: number = 0;
 
     // variables for dragging the column around
     public windowResizing: boolean = false;
     
-    constructor(private settingsBus: SettingsBus, private selectBus: SelectBus, private subtreeBus: SubtreeBus, private snackbarBus: SnackbarBus) {
+    constructor(private settingsBus: SettingsBus, private selectBus: SelectBus, private subtreeBus: SubtreeBus, private snackbarBus: SnackbarBus, private changeDetection: ChangeDetectorRef) {
         this.createVisualizers();
 
         this.settingsBus.settingsChanged.subscribe((settings: Settings) => {
@@ -157,7 +159,7 @@ export class AppComponent implements OnInit {
     public closeTab(tab: Tab) {
         tab.window.destroyScene();
 
-        const wasActive = tab === this.activeTab;
+        const wasActive = tab === this.activeTab || tab.active;
         const index = this.tabs.indexOf(tab);
 
         this.tabs = this.tabs.filter(item => item !== tab);
@@ -170,6 +172,8 @@ export class AppComponent implements OnInit {
             this.resizeActiveTab();
         }
 
+        this.tabs = this.tabs.slice();
+
         this.resetTabWidths();
     }
 
@@ -180,6 +184,8 @@ export class AppComponent implements OnInit {
 
         tab.active = true;
         this.activeTab = tab;
+
+        this.sortTabs();
 
         if (tab.window) {
             // setTimeout(() => {
@@ -248,11 +254,6 @@ export class AppComponent implements OnInit {
                 await tab.window.computeScene(override);
             }
         }
-        // for (const tab of this.tabs.slice().sort((a, b) => a === this.activeTab ? 0 : 1)) {
-        //     if (tab.window) {
-        //         await tab.window.computeScene();
-        //     }
-        // }
     }
 
     public startHelp(): void {
@@ -276,7 +277,7 @@ export class AppComponent implements OnInit {
         }
         
         const tab: Tab = {
-            id: this.tabs.length + 1,
+            id: this.tabCounter++,
             visualizer: visualizer,
             active: false,
         };
@@ -358,6 +359,14 @@ export class AppComponent implements OnInit {
         for (const tabSection of this.tabSections.toArray()) {
             tabSection.nativeElement.style.width = '100%';
         }
+    }
+
+    private sortTabs(): void {
+        this.tabsSorted = this.tabs.slice().sort((a, b) => a === this.activeTab ? 0 : 1);
+    }
+
+    public getTabs(): Tab[] {
+        return this.isTabViewMode() ? this.tabsSorted : this.tabs;
     }
     /** @end-author Bart Wesselink */
     /** @author Roan Hofland */
