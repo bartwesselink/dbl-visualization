@@ -46,9 +46,10 @@ There is a step-by-step help feature on the front page as well as at the top rig
 A hosted version of our application can currently be found on: [dbl.mboezer.com](http://dbl.mboezer.com)
 
 ## Running the app locally
-###Requirements:
+### Requirements:
 - [NodeJS LTS (currently 8.11.3)](https://yarnpkg.com/en/docs/install)
 - [Yarn package manager](https://nodejs.org/en/download/)
+
 Make sure to install the Yarn package manager to your PATH to ensure smooth operation and installation of the required packages.
 
 ### Production
