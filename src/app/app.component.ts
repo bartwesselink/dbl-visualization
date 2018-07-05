@@ -65,7 +65,7 @@ export class AppComponent implements OnInit {
 
     // variables for dragging the column around
     public windowResizing: boolean = false;
-
+    
     constructor(private settingsBus: SettingsBus, private selectBus: SelectBus, private subtreeBus: SubtreeBus, private snackbarBus: SnackbarBus) {
         this.createVisualizers();
 
@@ -266,6 +266,15 @@ export class AppComponent implements OnInit {
     }
 
     private addTab(visualizer: Visualizer) {
+        if(this.tree == null){
+            this.snackbarBus.send({
+                message: 'Please select a dataset before opening a visulisation.',
+                duration: 10000,
+                closeButton: true,
+            });
+            return;
+        }
+        
         const tab: Tab = {
             id: this.tabs.length + 1,
             visualizer: visualizer,
