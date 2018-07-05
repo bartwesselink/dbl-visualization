@@ -57,8 +57,7 @@ Build intstructions:
 1. Navigate to the root directory using a terminal or command prompt.
 2. Run `yarn`
 3. Run `yarn build`
-4. Navigate to the `dist/` folder
-5. Open `index.html` in a webbrowser and the site is good to go!
+4. Copy the files from the `dist/` folder to a webserver and the site is good to go!
 
 ### Development
 1. Navigate to the root directory using a terminal or command prompt.
