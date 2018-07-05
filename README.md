@@ -36,7 +36,7 @@ In order to support data scientists with the right tools we made a selection of 
 NGL Tree is the result of a TU/e student group project. Currently the deadline for the project has passed and hence the work here can be seen as "final". There are no immediate steps we intend to take towards improving the current implementation.
 
 ## Usage tips
-There is a step-by-step help feature on the front page as well as at the top right of the tool. Aditionally, Navigation in the canvas can also be done with the following hotkeys:
+There is a step-by-step help feature on the front page as well as at the top right of the tool. Aditionally, navigation in the canvas can also be done with the following hotkeys:
  - W, A, S, D : panning
  - Q, E : rotating
  - R, F : zooming
