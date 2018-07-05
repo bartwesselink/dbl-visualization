@@ -19,7 +19,7 @@ The following features and or functionality have been implemented:
 - Interaction through node selections
 - Tree navigator element with a search filter
 - Showing multiple visualizations side by side
-- Screenshot / Export of current visualization
+- Screenshot the current visualization
 - Dark mode
 - Global settings integration for the entire tool
 - Per visualization settings capabilities
@@ -45,6 +45,8 @@ There is a step-by-step help feature on the front page as well as at the top rig
 ## Live demo
 A hosted version of our application can currently be found on: [dbl.mboezer.com](http://dbl.mboezer.com)
 
+**NOTE: Since this application uses modern technologies like web workers and WebGL 2.0 we can only guarantee optimal performance on the latest versions of Google Chrome and Mozilla Firefox.**
+
 ## Running the app locally
 ### Requirements:
 - [NodeJS LTS (currently 8.11.3)](https://yarnpkg.com/en/docs/install)
@@ -54,13 +56,13 @@ Make sure to install the Yarn package manager to your PATH to ensure smooth oper
 
 ### Production
 Build intstructions:
-1. Navigate to the root directory using a terminal or command prompt.
+1. Navigate to the root directory using a terminal or command prompt
 2. Run `yarn`
 3. Run `yarn build`
 4. Copy the files from the `dist/` folder to a webserver and the site is good to go!
 
 ### Development
-1. Navigate to the root directory using a terminal or command prompt.
+1. Navigate to the root directory using a terminal or command prompt
 2. Run `yarn`
 3. Run `yarn start`
-4. Navigate to `localhost:4200` to visit the site. Live-reload should automatically update your code while you're working on it.
+4. Navigate to `localhost:4200` to visit the site. Live-reload should automatically update your code while you're working on it
