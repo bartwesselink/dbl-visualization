@@ -31,21 +31,19 @@
             </div>
 
             <div class="holder-app" [class.holder-app-side-by-side]="isSideBySideViewMode()" [class.holder-app-tabs]="isTabViewMode()" #appHolder>
-                <ng-container *ngFor="let tab of tabs; let i = index;">
-                    <section class="full-height holder-item holder-item-{{ i + 1}}" [class.holder-tab-panel]="isTabViewMode()" [class.is-active]="tab.active" #tabSection>
-                        <div class="page-content full-height holder-view">
-                            <div class="holder-header">
-                                <div class="holder-header-title">
-                                    {{ tab.visualizer.getName() }}
-                                    <app-visualization-picker class="holder-header-pick-visualization" type="tab" [hidden]="!tree" [identifier]="'header-switch-' + i" [visualizers]="visualizers" (select)="updateVisualization($event, tab)"></app-visualization-picker>
-                                    <i class="mdi mdi-close-circle holder-header-close" (click)="closeTab(tab)"></i>
-                                </div>
+                <section *ngFor="let tab of getTabs(); let i = index;" class="full-height holder-item holder-item-{{ i + 1}}" [class.holder-tab-panel]="isTabViewMode()" [class.is-active]="tab.active">
+                    <div class="page-content full-height holder-view">
+                        <div class="holder-header">
+                            <div class="holder-header-title">
+                                {{ tab.visualizer.getName() }}
+                                <app-visualization-picker class="holder-header-pick-visualization" type="tab" [hidden]="!tree" [identifier]="'header-switch-' + i" [visualizers]="visualizers" (select)="updateVisualization($event, tab)"></app-visualization-picker>
+                                <i class="mdi mdi-close-circle holder-header-close" (click)="closeTab(tab)"></i>
                             </div>
-
-                            <app-window [tree]="tree" [visualizer]="tab.visualizer" [tab]="tab" (loading)="updateLoading($event)" (redrawAll)="redrawAllTabs()"></app-window>
                         </div>
-                    </section>
-                </ng-container>
+
+                        <app-window [tree]="tree" [visualizer]="tab.visualizer" [tab]="tab" (loading)="updateLoading($event)" (redrawAll)="redrawAllTabs()"></app-window>
+                    </div>
+                </section>
 
                 <div class="holder-divider" #resizer [hidden]="!isSideBySideViewMode() || tabs?.length < 2" (mousedown)="startResize()"></div>
             </div>
