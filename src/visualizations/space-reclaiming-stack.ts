@@ -50,14 +50,14 @@ export class SpaceReclaimingStack implements Visualizer {
             return -1;
         };
 
-        const simpleCompute = (): void => {//tree:NodeSpaceReclaimingStack, index: number): void => {
-            for (let depth = 0; depth < sortedNodes.length; depth++) {
+        const simpleCompute = (basisDepth: number): void => {//tree:NodeSpaceReclaimingStack, index: number): void => {
+            for (let depth = basisDepth; depth < sortedNodes.length; depth++) {
                 // Points at the top
                 for (let i = 0; i < sortedNodes[depth].length; i++) {
                     const tree = sortedNodes[depth][i];
                     const topY = globalHeight / 2 - levelHeight * tree.depth;
 
-                    if (tree.parent) {
+                    if (tree.depth != basisDepth) { // basisDepth can only be 1 node, a root of the (sub)tree
                         if (tree.parent.children.length > 1) {
                             const width = Math.abs(tree.parent.bottomleft[0] - tree.parent.bottomright[0]);
                             const index = calculateIndex(tree);
@@ -78,7 +78,7 @@ export class SpaceReclaimingStack implements Visualizer {
                             tree.topleft = tree.parent.bottomleft;
                             tree.topright = tree.parent.bottomright;
                         }
-                    } else { // Root case
+                    } else { // Root case of the given tree
                         tree.topleft = [-globalWidth / 2, topY];
                         tree.topright = [globalWidth / 2, topY];
                     }
@@ -91,13 +91,17 @@ export class SpaceReclaimingStack implements Visualizer {
                 let segmentWidth;
                 let offset;
 
-                if (depth > 0) { // reclaim coefficient implementation
-                    let parentWidth = Math.abs(sortedNodes[depth][0].topleft[0] - sortedNodes[depth][sortedNodes[depth].length - 1].topright[0]);
-                    parentWidth = parentWidth + (globalWidth - parentWidth) * reclaimCoefficient;
-                    offset = Math.min(parentWidth / sortedNodes[depth].length * offsetBasis, maximumOffset);
-                    segmentWidth = (parentWidth - offset * (sortedNodes[depth].length - 1)) / sortedNodes[depth].length;
+                if (depth > basisDepth) { // reclaim coefficient implementation
+                    // Summing all widths of the top edges of nodes at the current depth
+                    let topWidthSum = 0;
+                    for (let i = 0; i < sortedNodes[depth].length; i++) {
+                        topWidthSum += Math.abs(sortedNodes[depth][i].topleft[0] - sortedNodes[depth][i].topright[0]);
+                    }
+                    topWidthSum = topWidthSum + (globalWidth - topWidthSum) * reclaimCoefficient;
+                    offset = Math.min(topWidthSum / sortedNodes[depth].length * offsetBasis, maximumOffset);
+                    segmentWidth = (topWidthSum - offset * (sortedNodes[depth].length - 1)) / sortedNodes[depth].length;
 
-                    left = -parentWidth / 2;
+                    left = -topWidthSum / 2;
                 } else {
                     offset = Math.min(globalWidth / sortedNodes[depth].length * offsetBasis, maximumOffset);
                     segmentWidth = (globalWidth - offset * (sortedNodes[depth].length - 1)) / sortedNodes[depth].length;
@@ -145,8 +149,8 @@ export class SpaceReclaimingStack implements Visualizer {
             endPoints.push([]);
         }
 
-        recursiveDepthSort(originalTree); // Sort nodes by level in a nested array
-        simpleCompute(); // Compute all the coordinates for all of the nodes
+        recursiveDepthSort(originalTree);   // Sort nodes by level in a nested array
+        simpleCompute(originalTree.depth);  // Compute all the coordinates for all of the nodes
         recursiveDraw(originalTree, false); // Compute all draws for the tree
 
         return draws;
@@ -171,7 +175,7 @@ export class SpaceReclaimingStack implements Visualizer {
     }
 
     public enableShaders(gl: OpenGL):void {
-        gl.setSizeThresHold(15);
+        gl.setSizeThresHold(10);
     }
 
     /** @author Roan Hofland */

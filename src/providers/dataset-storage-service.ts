@@ -17,10 +17,10 @@ export class DatasetStorageService {
     private userDatasetsStorageKey = 'userDatasets';
 
     public defaultDatasets: DatasetFile[] = [
-        {title: 'NCBI Dataset', path: this.defaultDataPath + 'ncbi-taxonomy.tre'},
         {title: 'Phyloviz example dataset', path: this.defaultDataPath + 'newick_example_phyloviz.nwk'},
+        {title: 'NCBI Dataset', path: this.defaultDataPath + 'ncbi-taxonomy.tre'},
         {title: 'Galaxy Dataset', path: this.defaultDataPath + 'galaxy.tre'},
-        {title: 'Expected phylogeny of last generation of isolates', path: this.defaultDataPath + 'ideal_lastday.newick'},
+        {title: 'Expected phylogeny of last generation of isolates', path: this.defaultDataPath + 'ideal_lastday.nwk'},
         {title: 'Tetrapoda Chronograms', path: this.defaultDataPath + 'tetrapoda chronograms.tre'},
     ]; // list of all example/default datasets that user can pick from with their paths
 
