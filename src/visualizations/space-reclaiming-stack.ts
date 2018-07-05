@@ -167,7 +167,7 @@ export class SpaceReclaimingStack implements Visualizer {
     }
 
     public getThumbnailImage(): string | null {
-        return '/assets/images/visualization-space-reclaiming-stack.png';
+        return 'assets/images/visualization-space-reclaiming-stack.png';
     }
 
     public enableShaders(gl: OpenGL):void {
