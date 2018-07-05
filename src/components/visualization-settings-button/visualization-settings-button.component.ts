@@ -20,8 +20,4 @@ export class VisualizationSettingsButtonComponent {
         this.valueChanges.emit(value);
     }
     /** @end-author Bart Wesselink */
-
-       public close(): void {
-        this.viewSettings = false;
-    }
 }
