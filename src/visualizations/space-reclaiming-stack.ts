@@ -91,13 +91,17 @@ export class SpaceReclaimingStack implements Visualizer {
                 let segmentWidth;
                 let offset;
 
-                if (depth > 0) { // reclaim coefficient implementation
-                    let parentWidth = Math.abs(sortedNodes[depth][0].topleft[0] - sortedNodes[depth][sortedNodes[depth].length - 1].topright[0]);
-                    parentWidth = parentWidth + (globalWidth - parentWidth) * reclaimCoefficient;
-                    offset = Math.min(parentWidth / sortedNodes[depth].length * offsetBasis, maximumOffset);
-                    segmentWidth = (parentWidth - offset * (sortedNodes[depth].length - 1)) / sortedNodes[depth].length;
+                if (depth > basisDepth) { // reclaim coefficient implementation
+                    // Summing all widths of the top edges of nodes at the current depth
+                    let topWidthSum = 0;
+                    for (let i = 0; i < sortedNodes[depth].length; i++) {
+                        topWidthSum += Math.abs(sortedNodes[depth][i].topleft[0] - sortedNodes[depth][i].topright[0]);
+                    }
+                    topWidthSum = topWidthSum + (globalWidth - topWidthSum) * reclaimCoefficient;
+                    offset = Math.min(topWidthSum / sortedNodes[depth].length * offsetBasis, maximumOffset);
+                    segmentWidth = (topWidthSum - offset * (sortedNodes[depth].length - 1)) / sortedNodes[depth].length;
 
-                    left = -parentWidth / 2;
+                    left = -topWidthSum / 2;
                 } else {
                     offset = Math.min(globalWidth / sortedNodes[depth].length * offsetBasis, maximumOffset);
                     segmentWidth = (globalWidth - offset * (sortedNodes[depth].length - 1)) / sortedNodes[depth].length;
@@ -171,7 +175,7 @@ export class SpaceReclaimingStack implements Visualizer {
     }
 
     public enableShaders(gl: OpenGL):void {
-        gl.setSizeThresHold(15);
+        gl.setSizeThresHold(10);
     }
 
     /** @author Roan Hofland */
