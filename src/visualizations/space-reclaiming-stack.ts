@@ -50,14 +50,14 @@ export class SpaceReclaimingStack implements Visualizer {
             return -1;
         };
 
-        const simpleCompute = (): void => {//tree:NodeSpaceReclaimingStack, index: number): void => {
-            for (let depth = 0; depth < sortedNodes.length; depth++) {
+        const simpleCompute = (basisDepth: number): void => {//tree:NodeSpaceReclaimingStack, index: number): void => {
+            for (let depth = basisDepth; depth < sortedNodes.length; depth++) {
                 // Points at the top
                 for (let i = 0; i < sortedNodes[depth].length; i++) {
                     const tree = sortedNodes[depth][i];
                     const topY = globalHeight / 2 - levelHeight * tree.depth;
 
-                    if (tree.parent) {
+                    if (tree.depth != basisDepth) { // basisDepth can only be 1 node, a root of the (sub)tree
                         if (tree.parent.children.length > 1) {
                             const width = Math.abs(tree.parent.bottomleft[0] - tree.parent.bottomright[0]);
                             const index = calculateIndex(tree);
@@ -78,7 +78,7 @@ export class SpaceReclaimingStack implements Visualizer {
                             tree.topleft = tree.parent.bottomleft;
                             tree.topright = tree.parent.bottomright;
                         }
-                    } else { // Root case
+                    } else { // Root case of the given tree
                         tree.topleft = [-globalWidth / 2, topY];
                         tree.topright = [globalWidth / 2, topY];
                     }
@@ -145,8 +145,8 @@ export class SpaceReclaimingStack implements Visualizer {
             endPoints.push([]);
         }
 
-        recursiveDepthSort(originalTree); // Sort nodes by level in a nested array
-        simpleCompute(); // Compute all the coordinates for all of the nodes
+        recursiveDepthSort(originalTree);   // Sort nodes by level in a nested array
+        simpleCompute(originalTree.depth);  // Compute all the coordinates for all of the nodes
         recursiveDraw(originalTree, false); // Compute all draws for the tree
 
         return draws;
