@@ -23,7 +23,7 @@ export class SpaceReclaimingStack implements Visualizer {
         let reclaimCoefficient = settings.reclaimCoefficient / 100; // Percentage
         let offsetBasis = settings.offset / 200; // Percentage 0 - 50%
         let maximumOffset = settings.maximumOffset;
-        const levelHeight = globalHeight / originalTree.maxDepth;
+        const levelHeight = globalHeight / (originalTree.maxDepth + 1);
 
         let sortedNodes: any;
         let startPoints: any;
@@ -41,7 +41,14 @@ export class SpaceReclaimingStack implements Visualizer {
             }
         };
 
-        const calculateIndex = (tree: NodeSpaceReclaimingStack): number => {
+        /** For the given node, return the index of the node itself in the child-array of its parent.
+         *  Example: If this node has no siblings, then the index will be 0.
+         *           If this node is the second child in the parent.children array, then the index will be 1.
+         *           If this node is the last child in the parent.children array, then the index will be parent.children.length - 1 (because arrays start at 0).
+         * @param tree Node for which we want to know the n in terms of "nth child" in relation to its parent and siblings.
+         * @returns {number} n, indicating this is the nth child of its parent.
+         */
+        const calculateSiblingIndex = (tree: NodeSpaceReclaimingStack): number => {
             for (let i = 0; i < tree.parent.children.length; i++) {
                 if (tree.parent.children[i] === tree) {
                     return i;
@@ -60,7 +67,7 @@ export class SpaceReclaimingStack implements Visualizer {
                     if (tree.depth != basisDepth) { // basisDepth can only be 1 node, a root of the (sub)tree
                         if (tree.parent.children.length > 1) {
                             const width = Math.abs(tree.parent.bottomleft[0] - tree.parent.bottomright[0]);
-                            const index = calculateIndex(tree);
+                            const index = calculateSiblingIndex(tree);
 
                             if (index == 0) {
                                 tree.topleft = tree.parent.bottomleft;
@@ -158,9 +165,9 @@ export class SpaceReclaimingStack implements Visualizer {
 
     public getForm(formFactory: FormFactory) {
         return formFactory.createFormBuilder()
-            .addNumberField('height', 800, {label: 'Height'})
+            .addNumberField('height', 300, {label: 'Height'})
             .addNumberField('width', 300, {label: 'Width'})
-            .addSliderField('reclaimCoefficient', 50, {label: "Reclaiming coefficient", min: 0, max: 100})
+            .addNumberField('reclaimCoefficient', 50, {label: "Reclaiming coefficient"})
             .addSliderField('offset', 50, {label: "Relative offset in between nodes on the same depth", min: 0, max: 100})
             .addNumberField('maximumOffset', 10, {label: 'Maximum offset'})
             .getForm();
